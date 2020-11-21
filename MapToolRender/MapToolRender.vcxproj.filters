@@ -65,6 +65,9 @@
     <ClCompile Include="TextureConverter.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="MapObject.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc">

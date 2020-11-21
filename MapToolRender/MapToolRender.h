@@ -4,7 +4,7 @@
 #include"TextureConverter.h"
 struct IDirect3D9Ex;
 struct IDirect3DDevice9Ex;
-class RenderObject;
+struct RenderObject;
 class RenderModule;
 
 namespace MapToolRender {
@@ -57,10 +57,22 @@ namespace MapToolRender {
 		Dictionary<RenderGroup, HashSet<RenderObject^>^ > m_renderObjects;
 		RenderModule* m_pRenderModule;
 	};
-	public ref class RenderObject abstract : public INotifyPropertyChanged
+	public ref class MapObject abstract : public INotifyPropertyChanged
 	{
 	public:
 		virtual event PropertyChangedEventHandler^ PropertyChanged;
+		[CategoryAttribute("속성")]
+		property System::String^ Name
+		{
+			auto get()->System::String^;
+			auto set(System::String^ value)->void;
+		}
+	protected:
+		System::String^ m_name;
+	};
+	public ref class RenderObject abstract: public MapObject
+	{
+	public:
 		[CategoryAttribute("속성")]
 		property MapToolRender::Transform^ Transform
 		{

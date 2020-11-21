@@ -6,7 +6,8 @@
 #include<string>
 #include<wincodec.h>
 struct IWICImagingFactory;
-
+extern "C" HRESULT InitializeModule();
+extern "C" HRESULT UnitializeModule();
 class DLL_CLASS RenderModule
 {
 public:

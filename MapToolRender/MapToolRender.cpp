@@ -76,7 +76,7 @@ auto MapToolRender::GraphicsDevice::Remove(RenderGroup groupId, RenderObject^ ob
 auto MapToolRender::GraphicsDevice::ApplyViewProjMatrix() -> void
 {
 	m_pRenderModule->SetCamera(m_currentCamera->PositionPtr, m_currentCamera->RotationPtr);
-	m_pRenderModule->SetProj(45.f, 1.f, 0.1f, 1000.f);
+	m_pRenderModule->SetProj(45.f, 1.f, 0.1f, 2000.f);
 }
 
 MapToolRender::GraphicsDevice::!GraphicsDevice()
@@ -97,9 +97,9 @@ MapToolRender::GraphicsDevice::GraphicsDevice(Control^ renderView, unsigned widt
 	m_currentCamera = gcnew Camera();
 	auto position = m_currentCamera->Position;
 	auto rotation = m_currentCamera->Rotation;
-	position->Y = 200.f;
-	position->Z = -4.f;
-	rotation->X = DirectX::XMConvertToRadians(45.f);
+	position->Y = 1.f;
+	position->Z = -1.f;
+	rotation->X = DirectX::XMConvertToRadians(10.f);
 	m_currentCamera->Position = position;
 	m_currentCamera->Rotation = rotation;
 	

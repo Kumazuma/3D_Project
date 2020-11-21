@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.ComponentModel;
 namespace MapTool.Doc
 {
-    class Document
+    class Document: INotifyPropertyChanged
     {
         private static Document s_instance;
-        private List<MapToolRender.RenderObject> m_renderObjects;
-        public Document Instance
+        private List<MapToolRender.MapObject> m_mapObjects = new List<MapToolRender.MapObject>();
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public static Document Instance
         {
             get
             {
@@ -27,10 +29,17 @@ namespace MapTool.Doc
                 return s_instance;
             }
         }
-        public List<MapToolRender.RenderObject> RenderObjects
+        public List<MapToolRender.MapObject> MapObjects
         {
-            get => m_renderObjects;
-            set => m_renderObjects = value;
+            get => m_mapObjects;
+            set => m_mapObjects = value;
+        }
+
+
+        public void AddObject(MapToolRender.MapObject mapObj)
+        {
+            m_mapObjects.Add(mapObj);
+            PropertyChanged?.Invoke(mapObj, new PropertyChangedEventArgs("MapObjects"));
         }
     }
 

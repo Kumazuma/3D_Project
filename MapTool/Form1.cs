@@ -37,22 +37,22 @@ namespace MapTool
             m_renderView.IsFloat = false;
             
             GraphicsDevice.Initialize(m_renderView.Content, 1920, 1080);
-            GraphicsDevice.Instance.CurrentCamera.Position.Y = 700f;
+            
             GraphicsDevice.Instance.Render();
             m_renderView.Content.Paint += Form1_Paint;
             
             
-            TerrainObject terrain =
-                new TerrainObject(
-                    GraphicsDevice.Instance,
-                    "./Height1.bmp",
-                    10.0f,
-                    200.0f
-                );
-            Texture texture = new Texture(GraphicsDevice.Instance,  "./Grass_1.png");
-            terrain.DiffuseTexture = texture;
-            m_propertyView.Content.SelectedObject = terrain;
-            GraphicsDevice.Instance.Add(RenderGroup.PRIORITY, terrain);
+            //TerrainObject terrain =
+            //    new TerrainObject(
+            //        GraphicsDevice.Instance,
+            //        "./Height1.bmp",
+            //        10.0f,
+            //        200.0f
+            //    );
+            //Texture texture = new Texture(GraphicsDevice.Instance,  "./Grass_1.png");
+            //terrain.DiffuseTexture = texture;
+            //m_propertyView.Content.SelectedObject = terrain;
+            //GraphicsDevice.Instance.Add(RenderGroup.PRIORITY, terrain);
             
         }
 
@@ -74,5 +74,26 @@ namespace MapTool
             }
         }
 
+        private void TerrainToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new View.TerrainCreateDialog())
+            {
+                if(dialog.ShowDialog() == DialogResult.OK)
+                {
+                    TerrainObject terrain =
+                        new TerrainObject(
+                            GraphicsDevice.Instance,
+                            dialog.HeightmapImgPath,
+                            dialog.Interval,
+                            dialog.MaxHeight
+                        );
+                    m_propertyView.Content.SelectedObject = terrain;
+                    GraphicsDevice.Instance.Add(RenderGroup.PRIORITY, terrain);
+                    terrain.Name = "Terrain";
+                    Doc.Document.Instance.AddObject(terrain);
+                    //m_mapObjTreePanel.Content.
+                }
+            }
+        }
     }
 }

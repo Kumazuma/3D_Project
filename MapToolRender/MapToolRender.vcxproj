@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="MapToolRender.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

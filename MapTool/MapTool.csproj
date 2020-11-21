@@ -111,6 +111,12 @@
     <Compile Include="View\MapObjectTreePanel.Designer.cs">
       <DependentUpon>MapObjectTreePanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\TerrainCreateDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\TerrainCreateDialog.Designer.cs">
+      <DependentUpon>TerrainCreateDialog.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -128,6 +134,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\RenderView.resx">
       <DependentUpon>RenderView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\TerrainCreateDialog.resx">
+      <DependentUpon>TerrainCreateDialog.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
