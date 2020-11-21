@@ -1,7 +1,11 @@
 #include "pch.h"
 #include <d3d9.h>
-#include <DirectXMath.h>
-
+#pragma unmanaged
+#pragma warning(push)
+#pragma warning(once: 4793)
+#include<DirectXMath.h>
+#pragma warning(pop)
+#pragma managed
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "windowscodecs.lib")
 

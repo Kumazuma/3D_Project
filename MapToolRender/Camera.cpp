@@ -1,6 +1,8 @@
 #include"pch.h"
 #include "Camera.h"
 #pragma unmanaged
+#pragma warning(push)
+#pragma warning(disable: 4793)
 void MoveForward(DirectX::XMFLOAT3* pPosition, DirectX::XMFLOAT3* pRotation,  float delta)
 {
 	using namespace DirectX;
@@ -23,6 +25,7 @@ void MoveRight(DirectX::XMFLOAT3* pPosition, DirectX::XMFLOAT3* pRotation, float
 	vPos += vDir;
 	XMStoreFloat3(pPosition, vPos);
 }
+#pragma warning(pop)
 #pragma managed
 MapToolRender::Camera::Camera()
 {
