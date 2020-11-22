@@ -1,5 +1,10 @@
 #pragma once
+#pragma unmanaged
+#pragma warning(push)
+#pragma warning(once : 4793)
 #include<DirectXMath.h>
+#pragma warning(pop)
+#pragma managed
 #include"Transform.h"
 namespace MapToolRender
 {

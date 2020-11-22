@@ -10,12 +10,16 @@ using System.Windows.Forms;
 
 namespace MapTool.View
 {
+    public delegate void ChangedTreeNodeSelectedHandler(object selectedObj);
     public partial class MapObjectTreePanel : UserControl
     {
+        TreeNode m_rootNode;
+        public event ChangedTreeNodeSelectedHandler SelectedObjChanged;
         public MapObjectTreePanel()
         {
             InitializeComponent();
-            Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;    
+            m_rootNode = treeView1.Nodes.Add("world");
+            Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;
         }
 
         private void Document_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -24,7 +28,7 @@ namespace MapTool.View
             {
                 case "MapObjects":
                     var mapObj = sender as MapToolRender.MapObject;
-                    var node = treeView1.Nodes.Add(mapObj.GetHashCode().ToString(), mapObj.Name);
+                    var node = m_rootNode.Nodes.Add(mapObj.GetHashCode().ToString(), mapObj.Name);
                     mapObj.PropertyChanged += MapObj_PropertyChanged;
                     node.Tag = mapObj;
                     break;
@@ -39,6 +43,14 @@ namespace MapTool.View
                     treeView1.Nodes.Find(sender.GetHashCode().ToString(), true)[0].Text = (sender as MapToolRender.MapObject).Name;
                     break;
 
+            }
+        }
+
+        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if(e.Node.Tag != null)
+            {
+                
             }
         }
     }
