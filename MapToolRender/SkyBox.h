@@ -2,18 +2,19 @@
 #include "MapToolRender.h"
 namespace MapToolRender
 {
+	ref class CubeTexture;
 	public ref class SkyBox : public RenderObject
 	{
 	public:
 		SkyBox(GraphicsDevice^ device);
 		auto Clone()->RenderObject^ override;
-		property MapToolRender::Texture^ SkyBoxTexture
+		property MapToolRender::CubeTexture^ SkyBoxTexture
 		{
-			auto get()->MapToolRender::Texture^;
-			auto set(MapToolRender::Texture^ texture)->void;
+			auto get()->MapToolRender::CubeTexture^;
+			auto set(MapToolRender::CubeTexture^ texture)->void;
 		}
 	protected:
 		SkyBox(SkyBox^ const& rhs);
-		Texture^ m_texture;
+		CubeTexture^ m_texture;
 	};
 }

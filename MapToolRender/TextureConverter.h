@@ -28,5 +28,17 @@ namespace MapToolRender
 	public:
 		virtual auto EditValue(ITypeDescriptorContext^ context, System::IServiceProvider^ provider, System::Object^ value)->System::Object^ override;
 	};
-	
+	public ref class CubeTextureFileEditor : public System::Windows::Forms::Design::FileNameEditor
+	{
+	protected:
+		virtual void InitializeDialog(OpenFileDialog^ openFileDialog) override
+		{
+			//FileNameEditor::InitializeDialog()
+			FileNameEditor::InitializeDialog(openFileDialog);
+			openFileDialog->Filter = "texture files (*.dds)|*.dds";
+
+		}
+	public:
+		virtual auto EditValue(ITypeDescriptorContext^ context, System::IServiceProvider^ provider, System::Object^ value)->System::Object^ override;
+	};
 }

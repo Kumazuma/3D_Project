@@ -29,22 +29,32 @@ auto MapToolRender::GraphicsDevice::Render() -> void
 
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_STENCIL | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 255, 255), 1.f, 0);
 	pDevice->BeginScene();
-	auto enums = Enum::GetValues(RenderGroup::typeid);
-	for each (auto it in enums)
+
+	auto list = m_renderObjects[RenderGroup::PRIORITY];
+	for each (auto obj in list)
 	{
-		auto key = static_cast<RenderGroup>(it);
-		if (m_renderObjects.ContainsKey(key))
+		auto* handle{ obj->Handle };
+		if (handle != nullptr)
 		{
-			auto  list = m_renderObjects[key];
-			for each (auto obj in list)
-			{
-				auto* handle{ obj->Handle };
-				if (handle != nullptr)
-				{
-					handle->Render(m_pRenderModule);
-				}
-				//obj->Handle->Render(m_pRenderModule);
-			}
+			handle->Render(m_pRenderModule);
+		}
+	}
+	list = m_renderObjects[RenderGroup::NONALPHA];
+	for each (auto obj in list)
+	{
+		auto* handle{ obj->Handle };
+		if (handle != nullptr)
+		{
+			handle->Render(m_pRenderModule);
+		}
+	}
+	list = m_renderObjects[RenderGroup::ALPHA];
+	for each (auto obj in list)
+	{
+		auto* handle{ obj->Handle };
+		if (handle != nullptr)
+		{
+			handle->Render(m_pRenderModule);
 		}
 	}
 	//for each (auto var in m_renderObjects[RenderGroup::PRIORITY])
@@ -107,7 +117,12 @@ MapToolRender::GraphicsDevice::GraphicsDevice(Control^ renderView, unsigned widt
 	m_currentCamera->Position = position;
 	m_currentCamera->Rotation = rotation;
 	
-	
+	auto enums = Enum::GetValues(RenderGroup::typeid);
+	for each (auto it in enums)
+	{
+		auto key = static_cast<RenderGroup>(it);
+		m_renderObjects.Add(key, gcnew HashSet<RenderObject^>{});
+	}
 }
 
 MapToolRender::MapObject::MapObject(MapObject^rhs):

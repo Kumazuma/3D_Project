@@ -64,8 +64,7 @@ auto MapToolRender::TextureConverter::ConvertFrom(
     }
     if (value->GetType() == System::String::typeid)
     {
-        System::String^ projectDirectory{ MapToolCore::Environment::Instance->ProjectDirectory };
-        System::String^ path{ MapToolCore::Utility::MakeRelativePath(projectDirectory, static_cast<System::String^>(value)) };
+        System::String^ path{ static_cast<System::String^>(value) };
         return gcnew Texture(MapToolRender::GraphicsDevice::Instance, path);
     }
     return nullptr;
@@ -77,6 +76,16 @@ auto MapToolRender::TextureFileEditor::EditValue(ITypeDescriptorContext^ context
     if (text->GetType() == System::String::typeid)
     {
         return gcnew Texture(MapToolRender::GraphicsDevice::Instance,static_cast<System::String^>( text) );
+    }
+    return text;
+}
+
+auto MapToolRender::CubeTextureFileEditor::EditValue(ITypeDescriptorContext^ context, System::IServiceProvider^ provider, System::Object^ value) -> System::Object^ 
+{
+    System::Object^ text = FileNameEditor::EditValue(context, provider, value);
+    if (text->GetType() == System::String::typeid)
+    {
+        return gcnew CubeTexture(MapToolRender::GraphicsDevice::Instance, static_cast<System::String^>(text));
     }
     return text;
 }

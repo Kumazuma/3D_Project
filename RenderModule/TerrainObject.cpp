@@ -4,6 +4,7 @@
 #pragma comment(lib, "d3d9.lib")
 #undef max
 using namespace DirectX;
+
 auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32 const imgHeight, f32 const interval, f32 const terrainMaxHeight, u8 const* const pArray) -> HRESULT
 {
 	COMPtr<IDirect3DDevice9Ex> pDevice{};
@@ -63,12 +64,13 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 	constexpr f32 U8MAX{ std::numeric_limits<u8>::max()  };
 	for (u32 i = 0; i < m_depth; ++i)
 	{
-		f32 const z{ static_cast<f32>(i) };
-		f32 const u{ z / static_cast<f32>(m_depth - 1) };
+		f32 const z{ interval * static_cast<f32>(i) };
+		f32 const u{  z / static_cast<f32>(m_depth - 1) };
 		for (u32 j = 0; j < m_width; ++j)
 		{
-			f32 const x{ static_cast<f32>(j) };
-			f32 const v{ static_cast<f32>(j) / static_cast<f32>(m_width - 1) };
+			f32 const x{ interval * static_cast<f32>(j) };
+			f32 const v{ x / static_cast<f32>(m_width - 1) };
+
 			u32 index = i * m_width + j;
 			XMFLOAT3A postion{};
 			postion.x = x;
@@ -104,16 +106,16 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 				XMVECTOR vOrigin{ XMLoadFloat3(&originVertex.vPosition) };
 				
 				vRight = XMLoadFloat3(&rightVertex.vPosition);
-				vRight -= vOrigin;
-				
 				vUp = XMLoadFloat3A(rVertexPosition.data() + pIndices[idx][2]);
+				vRight -= vOrigin;
 				vUp -= vOrigin;
+				
 
 				XMVECTOR vNormal{ XMVector3Cross(vRight, vUp) };
-
 				XMVECTOR vOriginNormal{ XMLoadFloat3(&originVertex.vNormal) };
 				XMVECTOR vRightNormal{ XMLoadFloat3(&rightVertex.vNormal) };
 				XMVECTOR vUpNormal{XMLoadFloat3(&upVertex.vNormal)};
+
 				vOriginNormal += vNormal;
 				vRightNormal += vNormal;
 				vUpNormal += vNormal;
@@ -216,6 +218,7 @@ auto TerrainObject::Create(RenderModule* pRenderModule, u32 width, u32 height, f
 }
 auto TerrainObject::SetInterval(f32 value)->void
 {
+	ResetTerrain(m_maxHeight, value);
 	m_interval = value;
 }
 auto TerrainObject::GetInterval()const->f32
@@ -223,6 +226,11 @@ auto TerrainObject::GetInterval()const->f32
 	return m_interval;
 }
 auto TerrainObject::SetMaxHeight(f32 value)->void
+{
+	ResetTerrain(value, m_interval);
+	m_maxHeight = value;
+}
+auto TerrainObject::ResetTerrain(f32 const newMaxHeight, f32 const newInterval) -> void
 {
 	if (m_copied)
 	{
@@ -247,23 +255,22 @@ auto TerrainObject::SetMaxHeight(f32 value)->void
 	}
 
 	HRESULT hr{};
-	f32 newMaxHeight{ value };
 	VERTEX<FVF_TEX>* pVertices = nullptr;
 	hr = m_pVertexBuffer->Lock(0, 0, reinterpret_cast<void**>(&pVertices), 0);
 	if (FAILED(hr))
-		return ;
+		return;
 	constexpr f32 U8MAX{ std::numeric_limits<u8>::max() };
 	std::vector<XMFLOAT3A>& rVertexPosition{ *m_pVertexPositions };
 	rVertexPosition.resize(m_vertexCount, XMFLOAT3A{ 0.f, 0.f, 0.f });
 
 	for (u32 i = 0; i < m_depth; ++i)
 	{
-		f32 const z{ static_cast<f32>(i) };
-		f32 const u{ z / static_cast<f32>(m_depth - 1) };
+		f32 const z{ newInterval * static_cast<f32>(i) };
+		f32 const u{  z / static_cast<f32>(m_depth - 1) };
 		for (u32 j = 0; j < m_width; ++j)
 		{
-			f32 const x{ static_cast<f32>(j) };
-			f32 const v{ static_cast<f32>(j) / static_cast<f32>(m_width - 1) };
+			f32 const x{ newInterval * static_cast<f32>(j)  };
+			f32 const v{ x / static_cast<f32>(m_width - 1) };
 			u32 index = i * m_width + j;
 			XMFLOAT3A postion{};
 			rVertexPosition[index].y = newMaxHeight * rVertexPosition[index].y / m_maxHeight;
@@ -324,7 +331,6 @@ auto TerrainObject::SetMaxHeight(f32 value)->void
 		XMStoreFloat3(&it->vNormal, XMVector3Normalize(vNormal));
 	}
 	m_pVertexBuffer->Unlock();
-	m_maxHeight = value;
 }
 auto TerrainObject::GetMaxHeight()const->f32
 {

@@ -205,6 +205,22 @@ auto RenderModule::CreateTexture(wchar_t const* szFilePath, IDirect3DTexture9** 
 	return hr;
 }
 
+auto RenderModule::CreateCubeTexture(wchar_t const* szFilePath, IDirect3DCubeTexture9** pOut) -> HRESULT
+{
+	if (pOut == nullptr)
+	{
+		return E_POINTER;
+	}
+	IDirect3DCubeTexture9* pTexture;
+	HRESULT hr{};
+	hr = D3DXCreateCubeTextureFromFileW(m_pDevice.Get(), szFilePath, &pTexture);
+	if (SUCCEEDED(hr))
+	{
+		*pOut = pTexture;
+	}
+	return hr;
+}
+
 auto RenderModule::GetDefaultTexture(IDirect3DTexture9** pTexture) -> HRESULT
 {
 	try

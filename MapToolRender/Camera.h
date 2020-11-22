@@ -15,8 +15,11 @@ namespace MapToolRender
 		Camera();
 		~Camera();
 		!Camera();
+		auto MoveUp(float delta)->void;
 		auto MoveForward(float delta)->void;
 		auto MoveRight(float delta)->void;
+		auto RotationX(float delta)->void;
+		auto RotationY(float delta)->void;
 		property DirectX::XMFLOAT3* PositionPtr
 		{
 			auto get()->DirectX::XMFLOAT3*;
@@ -37,7 +40,7 @@ namespace MapToolRender
 		}
 	private:
 		MapToolRender::Position^ m_position;
-		MapToolRender::Rotation^ m_rotaion;
+		MapToolRender::Rotation^ m_rotation;
 		DirectX::XMFLOAT3* m_pPosition;
 		DirectX::XMFLOAT3* m_pRotation;
 	};

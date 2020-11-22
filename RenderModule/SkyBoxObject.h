@@ -10,7 +10,7 @@ public:
 
 	auto Render(RenderModule* pRenderModule)->void override;
 	auto Clone()const->RenderObject*;
-	auto SetDiffuseTexture(IDirect3DTexture9* pTexture)->void;
+	auto SetDiffuseTexture(IDirect3DCubeTexture9* pTexture)->void;
 protected:
 	auto Initialize(RenderModule* pRenderModule)->HRESULT;
 	SkyBoxObject();
@@ -28,5 +28,5 @@ private:
 	f32 m_maxHeight;
 	COMPtr<IDirect3DVertexBuffer9> m_pVertexBuffer;
 	COMPtr<IDirect3DIndexBuffer9> m_pIndexBuffer;
-	COMPtr<IDirect3DTexture9>  m_pTexture;
+	COMPtr<IDirect3DCubeTexture9>  m_pTexture;
 };

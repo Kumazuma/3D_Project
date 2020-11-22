@@ -16,6 +16,7 @@ public:
 	auto GetDevice(IDirect3DDevice9Ex** pOut)->HRESULT;
 	auto CreateTerrain(wchar_t const* szHeightMapPath, size_t len, f32 interval, f32 maxHeight, RenderObject** pOut)->HRESULT;
 	auto CreateTexture(wchar_t const* szFilePath, IDirect3DTexture9** pOut)->HRESULT;
+	auto CreateCubeTexture(wchar_t const* szFilePath, IDirect3DCubeTexture9** pOut)->HRESULT;
 	auto GetDefaultTexture(IDirect3DTexture9** pTexture)->HRESULT;
 	auto GetWidth()const->u32 { return m_width; }
 	auto GetHeight()const->u32 { return m_height; }

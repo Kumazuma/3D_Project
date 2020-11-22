@@ -21,11 +21,11 @@ MapToolRender::SkyBox::SkyBox(SkyBox^ const& rhs):
 {
     m_pNativeObject = rhs->m_pNativeObject;
 }
-auto MapToolRender::SkyBox::SkyBoxTexture::get()->Texture^
+auto MapToolRender::SkyBox::SkyBoxTexture::get()->CubeTexture^
 {
     return m_texture;
 }
-auto MapToolRender::SkyBox::SkyBoxTexture::set(Texture^ value)->void
+auto MapToolRender::SkyBox::SkyBoxTexture::set(CubeTexture^ value)->void
 {
     static_cast<SkyBoxObject*>(m_pNativeObject)->SetDiffuseTexture(value->Handle);
     m_texture = value;

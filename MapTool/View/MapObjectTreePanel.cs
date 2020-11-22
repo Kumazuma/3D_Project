@@ -38,6 +38,8 @@ namespace MapTool.View
                     treeView1.SelectedNode = selectedNode;
                     break;
             }
+            MapToolRender.GraphicsDevice.Instance.Render();
+
         }
 
         private void MapObj_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -46,6 +48,9 @@ namespace MapTool.View
             {
                 case "Name":
                     treeView1.Nodes.Find(sender.GetHashCode().ToString(), true)[0].Text = (sender as MapToolRender.MapObject).Name;
+                    break;
+                default:
+                    MapToolRender.GraphicsDevice.Instance.Render();
                     break;
 
             }

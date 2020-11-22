@@ -17,6 +17,7 @@ public:
 	auto SetMaxHeight(f32 value)->void;
 	auto GetMaxHeight()const->f32;
 protected:
+	auto ResetTerrain(f32 newMaxHeight, f32 newInterval)->void;
 	auto Initialize(RenderModule* pRenderModule, u32 width, u32 height, f32 interval, f32 terrainMaxHeight, u8 const* pArray)->HRESULT;
 	TerrainObject();
 	TerrainObject(TerrainObject const* rhs);

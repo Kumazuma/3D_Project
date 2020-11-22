@@ -84,7 +84,7 @@ auto SkyBoxObject::Clone() const -> RenderObject*
     return nullptr;
 }
 
-auto SkyBoxObject::SetDiffuseTexture(IDirect3DTexture9* pTexture) -> void
+auto SkyBoxObject::SetDiffuseTexture(IDirect3DCubeTexture9* pTexture) -> void
 {
     m_pTexture = MakeCOMPtr(std::move(pTexture));
 }
@@ -200,9 +200,9 @@ auto SkyBoxObject::Initialize(RenderModule* pRenderModule) -> HRESULT
 	pIndices[10][1] = 1;
 	pIndices[10][2] = 2;
 
-	pIndices[12][0] = 0;
-	pIndices[12][1] = 2;
-	pIndices[12][2] = 3;
+	pIndices[11][0] = 0;
+	pIndices[11][1] = 2;
+	pIndices[11][2] = 3;
 	m_pIndexBuffer->Unlock();
 	m_pVertexBuffer->Unlock();
 	
