@@ -9,9 +9,20 @@ namespace MapTool.Doc
     class Document: INotifyPropertyChanged
     {
         private static Document s_instance;
+        private object m_selectedObjects;
         private List<MapToolRender.MapObject> m_mapObjects = new List<MapToolRender.MapObject>();
-        public event PropertyChangedEventHandler PropertyChanged;
+        public MapToolRender.MapObject World { get; set; }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        public object SelectedObject
+        {
+            get => m_selectedObjects;
+            set
+            {
+                m_selectedObjects = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedObject"));
+            }
+        }
         public static Document Instance
         {
             get

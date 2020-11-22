@@ -109,3 +109,8 @@ MapToolRender::GraphicsDevice::GraphicsDevice(Control^ renderView, unsigned widt
 	
 	
 }
+
+MapToolRender::MapObject::MapObject(MapObject^rhs):
+	m_name{rhs->m_name}
+{
+}

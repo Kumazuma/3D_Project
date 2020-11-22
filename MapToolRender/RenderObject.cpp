@@ -26,6 +26,7 @@ namespace MapToolRender
 		m_transform->PropertyChanged += m_transformChangedHandler;
 	}
 	RenderObject::RenderObject(RenderObject^  obj):
+		MapObject(obj),
 		m_pNativeObject{obj->m_pNativeObject->Clone()},
 		m_transform{ gcnew MapToolRender::Transform{obj->m_transform} }
 	{

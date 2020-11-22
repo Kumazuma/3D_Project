@@ -20,8 +20,19 @@ namespace MapTool
         {
             InitializeComponent();
             MapToolCore.Environment.Instance.ProjectDirectory = ".";
-            m_mapObjTreePanel = new DockView<View.MapObjectTreePanel>();
+
             m_renderView = new DockView<View.RenderView>();
+            GraphicsDevice.Initialize(m_renderView.Content, 1920, 1080);
+            SkyBox skyBox = new SkyBox(GraphicsDevice.Instance);
+            GraphicsDevice.Instance.Add(RenderGroup.PRIORITY, skyBox);
+
+            Doc.Document.Instance.World = skyBox;
+            Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;
+            //GraphicsDevice.Instance.Add(RenderGroup.PRIORITY, terrain);
+            //terrain.Name = "Terrain";
+            //Doc.Document.Instance.AddObject(terrain);
+
+            m_mapObjTreePanel = new DockView<View.MapObjectTreePanel>();
             m_propertyView = new DockView<PropertyGrid>();
             m_mapObjTreePanel.TabText = "트리";
             m_renderView.TabText = "렌더";
@@ -36,12 +47,9 @@ namespace MapTool
             m_renderView.CloseButton = false;
             m_renderView.IsFloat = false;
             
-            GraphicsDevice.Initialize(m_renderView.Content, 1920, 1080);
-            
             GraphicsDevice.Instance.Render();
             m_renderView.Content.Paint += Form1_Paint;
-            
-            
+
             //TerrainObject terrain =
             //    new TerrainObject(
             //        GraphicsDevice.Instance,
@@ -53,7 +61,17 @@ namespace MapTool
             //terrain.DiffuseTexture = texture;
             //m_propertyView.Content.SelectedObject = terrain;
             //GraphicsDevice.Instance.Add(RenderGroup.PRIORITY, terrain);
-            
+
+        }
+
+        private void Document_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case "SelectedObject":
+                    m_propertyView.Content.SelectedObject = Doc.Document.Instance.SelectedObject;
+                    break;
+            }
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -87,8 +105,7 @@ namespace MapTool
                             dialog.Interval,
                             dialog.MaxHeight
                         );
-                    m_propertyView.Content.SelectedObject = terrain;
-                    GraphicsDevice.Instance.Add(RenderGroup.PRIORITY, terrain);
+                    GraphicsDevice.Instance.Add(RenderGroup.NONALPHA, terrain);
                     terrain.Name = "Terrain";
                     Doc.Document.Instance.AddObject(terrain);
                     //m_mapObjTreePanel.Content.

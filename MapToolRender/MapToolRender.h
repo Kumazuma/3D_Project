@@ -68,6 +68,8 @@ namespace MapToolRender {
 			auto set(System::String^ value)->void;
 		}
 	protected:
+		MapObject() {}
+		MapObject(MapObject^ rhs);
 		System::String^ m_name;
 	};
 	public ref class RenderObject abstract: public MapObject

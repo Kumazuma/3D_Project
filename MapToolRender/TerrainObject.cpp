@@ -40,6 +40,8 @@ auto MapToolRender::TerrainObject::DiffuseTexture::set(MapToolRender::Texture^ t
 {
 	m_texture = texture;
 	static_cast<::TerrainObject*>(this->m_pNativeObject)->SetDiffuseTexture(m_texture->Handle);
+	OnPropertyChanged("DiffuseTexture");
+
 }
 auto MapToolRender::TerrainObject::Interval::get()->float
 {
@@ -49,6 +51,8 @@ auto MapToolRender::TerrainObject::Interval::get()->float
 auto MapToolRender::TerrainObject::Interval::set(float value)->void
 {
 	static_cast<::TerrainObject*>(m_pNativeObject)->SetInterval(value);
+	OnPropertyChanged("Interval");
+
 }
 auto MapToolRender::TerrainObject::MaxHeight::get()->float
 {
@@ -58,4 +62,6 @@ auto MapToolRender::TerrainObject::MaxHeight::get()->float
 auto MapToolRender::TerrainObject::MaxHeight::set(float value)->void
 {
 	static_cast<::TerrainObject*>(m_pNativeObject)->SetMaxHeight(value);
+	OnPropertyChanged("MaxHeight");
+
 }

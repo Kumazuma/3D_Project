@@ -17,6 +17,7 @@ protected:
 	DirectX::XMFLOAT4X4 m_transform;
 protected:
 	static constexpr unsigned long FVF_TEX = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;
+	static constexpr unsigned long FVF_TEX3D = D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXCOORDSIZE3(0);;
 	template<unsigned long FVFTYPE>
 	struct VERTEX;
 	template<>
@@ -26,24 +27,32 @@ protected:
 		DirectX::XMFLOAT3 vNormal;
 		DirectX::XMFLOAT2 vUV;
 	};
-	template<unsigned long INDEXTYPE>
-	struct Index;
 	template<>
-	struct Index<D3DFMT_INDEX32>
+	struct VERTEX<FVF_TEX3D>
 	{
-		u32 var[3];
-		template<typename INDEX>
-		u32& operator [](INDEX i) { return var[i]; }
-		template<typename INDEX>
-		u32 const& operator [](INDEX i)const { return var[i]; }
+		DirectX::XMFLOAT3 vPosition;
+		DirectX::XMFLOAT3 vUV;
+	};
+	template<unsigned long INDEXTYPE>
+	struct MetaIndexData{};
+	template<>
+	struct MetaIndexData<D3DFMT_INDEX16>
+	{
+		using IndexType = u16;
 	};
 	template<>
-	struct Index<D3DFMT_INDEX16>
+	struct MetaIndexData<D3DFMT_INDEX32>
 	{
-		u16 var[3];
-		template<typename INDEX>
-		u16& operator [](INDEX i) { return var[i]; }
-		template<typename INDEX>
-		u16 const& operator [](INDEX i)const { return var[i]; }
+		using IndexType = u32;
+	};
+	template<unsigned long INDEXTYPE>
+	struct Index
+	{
+		using IndexType = typename MetaIndexData<INDEXTYPE>::IndexType;
+		IndexType var[3];
+		template<typename _INDEX>
+		IndexType& operator[](_INDEX&& i) { return var[i]; }
+		template<typename _INDEX>
+		IndexType const& operator[](_INDEX&& i)const { return var[i]; }
 	};
 };

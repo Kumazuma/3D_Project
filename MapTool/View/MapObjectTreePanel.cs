@@ -18,7 +18,8 @@ namespace MapTool.View
         public MapObjectTreePanel()
         {
             InitializeComponent();
-            m_rootNode = treeView1.Nodes.Add("world");
+            m_rootNode = treeView1.Nodes.Add(Doc.Document.Instance.World.GetHashCode().ToString(), "world");
+            m_rootNode.Tag = Doc.Document.Instance.World;
             Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;
         }
 
@@ -31,6 +32,10 @@ namespace MapTool.View
                     var node = m_rootNode.Nodes.Add(mapObj.GetHashCode().ToString(), mapObj.Name);
                     mapObj.PropertyChanged += MapObj_PropertyChanged;
                     node.Tag = mapObj;
+                    break;
+                case "SelectedObject":
+                    var selectedNode = treeView1.Nodes.Find(Doc.Document.Instance.SelectedObject.GetHashCode().ToString(), true)[0];
+                    treeView1.SelectedNode = selectedNode;
                     break;
             }
         }
@@ -50,7 +55,7 @@ namespace MapTool.View
         {
             if(e.Node.Tag != null)
             {
-                
+                Doc.Document.Instance.SelectedObject = e.Node.Tag;
             }
         }
     }

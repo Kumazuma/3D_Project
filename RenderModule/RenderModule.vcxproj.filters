@@ -33,6 +33,9 @@
     <ClInclude Include="RenderModule.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SkyBoxObject.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -48,6 +51,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="RenderModule.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBoxObject.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
