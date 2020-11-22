@@ -157,6 +157,7 @@ TerrainObject::TerrainObject(TerrainObject const* rhs):
 	m_interval{rhs->m_interval},
 	m_copied{true}
 {
+
 }
 
 auto TerrainObject::Render(RenderModule* pRenderModule) -> void
@@ -223,6 +224,28 @@ auto TerrainObject::GetInterval()const->f32
 }
 auto TerrainObject::SetMaxHeight(f32 value)->void
 {
+	if (m_copied)
+	{
+		//Max Height가 변경되면 이전 버텍스 버퍼와는 정보가 달라지므로 카피해야 한다.
+		HRESULT hr{};
+		COMPtr<IDirect3DDevice9> pDevice;
+		m_pVertexBuffer->GetDevice(&pDevice);
+		std::shared_ptr<std::vector<DirectX::XMFLOAT3A> > newVertexPosition{ new std::vector<XMFLOAT3A>{} };
+		*newVertexPosition = *m_pVertexPositions;
+		m_pVertexPositions = std::move(newVertexPosition);
+		UINT length{ VERTEX_SIZE * m_vertexCount };
+		hr =
+			pDevice->CreateVertexBuffer(
+				length,
+				0,
+				FVF,
+				D3DPOOL_DEFAULT,
+				&m_pVertexBuffer,
+				nullptr
+			);
+		m_copied = false;
+	}
+
 	HRESULT hr{};
 	f32 newMaxHeight{ value };
 	VERTEX<FVF_TEX>* pVertices = nullptr;
