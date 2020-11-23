@@ -173,6 +173,7 @@
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="SkyBoxObject.h" />
+    <ClInclude Include="StaticXMeshObject.h" />
     <ClInclude Include="TerrainObject.h" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +187,7 @@
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="SkyBoxObject.cpp" />
+    <ClCompile Include="StaticXMeshObject.cpp" />
     <ClCompile Include="TerrainObject.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
