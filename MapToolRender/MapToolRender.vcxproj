@@ -74,20 +74,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>../$(PlatformTarget)/$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>..\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);../$(PlatformTarget)/$(Configuration);$(DXSDK_DIR)lib\$(PlatformTarget)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\;$(DXSDK_DIR)include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>../$(PlatformTarget)/$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>..\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);../$(PlatformTarget)/$(Configuration);$(DXSDK_DIR)lib\$(PlatformTarget)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\;$(DXSDK_DIR)include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>../$(PlatformTarget)/$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>..\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);../$(PlatformTarget)/$(Configuration);$(DXSDK_DIR)lib\$(PlatformTarget)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\;$(DXSDK_DIR)include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>../$(PlatformTarget)/$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>..\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);../$(PlatformTarget)/$(Configuration);$(DXSDK_DIR)lib\$(PlatformTarget)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\;$(DXSDK_DIR)include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -148,8 +148,10 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureCollection.h" />
     <ClInclude Include="TextureConverter.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="XMeshObj.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
@@ -168,6 +170,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureConverter.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="XMeshObj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />

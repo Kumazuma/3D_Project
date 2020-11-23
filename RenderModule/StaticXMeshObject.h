@@ -5,31 +5,22 @@
 #include<memory>
 #include<string>
 #include<d3dx9.h>
-class DLL_CLASS XMeshObject : public RenderObject
-{
-public:
-	auto SetDiffuseTexture(u32 index, IDirect3DTexture9* pTexture)->void;
-	auto GetDiffuseTextureName(u32 index)->std::wstring;
-protected:
-	u32 m_stride;
-	u32 m_vertexCount;
-	u32 m_subsetCount;
-	std::vector<D3DXMATERIAL> m_materials;
-	std::vector<COMPtr<IDirect3DTexture9> > m_textures;
-	//Copied플래그, Copy on write를 구현하기 위한 변수
-	bool m_copied;
-
-};
-
+#include "MeshObject.h"
 class DLL_CLASS StaticXMeshObject : public XMeshObject
 {
-public:
-	static auto Create(RenderModule* pRenderModule, std::wstring const& filePath)->HRESULT;
-	auto Render(RenderModule* pRenderModule)->void override;
-	auto Clone()const->RenderObject*;
-
 protected:
-	auto Initialize(RenderModule* pRenderModule, u32 width, u32 height, f32 interval, f32 terrainMaxHeight, u8 const* pArray)->HRESULT;
-private:
+	StaticXMeshObject();
+	auto Initialize(RenderModule* pRenderModule, std::wstring const& filePath)->HRESULT;
 
+public:
+	static auto Create(RenderModule* pRenderModule, std::wstring const& filePath, StaticXMeshObject** pOut)->HRESULT;
+	auto Render(RenderModule* pRenderModule)->void override;
+	auto GetMaterialCount()const->u32;
+	auto Clone()const->RenderObject*;
+private:
+	COMPtr<ID3DXMesh> m_pOriMesh;// 최초 로드 시점에 생성하는 메쉬 컴객체
+	COMPtr<ID3DXMesh> m_pMesh;// 노말 정보를 삽입하여 변환시킨 메쉬 컴객체
+	COMPtr<ID3DXBuffer> m_pAdjacency;
+	COMPtr<ID3DXBuffer> m_pSubset;
+	std::vector<DirectX::XMFLOAT3A> m_vertices;
 };

@@ -49,7 +49,10 @@ namespace MapTool
             
             GraphicsDevice.Instance.Render();
             m_renderView.Content.Paint += Form1_Paint;
-
+            StaticXMeshObj mesh = new StaticXMeshObj(GraphicsDevice.Instance, "./Tree01.X");
+            GraphicsDevice.Instance.Add(RenderGroup.NONALPHA, mesh);
+            mesh.Name = "mesh";
+            Doc.Document.Instance.AddObject(mesh);
             //TerrainObject terrain =
             //    new TerrainObject(
             //        GraphicsDevice.Instance,
