@@ -176,15 +176,8 @@ auto TerrainObject::Render(RenderModule* pRenderModule) -> void
 	{
 		pDevice->SetTexture(0, m_pTexture.Get());
 	}
-	XMMATRIX mWorldMatrix{ XMLoadFloat4x4(&m_transform) };
-	XMVECTOR vPos{ mWorldMatrix.r[3] };
-	mWorldMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-	mWorldMatrix = XMMatrixScaling(m_interval, 1.f, m_interval) * mWorldMatrix;
-	mWorldMatrix.r[3] = vPos;
-	D3DMATRIX worldMat{};
-	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&worldMat), mWorldMatrix);
     pDevice->SetFVF(FVF);
-    pDevice->SetTransform(D3DTS_WORLD,&worldMat);
+    pDevice->SetTransform(D3DTS_WORLD,&reinterpret_cast<D3DMATRIX&>(m_transform));
     pDevice->SetStreamSource(0, m_pVertexBuffer.Get(), 0, VERTEX_SIZE);
     pDevice->SetIndices(m_pIndexBuffer.Get());
     pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, m_indexCount);
@@ -261,7 +254,6 @@ auto TerrainObject::ResetTerrain(f32 const newMaxHeight, f32 const newInterval) 
 		return;
 	constexpr f32 U8MAX{ std::numeric_limits<u8>::max() };
 	std::vector<XMFLOAT3A>& rVertexPosition{ *m_pVertexPositions };
-	rVertexPosition.resize(m_vertexCount, XMFLOAT3A{ 0.f, 0.f, 0.f });
 
 	for (u32 i = 0; i < m_depth; ++i)
 	{
@@ -273,10 +265,10 @@ auto TerrainObject::ResetTerrain(f32 const newMaxHeight, f32 const newInterval) 
 			f32 const v{ x / static_cast<f32>(m_width - 1) };
 			u32 index = i * m_width + j;
 			XMFLOAT3A postion{};
-			rVertexPosition[index].y = newMaxHeight * rVertexPosition[index].y / m_maxHeight;
 			postion.x = x;
 			postion.z = z;
-			postion.y = rVertexPosition[index].y;
+			postion.y = newMaxHeight * rVertexPosition[index].y / m_maxHeight;
+			rVertexPosition[index] = postion;
 			pVertices[index].vPosition = postion;
 			pVertices[index].vUV = { u,v };
 			pVertices[index].vNormal = {};
