@@ -324,3 +324,26 @@ auto RenderModule::GetSimpleColorTexture(DefaultColorTexture kind, IDirect3DText
 	*pOut = pRef;
 	return S_OK;
 }
+
+auto RenderModule::GetFrustum() const -> Frustum const&
+{
+	return m_frustum;
+}
+
+auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
+{
+	DirectX::XMMATRIX mView;
+	DirectX::XMMATRIX mProj;
+	m_pDevice->GetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&mView));
+	m_pDevice->GetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&mProj));
+
+	m_frustum.MakeFrustum(mView, mProj);
+	m_pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_STENCIL | D3DCLEAR_ZBUFFER, D3DCOLOR_COLORVALUE(r,g,b,a), 1.f, 0);
+	m_pDevice->BeginScene();
+}
+
+auto RenderModule::EndRender() -> void
+{
+	m_pDevice->EndScene();
+	m_pDevice->PresentEx(nullptr, nullptr, nullptr, nullptr, 0);
+}

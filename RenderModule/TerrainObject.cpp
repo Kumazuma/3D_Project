@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "TerrainObject.h"
 #include "RenderModule.h"
+#include "Frustum.h"
 #pragma comment(lib, "d3d9.lib")
 #undef max
+#undef min
 using namespace DirectX;
 
 auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32 const imgHeight, f32 const interval, f32 const terrainMaxHeight, u8 const* const pArray) -> HRESULT
@@ -87,12 +89,14 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 						pIndices[idx][2] = vertexIdx + (!k ? 1 : 0);
 					}
 				}
+				//vertex x =	  0~128
+				//				129~257
 			}
 			pIndexBuffer->Unlock();
 			m_pIndexBufferes[row * COLS_COUNT + cols] = pIndexBuffer;
 			xOffset += subWidth;
 		}
-		zOffset += subDepth;
+		zOffset += subDepth ;
 	}	
 		
 	assert(SUCCEEDED(hr));
@@ -172,8 +176,7 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 	}
 
 	m_pVertexBuffer->Unlock();
-
-	//각 인덱스 버퍼의 최고값, 최저값을 구하자.
+	GenerateSubMeshBoundingBox();
 	
     return S_OK;
 }
@@ -198,6 +201,10 @@ TerrainObject::TerrainObject(TerrainObject const* rhs):
 	m_totalTriangleCount{rhs->m_totalTriangleCount},
 	m_vertexCount{rhs->m_vertexCount},
 	m_interval{rhs->m_interval},
+	m_width{ rhs->m_width },
+	m_depth{ rhs->m_depth },
+	m_maxHeight{ rhs->m_maxHeight },
+	m_subsetBoundingBoxes{rhs->m_subsetBoundingBoxes},
 	m_copied{true}
 {
 }
@@ -216,15 +223,42 @@ auto TerrainObject::Render(RenderModule* pRenderModule) -> void
 	{
 		pDevice->SetTexture(0, m_pTexture.Get());
 	}
-    pDevice->SetFVF(FVF);
-    pDevice->SetTransform(D3DTS_WORLD,&reinterpret_cast<D3DMATRIX&>(m_transform));
-    pDevice->SetStreamSource(0, m_pVertexBuffer.Get(), 0, VERTEX_SIZE);
-	for (u32 i = 0; i < 16; ++i)
+	pDevice->SetFVF(FVF);
+	pDevice->SetTransform(D3DTS_WORLD,&reinterpret_cast<D3DMATRIX&>(m_transform));
+	pDevice->SetStreamSource(0, m_pVertexBuffer.Get(), 0, VERTEX_SIZE);
+	u32 zOffset{};
+	auto& rFrustum{ pRenderModule->GetFrustum() };
+	for (u32 row = 0; row < ROW_COUNT; ++row)
 	{
-		pDevice->SetIndices(m_pIndexBufferes[i].Get());
-		LONG triangleCount{ m_triangleCounts[i].cx * m_triangleCounts[i].cy * 2};
-		pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, triangleCount);
+		u32 xOffset{};
+		u32 zCount{};
+		u32 xCount{};
+		for (u32 cols = 0; cols < COLS_COUNT; ++cols)
+		{
+			u32 const i = row * COLS_COUNT + cols;
+			zCount = static_cast<u32>(m_triangleCounts[i].cy);
+			xCount = static_cast<u32>(m_triangleCounts[i].cx);
+			bool intersacted{false};
+			for (auto& point : m_subsetBoundingBoxes[i])
+			{
+				if (rFrustum.Intersact(XMLoadFloat3A(&point)))
+				{
+					intersacted = true;
+					break;
+				}
+			}
+			if (intersacted)
+			{
+				LONG triangleCount{ m_triangleCounts[i].cx * m_triangleCounts[i].cy * 2 };
+				pDevice->SetIndices(m_pIndexBufferes[i].Get());
+				pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, triangleCount);
+
+			}
+			xOffset += static_cast<u32>(m_triangleCounts[i].cx);
+		}
+		zOffset += zCount;
 	}
+
 }
 
 auto TerrainObject::Clone() const -> RenderObject*
@@ -367,6 +401,50 @@ auto TerrainObject::ResetTerrain(f32 const newMaxHeight, f32 const newInterval) 
 		XMStoreFloat3(&it->vNormal, XMVector3Normalize(vNormal));
 	}
 	m_pVertexBuffer->Unlock();
+	GenerateSubMeshBoundingBox();
+}
+auto TerrainObject::GenerateSubMeshBoundingBox() -> void
+{
+	u32 zOffset{};
+	//각 인덱스 버퍼의 최고값, 최저값을 구하자.
+	for (u32 row = 0; row < ROW_COUNT; ++row)
+	{
+		u32 xOffset{};
+		u32 zCount{};
+		u32 xCount{};
+		for (u32 cols = 0; cols < COLS_COUNT; ++cols)
+		{
+			u32 const i = row * COLS_COUNT + cols;
+			zCount = static_cast<u32>(m_triangleCounts[i].cy);
+			xCount = static_cast<u32>(m_triangleCounts[i].cx);
+
+			XMFLOAT3 min{ std::numeric_limits<float>::max(),std::numeric_limits<float>::max(),std::numeric_limits<float>::max() };
+			XMFLOAT3 max{ std::numeric_limits<float>::min(),std::numeric_limits<float>::min(),std::numeric_limits<float>::min() };
+			for (u32 z = 0; z <= zCount; ++z)
+			{
+				for (u32 x = 0; x <= xCount; ++x)
+				{
+					u32 vertexIdx{ (z + zOffset) * m_width + x + xOffset };
+					min.x = std::min(min.x, m_pVertexPositions->at(vertexIdx).x);
+					min.y = std::min(min.y, m_pVertexPositions->at(vertexIdx).y);
+					min.z = std::min(min.z, m_pVertexPositions->at(vertexIdx).z);
+					max.x = std::max(max.x, m_pVertexPositions->at(vertexIdx).x);
+					max.y = std::max(max.y, m_pVertexPositions->at(vertexIdx).y);
+					max.z = std::max(max.z, m_pVertexPositions->at(vertexIdx).z);
+				}
+			}
+			m_subsetBoundingBoxes[i][0] = XMFLOAT3A{ max.x, max.y, max.z };
+			m_subsetBoundingBoxes[i][1] = XMFLOAT3A{ max.x, max.y, min.z };
+			m_subsetBoundingBoxes[i][2] = XMFLOAT3A{ max.x, min.y, max.z };
+			m_subsetBoundingBoxes[i][3] = XMFLOAT3A{ max.x, min.y, min.z };
+			m_subsetBoundingBoxes[i][4] = XMFLOAT3A{ min.x, max.y, max.z };
+			m_subsetBoundingBoxes[i][5] = XMFLOAT3A{ min.x, max.y, min.z };
+			m_subsetBoundingBoxes[i][6] = XMFLOAT3A{ min.x, min.y, max.z };
+			m_subsetBoundingBoxes[i][7] = XMFLOAT3A{ min.x, min.y, min.z };
+			xOffset += xCount;
+		}
+		zOffset += zCount;
+	}
 }
 auto TerrainObject::GetMaxHeight()const->f32
 {

@@ -3,6 +3,7 @@
 #include<d3d9.h>
 #include<DirectXMath.h>
 class RenderModule;
+class Frustum;
 struct DLL_CLASS RenderObject
 {
 protected:

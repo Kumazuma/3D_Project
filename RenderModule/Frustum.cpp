@@ -32,7 +32,7 @@ void __vectorcall Frustum::MakeFrustum(DirectX::XMMATRIX view, DirectX::XMMATRIX
 	XMStoreFloat4(&m_farPlane, XMPlaneFromPoints(vPoints[0], vPoints[1], vPoints[2]));
 }
 
-auto __vectorcall Frustum::Intersact(DirectX::XMVECTOR pos)->bool
+auto __vectorcall Frustum::Intersact(DirectX::XMVECTOR pos) const -> bool
 {
 	XMMATRIX mSides;
 	for (u32 i = 0; i < 4; ++i)
@@ -40,9 +40,11 @@ auto __vectorcall Frustum::Intersact(DirectX::XMVECTOR pos)->bool
 		mSides.r[i] = XMLoadFloat4(m_sidePlanes + i);
 	}
 	mSides = XMMatrixTranspose(mSides);
-	XMVECTOR vRes = XMVector3TransformCoord(pos, mSides);
-	//각 면과 내적해서 모두 양수가 아니면 절두체 밖에 있다.
-	if (!XMVector4GreaterOrEqual(vRes, XMVectorSet(0.f, 0.f, 0.f, 0.f)))
+	pos = XMVectorSetW(pos, 1.f);
+	XMVECTOR vRes = XMVector4Transform(pos, mSides);
+	//각 면과 내적해서 모두 음수가 아니면 절두체 밖에 있다.
+	bool res = XMVector4Less(vRes, XMVectorSet(0.f, 0.f, 0.f, 0.f));
+	if (!res)
 	{
 		return false;
 	}

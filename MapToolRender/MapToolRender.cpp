@@ -28,8 +28,7 @@ auto MapToolRender::GraphicsDevice::Render() -> void
 	ApplyViewProjMatrix();
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_STENCIL | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 255, 255), 1.f, 0);
-	pDevice->BeginScene();
+	m_pRenderModule->BeginRender(0.f, 0.f, 1.f, 1.f);
 
 	auto list = m_renderObjects[RenderGroup::PRIORITY];
 	for each (auto obj in list)
@@ -58,12 +57,7 @@ auto MapToolRender::GraphicsDevice::Render() -> void
 			handle->Render(m_pRenderModule);
 		}
 	}
-	//for each (auto var in m_renderObjects[RenderGroup::PRIORITY])
-	//{
-	//	TODO: 각 오브젝트의 렌더를 진행해야 한다.
-	//} 
-	pDevice->EndScene();
-	pDevice->PresentEx(nullptr, nullptr, NULL, nullptr,0);
+	m_pRenderModule->EndRender();
 }
 
 auto MapToolRender::GraphicsDevice::ClearRenderGroup() -> void

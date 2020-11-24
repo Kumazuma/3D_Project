@@ -5,13 +5,14 @@
 #include "RenderObject.h"
 #include<string>
 #include<wincodec.h>
+#include "Frustum.h"
 struct IWICImagingFactory;
 enum class DefaultColorTexture {
 	RED,
 	GREEN,
 	BLUE,
 };
-
+class Frustum;
 class DLL_CLASS RenderModule
 {
 public:
@@ -30,6 +31,9 @@ public:
 	auto SetViewProjMatrix(DirectX::XMFLOAT4X4 const& viewMatrix, DirectX::XMFLOAT4X4 const& projMatrix)->void;
 	auto CreateSimpleColorTexture(u32 width, u32 height, const DirectX::XMFLOAT4& color, IDirect3DTexture9** pOut)->HRESULT;
 	auto GetSimpleColorTexture(DefaultColorTexture kind, IDirect3DTexture9** pOut)->HRESULT;
+	auto GetFrustum()const->Frustum const&;
+	auto BeginRender(float r, float g, float b, float a)->void;
+	auto EndRender()->void;
 protected:
 	RenderModule();
 	auto Initialize(HWND hWindow, u32 width, u32 height)->HRESULT;
@@ -42,6 +46,7 @@ private:
 	COMPtr<IDirect3DTexture9> m_pGreenTexture;
 	COMPtr<IDirect3DTexture9> m_pBlueTexture;
 	COMPtr<IWICImagingFactory> m_pImageFactory;
+	Frustum m_frustum;
 	u32 m_width;
 	u32 m_height;
 };
