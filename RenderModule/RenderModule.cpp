@@ -71,38 +71,11 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 		hr = m_pSDK->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, (HWND)hWindow, iFlag, &d3dPP, nullptr, &m_pDevice);
 		if (FAILED(hr))
 			throw hr;
-		hr = m_pDevice->CreateTexture(64, 64, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_pDefaultTexture, NULL);
-		switch (hr)
-		{
-		case D3DERR_INVALIDCALL:
-			"D3DERR_INVALIDCALL"; __debugbreak();
-			break;
-		case D3DERR_OUTOFVIDEOMEMORY:
-			"D3DERR_OUTOFVIDEOMEMORY"; __debugbreak();
+		CreateSimpleColorTexture(64, 64, { 0.5f, 0.5f, 0.5f, 1.f }, &m_pDefaultTexture);
+		CreateSimpleColorTexture(64, 64, { 1.0f, 0.f, 0.f, 1.f }, &m_pRedTexture);
+		CreateSimpleColorTexture(64, 64, { 0.f, 1.0f, 0.f, 1.f }, &m_pGreenTexture);
+		CreateSimpleColorTexture(64, 64, { 0.f, 0.f, 1.f, 1.f }, &m_pBlueTexture);
 
-			break;
-		case E_OUTOFMEMORY:
-			"E_OUTOFMEMORY"; __debugbreak();
-			break;
-		}
-
-		D3DLOCKED_RECT		LockRect{};
-		
-		m_pDefaultTexture->LockRect(0, &LockRect, NULL, 0);
-		{
-			u32* pStart = reinterpret_cast<u32*>(LockRect.pBits);
-			for (int i = 0; i < 64; ++i)
-			{
-				u32 * const pEnd = pStart + LockRect.Pitch/sizeof(u32);
-				for (u32* it = pStart; it != pEnd; ++it)
-				{
-					*it = D3DCOLOR_COLORVALUE(0.5f, 0.5f, 0.5f, 1.0f);
-				}
-				pStart = pEnd;
-			}
-		}
-		//*((_ulong*)LockRect.pBits) = D3DCOLOR_COLORVALUE(0.5f, 0.5f, 0.5f, 1.f);
-		m_pDefaultTexture->UnlockRect(0);
 		return S_OK;
 	}
 	catch (HRESULT hr)
@@ -276,4 +249,78 @@ auto RenderModule::SetProj(float angle, float aspect, float nearZ, float farZ)->
 auto RenderModule::SetViewProjMatrix(DirectX::XMFLOAT4X4 const& viewMatrix, DirectX::XMFLOAT4X4 const& projMatrix)->void
 {
 
+}
+
+auto RenderModule::CreateSimpleColorTexture(u32 width, u32 height, const DirectX::XMFLOAT4& color, IDirect3DTexture9** pOut) -> HRESULT
+{
+	HRESULT hr{};
+	if (pOut == nullptr)
+	{
+		return E_POINTER;
+	}
+	COMPtr<IDirect3DTexture9> pTexture;
+	hr = m_pDevice->CreateTexture(width, height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pTexture, NULL);
+	switch (hr)
+	{
+	case D3DERR_INVALIDCALL:
+		"D3DERR_INVALIDCALL"; __debugbreak();
+		break;
+	case D3DERR_OUTOFVIDEOMEMORY:
+		"D3DERR_OUTOFVIDEOMEMORY"; __debugbreak();
+
+		break;
+	case E_OUTOFMEMORY:
+		"E_OUTOFMEMORY"; __debugbreak();
+		break;
+	}
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+	D3DLOCKED_RECT		LockRect{};
+	D3DCOLOR d3dColor = D3DCOLOR_COLORVALUE(color.x, color.y, color.z, color.w);
+	pTexture->LockRect(0, &LockRect, NULL, 0);
+	{
+		u32* pStart = reinterpret_cast<u32*>(LockRect.pBits);
+		for (int i = 0; i < height; ++i)
+		{
+			u32* const pEnd = pStart + LockRect.Pitch / sizeof(u32);
+			for (u32* it = pStart; it != pEnd; ++it)
+			{
+				*it = d3dColor;
+			}
+			pStart = pEnd;
+		}
+	}
+	//*((_ulong*)LockRect.pBits) = D3DCOLOR_COLORVALUE(0.5f, 0.5f, 0.5f, 1.f);
+	pTexture->UnlockRect(0);
+	*pOut = pTexture.Get();
+	pTexture->AddRef();
+	return S_OK;
+}
+
+auto RenderModule::GetSimpleColorTexture(DefaultColorTexture kind, IDirect3DTexture9** pOut) -> HRESULT
+{
+	IDirect3DTexture9* pRef{};
+	if (pOut == nullptr)
+	{
+		return E_POINTER;
+	}
+	switch (kind)
+	{
+	case DefaultColorTexture::RED:
+		pRef = m_pRedTexture.Get();
+		break;
+	case DefaultColorTexture::GREEN:
+		pRef = m_pGreenTexture.Get();
+		break;
+	case DefaultColorTexture::BLUE:
+		pRef = m_pBlueTexture.Get();
+		break;
+	default:
+		return E_FAIL;
+	}
+	pRef->AddRef();
+	*pOut = pRef;
+	return S_OK;
 }

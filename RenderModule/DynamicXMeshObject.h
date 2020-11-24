@@ -6,13 +6,13 @@
 #include<string>
 #include<d3dx9.h>
 #include "MeshObject.h"
-class DLL_CLASS StaticXMeshObject : public XMeshObject
+class DLL_CLASS DynamicXMeshObject : public XMeshObject
 {
 protected:
-	StaticXMeshObject();
+	DynamicXMeshObject();
 	auto Initialize(RenderModule* pRenderModule, std::wstring const& filePath)->HRESULT;
 public:
-	static auto Create(RenderModule* pRenderModule, std::wstring const& filePath, StaticXMeshObject** pOut)->HRESULT;
+	static auto Create(RenderModule* pRenderModule, std::wstring const& filePath, DynamicXMeshObject** pOut)->HRESULT;
 	auto Render(RenderModule* pRenderModule)->void override;
 	auto GetMaterialCount()const->u32;
 	auto Clone()const->RenderObject*;

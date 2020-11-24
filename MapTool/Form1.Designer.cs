@@ -40,6 +40,7 @@ namespace MapTool
             this.종료ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.추가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TerrainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.StaticXMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -103,7 +104,8 @@ namespace MapTool
             // 추가ToolStripMenuItem
             // 
             this.추가ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TerrainToolStripMenuItem});
+            this.TerrainToolStripMenuItem,
+            this.StaticXMeshToolStripMenuItem});
             this.추가ToolStripMenuItem.Name = "추가ToolStripMenuItem";
             this.추가ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.추가ToolStripMenuItem.Text = "추가";
@@ -114,6 +116,13 @@ namespace MapTool
             this.TerrainToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.TerrainToolStripMenuItem.Text = "터레인";
             this.TerrainToolStripMenuItem.Click += new System.EventHandler(this.TerrainToolStripMenuItem_Click);
+            // 
+            // StaticXMeshToolStripMenuItem
+            // 
+            this.StaticXMeshToolStripMenuItem.Name = "StaticXMeshToolStripMenuItem";
+            this.StaticXMeshToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.StaticXMeshToolStripMenuItem.Text = "스태틱 X 메시";
+            this.StaticXMeshToolStripMenuItem.Click += new System.EventHandler(this.StaticXMeshToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -145,6 +154,7 @@ namespace MapTool
         private System.Windows.Forms.ToolStripMenuItem 종료ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 추가ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TerrainToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem StaticXMeshToolStripMenuItem;
     }
 }
 

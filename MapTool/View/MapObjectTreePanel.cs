@@ -10,11 +10,9 @@ using System.Windows.Forms;
 
 namespace MapTool.View
 {
-    public delegate void ChangedTreeNodeSelectedHandler(object selectedObj);
     public partial class MapObjectTreePanel : UserControl
     {
         TreeNode m_rootNode;
-        public event ChangedTreeNodeSelectedHandler SelectedObjChanged;
         public MapObjectTreePanel()
         {
             InitializeComponent();
@@ -22,7 +20,6 @@ namespace MapTool.View
             m_rootNode.Tag = Doc.Document.Instance.World;
             Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;
         }
-
         private void Document_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch(e.PropertyName)
@@ -52,7 +49,6 @@ namespace MapTool.View
                 default:
                     MapToolRender.GraphicsDevice.Instance.Render();
                     break;
-
             }
         }
 
@@ -60,8 +56,28 @@ namespace MapTool.View
         {
             if(e.Node.Tag != null)
             {
-                Doc.Document.Instance.SelectedObject = e.Node.Tag;
+                switch(e.Button)
+                {
+                    case MouseButtons.Left:
+                        Doc.Document.Instance.SelectedObject = e.Node.Tag;
+                        break;
+                    case MouseButtons.Right:
+                        contextMenuStrip1.Tag = e.Node.Tag;
+                        contextMenuStrip1.Show(sender as Control, new Point(e.X, e.Y));
+                        break;
+                }
             }
+            
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void DuplicateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

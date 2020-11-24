@@ -31,6 +31,7 @@ auto MapToolRender::TerrainObject::Clone() -> RenderObject^
 MapToolRender::TerrainObject::TerrainObject(TerrainObject ^ const& rhs):
 	RenderObject{ rhs }
 {
+	
 }
 auto MapToolRender::TerrainObject::DiffuseTexture::get()->MapToolRender::Texture^
 {

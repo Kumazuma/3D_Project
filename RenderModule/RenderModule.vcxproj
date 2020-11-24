@@ -168,17 +168,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
+    <ClInclude Include="DynamicXMeshObject.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Frustum.h" />
     <ClInclude Include="MeshObject.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderObject.h" />
+    <ClInclude Include="SimpleColliderBoxObject.h" />
     <ClInclude Include="SkyBoxObject.h" />
     <ClInclude Include="StaticXMeshObject.h" />
     <ClInclude Include="TerrainObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="MeshObject.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -188,6 +192,7 @@
     </ClCompile>
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="RenderObject.cpp" />
+    <ClCompile Include="SimpleColliderBoxObject.cpp" />
     <ClCompile Include="SkyBoxObject.cpp" />
     <ClCompile Include="StaticXMeshObject.cpp" />
     <ClCompile Include="TerrainObject.cpp" />

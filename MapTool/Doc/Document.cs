@@ -46,7 +46,6 @@ namespace MapTool.Doc
             set => m_mapObjects = value;
         }
 
-
         public void AddObject(MapToolRender.MapObject mapObj)
         {
             m_mapObjects.Add(mapObj);

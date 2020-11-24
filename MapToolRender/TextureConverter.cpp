@@ -30,8 +30,6 @@ auto MapToolRender::TextureConverter::CanConvertTo(ITypeDescriptorContext^ conte
 
 auto MapToolRender::TextureConverter::CreateInstance(ITypeDescriptorContext^ context, System::Collections::IDictionary^ propertyValues) -> System::Object^ 
 {
-    System::String^ projectDirectory{ MapToolCore::Environment::Instance->ProjectDirectory };
-    //System::String^ path{ MapToolCore::Utility::MakeRelativePath(projectDirectory, static_cast<System::String^>(value)) };
     return gcnew Texture();
 }
 
@@ -73,7 +71,11 @@ auto MapToolRender::TextureConverter::ConvertFrom(
 auto MapToolRender::TextureFileEditor::EditValue(ITypeDescriptorContext^ context, System::IServiceProvider^ provider, System::Object^ value) -> System::Object^ 
 {
     System::Object^ text = FileNameEditor::EditValue(context, provider, value);
-    if (text->GetType() == System::String::typeid)
+    if (text == nullptr)
+    {
+        return text;
+    }
+    else if (text->GetType() == System::String::typeid)
     {
         return gcnew Texture(MapToolRender::GraphicsDevice::Instance,static_cast<System::String^>( text) );
     }

@@ -14,6 +14,10 @@ MapToolRender::Texture::Texture(GraphicsDevice^ device,  System::String^ filePat
 	HRESULT hr{};
 	hr = device->Handle->CreateTexture(szFilePath, &pTexture);
 	assert(SUCCEEDED(hr));
+	if (FAILED(hr))
+	{
+		return;
+	}
 	m_pTexture = pTexture;
 
 

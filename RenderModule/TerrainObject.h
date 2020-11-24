@@ -3,7 +3,7 @@
 #include"COMPtr.hpp"
 #include<vector>
 #include<memory>
-
+#include<array>
 class DLL_CLASS TerrainObject : public RenderObject
 {
 public:
@@ -27,17 +27,22 @@ private:
 	static constexpr size_t VERTEX_SIZE = sizeof(VERTEX<FVF>);
 	static constexpr D3DFORMAT INDEX_TYPE = D3DFMT_INDEX32;
 	static constexpr size_t INDEX_SIZE = sizeof(Index<INDEX_TYPE>);
+	static constexpr u32 ROW_COUNT = 4;
+	static constexpr u32 COLS_COUNT = 4;
 	unsigned short m_fvf;
 	u32 m_vertexCount;
-	u32 m_indexCount;
 	u32 m_width;
 	u32 m_depth;
 	f32 m_interval;
 	f32 m_maxHeight;
-	
+	u32 m_totalTriangleCount;
 	COMPtr<IDirect3DVertexBuffer9> m_pVertexBuffer;
-	COMPtr<IDirect3DIndexBuffer9> m_pIndexBuffer;
-	 COMPtr<IDirect3DTexture9>  m_pTexture;
+	std::array < COMPtr<IDirect3DIndexBuffer9>, ROW_COUNT* COLS_COUNT> m_pIndexBufferes;
+	std::array<SIZE, ROW_COUNT* COLS_COUNT> m_triangleCounts;
+	
+	std::array<std::array<DirectX::XMFLOAT3A, 8>, ROW_COUNT* COLS_COUNT> m_subsetBoundingBoxes;
+	
+	COMPtr<IDirect3DTexture9>  m_pTexture;
 	std::shared_ptr< std::vector<DirectX::XMFLOAT3A>> m_pVertexPositions;
 	//Copied플래그, Copy on write를 구현하기 위한 변수
 	bool m_copied;

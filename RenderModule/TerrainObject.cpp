@@ -14,8 +14,12 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 	pRenderModule->GetDevice(&pDevice);
 	HRESULT hr{ E_FAIL };
 	DWORD fvf = FVF;
-    m_indexCount = (m_width - 1) * (m_depth - 1) * 2;
+	u32 const cx = m_width - 1;
+	u32 const cz = m_depth - 1;
+    m_totalTriangleCount = cx * cz * 2;
     m_vertexCount = m_width * m_depth;
+
+
 	m_pVertexPositions.reset(new std::vector<XMFLOAT3A>());
 	std::vector<XMFLOAT3A>& rVertexPosition{ *m_pVertexPositions };
 	rVertexPosition.resize(m_vertexCount, XMFLOAT3A{ 0.f, 0.f, 0.f });
@@ -45,15 +49,52 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 	}
 	if (FAILED(hr))
 		return hr;
-	hr =
-		pDevice->CreateIndexBuffer(
-			INDEX_SIZE * m_indexCount,
-			0,
-			INDEX_TYPE,
-			D3DPOOL_DEFAULT,
-			&m_pIndexBuffer,
-			nullptr
-		);
+	//16개의 인덱스 버퍼에 들어가는 삼각형 갯수를 배분해주자.
+
+	u32 zOffset{};
+	for (u32 row = 0; row < ROW_COUNT; ++row)
+	{
+		u32 subDepth{ cz / ROW_COUNT };
+		subDepth += row != (ROW_COUNT - 1) ? 0 : (cz % (cz / ROW_COUNT));
+		u32 xOffset{};
+		for (u32 cols = 0; cols < COLS_COUNT; ++cols)
+		{
+			COMPtr<IDirect3DIndexBuffer9> pIndexBuffer;
+			u32 subWidth{ cx / COLS_COUNT };
+			subWidth += cols != (COLS_COUNT - 1) ? 0 : (cx % (cx / COLS_COUNT));
+			m_triangleCounts[row * COLS_COUNT + cols] = SIZE{ static_cast<LONG>(subWidth),static_cast<LONG>( subDepth )};
+			pDevice->CreateIndexBuffer(
+				INDEX_SIZE * subWidth * subDepth * 2,
+				0,
+				INDEX_TYPE,
+				D3DPOOL_DEFAULT,
+				&pIndexBuffer,
+				nullptr
+			);
+			Index<INDEX_TYPE>* pIndices;
+			pIndexBuffer->Lock(0, 0, reinterpret_cast<void**>(&pIndices), 0);
+			u32 lastIdx{  };
+			for (u32 z = 0; z < subDepth; ++z)
+			{
+				for (u32 x = 0; x < subWidth; ++x)
+				{
+					u32 vertexIdx{ (z + zOffset) * m_width + x + xOffset };
+					for (u32 k = 0; k < 2; ++k)
+					{
+						u32 idx{ lastIdx++ };
+						pIndices[idx][0] = vertexIdx + m_width;
+						pIndices[idx][1] = vertexIdx + (!k ? 1 : 0) * m_width + 1;
+						pIndices[idx][2] = vertexIdx + (!k ? 1 : 0);
+					}
+				}
+			}
+			pIndexBuffer->Unlock();
+			m_pIndexBufferes[row * COLS_COUNT + cols] = pIndexBuffer;
+			xOffset += subWidth;
+		}
+		zOffset += subDepth;
+	}	
+		
 	assert(SUCCEEDED(hr));
 	if (FAILED(hr))
 		return hr;
@@ -82,35 +123,33 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 			rVertexPosition[index] = postion;
 		}
 	}
-	Index<INDEX_TYPE>* pIndices{ nullptr };
-	m_pIndexBuffer->Lock(0, 0, reinterpret_cast<void**>(&pIndices), 0);
-	u32 lastIdx{  };
+
+	//노멀라이즈 과정
 	for (u32 i = 0; i < m_depth - 1; ++i)
 	{
 		for (u32 j = 0; j < m_width - 1; ++j)
 		{
 			for (u32 k = 0; k < 2; ++k)
 			{
-				u32 idx{ lastIdx++ };
+				
 				u32 vertexIdx{ i * m_width + j };
+				Index<INDEX_TYPE> index;
 
-				pIndices[idx][0] = vertexIdx + m_width;
-				pIndices[idx][1] = vertexIdx + (!k?1:0) * m_width + 1;
-				pIndices[idx][2] = vertexIdx +  (!k ? 1 : 0);
+				index [0] = vertexIdx + m_width;
+				index [1] = vertexIdx + (!k?1:0) * m_width + 1;
+				index [2] = vertexIdx +  (!k ? 1 : 0);
 
 				XMVECTOR vRight{};
 				XMVECTOR vUp{};
-				auto& originVertex{ pVertices[pIndices[idx][0]] };
-				auto& rightVertex{ pVertices[pIndices[idx][1]] };
-				auto& upVertex{ pVertices[pIndices[idx][2]] };
+				auto& originVertex{ pVertices[index[0]] };
+				auto& rightVertex{ pVertices[index[1]] };
+				auto& upVertex{ pVertices[index[2]] };
 				XMVECTOR vOrigin{ XMLoadFloat3(&originVertex.vPosition) };
 				
 				vRight = XMLoadFloat3(&rightVertex.vPosition);
-				vUp = XMLoadFloat3A(rVertexPosition.data() + pIndices[idx][2]);
+				vUp = XMLoadFloat3A(rVertexPosition.data() + index[2]);
 				vRight -= vOrigin;
 				vUp -= vOrigin;
-				
-
 				XMVECTOR vNormal{ XMVector3Cross(vRight, vUp) };
 				XMVECTOR vOriginNormal{ XMLoadFloat3(&originVertex.vNormal) };
 				XMVECTOR vRightNormal{ XMLoadFloat3(&rightVertex.vNormal) };
@@ -126,7 +165,6 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 		}
 	}
 	const auto pEnd{ pVertices + m_vertexCount };
-	
 	for (auto it = pVertices; it != pEnd; ++it)
 	{
 		XMVECTOR vNormal{ XMLoadFloat3( &it->vNormal) };
@@ -134,12 +172,14 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 	}
 
 	m_pVertexBuffer->Unlock();
-	m_pIndexBuffer->Unlock();
+
+	//각 인덱스 버퍼의 최고값, 최저값을 구하자.
+	
     return S_OK;
 }
 TerrainObject::TerrainObject():
     m_fvf{ FVF_TEX },
-    m_indexCount{},
+    m_triangleCounts{},
     m_vertexCount{},
 	m_interval{ },
 	m_copied{ false }
@@ -152,14 +192,14 @@ TerrainObject::TerrainObject():
 TerrainObject::TerrainObject(TerrainObject const* rhs):
 	m_fvf{ rhs->m_fvf },
 	m_pVertexPositions{rhs->m_pVertexPositions},
-	m_indexCount{ rhs->m_indexCount},
-	m_pIndexBuffer {rhs->m_pIndexBuffer},
 	m_pVertexBuffer{rhs->m_pVertexBuffer},
+	m_pIndexBufferes(rhs->m_pIndexBufferes),
+	m_triangleCounts(rhs->m_triangleCounts),
+	m_totalTriangleCount{rhs->m_totalTriangleCount},
 	m_vertexCount{rhs->m_vertexCount},
 	m_interval{rhs->m_interval},
 	m_copied{true}
 {
-
 }
 
 auto TerrainObject::Render(RenderModule* pRenderModule) -> void
@@ -179,8 +219,12 @@ auto TerrainObject::Render(RenderModule* pRenderModule) -> void
     pDevice->SetFVF(FVF);
     pDevice->SetTransform(D3DTS_WORLD,&reinterpret_cast<D3DMATRIX&>(m_transform));
     pDevice->SetStreamSource(0, m_pVertexBuffer.Get(), 0, VERTEX_SIZE);
-    pDevice->SetIndices(m_pIndexBuffer.Get());
-    pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, m_indexCount);
+	for (u32 i = 0; i < 16; ++i)
+	{
+		pDevice->SetIndices(m_pIndexBufferes[i].Get());
+		LONG triangleCount{ m_triangleCounts[i].cx * m_triangleCounts[i].cy * 2};
+		pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, triangleCount);
+	}
 }
 
 auto TerrainObject::Clone() const -> RenderObject*

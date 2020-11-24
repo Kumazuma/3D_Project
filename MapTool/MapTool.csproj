@@ -101,6 +101,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\ProjectDirectoryPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="View\ProjectDirectoryPanel.Designer.cs">
+      <DependentUpon>ProjectDirectoryPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\RenderView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -133,6 +139,9 @@
     </Compile>
     <EmbeddedResource Include="View\MapObjectTreePanel.resx">
       <DependentUpon>MapObjectTreePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\ProjectDirectoryPanel.resx">
+      <DependentUpon>ProjectDirectoryPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\RenderView.resx">
       <DependentUpon>RenderView.cs</DependentUpon>

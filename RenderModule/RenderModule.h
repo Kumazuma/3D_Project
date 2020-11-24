@@ -6,8 +6,12 @@
 #include<string>
 #include<wincodec.h>
 struct IWICImagingFactory;
-extern "C" HRESULT InitializeModule();
-extern "C" HRESULT UnitializeModule();
+enum class DefaultColorTexture {
+	RED,
+	GREEN,
+	BLUE,
+};
+
 class DLL_CLASS RenderModule
 {
 public:
@@ -24,6 +28,8 @@ public:
 	auto SetCamera(DirectX::XMFLOAT3 const* pCameraPos, DirectX::XMFLOAT3 const* pRotation)->void;
 	auto SetProj(float angle, float aspect, float nearZ, float farZ)->void;
 	auto SetViewProjMatrix(DirectX::XMFLOAT4X4 const& viewMatrix, DirectX::XMFLOAT4X4 const& projMatrix)->void;
+	auto CreateSimpleColorTexture(u32 width, u32 height, const DirectX::XMFLOAT4& color, IDirect3DTexture9** pOut)->HRESULT;
+	auto GetSimpleColorTexture(DefaultColorTexture kind, IDirect3DTexture9** pOut)->HRESULT;
 protected:
 	RenderModule();
 	auto Initialize(HWND hWindow, u32 width, u32 height)->HRESULT;
@@ -32,6 +38,9 @@ private:
 	COMPtr<IDirect3DDevice9Ex> m_pDevice;
 	COMPtr<IDirect3D9Ex> m_pSDK;
 	COMPtr<IDirect3DTexture9> m_pDefaultTexture;
+	COMPtr<IDirect3DTexture9> m_pRedTexture;
+	COMPtr<IDirect3DTexture9> m_pGreenTexture;
+	COMPtr<IDirect3DTexture9> m_pBlueTexture;
 	COMPtr<IWICImagingFactory> m_pImageFactory;
 	u32 m_width;
 	u32 m_height;

@@ -42,6 +42,15 @@
     <ClInclude Include="MeshObject.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="DynamicXMeshObject.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleColliderBoxObject.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -66,6 +75,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MeshObject.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleColliderBoxObject.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Frustum.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
