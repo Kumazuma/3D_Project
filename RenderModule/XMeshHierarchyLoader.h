@@ -18,11 +18,12 @@ public:
     auto __stdcall DestroyMeshContainer(LPD3DXMESHCONTAINER pMeshContainerToFree)->HRESULT override;
 private:
     auto AllocateName(char** ppName, char const* pFrameName)->void;
+    HierarchyLoader(IDirect3DDevice9Ex* pDevice, std::wstring const& path);
 private:
     COMPtr<IDirect3DDevice9Ex> m_pDevice;
     std::wstring m_path;
 public:
-    auto Create(IDirect3DDevice9Ex* pGraphicesDevice, std::wstring const& path, HierarchyLoader** pOut)->HRESULT;
+    static auto Create(IDirect3DDevice9Ex* pGraphicesDevice, std::wstring const& path, HierarchyLoader** pOut)->HRESULT;
 public:
 
 };

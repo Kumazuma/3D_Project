@@ -212,6 +212,9 @@ TerrainObject::TerrainObject(TerrainObject const* rhs):
 auto TerrainObject::Render(RenderModule* pRenderModule) -> void
 {
 	COMPtr<IDirect3DDevice9Ex> pDevice{};
+	XMMATRIX mTransform{ XMLoadFloat4x4(&m_transform) };
+	std::array<XMFLOAT3A, 8> subsetBoundingBoxes{  };
+
 	pRenderModule->GetDevice(&pDevice);
 	if (m_pTexture == nullptr)
 	{
@@ -239,7 +242,16 @@ auto TerrainObject::Render(RenderModule* pRenderModule) -> void
 			zCount = static_cast<u32>(m_triangleCounts[i].cy);
 			xCount = static_cast<u32>(m_triangleCounts[i].cx);
 			bool intersacted{false};
-			for (auto& point : m_subsetBoundingBoxes[i])
+			XMVector3TransformCoordStream(
+				subsetBoundingBoxes.data(),
+				sizeof(XMFLOAT3A),
+				m_subsetBoundingBoxes[i].data(),
+				sizeof(XMFLOAT3A),
+				m_subsetBoundingBoxes.size(),
+				mTransform
+			);
+
+			for (auto& point : subsetBoundingBoxes)
 			{
 				if (rFrustum.Intersact(XMLoadFloat3A(&point)))
 				{
@@ -252,7 +264,6 @@ auto TerrainObject::Render(RenderModule* pRenderModule) -> void
 				LONG triangleCount{ m_triangleCounts[i].cx * m_triangleCounts[i].cy * 2 };
 				pDevice->SetIndices(m_pIndexBufferes[i].Get());
 				pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, triangleCount);
-
 			}
 			xOffset += static_cast<u32>(m_triangleCounts[i].cx);
 		}

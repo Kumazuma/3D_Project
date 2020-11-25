@@ -180,6 +180,7 @@
     <ClInclude Include="SkyBoxObject.h" />
     <ClInclude Include="StaticXMeshObject.h" />
     <ClInclude Include="TerrainObject.h" />
+    <ClInclude Include="XMeshAnimCtrler.h" />
     <ClInclude Include="XMeshContainer.h" />
     <ClInclude Include="XMeshHierarchyLoader.h" />
   </ItemGroup>
@@ -196,9 +197,11 @@
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="SimpleColliderBoxObject.cpp" />
+    <ClCompile Include="SkinnedXMeshObject.cpp" />
     <ClCompile Include="SkyBoxObject.cpp" />
     <ClCompile Include="StaticXMeshObject.cpp" />
     <ClCompile Include="TerrainObject.cpp" />
+    <ClCompile Include="XMeshAnimCtrler.cpp" />
     <ClCompile Include="XMeshHierarchyLoader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

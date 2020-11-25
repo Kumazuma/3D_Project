@@ -1,14 +1,16 @@
 #pragma once
 #include<DirectXMath.h>
+#include<stddef.h>
 using HLSLfloat4 = DirectX::XMFLOAT4;
 using HLSLfloat2 = DirectX::XMFLOAT2;
 using HLSLMatrix = DirectX::XMMATRIX;
 using f32x3 = DirectX::XMFLOAT3;
+
 using i64 = long long;
 using i32 = long;
 using i16 = short;
 using i8 = char;
-
+using usize = size_t;
 using u64 = unsigned long long;
 using u32 = unsigned int;
 using u16 = unsigned short;
