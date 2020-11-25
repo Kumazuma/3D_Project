@@ -13,7 +13,7 @@ auto StaticXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring con
 {
     HRESULT hr{};
     DWORD subsetCount{};
-    COMPtr<IDirect3DDevice9Ex> pDevice;
+    COMPtr<IDirect3DDevice9> pDevice;
     pRenderModule->GetDevice(&pDevice);
     hr = D3DXLoadMeshFromXW(
         filePath.c_str(),
@@ -84,8 +84,10 @@ auto StaticXMeshObject::Create(RenderModule* pRenderModule, std::wstring const& 
 auto StaticXMeshObject::Render(RenderModule* pRenderModule) -> void
 { 
     COMPtr<IDirect3DTexture9> pTexture;
-    COMPtr<IDirect3DDevice9Ex> pDevice;
+    COMPtr<IDirect3DDevice9> pDevice;
     pRenderModule->GetDevice(&pDevice);
+    pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_transform));
+
     for (u32 i = 0; i < m_subsetCount; ++i)
     {
         pTexture = m_textures[i];

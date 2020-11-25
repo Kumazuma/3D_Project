@@ -9,7 +9,7 @@ using namespace DirectX;
 
 auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32 const imgHeight, f32 const interval, f32 const terrainMaxHeight, u8 const* const pArray) -> HRESULT
 {
-	COMPtr<IDirect3DDevice9Ex> pDevice{};
+	COMPtr<IDirect3DDevice9> pDevice{};
 	m_width = width;
 	m_depth = imgHeight;
 	m_maxHeight = terrainMaxHeight;
@@ -211,7 +211,7 @@ TerrainObject::TerrainObject(TerrainObject const* rhs):
 
 auto TerrainObject::Render(RenderModule* pRenderModule) -> void
 {
-	COMPtr<IDirect3DDevice9Ex> pDevice{};
+	COMPtr<IDirect3DDevice9> pDevice{};
 	XMMATRIX mTransform{ XMLoadFloat4x4(&m_transform) };
 	std::array<XMFLOAT3A, 8> subsetBoundingBoxes{  };
 
@@ -247,7 +247,7 @@ auto TerrainObject::Render(RenderModule* pRenderModule) -> void
 				sizeof(XMFLOAT3A),
 				m_subsetBoundingBoxes[i].data(),
 				sizeof(XMFLOAT3A),
-				m_subsetBoundingBoxes.size(),
+				m_subsetBoundingBoxes[i].size(),
 				mTransform
 			);
 

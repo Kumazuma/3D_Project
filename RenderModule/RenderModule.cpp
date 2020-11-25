@@ -40,7 +40,7 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 			throw hr;
 		
 		
-		hr = Direct3DCreate9Ex(D3D_SDK_VERSION, &m_pSDK);
+		*(&m_pSDK) = Direct3DCreate9(D3D_SDK_VERSION);
 		if (FAILED(hr))
 			throw hr;
 
@@ -68,7 +68,7 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 		d3dPP.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 		d3dPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 		
-		hr = m_pSDK->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, (HWND)hWindow, iFlag, &d3dPP, nullptr, &m_pDevice);
+		hr = m_pSDK->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, (HWND)hWindow, iFlag, &d3dPP,  &m_pDevice);
 		if (FAILED(hr))
 			throw hr;
 		CreateSimpleColorTexture(64, 64, { 0.5f, 0.5f, 0.5f, 1.f }, &m_pDefaultTexture);
@@ -84,7 +84,7 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 	}
 }
 
-auto RenderModule::GetDevice(IDirect3DDevice9Ex** pOut) -> HRESULT
+auto RenderModule::GetDevice(IDirect3DDevice9** pOut) -> HRESULT
 {
 	try
 	{
@@ -282,7 +282,7 @@ auto RenderModule::CreateSimpleColorTexture(u32 width, u32 height, const DirectX
 	pTexture->LockRect(0, &LockRect, NULL, 0);
 	{
 		u32* pStart = reinterpret_cast<u32*>(LockRect.pBits);
-		for (int i = 0; i < height; ++i)
+		for (u32 i = 0; i < height; ++i)
 		{
 			u32* const pEnd = pStart + LockRect.Pitch / sizeof(u32);
 			for (u32* it = pStart; it != pEnd; ++it)
@@ -345,5 +345,5 @@ auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 auto RenderModule::EndRender() -> void
 {
 	m_pDevice->EndScene();
-	m_pDevice->PresentEx(nullptr, nullptr, nullptr, nullptr, 0);
+	m_pDevice->Present(nullptr, nullptr, nullptr,  0);
 }

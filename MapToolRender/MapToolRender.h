@@ -67,6 +67,7 @@ namespace MapToolRender {
 			auto get()->System::String^;
 			auto set(System::String^ value)->void;
 		}
+		virtual auto Update(int ms)->void {}
 	protected:
 		MapObject() {}
 		MapObject(MapObject^ rhs);

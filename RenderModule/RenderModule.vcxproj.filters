@@ -13,8 +13,17 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="헤더 파일\SkinnedXMesh">
+    <Filter Include="SkinnedXMesh">
       <UniqueIdentifier>{cf2f863b-4997-4125-a382-0b5fe0335ebd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Terrain">
+      <UniqueIdentifier>{977d6f8b-e084-4156-842b-281ef37caf20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SkyBox">
+      <UniqueIdentifier>{4c100957-ea24-49be-bd44-2b5a67986c4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StaticXMesh">
+      <UniqueIdentifier>{9f77d1f1-13fe-4187-ae4b-768018fb16f1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -27,25 +36,13 @@
     <ClInclude Include="RenderObject.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainObject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Common.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="RenderModule.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SkyBoxObject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticXMeshObject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="MeshObject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="DynamicXMeshObject.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SimpleColliderBoxObject.h">
@@ -55,16 +52,25 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SkinnedXMeshObject.h">
-      <Filter>헤더 파일\SkinnedXMesh</Filter>
+      <Filter>SkinnedXMesh</Filter>
     </ClInclude>
     <ClInclude Include="XMeshHierarchyLoader.h">
-      <Filter>헤더 파일\SkinnedXMesh</Filter>
+      <Filter>SkinnedXMesh</Filter>
     </ClInclude>
     <ClInclude Include="XMeshContainer.h">
-      <Filter>헤더 파일\SkinnedXMesh</Filter>
+      <Filter>SkinnedXMesh</Filter>
     </ClInclude>
     <ClInclude Include="XMeshAnimCtrler.h">
-      <Filter>헤더 파일\SkinnedXMesh</Filter>
+      <Filter>SkinnedXMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainObject.h">
+      <Filter>Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBoxObject.h">
+      <Filter>SkyBox</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticXMeshObject.h">
+      <Filter>StaticXMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -77,16 +83,7 @@
     <ClCompile Include="RenderObject.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="TerrainObject.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="RenderModule.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyBoxObject.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticXMeshObject.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MeshObject.cpp">
@@ -99,13 +96,22 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="XMeshHierarchyLoader.cpp">
-      <Filter>헤더 파일\SkinnedXMesh</Filter>
+      <Filter>SkinnedXMesh</Filter>
     </ClCompile>
     <ClCompile Include="XMeshAnimCtrler.cpp">
-      <Filter>헤더 파일\SkinnedXMesh</Filter>
+      <Filter>SkinnedXMesh</Filter>
     </ClCompile>
     <ClCompile Include="SkinnedXMeshObject.cpp">
-      <Filter>헤더 파일\SkinnedXMesh</Filter>
+      <Filter>SkinnedXMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainObject.cpp">
+      <Filter>Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBoxObject.cpp">
+      <Filter>SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticXMeshObject.cpp">
+      <Filter>StaticXMesh</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

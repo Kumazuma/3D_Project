@@ -22,7 +22,7 @@ auto MapToolRender::GraphicsDevice::Initialize(System::Windows::Forms::Control^ 
 }
 auto MapToolRender::GraphicsDevice::Render() -> void
 {
-	COMPtr<IDirect3DDevice9Ex> pDevice;
+	COMPtr<IDirect3DDevice9> pDevice;
 	m_pRenderModule->GetDevice(&pDevice);
 
 	ApplyViewProjMatrix();

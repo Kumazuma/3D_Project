@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using MapToolRender;
 using System.Drawing.Design;
+using System.Diagnostics;
 
 namespace MapTool
 {
@@ -19,6 +20,9 @@ namespace MapTool
         DockView<View.RenderView> m_renderView;
         DockView<PropertyGrid> m_propertyView;
         DockView<View.ProjectDirectoryPanel> m_projectDirectoryView;
+        Timer m_timer;
+        Stopwatch stopWatch = new Stopwatch();
+        TimeSpan lastTimeSpan;
         public Form1()
         {
             InitializeComponent();
@@ -56,10 +60,32 @@ namespace MapTool
             m_renderView.CloseButtonVisible = false;
             m_renderView.CloseButton = false;
             m_renderView.IsFloat = false;
-            
-            GraphicsDevice.Instance.Render();
+
+            var obj = new MapToolRender.SkinnedXMeshObj(GraphicsDevice.Instance, "./Mesh/DynamicMesh/Player/Player.X");
+            GraphicsDevice.Instance.Add(RenderGroup.NONALPHA, obj);
+            obj.Name = "Skinned X Mesh";
+            Doc.Document.Instance.AddObject(obj);
+            //GraphicsDevice.Instance.Render();
             m_renderView.Content.Paint += Form1_Paint;
 
+            m_timer = new Timer();
+            m_timer.Interval = 33;
+            m_timer.Tick += OnTimerTick;
+            stopWatch.Start();
+            lastTimeSpan = stopWatch.Elapsed;
+            m_timer.Start();
+        }
+
+        private void OnTimerTick(object sender, EventArgs e)
+        {
+            var timeSpan = stopWatch.Elapsed;
+            var delta = timeSpan - lastTimeSpan;
+            lastTimeSpan = timeSpan;
+            foreach (var obj in Doc.Document.Instance.MapObjects)
+            {
+                obj.Update((int)(delta.TotalSeconds * 1000));
+            }
+            GraphicsDevice.Instance.Render();
         }
 
         private void PropertyView_DragDrop(object sender, DragEventArgs e)

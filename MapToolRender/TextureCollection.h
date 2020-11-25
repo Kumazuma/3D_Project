@@ -145,7 +145,7 @@ namespace MapToolRender
     };
 
 
-    PropertyDescriptorCollection^ TextureCollection::GetProperties()
+    inline PropertyDescriptorCollection^ TextureCollection::GetProperties()
     {
         PropertyDescriptorCollection^ pds = gcnew PropertyDescriptorCollection(nullptr);
         int len = m_textures->Length;

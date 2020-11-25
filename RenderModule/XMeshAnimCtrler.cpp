@@ -13,7 +13,7 @@ SkinnedXMeshObject::AnimationController::AnimationController(ID3DXAnimationContr
     m_period{ 0.f },
     m_pAnimCtrl{MakeCOMPtr(std::move(pAnimCtrl))}
 {
-
+    
 }
 
 SkinnedXMeshObject::AnimationController::AnimationController(AnimationController const* rhs):
@@ -23,6 +23,13 @@ SkinnedXMeshObject::AnimationController::AnimationController(AnimationController
     m_period{ rhs->m_period },
     m_pAnimCtrl{ rhs->m_pAnimCtrl }
 {
+    m_pAnimCtrl->CloneAnimationController(
+        m_pAnimCtrl->GetMaxNumAnimationOutputs(),
+        m_pAnimCtrl->GetMaxNumAnimationSets(),
+        m_pAnimCtrl->GetMaxNumTracks(),
+        m_pAnimCtrl->GetMaxNumEvents(),
+        &m_pAnimCtrl
+    );
 }
 
 auto SkinnedXMeshObject::AnimationController::Create(ID3DXAnimationController* pAnimCtrl, AnimationController** pOut) -> HRESULT
@@ -31,6 +38,7 @@ auto SkinnedXMeshObject::AnimationController::Create(ID3DXAnimationController* p
     {
         return E_POINTER;
     }
+    
     auto obj = new AnimationController{ pAnimCtrl };
     *pOut = obj;
     return S_OK;
@@ -75,19 +83,27 @@ auto SkinnedXMeshObject::AnimationController::PlayAnimationSet(u32 _idx) -> void
     m_accTime = 0.f;
     m_oldAnimIdx = idx;
     m_currentTrackIdx = static_cast<i32>(currentIdx);
-    m_period = pAnimSet->GetPeriod();
+    m_period = static_cast<f32>(pAnimSet->GetPeriod());
 }
 
 auto SkinnedXMeshObject::AnimationController::AdvanceTime(f32 timeDelta) -> void
 {
-    m_pAnimCtrl->AdvanceTime(static_cast<f64>(timeDelta), nullptr);
+    //m_pAnimCtrl->AdvanceTime(static_cast<f64>(timeDelta), nullptr);
+    //하나의 X파일을 여러 오브젝트가 공유하므로 이떄 AdvanceTime을 한다고 해서 의미가 있을 것같지
+    //않다. 차라리 함수를 하나 더 만들어서 각 시간때마다의 뼈대의 Transform을 적용시키는 함수를 만드는 것이 나을 것같다.
     // AdvanceTime 호출 시 내부적으로 누적되는 시간 값이 있음
     m_accTime += timeDelta;
+    m_lastTimeDelta = timeDelta;
+    //m_accTime = fmodf(m_accTime, m_period);
 }
 
 auto SkinnedXMeshObject::AnimationController::IsAnimationSetEnd() -> bool
 {
-    D3DXTRACK_DESC trackInfo{};
-    m_pAnimCtrl->GetTrackDesc(m_currentTrackIdx, &trackInfo);
-    return trackInfo.Position >= m_period;
+    return m_accTime >= m_period;
+}
+
+auto SkinnedXMeshObject::AnimationController::AdjustAnimationToFrame() -> void
+{
+    m_pAnimCtrl->AdvanceTime(static_cast<f64>(m_lastTimeDelta), nullptr);
+    m_lastTimeDelta = 0.f;
 }

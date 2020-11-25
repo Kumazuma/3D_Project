@@ -13,6 +13,8 @@ auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateFrame(LPCSTR szName, D
     XMStoreFloat4x4(pNewFrame->combinedTransformationMatrix.get(),
         XMMatrixIdentity());
     *ppNewFrame = pNewFrame;
+    m_frames.emplace(pNewFrame, std::unique_ptr<Frame>{ (Frame*)pNewFrame});
+
     return S_OK;
 }
 
@@ -32,6 +34,7 @@ auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateMeshContainer(
         return E_POINTER;
     }
     CustomMeshContainer* pNewMeshContainer{ new CustomMeshContainer{} };
+
     AllocateName(&pNewMeshContainer->Name, szName);
     
     COMPtr<ID3DXMesh> pMesh = MakeCOMPtr(std::move( (ID3DXMesh*) pMeshData->pMesh));
@@ -58,16 +61,18 @@ auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateMeshContainer(
     else
     {
         pNewMeshContainer->materials.assign(pMaterials, pMaterials + NumMaterials);
+        auto* pTmp{ pNewMeshContainer->materials.data() };
         pNewMeshContainer->textures.resize(NumMaterials);
         wchar_t szFullPath[256]{};
-        wchar_t szFileName[256]{};
 
         for (u32 i = 0; i < NumMaterials; ++i)
         {
+            wchar_t szFileName[256]{};
+            D3DXMATERIAL material{ pNewMeshContainer->materials[i] };
             MultiByteToWideChar(CP_ACP,
                 0,
-                pNewMeshContainer->materials[i].pTextureFilename,
-                strlen(pNewMeshContainer->pMaterials[i].pTextureFilename),
+                material.pTextureFilename,
+                strlen(material.pTextureFilename),
                 szFileName,
                 256);
             lstrcpy(szFullPath, m_path.c_str());
@@ -108,33 +113,68 @@ auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateMeshContainer(
 
     }
     *ppNewMeshContainer = pNewMeshContainer;
+    m_containers.emplace(pNewMeshContainer, std::unique_ptr<CustomMeshContainer>{ (CustomMeshContainer*)pNewMeshContainer});
+
     return S_OK;
 }
 
 auto __stdcall SkinnedXMeshObject::HierarchyLoader::DestroyFrame(LPD3DXFRAME const pFrameToFree) -> HRESULT 
 {
     if (pFrameToFree == nullptr)return S_OK;
-    delete[] pFrameToFree->Name;
+    const auto it{ m_frames.find(static_cast<Frame*>(pFrameToFree) ) };
+    if (it == m_frames.end())
+    {
+        return S_OK;
+    }
+
     if (pFrameToFree->pMeshContainer != nullptr)
         DestroyMeshContainer(pFrameToFree->pMeshContainer);
     if (pFrameToFree->pFrameSibling != nullptr)
         DestroyFrame(pFrameToFree->pFrameSibling);
     if (pFrameToFree->pFrameFirstChild != nullptr)
         DestroyFrame(pFrameToFree->pFrameFirstChild);
-    delete pFrameToFree;
+
+    delete[] pFrameToFree->Name;
+    m_frames.erase(it);
     return S_OK;
 }
 
 auto __stdcall SkinnedXMeshObject::HierarchyLoader::DestroyMeshContainer(LPD3DXMESHCONTAINER pMeshContainerToFree) -> HRESULT 
 {
 
+    CustomMeshContainer* pMeshContainer = static_cast<CustomMeshContainer*>(pMeshContainerToFree);
+    const auto it{ m_containers.find(pMeshContainer) };
+    if (it == m_containers.end())
+    {
+        return S_OK;
+    }
     pMeshContainerToFree->MeshData.pMesh->Release();
     pMeshContainerToFree->pSkinInfo->Release();
+    m_containers.erase(it);
+    return S_OK;
 
-    CustomMeshContainer* pMeshContainer = static_cast<CustomMeshContainer*>(pMeshContainerToFree);
-    delete pMeshContainer;
-    return E_NOTIMPL;
+}
 
+SkinnedXMeshObject::HierarchyLoader::~HierarchyLoader()
+{
+    for (auto& it : m_containers)
+    {
+        CustomMeshContainer* ptr{ it.first };
+        if (ptr->Name != nullptr)
+        {
+            delete[] ptr->Name;
+        }
+        ptr->Name = nullptr;
+    }
+    for (auto& it : m_frames)
+    {
+        Frame* ptr{ it.first };
+        if (ptr->Name != nullptr)
+        {
+            delete[] ptr->Name;
+        }
+        ptr->Name = nullptr;
+    }
 }
 
 auto SkinnedXMeshObject::HierarchyLoader::AllocateName(char** ppName, char const* pFrameName) -> void
@@ -142,20 +182,19 @@ auto SkinnedXMeshObject::HierarchyLoader::AllocateName(char** ppName, char const
     if (nullptr == pFrameName)
         return;
     usize len{ strlen(pFrameName) };
-    std::wstring a;
     
     *ppName = new i8[len + 1];
     strcpy_s(*ppName, len + 1, pFrameName);
 }
 
-SkinnedXMeshObject::HierarchyLoader::HierarchyLoader(IDirect3DDevice9Ex* pDevice, std::wstring const& path):
+SkinnedXMeshObject::HierarchyLoader::HierarchyLoader(IDirect3DDevice9* pDevice, std::wstring const& path):
     m_pDevice{MakeCOMPtr(std::move(pDevice))},
     m_path{ path }
 {
 
 }
 
-auto SkinnedXMeshObject::HierarchyLoader::Create(IDirect3DDevice9Ex* pGraphicesDevice, std::wstring const& path, HierarchyLoader** pOut) -> HRESULT
+auto SkinnedXMeshObject::HierarchyLoader::Create(IDirect3DDevice9* pGraphicesDevice, std::wstring const& path, HierarchyLoader** pOut) -> HRESULT
 {
     if (pOut == nullptr)
     {

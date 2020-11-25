@@ -27,7 +27,7 @@ auto SkyBoxObject::Render(RenderModule* pRenderModule) -> void
 	{
 		return;
 	}
-	COMPtr<IDirect3DDevice9Ex> pDevice;
+	COMPtr<IDirect3DDevice9> pDevice;
 	pRenderModule->GetDevice(&pDevice);
 	D3DMATRIX viewMatrix;
 	D3DMATRIX projMatrix;
@@ -91,7 +91,7 @@ auto SkyBoxObject::SetDiffuseTexture(IDirect3DCubeTexture9* pTexture) -> void
 
 auto SkyBoxObject::Initialize(RenderModule* pRenderModule) -> HRESULT
 {
-	COMPtr<IDirect3DDevice9Ex> pDevice;
+	COMPtr<IDirect3DDevice9> pDevice;
 	m_vertexCount = 8;
 	m_indexCount = 6 * 2;
 	pRenderModule->GetDevice(&pDevice);

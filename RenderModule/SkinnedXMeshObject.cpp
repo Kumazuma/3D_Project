@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "SkinnedXMeshObject.h"
 #include "RenderModule.h"
+#include <shlwapi.h>
+#pragma comment(lib, "shlwapi.lib")
 using namespace DirectX;
 inline auto __vectorcall ToFloat4x4(XMMATRIX mat)->XMFLOAT4X4
 {
@@ -28,8 +30,16 @@ auto SkinnedXMeshObject::Create(RenderModule* pRenderModule, std::wstring const&
 
 auto SkinnedXMeshObject::Render(RenderModule* pRenderModule) -> void
 {
-    COMPtr<IDirect3DDevice9Ex> pDevice;
+    COMPtr<IDirect3DDevice9> pDevice;
     pRenderModule->GetDevice(&pDevice);
+    m_pAnimCtrler->AdjustAnimationToFrame();
+    UpdateFrameMatrices(
+        static_cast<Frame*>(m_pRootFrame),
+        ToFloat4x4(XMMatrixRotationY(XMConvertToRadians(180.f)))
+    );
+
+    pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_transform));
+
     for (auto& iter : m_meshContainters)
     {
         for (u32 i = 0; i < iter->boneCount; ++i)
@@ -71,22 +81,75 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule) -> void
 
 auto SkinnedXMeshObject::Clone() const -> RenderObject*
 {
-    //TODO:
-    return nullptr;
+    return new SkinnedXMeshObject{ this };
+}
+
+auto SkinnedXMeshObject::FindFrameByName(std::string const& frameName) ->Frame const&
+{
+    D3DXFRAME* const pFrame{ D3DXFrameFind(m_pRootFrame, frameName.c_str()) };
+    return *static_cast<Frame*>(pFrame);
+}
+
+auto SkinnedXMeshObject::IsAnimationSetEnd() -> bool
+{
+    return m_pAnimCtrler->IsAnimationSetEnd();
+}
+
+auto SkinnedXMeshObject::SetAnimationSet(u32 idx) -> void
+{
+    m_pAnimCtrler->PlayAnimationSet(idx);
+}
+
+auto SkinnedXMeshObject::PlayAnimation(f32 timeDelta) -> void
+{
+    m_pAnimCtrler->AdvanceTime(timeDelta);
+    
+}
+
+SkinnedXMeshObject::SkinnedXMeshObject():
+    m_pRootFrame{}
+{
+
+}
+
+SkinnedXMeshObject::SkinnedXMeshObject(SkinnedXMeshObject const* rhs):
+    m_pAnimCtrler{ rhs->m_pAnimCtrler->Clone() },
+    m_pHierarchyLoader{rhs->m_pHierarchyLoader},
+    m_meshContainters{rhs->m_meshContainters},
+    m_pRootFrame{rhs->m_pRootFrame}
+{
+    //TODO: 깊은 복사를 해야한다. HOWTO?
 }
 
 auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring const& filePath) -> HRESULT
 {
+
     HRESULT hr{};
-    COMPtr<IDirect3DDevice9Ex> pDevice;
+    COMPtr<IDirect3DDevice9> pDevice;
     HierarchyLoader* pHierarchyLoader{};
     COMPtr<ID3DXAnimationController> pAnimationController{};
     AnimationController* pAnimCtrler{};
     D3DXFRAME* pRootFrame{};
     pRenderModule->GetDevice(&pDevice);
     usize idx = filePath.find_last_of(DIRECTORY_SEPARATOR);
-    std::wstring directoryPath{ filePath.substr(0, idx + 1) };
-    hr = HierarchyLoader::Create(pDevice.Get(), directoryPath, &pHierarchyLoader);
+    usize idx2 = filePath.find_last_of(L'/');
+    usize idx3{};
+    std::wstring directory{};
+    
+    if (idx2 == std::wstring::npos)
+    {
+        idx3 = idx;
+    }
+    else if (idx == std::wstring::npos)
+    {
+        idx3 = idx2;
+    }
+    else
+    {
+        idx3 = idx > idx2 ? idx : idx2;
+    }
+    directory = filePath.substr(0, idx3 + 1);
+    hr = HierarchyLoader::Create(pDevice.Get(), directory, &pHierarchyLoader);
     if(FAILED(hr))
     {
         return hr;
@@ -99,26 +162,26 @@ auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring co
         pDevice.Get(),
         m_pHierarchyLoader.get(),
         nullptr,
-        &pRootFrame,
+        &m_pRootFrame,
         &pAnimationController);
     if (FAILED(hr))
     {
         return hr;
     }
-    m_pRootFrame.reset(pRootFrame);
     hr = AnimationController::Create(pAnimationController.Get(), &pAnimCtrler);
+    
     if (FAILED(hr))
     {
         return hr;
     }
     m_pAnimCtrler.reset(pAnimCtrler);
-    InitializeFrameMatrix(static_cast<Frame*>(m_pRootFrame.get()));
     UpdateFrameMatrices(
-        static_cast<Frame*>(m_pRootFrame.get()),
+        static_cast<Frame*>(m_pRootFrame),
         ToFloat4x4(XMMatrixRotationY(XMConvertToRadians(180.f)))
     );
-
-    return E_NOTIMPL;
+    InitializeFrameMatrix(static_cast<Frame*>(m_pRootFrame));
+    SetAnimationSet(54);
+    return S_OK;
 }
 
 auto SkinnedXMeshObject::InitializeFrameMatrix(Frame* pFrame)->void
@@ -129,7 +192,7 @@ auto SkinnedXMeshObject::InitializeFrameMatrix(Frame* pFrame)->void
         for (u32 i = 0; i < pMeshContainer->boneCount; ++i)
         {
             char const* pBoneName{ pMeshContainer->pSkinInfo->GetBoneName(i) };
-            Frame* pBone{ static_cast<Frame*>(D3DXFrameFind(m_pRootFrame.get(), pBoneName)) };
+            Frame* pBone{ static_cast<Frame*>(D3DXFrameFind(m_pRootFrame, pBoneName)) };
             pMeshContainer->frameCombinedMatries[i] = pBone->combinedTransformationMatrix;
         }
         m_meshContainters.push_back(pMeshContainer);
@@ -141,22 +204,22 @@ auto SkinnedXMeshObject::InitializeFrameMatrix(Frame* pFrame)->void
 
 }
 
-auto SkinnedXMeshObject::UpdateFrameMatrices(Frame* const pFrame, DirectX::XMFLOAT4X4 const& mat)->void
+auto SkinnedXMeshObject::UpdateFrameMatrices(Frame* const pFrame, DirectX::XMFLOAT4X4 const& parentTransform)->void
 {
     if (pFrame == nullptr)
         return;
     XMMATRIX mCombindTransform{};
     XMMATRIX mParentTransform{};
-    mCombindTransform = XMLoadFloat4x4(pFrame->combinedTransformationMatrix.get());
-    mParentTransform = XMLoadFloat4x4(&mat);
+    mCombindTransform = XMLoadFloat4x4(&reinterpret_cast<XMFLOAT4X4&>(pFrame->TransformationMatrix));
+    mParentTransform = XMLoadFloat4x4(&parentTransform);
     mCombindTransform = mCombindTransform * mParentTransform;
     XMStoreFloat4x4(pFrame->combinedTransformationMatrix.get(), mCombindTransform);
     if (pFrame->pFrameSibling != nullptr)
     {
-        UpdateFrameMatrices(static_cast<Frame*>(pFrame->pFrameSibling), mat);
+        UpdateFrameMatrices(static_cast<Frame*>(pFrame->pFrameSibling), parentTransform);
     }
     if (pFrame->pFrameFirstChild != nullptr)
     {
-        UpdateFrameMatrices(static_cast<Frame*>(pFrame->pFrameSibling), *pFrame->combinedTransformationMatrix);
+        UpdateFrameMatrices(static_cast<Frame*>(pFrame->pFrameFirstChild), *pFrame->combinedTransformationMatrix);
     }
 }

@@ -40,7 +40,7 @@ auto SimpleBoxObject::Clone() const -> RenderObject*
 auto SimpleBoxObject::Render(RenderModule* pRenderModule) -> void
 {
 	DWORD fillMode;
-    COMPtr<IDirect3DDevice9Ex> pDevice;
+    COMPtr<IDirect3DDevice9> pDevice;
 	pDevice->GetRenderState(D3DRS_FILLMODE, &fillMode);
 	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
     pRenderModule->GetDevice(&pDevice);
@@ -54,7 +54,6 @@ auto SimpleBoxObject::Render(RenderModule* pRenderModule) -> void
 	pDevice->SetTransform(D3DTS_WORLD, pWorld);//vertex shader
 	m_pMesh->DrawSubset(0);
 	pDevice->SetRenderState(D3DRS_FILLMODE, fillMode);
-	D3DMATERIAL9 mat;
 }
 
 auto SimpleBoxObject::Initialize(RenderModule* pRenderModule, f32 width, f32 height, f32 depth) -> HRESULT
@@ -64,7 +63,7 @@ auto SimpleBoxObject::Initialize(RenderModule* pRenderModule, f32 width, f32 hei
 	m_depth = depth;
 	HRESULT hr{ E_FAIL };
 
-	COMPtr<IDirect3DDevice9Ex> pDevice;
+	COMPtr<IDirect3DDevice9> pDevice;
 	pRenderModule->GetDevice(&pDevice);
 	hr = D3DXCreateBox(pDevice.Get(), 1, 1, 1, &m_pMesh, nullptr);
 	m_material.Diffuse = D3DCOLORVALUE{ 1.f, 1.f, 1.f, 1.f };

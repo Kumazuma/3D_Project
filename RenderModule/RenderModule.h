@@ -18,7 +18,7 @@ class DLL_CLASS RenderModule
 public:
 	static auto Create(HWND hWindow, u32 width, u32 height, RenderModule** pOut)->HRESULT;
 public:
-	auto GetDevice(IDirect3DDevice9Ex** pOut)->HRESULT;
+	auto GetDevice(IDirect3DDevice9** pOut)->HRESULT;
 	auto CreateTerrain(wchar_t const* szHeightMapPath, size_t len, f32 interval, f32 maxHeight, RenderObject** pOut)->HRESULT;
 	auto CreateTexture(wchar_t const* szFilePath, IDirect3DTexture9** pOut)->HRESULT;
 	auto CreateCubeTexture(wchar_t const* szFilePath, IDirect3DCubeTexture9** pOut)->HRESULT;
@@ -39,8 +39,8 @@ protected:
 	auto Initialize(HWND hWindow, u32 width, u32 height)->HRESULT;
 
 private:
-	COMPtr<IDirect3DDevice9Ex> m_pDevice;
-	COMPtr<IDirect3D9Ex> m_pSDK;
+	COMPtr<IDirect3DDevice9> m_pDevice;
+	COMPtr<IDirect3D9> m_pSDK;
 	COMPtr<IDirect3DTexture9> m_pDefaultTexture;
 	COMPtr<IDirect3DTexture9> m_pRedTexture;
 	COMPtr<IDirect3DTexture9> m_pGreenTexture;

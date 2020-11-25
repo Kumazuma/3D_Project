@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="skinnedxmesh">
+      <UniqueIdentifier>{fcb1042b-7e7b-4c13-a4e2-efc1639e9d59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapToolRender.h">
@@ -44,6 +47,9 @@
     </ClInclude>
     <ClInclude Include="TextureCollection.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedXMeshObj.h">
+      <Filter>skinnedxmesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="XMeshObj.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedXMeshObj.cpp">
+      <Filter>skinnedxmesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

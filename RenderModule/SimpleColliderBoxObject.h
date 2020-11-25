@@ -16,9 +16,9 @@ protected:
 	auto Initialize(RenderModule* pRenderModule, f32 width, f32 height, f32 depth)->HRESULT;
 private:
 
-	u32 m_width;
-	u32 m_depth;
-	u32 m_height;
+	f32 m_width;
+	f32 m_depth;
+	f32 m_height;
 	DirectX::XMFLOAT4 m_color;
 	D3DMATERIAL9 m_material;
 	COMPtr<ID3DXMesh> m_pMesh;

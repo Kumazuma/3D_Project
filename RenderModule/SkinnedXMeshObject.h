@@ -8,18 +8,25 @@ class DLL_CLASS SkinnedXMeshObject : public XMeshObject
 	class HierarchyLoader;
 	class AnimationController;
 	struct CustomMeshContainer;
+public:
 	struct Frame;
 public:
 	static auto Create(RenderModule* pRenderModule, std::wstring const& filePath, SkinnedXMeshObject** pOut)->HRESULT;
 	auto Render(RenderModule* pRenderModule)->void;
 	auto Clone()const->RenderObject*;
+	auto FindFrameByName(std::string const& frameName)->Frame const&;
+	auto IsAnimationSetEnd()->bool;
+	auto SetAnimationSet(u32 idx)->void;
+	auto PlayAnimation(f32 timeDelta)->void;
 protected:
+	SkinnedXMeshObject();
+	SkinnedXMeshObject(SkinnedXMeshObject const* rhs);
 	auto Initialize(RenderModule* pRenderModule, std::wstring const& filePath)->HRESULT;
 	auto InitializeFrameMatrix(Frame* pFrame)->void;
 	auto UpdateFrameMatrices(Frame* pFrame, DirectX::XMFLOAT4X4 const& mat)->void;
 private:
-	std::shared_ptr<D3DXFRAME> m_pRootFrame;
-	std::unique_ptr<HierarchyLoader> m_pHierarchyLoader;
+	D3DXFRAME* m_pRootFrame;
+	std::shared_ptr<HierarchyLoader> m_pHierarchyLoader;
 	std::unique_ptr<AnimationController> m_pAnimCtrler;
 	std::vector<CustomMeshContainer* > m_meshContainters;
 };
