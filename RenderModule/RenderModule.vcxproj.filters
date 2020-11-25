@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="헤더 파일\SkinnedXMesh">
+      <UniqueIdentifier>{cf2f863b-4997-4125-a382-0b5fe0335ebd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -51,6 +54,15 @@
     <ClInclude Include="Frustum.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SkinnedXMeshObject.h">
+      <Filter>헤더 파일\SkinnedXMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="XMeshHierarchyLoader.h">
+      <Filter>헤더 파일\SkinnedXMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="XMeshContainer.h">
+      <Filter>헤더 파일\SkinnedXMesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -81,6 +93,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Frustum.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="XMeshHierarchyLoader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

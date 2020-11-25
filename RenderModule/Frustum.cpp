@@ -43,7 +43,7 @@ auto __vectorcall Frustum::Intersact(DirectX::XMVECTOR pos) const -> bool
 	pos = XMVectorSetW(pos, 1.f);
 	XMVECTOR vRes = XMVector4Transform(pos, mSides);
 	//각 면과 내적해서 모두 음수가 아니면 절두체 밖에 있다.
-	bool res = XMVector4Less(vRes, XMVectorSet(0.f, 0.f, 0.f, 0.f));
+	bool res = XMVector4LessOrEqual(vRes, XMVectorSet(0.f, 0.f, 0.f, 0.f));
 	if (!res)
 	{
 		return false;

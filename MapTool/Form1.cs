@@ -59,21 +59,6 @@ namespace MapTool
             
             GraphicsDevice.Instance.Render();
             m_renderView.Content.Paint += Form1_Paint;
-            //StaticXMeshObj mesh = new StaticXMeshObj(GraphicsDevice.Instance, "./Tree01.X");
-            //GraphicsDevice.Instance.Add(RenderGroup.NONALPHA, mesh);
-            //mesh.Name = "mesh";
-            //Doc.Document.Instance.AddObject(mesh);
-            //TerrainObject terrain =
-            //    new TerrainObject(
-            //        GraphicsDevice.Instance,
-            //        "./Height1.bmp",
-            //        10.0f,
-            //        200.0f
-            //    );
-            //Texture texture = new Texture(GraphicsDevice.Instance,  "./Grass_1.png");
-            //terrain.DiffuseTexture = texture;
-            //m_propertyView.Content.SelectedObject = terrain;
-            //GraphicsDevice.Instance.Add(RenderGroup.PRIORITY, terrain);
 
         }
 
@@ -150,6 +135,17 @@ namespace MapTool
         private void StaticXMeshToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //TODO:
+            var fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "X 파일(*.x)|*.x";
+            if (fileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            var path = fileDialog.FileName;
+            var xmesh = new MapToolRender.StaticXMeshObj(MapToolRender.GraphicsDevice.Instance, path);
+            GraphicsDevice.Instance.Add(RenderGroup.NONALPHA, xmesh);
+            xmesh.Name = "XMesh";
+            Doc.Document.Instance.AddObject(xmesh);
         }
     }
 }
