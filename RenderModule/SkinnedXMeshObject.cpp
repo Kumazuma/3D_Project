@@ -84,10 +84,20 @@ auto SkinnedXMeshObject::Clone() const -> RenderObject*
     return new SkinnedXMeshObject{ this };
 }
 
-auto SkinnedXMeshObject::FindFrameByName(std::string const& frameName) ->Frame const&
+auto SkinnedXMeshObject::FindFrameTransfromByName(std::string const& frameName, XMFLOAT4X4 * const pOut) ->HRESULT
 {
-    D3DXFRAME* const pFrame{ D3DXFrameFind(m_pRootFrame, frameName.c_str()) };
-    return *static_cast<Frame*>(pFrame);
+    if (pOut == nullptr)
+    {
+        return E_POINTER;
+    }
+    const auto findResIt{ m_renderedMatrices.find(frameName) };
+    if(findResIt == m_renderedMatrices.end())
+    {
+        return E_FAIL;
+    }
+    *pOut = findResIt->second;
+    return S_OK;
+
 }
 
 auto SkinnedXMeshObject::IsAnimationSetEnd() -> bool
@@ -214,6 +224,7 @@ auto SkinnedXMeshObject::UpdateFrameMatrices(Frame* const pFrame, DirectX::XMFLO
     mParentTransform = XMLoadFloat4x4(&parentTransform);
     mCombindTransform = mCombindTransform * mParentTransform;
     XMStoreFloat4x4(pFrame->combinedTransformationMatrix.get(), mCombindTransform);
+    
     if (pFrame->pFrameSibling != nullptr)
     {
         UpdateFrameMatrices(static_cast<Frame*>(pFrame->pFrameSibling), parentTransform);

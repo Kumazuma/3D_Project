@@ -27,6 +27,7 @@ private:
     std::wstring m_path;
     std::unordered_map<CustomMeshContainer* , std::unique_ptr<CustomMeshContainer>> m_containers;
     std::unordered_map<Frame*, std::unique_ptr<Frame> > m_frames;
+    
 public:
     static auto Create(IDirect3DDevice9* pGraphicesDevice, std::wstring const& path, HierarchyLoader** pOut)->HRESULT;
 public:

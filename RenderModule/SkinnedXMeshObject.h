@@ -3,6 +3,7 @@
 #include "MeshObject.h"
 #include <vector>
 #include <memory>
+#include <unordered_map>
 class DLL_CLASS SkinnedXMeshObject : public XMeshObject
 {
 	class HierarchyLoader;
@@ -14,7 +15,7 @@ public:
 	static auto Create(RenderModule* pRenderModule, std::wstring const& filePath, SkinnedXMeshObject** pOut)->HRESULT;
 	auto Render(RenderModule* pRenderModule)->void;
 	auto Clone()const->RenderObject*;
-	auto FindFrameByName(std::string const& frameName)->Frame const&;
+	auto FindFrameTransfromByName(std::string const& frameName, DirectX::XMFLOAT4X4* const pOut)->HRESULT;
 	auto IsAnimationSetEnd()->bool;
 	auto SetAnimationSet(u32 idx)->void;
 	auto PlayAnimation(f32 timeDelta)->void;
@@ -29,6 +30,7 @@ private:
 	std::shared_ptr<HierarchyLoader> m_pHierarchyLoader;
 	std::unique_ptr<AnimationController> m_pAnimCtrler;
 	std::vector<CustomMeshContainer* > m_meshContainters;
+	std::unordered_map<std::string, DirectX::XMFLOAT4X4> m_renderedMatrices;
 };
 struct SkinnedXMeshObject::Frame : public D3DXFRAME
 {
