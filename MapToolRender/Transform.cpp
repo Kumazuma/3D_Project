@@ -218,3 +218,17 @@ MapToolRender::Rotation::Rotation(Rotation^  rhs) :
     Rotation{ rhs->x,rhs->y, rhs->z }
 {
 }
+#pragma unmanaged
+#include<DirectXMath.h>
+auto GetValueToRadian(float x, float y, float z, DirectX::XMFLOAT3* pOut)->void
+{
+    using namespace DirectX;
+    XMVECTOR vRotation{ XMVectorSet(x,y,z,0.f) };
+    vRotation = vRotation * DirectX::XM_PI / 180.f;
+    XMStoreFloat3(pOut, vRotation);
+}
+#pragma managed
+auto MapToolRender::Rotation::GetValueToRadian(DirectX::XMFLOAT3* pOut) -> void
+{
+    ::GetValueToRadian(x, y, z, pOut);
+}

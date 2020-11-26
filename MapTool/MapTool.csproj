@@ -101,6 +101,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\AnimationView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="View\AnimationView.Designer.cs">
+      <DependentUpon>AnimationView.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\ProjectDirectoryPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -137,6 +143,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="View\AnimationView.resx">
+      <DependentUpon>AnimationView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="View\MapObjectTreePanel.resx">
       <DependentUpon>MapObjectTreePanel.cs</DependentUpon>
     </EmbeddedResource>

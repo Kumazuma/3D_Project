@@ -33,6 +33,7 @@ namespace MapToolRender {
 
 		}
 		auto Render()->void;
+		auto Render(Control^ renderView, RenderObject^ obj, Camera^ camera)->void;
 		auto ClearRenderGroup()->void;
 		auto Add(RenderGroup groupId, RenderObject^ obj)->void;
 		auto Remove(RenderGroup groupId, RenderObject^ obj)->void;

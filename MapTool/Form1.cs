@@ -20,9 +20,8 @@ namespace MapTool
         DockView<View.RenderView> m_renderView;
         DockView<PropertyGrid> m_propertyView;
         DockView<View.ProjectDirectoryPanel> m_projectDirectoryView;
-        Timer m_timer;
-        Stopwatch stopWatch = new Stopwatch();
-        TimeSpan lastTimeSpan;
+        DockView<View.AnimationView> m_animationJsonEditView;
+
         public Form1()
         {
             InitializeComponent();
@@ -42,12 +41,12 @@ namespace MapTool
             m_mapObjTreePanel = new DockView<View.MapObjectTreePanel>();
             m_propertyView = new DockView<PropertyGrid>();
             m_projectDirectoryView = new DockView<View.ProjectDirectoryPanel>();
-
+            m_animationJsonEditView = new DockView<View.AnimationView>();
             m_mapObjTreePanel.TabText = "트리";
             m_renderView.TabText = "렌더";
             m_projectDirectoryView.TabText = "디렉토리";
             m_propertyView.TabText = "속성";
-
+            m_animationJsonEditView.TabText = "애니메이션";
             m_propertyView.Content.AllowDrop = true;
             m_propertyView.Content.DragEnter += PropertyView_DragEnter;
             m_propertyView.Content.DragDrop += PropertyView_DragDrop;
@@ -56,11 +55,13 @@ namespace MapTool
             m_renderView.Show(dockPanel1, DockState.Document);
             m_propertyView.Show(dockPanel1, DockState.DockRight);
             m_projectDirectoryView.Show(dockPanel1, DockState.DockBottom);
-
+            m_animationJsonEditView.Show(dockPanel1, DockState.Document);
             m_renderView.CloseButtonVisible = false;
             m_renderView.CloseButton = false;
             m_renderView.IsFloat = false;
-
+            m_animationJsonEditView.CloseButtonVisible = false;
+            m_animationJsonEditView.CloseButton = false;
+            m_animationJsonEditView.IsFloat = false;
             var obj = new MapToolRender.SkinnedXMeshObj(GraphicsDevice.Instance, "./Mesh/DynamicMesh/Player/Player.X");
             GraphicsDevice.Instance.Add(RenderGroup.NONALPHA, obj);
             obj.Name = "Skinned X Mesh";
@@ -68,25 +69,10 @@ namespace MapTool
             //GraphicsDevice.Instance.Render();
             m_renderView.Content.Paint += Form1_Paint;
 
-            m_timer = new Timer();
-            m_timer.Interval = 33;
-            m_timer.Tick += OnTimerTick;
-            stopWatch.Start();
-            lastTimeSpan = stopWatch.Elapsed;
-            m_timer.Start();
+            
         }
 
-        private void OnTimerTick(object sender, EventArgs e)
-        {
-            var timeSpan = stopWatch.Elapsed;
-            var delta = timeSpan - lastTimeSpan;
-            lastTimeSpan = timeSpan;
-            foreach (var obj in Doc.Document.Instance.MapObjects)
-            {
-                obj.Update((int)(delta.TotalSeconds * 1000));
-            }
-            GraphicsDevice.Instance.Render();
-        }
+        
 
         private void PropertyView_DragDrop(object sender, DragEventArgs e)
         {

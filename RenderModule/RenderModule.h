@@ -34,6 +34,7 @@ public:
 	auto GetFrustum()const->Frustum const&;
 	auto BeginRender(float r, float g, float b, float a)->void;
 	auto EndRender()->void;
+	auto Present(HWND hWnd = nullptr)->void;
 protected:
 	RenderModule();
 	auto Initialize(HWND hWindow, u32 width, u32 height)->HRESULT;

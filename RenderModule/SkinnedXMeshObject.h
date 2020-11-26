@@ -19,6 +19,7 @@ public:
 	auto IsAnimationSetEnd()->bool;
 	auto SetAnimationSet(u32 idx)->void;
 	auto PlayAnimation(f32 timeDelta)->void;
+	auto GetAnimationCount()const->u32;
 protected:
 	SkinnedXMeshObject();
 	SkinnedXMeshObject(SkinnedXMeshObject const* rhs);

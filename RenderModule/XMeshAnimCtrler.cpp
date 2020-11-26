@@ -93,7 +93,7 @@ auto SkinnedXMeshObject::AnimationController::AdvanceTime(f32 timeDelta) -> void
     //않다. 차라리 함수를 하나 더 만들어서 각 시간때마다의 뼈대의 Transform을 적용시키는 함수를 만드는 것이 나을 것같다.
     // AdvanceTime 호출 시 내부적으로 누적되는 시간 값이 있음
     m_accTime += timeDelta;
-    m_lastTimeDelta = timeDelta;
+    m_lastTimeDelta += timeDelta;
     //m_accTime = fmodf(m_accTime, m_period);
 }
 
@@ -106,4 +106,9 @@ auto SkinnedXMeshObject::AnimationController::AdjustAnimationToFrame() -> void
 {
     m_pAnimCtrl->AdvanceTime(static_cast<f64>(m_lastTimeDelta), nullptr);
     m_lastTimeDelta = 0.f;
+}
+
+auto SkinnedXMeshObject::AnimationController::GetAnimCount() const -> u32
+{
+    return m_pAnimCtrl->GetNumAnimationSets();
 }

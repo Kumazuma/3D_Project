@@ -345,5 +345,9 @@ auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 auto RenderModule::EndRender() -> void
 {
 	m_pDevice->EndScene();
-	m_pDevice->Present(nullptr, nullptr, nullptr,  0);
+}
+
+auto RenderModule::Present(HWND hWnd) -> void
+{
+	m_pDevice->Present(nullptr, nullptr, hWnd, 0);
 }

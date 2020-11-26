@@ -116,6 +116,11 @@ auto SkinnedXMeshObject::PlayAnimation(f32 timeDelta) -> void
     
 }
 
+auto SkinnedXMeshObject::GetAnimationCount()const -> u32
+{
+    return m_pAnimCtrler->GetAnimCount();
+}
+
 SkinnedXMeshObject::SkinnedXMeshObject():
     m_pRootFrame{}
 {
@@ -190,7 +195,7 @@ auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring co
         ToFloat4x4(XMMatrixRotationY(XMConvertToRadians(180.f)))
     );
     InitializeFrameMatrix(static_cast<Frame*>(m_pRootFrame));
-    SetAnimationSet(54);
+
     return S_OK;
 }
 

@@ -31,7 +31,10 @@ namespace MapTool.View
                     node.Tag = mapObj;
                     break;
                 case "SelectedObject":
-                    var selectedNode = treeView1.Nodes.Find(Doc.Document.Instance.SelectedObject.GetHashCode().ToString(), true)[0];
+                    var findRes = treeView1.Nodes.Find(Doc.Document.Instance.SelectedObject.GetHashCode().ToString(), true);
+                    if (findRes.Length == 0)
+                        return;
+                    var selectedNode = findRes[0];
                     treeView1.SelectedNode = selectedNode;
                     break;
             }

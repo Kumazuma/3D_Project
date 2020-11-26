@@ -102,6 +102,7 @@ auto MapToolRender::Camera::Position::get()->MapToolRender::Position^
 auto MapToolRender::Camera::Position::set(MapToolRender::Position^ value)->void
 {
 	m_position = value;
+
 	m_pPosition->x = value->X;
 	m_pPosition->y = value->Y;
 	m_pPosition->z = value->Z;
@@ -113,15 +114,11 @@ auto MapToolRender::Camera::Rotation::get()->MapToolRender::Rotation^
 auto MapToolRender::Camera::Rotation::set(MapToolRender::Rotation^ value)->void
 {
 	m_rotation = value;
-	m_pRotation->x = value->X;
-	m_pRotation->y = value->Y;
-	m_pRotation->z = value->Z;
+	m_rotation->GetValueToRadian(m_pRotation);
 }
 auto MapToolRender::Camera::RotationPtr::get()->DirectX::XMFLOAT3*
 {
-	m_pRotation->x = m_rotation->X;
-	m_pRotation->y = m_rotation->Y;
-	m_pRotation->z = m_rotation->Z;
+	m_rotation->GetValueToRadian(m_pRotation);
 	return m_pRotation;
 }
 auto MapToolRender::Camera::PositionPtr::get()->DirectX::XMFLOAT3*

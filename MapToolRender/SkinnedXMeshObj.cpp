@@ -13,6 +13,7 @@ MapToolRender::SkinnedXMeshObj::SkinnedXMeshObj(GraphicsDevice^ device, System::
     SkinnedXMeshObject* obj{};
     SkinnedXMeshObject::Create(device->Handle, szFilePath, &obj);
     this->m_pNativeObject = obj;
+    m_filePath = filePath;
 }
 
 auto MapToolRender::SkinnedXMeshObj::Clone() -> RenderObject^ 
@@ -22,7 +23,8 @@ auto MapToolRender::SkinnedXMeshObj::Clone() -> RenderObject^
 
 auto MapToolRender::SkinnedXMeshObj::PlayAnimIdx(unsigned int idx) -> void
 {
-    throw gcnew System::NotImplementedException();
+    auto pObj{ static_cast<SkinnedXMeshObject*>(m_pNativeObject) };
+    pObj->SetAnimationSet(idx);
 }
 
 auto MapToolRender::SkinnedXMeshObj::Update(int ms) -> void
@@ -32,7 +34,17 @@ auto MapToolRender::SkinnedXMeshObj::Update(int ms) -> void
 }
 
 MapToolRender::SkinnedXMeshObj::SkinnedXMeshObj(SkinnedXMeshObj^ const& rhs):
-    RenderObject{ rhs }
+    RenderObject{ rhs },
+    m_filePath{rhs->m_filePath}
 {
     
+}
+auto MapToolRender::SkinnedXMeshObj::AnimationCount::get()-> System::UInt32
+{
+    auto pObj{ static_cast<SkinnedXMeshObject*>(m_pNativeObject) };
+    return pObj->GetAnimationCount();
+}
+auto MapToolRender::SkinnedXMeshObj::MeshFilePath::get()-> System::String^
+{
+    return m_filePath;
 }

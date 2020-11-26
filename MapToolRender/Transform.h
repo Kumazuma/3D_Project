@@ -1,4 +1,8 @@
 #pragma once
+namespace DirectX
+{
+	struct XMFLOAT3;
+}
 namespace MapToolRender
 {
 	using namespace System;
@@ -127,6 +131,7 @@ namespace MapToolRender
 		{
 			return String::Format("({0}, {1}, {2})", X, Y, Z);
 		}
+		auto GetValueToRadian(DirectX::XMFLOAT3* pOut)->void;
 	private:
 		void OnPropertyChanged(String^ info)
 		{

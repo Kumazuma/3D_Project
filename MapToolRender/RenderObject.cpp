@@ -58,9 +58,7 @@ namespace MapToolRender
 		scale.y = m_transform->Scale->Y;
 		scale.z = m_transform->Scale->Z;
 
-		rotation.x = m_transform->Rotation->X;
-		rotation.y = m_transform->Rotation->Y;
-		rotation.z = m_transform->Rotation->Z;
+		m_transform->Rotation->GetValueToRadian(&rotation);
 		DirectX::XMFLOAT4X4 worldMatrix;
 		CreateWorldTransform(&worldMatrix, position, rotation, scale);
 		m_pNativeObject->SetTransform(worldMatrix);
@@ -88,10 +86,7 @@ namespace MapToolRender
 		scale.x = m_transform->Scale->X;
 		scale.y = m_transform->Scale->Y;
 		scale.z = m_transform->Scale->Z;
-
-		rotation.x = m_transform->Rotation->X;
-		rotation.y = m_transform->Rotation->Y;
-		rotation.z = m_transform->Rotation->Z;
+		m_transform->Rotation->GetValueToRadian(&rotation);
 		DirectX::XMFLOAT4X4 worldMatrix;
 		CreateWorldTransform(&worldMatrix, position, rotation, scale);
 		m_pNativeObject->SetTransform(worldMatrix);

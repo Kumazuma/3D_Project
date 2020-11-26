@@ -14,6 +14,7 @@ public:
 	auto IsAnimationSetEnd()->bool;
 	//실제로 뼈대 행렬을 변경시키는 멤버함수.
 	auto AdjustAnimationToFrame()->void;
+	auto GetAnimCount()const->u32;
 
 private:
 	COMPtr<ID3DXAnimationController> m_pAnimCtrl;

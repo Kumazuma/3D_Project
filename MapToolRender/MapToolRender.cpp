@@ -22,42 +22,74 @@ auto MapToolRender::GraphicsDevice::Initialize(System::Windows::Forms::Control^ 
 }
 auto MapToolRender::GraphicsDevice::Render() -> void
 {
-	COMPtr<IDirect3DDevice9> pDevice;
-	m_pRenderModule->GetDevice(&pDevice);
-
-	ApplyViewProjMatrix();
-	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-	m_pRenderModule->BeginRender(0.f, 0.f, 1.f, 1.f);
-
-	auto list = m_renderObjects[RenderGroup::PRIORITY];
-	for each (auto obj in list)
+	System::Threading::Monitor::Enter(this);
+	try
 	{
-		auto* handle{ obj->Handle };
-		if (handle != nullptr)
+		COMPtr<IDirect3DDevice9> pDevice;
+		m_pRenderModule->GetDevice(&pDevice);
+
+		ApplyViewProjMatrix();
+		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
+		m_pRenderModule->BeginRender(0.f, 0.f, 1.f, 1.f);
+
+		auto list = m_renderObjects[RenderGroup::PRIORITY];
+		for each (auto obj in list)
 		{
-			handle->Render(m_pRenderModule);
+			auto* handle{ obj->Handle };
+			if (handle != nullptr)
+			{
+				handle->Render(m_pRenderModule);
+			}
 		}
+		list = m_renderObjects[RenderGroup::NONALPHA];
+		for each (auto obj in list)
+		{
+			auto* handle{ obj->Handle };
+			if (handle != nullptr)
+			{
+				handle->Render(m_pRenderModule);
+			}
+		}
+		list = m_renderObjects[RenderGroup::ALPHA];
+		for each (auto obj in list)
+		{
+			auto* handle{ obj->Handle };
+			if (handle != nullptr)
+			{
+				handle->Render(m_pRenderModule);
+			}
+		}
+		m_pRenderModule->EndRender();
+		m_pRenderModule->Present();
 	}
-	list = m_renderObjects[RenderGroup::NONALPHA];
-	for each (auto obj in list)
+	finally
 	{
-		auto* handle{ obj->Handle };
-		if (handle != nullptr)
-		{
-			handle->Render(m_pRenderModule);
-		}
+		System::Threading::Monitor::Exit(this);
 	}
-	list = m_renderObjects[RenderGroup::ALPHA];
-	for each (auto obj in list)
+}
+
+auto MapToolRender::GraphicsDevice::Render(Control^ renderView, RenderObject^ obj, Camera^ camera)->void
+{
+	System::Threading::Monitor::Enter(this);
+	try
 	{
-		auto* handle{ obj->Handle };
-		if (handle != nullptr)
-		{
-			handle->Render(m_pRenderModule);
-		}
+		COMPtr<IDirect3DDevice9> pDevice;
+		m_pRenderModule->GetDevice(&pDevice);
+		m_pRenderModule->SetCamera(camera->PositionPtr, camera->RotationPtr);
+		m_pRenderModule->SetProj(45.f, 1.f, 0.1f, 2000.f);
+		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
+		m_pRenderModule->BeginRender(0.f, 0.f, 1.f, 1.f);
+		obj->Handle->Render(m_pRenderModule);
+		m_pRenderModule->EndRender();
+		m_pRenderModule->Present((HWND)renderView->Handle.ToPointer());
 	}
-	m_pRenderModule->EndRender();
+	finally
+	{
+		System::Threading::Monitor::Exit(this);
+	}
+	
 }
 
 auto MapToolRender::GraphicsDevice::ClearRenderGroup() -> void

@@ -38,6 +38,7 @@ namespace MapToolRender
 			auto get()->MapToolRender::Rotation^;
 			auto set(MapToolRender::Rotation^ value)->void;
 		}
+		
 	private:
 		MapToolRender::Position^ m_position;
 		MapToolRender::Rotation^ m_rotation;
