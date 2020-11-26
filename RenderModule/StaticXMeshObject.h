@@ -17,7 +17,6 @@ public:
 	auto GetMaterialCount()const->u32;
 	auto Clone()const->RenderObject*;
 private:
-	COMPtr<ID3DXMesh> m_pOriMesh;// 최초 로드 시점에 생성하는 메쉬 컴객체
 	COMPtr<ID3DXMesh> m_pMesh;// 노말 정보를 삽입하여 변환시킨 메쉬 컴객체
 	COMPtr<ID3DXBuffer> m_pAdjacency;
 	COMPtr<ID3DXBuffer> m_pSubset;

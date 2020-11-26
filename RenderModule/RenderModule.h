@@ -33,13 +33,15 @@ public:
 	auto GetSimpleColorTexture(DefaultColorTexture kind, IDirect3DTexture9** pOut)->HRESULT;
 	auto GetFrustum()const->Frustum const&;
 	auto BeginRender(float r, float g, float b, float a)->void;
-	auto EndRender()->void;
-	auto Present(HWND hWnd = nullptr)->void;
+	auto EndRender(HWND hWnd = nullptr)->void;
+	auto Renderable()->bool;
 protected:
 	RenderModule();
 	auto Initialize(HWND hWindow, u32 width, u32 height)->HRESULT;
 
 private:
+	
+	D3DPRESENT_PARAMETERS m_d3dpp;
 	COMPtr<IDirect3DDevice9> m_pDevice;
 	COMPtr<IDirect3D9> m_pSDK;
 	COMPtr<IDirect3DTexture9> m_pDefaultTexture;
@@ -50,4 +52,5 @@ private:
 	Frustum m_frustum;
 	u32 m_width;
 	u32 m_height;
+	HWND m_hwnd;
 };

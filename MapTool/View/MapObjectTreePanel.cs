@@ -16,6 +16,8 @@ namespace MapTool.View
         public MapObjectTreePanel()
         {
             InitializeComponent();
+            listBox1.Items.Add(Doc.Document.Instance.World.GetHashCode().ToString(), "<world>");
+            
             m_rootNode = treeView1.Nodes.Add(Doc.Document.Instance.World.GetHashCode().ToString(), "world");
             m_rootNode.Tag = Doc.Document.Instance.World;
             Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;
@@ -81,6 +83,11 @@ namespace MapTool.View
         private void DuplicateToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var items = listBox1.SelectedItems;
         }
     }
 }

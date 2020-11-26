@@ -93,13 +93,13 @@ namespace MapTool.View
                 case MouseOperation.Rotating:
                     if (Math.Abs(deltaX) >= 1.0f)
                     {
-                        deltaX /= (float)Size.Width;
+                        deltaX /= (float)Size.Width * 0.01f;
                         newPrevPos.X = nowMousePoint.X;
                         MapToolRender.GraphicsDevice.Instance.CurrentCamera.RotationY(-deltaX);
                     }
                     if (Math.Abs(deltaY) >= 1.0f)
                     {
-                        deltaY /= (float)Size.Height;
+                        deltaY /= (float)Size.Height * 0.01f;
                         newPrevPos.Y = nowMousePoint.Y;
                         MapToolRender.GraphicsDevice.Instance.CurrentCamera.RotationX(-deltaY);
                     }

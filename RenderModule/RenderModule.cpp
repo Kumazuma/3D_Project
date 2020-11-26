@@ -4,8 +4,10 @@
 #include <vector>
 #include "TerrainObject.h"
 #include <d3dx9.h>
+#include <DxErr.h>
 #pragma comment(lib, "windowscodecs.lib")
 #pragma comment(lib, "d3dx9.lib")
+#pragma comment(lib, "DxErr.lib")
 auto RenderModule::Create(HWND hWindow, u32 width, u32 height, RenderModule** pOut) -> HRESULT
 {
 	RenderModule* pObj{ new RenderModule{} };
@@ -30,6 +32,7 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 	{
 		m_width = width;
 		m_height = height;
+		m_hwnd = hWindow;
 		hr = ::CoCreateInstance(
 			CLSID_WICImagingFactory,
 			nullptr,
@@ -50,7 +53,7 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 		hr = m_pSDK->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &DeviceCaps);
 		if (FAILED(hr))
 			throw hr;
-
+		
 		d3dPP.BackBufferWidth = width;
 		d3dPP.BackBufferHeight = height;
 		d3dPP.BackBufferFormat = D3DFMT_A8R8G8B8;
@@ -66,8 +69,8 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 		d3dPP.EnableAutoDepthStencil = true;
 		d3dPP.AutoDepthStencilFormat = D3DFMT_D24S8;
 		d3dPP.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
-		d3dPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
-		
+		d3dPP.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
+		m_d3dpp = d3dPP;
 		hr = m_pSDK->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, (HWND)hWindow, iFlag, &d3dPP,  &m_pDevice);
 		if (FAILED(hr))
 			throw hr;
@@ -170,7 +173,25 @@ auto RenderModule::CreateTexture(wchar_t const* szFilePath, IDirect3DTexture9** 
 	}
 	IDirect3DTexture9* pTexture;
 	HRESULT hr{};
-	hr = D3DXCreateTextureFromFileW(m_pDevice.Get(), szFilePath, &pTexture);
+	D3DXIMAGE_INFO info;
+
+	D3DXGetImageInfoFromFileW(szFilePath, &info);
+	hr = D3DXCreateTextureFromFileExW(
+		m_pDevice.Get(),
+		szFilePath,
+		info.Width,
+		info.Height,
+		info.MipLevels,
+		0,
+		info.Format,
+		D3DPOOL_MANAGED,
+		D3DX_FILTER_LINEAR,
+		D3DX_FILTER_LINEAR,
+		0,
+		&info,
+		nullptr,
+		&pTexture
+	);
 	if (SUCCEEDED(hr))
 	{
 		*pOut = pTexture;
@@ -186,6 +207,7 @@ auto RenderModule::CreateCubeTexture(wchar_t const* szFilePath, IDirect3DCubeTex
 	}
 	IDirect3DCubeTexture9* pTexture;
 	HRESULT hr{};
+	
 	hr = D3DXCreateCubeTextureFromFileW(m_pDevice.Get(), szFilePath, &pTexture);
 	if (SUCCEEDED(hr))
 	{
@@ -233,7 +255,10 @@ auto RenderModule::SetCamera(DirectX::XMFLOAT3 const* pCameraPos, DirectX::XMFLO
 		vPosition + vForward,
 		vUp
 	) };
-	m_pDevice->SetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&mView));
+	HRESULT hr{};
+	D3DMATRIX viewTransform{};
+	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&viewTransform), mView);
+	hr = m_pDevice->SetTransform(D3DTS_VIEW, &viewTransform);
 }
 auto RenderModule::SetProj(float angle, float aspect, float nearZ, float farZ)->void
 {
@@ -242,8 +267,10 @@ auto RenderModule::SetProj(float angle, float aspect, float nearZ, float farZ)->
 		static_cast<float>(GetHeight());
 
 	XMMATRIX mProj{ XMMatrixPerspectiveFovLH(XMConvertToRadians(angle), aspect, nearZ, farZ) };
+	HRESULT hr{};
 
-	m_pDevice->SetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&mProj));
+	hr = m_pDevice->SetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&mProj));
+	assert(SUCCEEDED(hr));
 
 }
 auto RenderModule::SetViewProjMatrix(DirectX::XMFLOAT4X4 const& viewMatrix, DirectX::XMFLOAT4X4 const& projMatrix)->void
@@ -259,7 +286,7 @@ auto RenderModule::CreateSimpleColorTexture(u32 width, u32 height, const DirectX
 		return E_POINTER;
 	}
 	COMPtr<IDirect3DTexture9> pTexture;
-	hr = m_pDevice->CreateTexture(width, height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pTexture, NULL);
+	hr = m_pDevice->CreateTexture(width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, NULL);
 	switch (hr)
 	{
 	case D3DERR_INVALIDCALL:
@@ -332,22 +359,47 @@ auto RenderModule::GetFrustum() const -> Frustum const&
 
 auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 {
+	if (!Renderable())
+	{
+		return;
+	}
+	HRESULT hr{};
 	DirectX::XMMATRIX mView;
 	DirectX::XMMATRIX mProj;
-	m_pDevice->GetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&mView));
-	m_pDevice->GetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&mProj));
+	hr = m_pDevice->GetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&mView));
+	assert(SUCCEEDED(hr));
+	hr = m_pDevice->GetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&mProj));
+	assert(SUCCEEDED(hr));
 
 	m_frustum.MakeFrustum(mView, mProj);
-	m_pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_STENCIL | D3DCLEAR_ZBUFFER, D3DCOLOR_COLORVALUE(r,g,b,a), 1.f, 0);
-	m_pDevice->BeginScene();
+	hr = m_pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_STENCIL | D3DCLEAR_ZBUFFER, D3DCOLOR_COLORVALUE(r,g,b,a), 1.f, 0);
+	assert(SUCCEEDED(hr));
+	hr = m_pDevice->BeginScene();
+	assert(SUCCEEDED(hr));
 }
 
-auto RenderModule::EndRender() -> void
+auto RenderModule::EndRender(HWND hWnd) -> void
 {
+
+
+	HRESULT hr;
+	if (hWnd == nullptr)
+	{
+		hWnd = m_hwnd;
+	}
 	m_pDevice->EndScene();
+	hr = m_pDevice->Present(nullptr, nullptr, hWnd, 0);
+	if (Renderable())
+	{
+	}
 }
 
-auto RenderModule::Present(HWND hWnd) -> void
+auto RenderModule::Renderable() -> bool
 {
-	m_pDevice->Present(nullptr, nullptr, hWnd, 0);
+	HRESULT hr = m_pDevice->TestCooperativeLevel();
+	if (hr == D3DERR_DEVICENOTRESET)
+	{
+		hr = m_pDevice->Reset(&m_d3dpp);
+	}
+	return hr == S_OK;
 }

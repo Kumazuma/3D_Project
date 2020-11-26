@@ -102,7 +102,7 @@ auto SkyBoxObject::Initialize(RenderModule* pRenderModule) -> HRESULT
 			length,
 			0,
 			FVF,
-			D3DPOOL_DEFAULT,
+			D3DPOOL_MANAGED,
 			&m_pVertexBuffer,
 			nullptr
 		);
@@ -111,7 +111,7 @@ auto SkyBoxObject::Initialize(RenderModule* pRenderModule) -> HRESULT
 			INDEX_SIZE * m_indexCount,
 			0,
 			INDEX_TYPE,
-			D3DPOOL_DEFAULT,
+			D3DPOOL_MANAGED,
 			&m_pIndexBuffer,
 			nullptr
 		);

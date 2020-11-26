@@ -32,7 +32,7 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 			length,
 			0,
 			fvf,
-			D3DPOOL_DEFAULT,
+			D3DPOOL_MANAGED,
 			&m_pVertexBuffer,
 			nullptr
 		); 
@@ -69,7 +69,7 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 				INDEX_SIZE * subWidth * subDepth * 2,
 				0,
 				INDEX_TYPE,
-				D3DPOOL_DEFAULT,
+				D3DPOOL_MANAGED,
 				&pIndexBuffer,
 				nullptr
 			);
@@ -329,7 +329,7 @@ auto TerrainObject::ResetTerrain(f32 const newMaxHeight, f32 const newInterval) 
 				length,
 				0,
 				FVF,
-				D3DPOOL_DEFAULT,
+				D3DPOOL_MANAGED,
 				&m_pVertexBuffer,
 				nullptr
 			);

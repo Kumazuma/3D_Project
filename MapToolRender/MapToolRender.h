@@ -20,10 +20,14 @@ namespace MapToolRender {
 	ref class RenderObject;
 	ref class Texture;
 	ref struct Transform;
+	ref class StaticXMeshObj;
 	public ref class GraphicsDevice sealed
 	{
 	public:
 		static auto Initialize(Control^ renderView, unsigned width, unsigned height)->void;
+		static auto GetOpenFilePath(System::Windows::Forms::Control^ owner, System::String^ filter)->System::String^;
+		static auto GetSaveFilePath(System::Windows::Forms::Control^ owner, System::String^ filter)->System::String^;
+
 		static property GraphicsDevice^ Instance
 		{
 			GraphicsDevice^  get()
@@ -37,7 +41,7 @@ namespace MapToolRender {
 		auto ClearRenderGroup()->void;
 		auto Add(RenderGroup groupId, RenderObject^ obj)->void;
 		auto Remove(RenderGroup groupId, RenderObject^ obj)->void;
-		
+		auto CreateStaticMesh()->StaticXMeshObj^;
 		property RenderModule* Handle
 		{
 			auto get()->RenderModule* { return m_pRenderModule; }

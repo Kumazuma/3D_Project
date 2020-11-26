@@ -1,4 +1,5 @@
 #include "pch.h"
+
 #include <d3d9.h>
 #pragma unmanaged
 #pragma warning(push)
@@ -8,11 +9,14 @@
 #pragma managed
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
+#pragma comment(lib, "DxErr.lib")
 #pragma comment(lib, "windowscodecs.lib")
-
+#include "msclr\marshal_cppstd.h"
+using namespace msclr::interop;
 #include "MapToolRender.h"
 #include <RenderModule/RenderModule.h>
 #include "COMPtr.hpp"
+#include "XMeshObj.h"
 using namespace DirectX;
 auto MapToolRender::GraphicsDevice::Initialize(System::Windows::Forms::Control^ renderView, unsigned width, unsigned height) -> void
 {
@@ -20,11 +24,42 @@ auto MapToolRender::GraphicsDevice::Initialize(System::Windows::Forms::Control^ 
 		return;
 	s_instance = gcnew MapToolRender::GraphicsDevice(renderView, width, height);
 }
+auto MapToolRender::GraphicsDevice::GetOpenFilePath(System::Windows::Forms::Control^ owner, System::String^ filter) -> System::String^
+{
+	OPENFILENAMEW ofn{};
+	wchar_t filePath[1024]{};
+	marshal_context ctx;
+	std::wstring szfilter{ ctx.marshal_as<std::wstring>(filter) };
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = nullptr;
+	ofn.hInstance = nullptr;
+	ofn.lpstrFilter = szfilter.c_str();
+	ofn.lpstrFile = filePath;
+	ofn.nMaxFile = 1024;
+	ofn.lpstrInitialDir = nullptr;
+	ofn.Flags = OFN_FILEMUSTEXIST;
+	if (GetOpenFileNameW(&ofn) != 0)
+	{
+		System::String^ res{ ctx.marshal_as<System::String^>(filePath) };
+		return res;
+	}
+	return nullptr;
+	// TODO: 여기에 return 문을 삽입합니다.
+}
+auto MapToolRender::GraphicsDevice::GetSaveFilePath(System::Windows::Forms::Control^ owner, System::String^ filter) -> System::String^
+{
+	// TODO: 여기에 return 문을 삽입합니다.
+	return nullptr;
+}
 auto MapToolRender::GraphicsDevice::Render() -> void
 {
 	System::Threading::Monitor::Enter(this);
 	try
 	{
+		if (!m_pRenderModule->Renderable())
+		{
+			return;
+		}
 		COMPtr<IDirect3DDevice9> pDevice;
 		m_pRenderModule->GetDevice(&pDevice);
 
@@ -61,7 +96,6 @@ auto MapToolRender::GraphicsDevice::Render() -> void
 			}
 		}
 		m_pRenderModule->EndRender();
-		m_pRenderModule->Present();
 	}
 	finally
 	{
@@ -74,7 +108,12 @@ auto MapToolRender::GraphicsDevice::Render(Control^ renderView, RenderObject^ ob
 	System::Threading::Monitor::Enter(this);
 	try
 	{
+		
 		COMPtr<IDirect3DDevice9> pDevice;
+		if (!m_pRenderModule->Renderable())
+		{
+			return;
+		}
 		m_pRenderModule->GetDevice(&pDevice);
 		m_pRenderModule->SetCamera(camera->PositionPtr, camera->RotationPtr);
 		m_pRenderModule->SetProj(45.f, 1.f, 0.1f, 2000.f);
@@ -82,8 +121,7 @@ auto MapToolRender::GraphicsDevice::Render(Control^ renderView, RenderObject^ ob
 
 		m_pRenderModule->BeginRender(0.f, 0.f, 1.f, 1.f);
 		obj->Handle->Render(m_pRenderModule);
-		m_pRenderModule->EndRender();
-		m_pRenderModule->Present((HWND)renderView->Handle.ToPointer());
+		m_pRenderModule->EndRender((HWND)renderView->Handle.ToPointer());
 	}
 	finally
 	{
@@ -113,6 +151,27 @@ auto MapToolRender::GraphicsDevice::Remove(RenderGroup groupId, RenderObject^ ob
 		m_renderObjects[groupId]->Remove(obj);
 	}
 
+}
+auto MapToolRender::GraphicsDevice::CreateStaticMesh() -> StaticXMeshObj^
+{
+
+	wchar_t filePath[1024]{};
+	OPENFILENAME ofn{};
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = nullptr;
+	ofn.hInstance = nullptr;
+	ofn.lpstrFilter = L"X파일\0*.x\0";
+	ofn.lpstrFile = filePath;
+	ofn.nMaxFile = 1024;
+	ofn.lpstrInitialDir = nullptr;
+	ofn.Flags = OFN_FILEMUSTEXIST;
+	if (GetOpenFileNameW(&ofn) != 0)
+	{
+		marshal_context ctx;
+		System::String^ res{ ctx.marshal_as<System::String^>(filePath) };
+		return gcnew StaticXMeshObj(this, res);
+	}
+	return nullptr;
 }
 auto MapToolRender::GraphicsDevice::ApplyViewProjMatrix() -> void
 {

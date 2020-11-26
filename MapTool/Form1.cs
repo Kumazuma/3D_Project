@@ -62,10 +62,7 @@ namespace MapTool
             m_animationJsonEditView.CloseButtonVisible = false;
             m_animationJsonEditView.CloseButton = false;
             m_animationJsonEditView.IsFloat = false;
-            var obj = new MapToolRender.SkinnedXMeshObj(GraphicsDevice.Instance, "./Mesh/DynamicMesh/Player/Player.X");
-            GraphicsDevice.Instance.Add(RenderGroup.NONALPHA, obj);
-            obj.Name = "Skinned X Mesh";
-            Doc.Document.Instance.AddObject(obj);
+
             //GraphicsDevice.Instance.Render();
             m_renderView.Content.Paint += Form1_Paint;
 

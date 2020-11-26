@@ -17,22 +17,24 @@ auto StaticXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring con
     pRenderModule->GetDevice(&pDevice);
     hr = D3DXLoadMeshFromXW(
         filePath.c_str(),
-        0,
+        D3DXMESH_MANAGED,
         pDevice.Get(),
         &m_pAdjacency,
         &m_pSubset,
         nullptr,
         &subsetCount,
-        &m_pOriMesh
+        &m_pMesh
     );
     if (FAILED(hr))
         return hr;
     m_subsetCount = static_cast<u32>(subsetCount);
-    DWORD meshFVF = m_pOriMesh->GetFVF();
-    m_pOriMesh->CloneMeshFVF(m_pOriMesh->GetOptions(), meshFVF | D3DFVF_NORMAL, pDevice.Get(), &m_pMesh);
+    DWORD meshFVF = m_pMesh->GetFVF();
     if (!(meshFVF & D3DFVF_NORMAL))
     {
-        D3DXComputeNormals(m_pMesh.Get(), reinterpret_cast<DWORD const*>(m_pAdjacency->GetBufferPointer()));
+        COMPtr<ID3DXMesh> tmp;
+        m_pMesh->CloneMeshFVF(m_pMesh->GetOptions(), meshFVF | D3DFVF_NORMAL, pDevice.Get(), &tmp);
+        D3DXComputeNormals(tmp.Get(), reinterpret_cast<DWORD const*>(m_pAdjacency->GetBufferPointer()));
+        m_pMesh = tmp;
     }
     meshFVF |= D3DFVF_NORMAL;
     u8 * pVertices{};
@@ -40,7 +42,10 @@ auto StaticXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring con
     m_vertices.reserve(m_vertexCount);
     std::array<D3DVERTEXELEMENT9, MAX_FVF_DECL_SIZE> decls{};
     m_pMesh->GetDeclaration(decls.data());
-    m_pMesh->LockVertexBuffer(0, &reinterpret_cast<void *&>( pVertices) );
+    hr = m_pMesh->LockVertexBuffer(0, &reinterpret_cast<void *&>( pVertices) );
+    assert(SUCCEEDED(hr));
+    if (FAILED(hr))
+        return hr;
     if (pVertices == nullptr)
         return E_FAIL;
     u32 byteOffset{};
@@ -59,7 +64,10 @@ auto StaticXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring con
         m_vertices.push_back(XMFLOAT3A{ pos->x, pos->y, pos->z });
         
     }
-    m_pMesh->UnlockVertexBuffer();
+    hr = m_pMesh->UnlockVertexBuffer();
+    assert(SUCCEEDED(hr));
+    if (FAILED(hr))
+        return hr;
     m_pMaterials = reinterpret_cast<D3DXMATERIAL const*>(m_pSubset->GetBufferPointer());
     m_textures.assign(m_subsetCount, COMPtr<IDirect3DTexture9>{});
 
