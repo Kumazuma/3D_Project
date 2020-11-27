@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TerrainObject.h"
+#include "QuedNode.h"
 #include "RenderModule.h"
 #include "Frustum.h"
 #pragma comment(lib, "d3d9.lib")
@@ -52,7 +53,7 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 	if (FAILED(hr))
 		return hr;
 	//16개의 인덱스 버퍼에 들어가는 삼각형 갯수를 배분해주자.
-
+	//auto quadTree{QuadNode::GenerateQuadTree(pRenderModule, pArray, 0,0, cx, cz, cx, cz, interval, m_maxHeight)};
 	u32 zOffset{};
 	for (u32 row = 0; row < ROW_COUNT; ++row)
 	{

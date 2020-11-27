@@ -57,3 +57,30 @@ auto __vectorcall Frustum::Intersact(DirectX::XMVECTOR pos) const -> bool
 	}
 	return true;
 }
+auto __vectorcall Frustum::Intersact(DirectX::XMVECTOR pos, float radius)const->bool
+{
+	XMMATRIX mSides;
+	for (u32 i = 0; i < 4; ++i)
+	{
+		mSides.r[i] = XMLoadFloat4(m_sidePlanes + i);
+	}
+	mSides = XMMatrixTranspose(mSides);
+	pos = XMVectorSetW(pos, 1.f);
+	XMVECTOR vRes = XMVector4Transform(pos, mSides);
+
+	//각 면과 내적해서 모두 음수가 아니면 절두체 밖에 있다.
+	bool res = XMVector4LessOrEqual(vRes, XMVectorSet(radius, radius, radius, radius));
+	//side[1] dot pos > -radius
+	if (!res)
+	{
+		return false;
+	}
+	XMVECTOR vFarPlane{ XMLoadFloat4(&m_farPlane) };
+	float t{};
+	XMStoreFloat(&t, XMVector4Dot(vFarPlane, pos));
+	if (t < -radius)
+	{
+		return false;
+	}
+	return true;
+}

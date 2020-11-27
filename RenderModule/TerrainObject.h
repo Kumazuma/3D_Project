@@ -6,6 +6,9 @@
 #include<array>
 class DLL_CLASS TerrainObject : public RenderObject
 {
+	class QuadNode;
+	class LeafNode;
+	class BranchNode;
 public:
 	static auto Create(RenderModule* pRenderModule, u32 width, u32 height, f32 interval, f32 terrainMaxHeight, u8 const* pArray, TerrainObject** pObj)->HRESULT;
 	
@@ -27,8 +30,8 @@ private:
 	static constexpr size_t VERTEX_SIZE = sizeof(VERTEX<FVF>);
 	static constexpr D3DFORMAT INDEX_TYPE = D3DFMT_INDEX32;
 	static constexpr size_t INDEX_SIZE = sizeof(Index<INDEX_TYPE>);
-	static constexpr u32 ROW_COUNT = 4;
-	static constexpr u32 COLS_COUNT = 4;
+	static constexpr u32 ROW_COUNT = 8;
+	static constexpr u32 COLS_COUNT = 8;
 	unsigned short m_fvf;
 	u32 m_vertexCount;
 	u32 m_width;

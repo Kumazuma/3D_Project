@@ -72,6 +72,12 @@
     <ClInclude Include="StaticXMeshObject.h">
       <Filter>StaticXMesh</Filter>
     </ClInclude>
+    <ClInclude Include="QuedNode.h">
+      <Filter>Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadTreeLeafNode.h">
+      <Filter>Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -111,6 +117,12 @@
       <Filter>SkyBox</Filter>
     </ClCompile>
     <ClCompile Include="StaticXMeshObject.cpp">
+      <Filter>StaticXMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="QuedNode.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadTreeLeafNode.cpp">
       <Filter>StaticXMesh</Filter>
     </ClCompile>
   </ItemGroup>
