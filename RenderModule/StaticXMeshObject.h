@@ -14,6 +14,7 @@ class DLL_CLASS StaticXMeshObject : public XMeshObject
 	using Entity = StaticXMeshObjectSubset;
 protected:
 	StaticXMeshObject();
+	StaticXMeshObject(StaticXMeshObject const& rhs);
 	auto Initialize(RenderModule* pRenderModule, std::wstring const& filePath)->HRESULT;
 public:
 	static auto Create(RenderModule* pRenderModule, std::wstring const& filePath, StaticXMeshObject** pOut)->HRESULT;
@@ -26,7 +27,7 @@ private:
 	COMPtr<ID3DXMesh> m_pMesh;// 노말 정보를 삽입하여 변환시킨 메쉬 컴객체
 	COMPtr<ID3DXBuffer> m_pAdjacency;
 	COMPtr<ID3DXBuffer> m_pSubset;
-	std::vector<DirectX::XMFLOAT3A> m_vertices;
+	std::shared_ptr< std::vector<DirectX::XMFLOAT3A> >  m_pVertices;
 	std::vector<std::shared_ptr<Entity> > m_entities;
 };
 class StaticXMeshObjectSubset : public RenderEntity
@@ -38,7 +39,6 @@ public:
 	auto IsEnableAlpha()const->bool;
 private:
 	StaticXMeshObject* m_pMeshObject;
-	DirectX::XMFLOAT4X4 m_worldTransform;
 	u32 m_subsetIndex;
 	bool m_enableAlpha;
 };

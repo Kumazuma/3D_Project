@@ -25,7 +25,7 @@ namespace MapTool
         public Form1()
         {
             InitializeComponent();
-            MapToolCore.Environment.Instance.ProjectDirectory = ".";
+            MapToolCore.Environment.Instance.ProjectDirectory =System.IO.Path.GetFullPath(".");
 
             m_renderView = new DockView<View.RenderView>();
             GraphicsDevice.Initialize(m_renderView.Content, 1920, 1080);
@@ -151,7 +151,8 @@ namespace MapTool
                 return;
             }
             var path = fileDialog.FileName;
-            var xmesh = new MapToolRender.StaticXMeshObj(MapToolRender.GraphicsDevice.Instance, path);
+
+            var xmesh = Doc.MeshManager.Instance.GetStaticMesh(path);
             GraphicsDevice.Instance.Add( xmesh);
             xmesh.Name = "XMesh";
             Doc.Document.Instance.AddObject(xmesh);

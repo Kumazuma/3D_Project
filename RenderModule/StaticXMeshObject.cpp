@@ -8,6 +8,23 @@ StaticXMeshObject::StaticXMeshObject()
 {
 
 }
+//COMPtr<ID3DXMesh> m_pMesh;// 노말 정보를 삽입하여 변환시킨 메쉬 컴객체
+//COMPtr<ID3DXBuffer> m_pAdjacency;
+//COMPtr<ID3DXBuffer> m_pSubset;
+//std::vector<DirectX::XMFLOAT3A> m_vertices;
+//std::vector<std::shared_ptr<Entity> > m_entities;
+StaticXMeshObject::StaticXMeshObject(StaticXMeshObject const& rhs):
+    XMeshObject{ rhs },
+    m_pAdjacency{rhs.m_pAdjacency},
+    m_pMesh{rhs.m_pMesh},
+    m_pSubset{rhs.m_pSubset},
+    m_pVertices{rhs.m_pVertices}
+{
+    for (u32 i = 0; i < m_subsetCount; ++i)
+    {
+        m_entities.emplace_back(new Entity{ this, i });
+    }
+}
 
 auto StaticXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring const& filePath) -> HRESULT
 {
@@ -39,7 +56,8 @@ auto StaticXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring con
     meshFVF |= D3DFVF_NORMAL;
     u8 * pVertices{};
     m_vertexCount = m_pMesh->GetNumVertices();
-    m_vertices.reserve(m_vertexCount);
+    m_pVertices.reset(new std::vector < XMFLOAT3A>{});
+    m_pVertices->reserve(m_vertexCount);
     std::array<D3DVERTEXELEMENT9, MAX_FVF_DECL_SIZE> decls{};
     m_pMesh->GetDeclaration(decls.data());
     hr = m_pMesh->LockVertexBuffer(0, &reinterpret_cast<void *&>( pVertices) );
@@ -61,7 +79,7 @@ auto StaticXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring con
         XMFLOAT3 const* pos =
             reinterpret_cast<XMFLOAT3 const*>(pVertices + i * m_stride + byteOffset);
         assert(pos != nullptr);
-        m_vertices.push_back(XMFLOAT3A{ pos->x, pos->y, pos->z });
+        m_pVertices->push_back(XMFLOAT3A{ pos->x, pos->y, pos->z });
         
     }
     hr = m_pMesh->UnlockVertexBuffer();
@@ -70,7 +88,10 @@ auto StaticXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring con
         return hr;
     m_pMaterials = reinterpret_cast<D3DXMATERIAL const*>(m_pSubset->GetBufferPointer());
     m_textures.assign(m_subsetCount, COMPtr<IDirect3DTexture9>{});
-
+    for (u32 i = 0; i < m_subsetCount; ++i)
+    {
+        m_entities.emplace_back(new Entity{ this, i });
+    }
     return S_OK;
 }
 
@@ -121,6 +142,8 @@ StaticXMeshObjectSubset::StaticXMeshObjectSubset(StaticXMeshObject* mesh, u32 id
 {
     m_pMeshObject = mesh;
     m_subsetIndex = idx;
+    m_enableAlpha = false;
+    
 }
 
 auto StaticXMeshObjectSubset::Render(RenderModule* pRenderModule) -> void 
@@ -128,7 +151,7 @@ auto StaticXMeshObjectSubset::Render(RenderModule* pRenderModule) -> void
     COMPtr<IDirect3DTexture9> pTexture;
     COMPtr<IDirect3DDevice9> pDevice;
     pRenderModule->GetDevice(&pDevice);
-    pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_worldTransform));
+    pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_pMeshObject->m_transform));
     pTexture = m_pMeshObject->m_textures[m_subsetIndex];
     if (pTexture == nullptr)
     {
