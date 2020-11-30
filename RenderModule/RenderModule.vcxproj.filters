@@ -25,6 +25,9 @@
     <Filter Include="StaticXMesh">
       <UniqueIdentifier>{9f77d1f1-13fe-4187-ae4b-768018fb16f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WowMapMesh">
+      <UniqueIdentifier>{96f05a3e-7036-44f4-bd82-5d2f18f29976}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -78,6 +81,12 @@
     <ClInclude Include="QuadTreeLeafNode.h">
       <Filter>Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="WowMapMeshObject.h">
+      <Filter>WowMapMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\UnicodeHelper.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -124,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="QuadTreeLeafNode.cpp">
       <Filter>StaticXMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="WowMapMeshObject.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

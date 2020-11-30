@@ -11,7 +11,6 @@ protected:
 public:
 	virtual ~RenderObject() = default;
 	virtual auto PrepareRender(RenderModule* pDevice)->void = 0;
-
 	virtual auto Clone()const->RenderObject* = 0;
 	auto SetTransform(DirectX::XMFLOAT4X4 const& transform)->void;
 	auto GetTransform()const->DirectX::XMFLOAT4X4 const&;
