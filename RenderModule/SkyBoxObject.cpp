@@ -21,62 +21,9 @@ auto SkyBoxObject::Create(RenderModule* pRenderModule, SkyBoxObject** pOut) -> H
 	return hr;
 }
 
-auto SkyBoxObject::Render(RenderModule* pRenderModule) -> void
+auto SkyBoxObject::PrepareRender(RenderModule* pRenderModule) -> void 
 {
-	if (m_pTexture == nullptr)
-	{
-		return;
-	}
-	COMPtr<IDirect3DDevice9> pDevice;
-	pRenderModule->GetDevice(&pDevice);
-	D3DMATRIX viewMatrix;
-	D3DMATRIX projMatrix;
-	D3DMATRIX worldTransfromMaxtrix;
-	XMFLOAT4X4& rWorldTransform{ reinterpret_cast<XMFLOAT4X4&>(worldTransfromMaxtrix) };
-	XMMATRIX mViewSpace{};
-	XMMATRIX mWorldTransfrom{XMMatrixIdentity()};
-	XMMATRIX mProjSpace{};
-	XMVECTOR vFar{ XMVectorSet(0.f, 0.f, 1.f, 0.f)};
-	pDevice->GetTransform(D3DTS_VIEW, &viewMatrix);
-	pDevice->GetTransform(D3DTS_PROJECTION, &projMatrix);
-	
-	mProjSpace = XMLoadFloat4x4(&reinterpret_cast<XMFLOAT4X4&>(projMatrix));
-	mViewSpace = XMLoadFloat4x4(&reinterpret_cast<XMFLOAT4X4&>(viewMatrix));
-	XMMATRIX mCameraTransform;
-	mCameraTransform = XMMatrixInverse(nullptr, mViewSpace);
-	vFar = XMVector3TransformCoord(vFar, XMMatrixInverse(nullptr, mProjSpace));
-	float scaleFactor = XMVectorGetZ(vFar * 0.5f);
-	mWorldTransfrom = XMMatrixScaling(scaleFactor, scaleFactor, scaleFactor);
-	mWorldTransfrom.r[3] = mCameraTransform.r[3];
-	XMStoreFloat4x4(&rWorldTransform, mWorldTransfrom);
-	
-	pDevice->SetTransform(D3DTS_WORLD, &worldTransfromMaxtrix);
-
-	pDevice->SetTexture(0, m_pTexture.Get());
-	// 그래픽 디바이스 장치에게 현재 내가 그리려는 버퍼를 링크시켜주는 함수
-	pDevice->SetStreamSource(0, m_pVertexBuffer.Get(), 0, VERTEX_SIZE);
-	// 1인자 : 몇 번 슬롯에 보관할 것인가
-	// 2인자 : 어떤 것을 넘겨줄 것인가
-	// 3인자 : 어디서부터 그릴 것인가
-	// 4인자 : 어떤 단위로 표현할 것인가
-
-	pDevice->SetFVF(FVF);
-	pDevice->SetIndices(m_pIndexBuffer.Get());
-	//m_pGraphicDev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, m_dwTriCnt);
-	DWORD lighting{};
-	DWORD zWriteEnable{};
-	pDevice->GetRenderState(D3DRS_LIGHTING, &lighting);
-	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &zWriteEnable);
-
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, m_indexCount);
-
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, zWriteEnable);
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	pDevice->SetRenderState(D3DRS_LIGHTING, lighting);
+	pRenderModule->AddRenderEntity(RenderModule::Kind::ENVIRONMENT, m_entity);
 }
 
 auto SkyBoxObject::Clone() const -> RenderObject*
@@ -206,6 +153,7 @@ auto SkyBoxObject::Initialize(RenderModule* pRenderModule) -> HRESULT
 	m_pIndexBuffer->Unlock();
 	m_pVertexBuffer->Unlock();
 	
+	m_entity.reset(new SkyBoxEntity{this});
     return S_OK;
 }
 
@@ -231,4 +179,72 @@ SkyBoxObject::SkyBoxObject(SkyBoxObject const* rhs):
 	m_pIndexBuffer	{ rhs->m_pIndexBuffer },
 	m_pTexture		{rhs->m_pTexture }
 {
+}
+
+SkyBoxEntity::SkyBoxEntity(SkyBoxObject* skyBox):
+	m_pObject{ skyBox }
+{
+}
+
+auto SkyBoxEntity::Render(RenderModule* pRenderModule) -> void 
+{
+	auto pTexture{ m_pObject->m_pTexture };
+	auto pIndexBuffer{ m_pObject->m_pIndexBuffer };
+	auto pVertexBuffer{ m_pObject->m_pVertexBuffer };
+	auto vertexCount{ m_pObject->m_vertexCount };
+	auto triangleCount{ m_pObject->m_indexCount };
+	if (pTexture == nullptr)
+	{
+		return;
+	}
+	COMPtr<IDirect3DDevice9> pDevice;
+	pRenderModule->GetDevice(&pDevice);
+	D3DMATRIX viewMatrix;
+	D3DMATRIX projMatrix;
+	D3DMATRIX worldTransfromMaxtrix;
+	XMFLOAT4X4& rWorldTransform{ reinterpret_cast<XMFLOAT4X4&>(worldTransfromMaxtrix) };
+	XMMATRIX mViewSpace{};
+	XMMATRIX mWorldTransfrom{ XMMatrixIdentity() };
+	XMMATRIX mProjSpace{};
+	XMVECTOR vFar{ XMVectorSet(0.f, 0.f, 1.f, 0.f) };
+	pDevice->GetTransform(D3DTS_VIEW, &viewMatrix);
+	pDevice->GetTransform(D3DTS_PROJECTION, &projMatrix);
+
+	mProjSpace = XMLoadFloat4x4(&reinterpret_cast<XMFLOAT4X4&>(projMatrix));
+	mViewSpace = XMLoadFloat4x4(&reinterpret_cast<XMFLOAT4X4&>(viewMatrix));
+	XMMATRIX mCameraTransform;
+	mCameraTransform = XMMatrixInverse(nullptr, mViewSpace);
+	vFar = XMVector3TransformCoord(vFar, XMMatrixInverse(nullptr, mProjSpace));
+	float scaleFactor = XMVectorGetZ(vFar * 0.5f);
+	mWorldTransfrom = XMMatrixScaling(scaleFactor, scaleFactor, scaleFactor);
+	mWorldTransfrom.r[3] = mCameraTransform.r[3];
+	XMStoreFloat4x4(&rWorldTransform, mWorldTransfrom);
+
+	pDevice->SetTransform(D3DTS_WORLD, &worldTransfromMaxtrix);
+
+	pDevice->SetTexture(0, pTexture.Get());
+	// 그래픽 디바이스 장치에게 현재 내가 그리려는 버퍼를 링크시켜주는 함수
+	pDevice->SetStreamSource(0, pVertexBuffer.Get(), 0, SkyBoxObject::VERTEX_SIZE);
+	// 1인자 : 몇 번 슬롯에 보관할 것인가
+	// 2인자 : 어떤 것을 넘겨줄 것인가
+	// 3인자 : 어디서부터 그릴 것인가
+	// 4인자 : 어떤 단위로 표현할 것인가
+
+	pDevice->SetFVF(SkyBoxObject::FVF);
+	pDevice->SetIndices(pIndexBuffer.Get());
+	//m_pGraphicDev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, m_dwTriCnt);
+	DWORD lighting{};
+	DWORD zWriteEnable{};
+	pDevice->GetRenderState(D3DRS_LIGHTING, &lighting);
+	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &zWriteEnable);
+
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
+	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, vertexCount, 0, triangleCount);
+
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, zWriteEnable);
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	pDevice->SetRenderState(D3DRS_LIGHTING, lighting);
 }

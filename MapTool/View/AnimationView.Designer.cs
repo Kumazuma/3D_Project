@@ -30,21 +30,21 @@ namespace MapTool.View
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.AnimIndex = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.animStringID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnXFileOpen = new System.Windows.Forms.Button();
             this.btnJsonOpen = new System.Windows.Forms.Button();
             this.btnJSONSave = new System.Windows.Forms.Button();
             this.comboAnim = new System.Windows.Forms.ComboBox();
             this.drawPanel = new System.Windows.Forms.Panel();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.AnimIndex = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.animStringID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -66,78 +66,6 @@ namespace MapTool.View
             this.splitContainer1.Size = new System.Drawing.Size(1246, 888);
             this.splitContainer1.SplitterDistance = 266;
             this.splitContainer1.TabIndex = 0;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.84615F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.15385F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
-            this.tableLayoutPanel1.Controls.Add(this.btnXFileOpen, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.btnJsonOpen, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.btnJSONSave, 2, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(258, 44);
-            this.tableLayoutPanel1.TabIndex = 8;
-            // 
-            // btnXFileOpen
-            // 
-            this.btnXFileOpen.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnXFileOpen.Location = new System.Drawing.Point(3, 3);
-            this.btnXFileOpen.Name = "btnXFileOpen";
-            this.btnXFileOpen.Size = new System.Drawing.Size(76, 38);
-            this.btnXFileOpen.TabIndex = 4;
-            this.btnXFileOpen.Text = "X파일 열기";
-            this.btnXFileOpen.UseVisualStyleBackColor = true;
-            this.btnXFileOpen.Click += new System.EventHandler(this.btnXFileOpen_Click_1);
-            // 
-            // btnJsonOpen
-            // 
-            this.btnJsonOpen.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnJsonOpen.Location = new System.Drawing.Point(85, 3);
-            this.btnJsonOpen.Name = "btnJsonOpen";
-            this.btnJsonOpen.Size = new System.Drawing.Size(99, 38);
-            this.btnJsonOpen.TabIndex = 3;
-            this.btnJsonOpen.Text = "JSON파일 열기";
-            this.btnJsonOpen.UseVisualStyleBackColor = true;
-            this.btnJsonOpen.Click += new System.EventHandler(this.btnJsonOpen_Click_1);
-            // 
-            // btnJSONSave
-            // 
-            this.btnJSONSave.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnJSONSave.Location = new System.Drawing.Point(190, 3);
-            this.btnJSONSave.Name = "btnJSONSave";
-            this.btnJSONSave.Size = new System.Drawing.Size(65, 38);
-            this.btnJSONSave.TabIndex = 5;
-            this.btnJSONSave.Text = "JSON 저장";
-            this.btnJSONSave.UseVisualStyleBackColor = true;
-            this.btnJSONSave.Click += new System.EventHandler(this.btnJSONSave_Click_1);
-            // 
-            // comboAnim
-            // 
-            this.comboAnim.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboAnim.FormattingEnabled = true;
-            this.comboAnim.Location = new System.Drawing.Point(3, 53);
-            this.comboAnim.Name = "comboAnim";
-            this.comboAnim.Size = new System.Drawing.Size(258, 20);
-            this.comboAnim.TabIndex = 7;
-            this.comboAnim.SelectedIndexChanged += new System.EventHandler(this.comboAnim_SelectedIndexChanged);
-            // 
-            // drawPanel
-            // 
-            this.drawPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.drawPanel.Location = new System.Drawing.Point(0, 0);
-            this.drawPanel.Name = "drawPanel";
-            this.drawPanel.Size = new System.Drawing.Size(974, 886);
-            this.drawPanel.TabIndex = 6;
-            this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
             // 
             // dataGridView1
             // 
@@ -166,6 +94,78 @@ namespace MapTool.View
             this.animStringID.HeaderText = "ID";
             this.animStringID.Name = "animStringID";
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.84615F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.15385F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 71F));
+            this.tableLayoutPanel1.Controls.Add(this.btnXFileOpen, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnJsonOpen, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnJSONSave, 2, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(258, 44);
+            this.tableLayoutPanel1.TabIndex = 8;
+            // 
+            // btnXFileOpen
+            // 
+            this.btnXFileOpen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnXFileOpen.Location = new System.Drawing.Point(3, 3);
+            this.btnXFileOpen.Name = "btnXFileOpen";
+            this.btnXFileOpen.Size = new System.Drawing.Size(75, 38);
+            this.btnXFileOpen.TabIndex = 4;
+            this.btnXFileOpen.Text = "X파일 열기";
+            this.btnXFileOpen.UseVisualStyleBackColor = true;
+            this.btnXFileOpen.Click += new System.EventHandler(this.btnXFileOpen_Click_1);
+            // 
+            // btnJsonOpen
+            // 
+            this.btnJsonOpen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnJsonOpen.Location = new System.Drawing.Point(84, 3);
+            this.btnJsonOpen.Name = "btnJsonOpen";
+            this.btnJsonOpen.Size = new System.Drawing.Size(99, 38);
+            this.btnJsonOpen.TabIndex = 3;
+            this.btnJsonOpen.Text = "JSON파일 열기";
+            this.btnJsonOpen.UseVisualStyleBackColor = true;
+            this.btnJsonOpen.Click += new System.EventHandler(this.btnJsonOpen_Click_1);
+            // 
+            // btnJSONSave
+            // 
+            this.btnJSONSave.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnJSONSave.Location = new System.Drawing.Point(189, 3);
+            this.btnJSONSave.Name = "btnJSONSave";
+            this.btnJSONSave.Size = new System.Drawing.Size(66, 38);
+            this.btnJSONSave.TabIndex = 5;
+            this.btnJSONSave.Text = "JSON 저장";
+            this.btnJSONSave.UseVisualStyleBackColor = true;
+            this.btnJSONSave.Click += new System.EventHandler(this.btnJSONSave_Click_1);
+            // 
+            // comboAnim
+            // 
+            this.comboAnim.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboAnim.FormattingEnabled = true;
+            this.comboAnim.Location = new System.Drawing.Point(3, 53);
+            this.comboAnim.Name = "comboAnim";
+            this.comboAnim.Size = new System.Drawing.Size(258, 20);
+            this.comboAnim.TabIndex = 7;
+            this.comboAnim.SelectedIndexChanged += new System.EventHandler(this.comboAnim_SelectedIndexChanged);
+            // 
+            // drawPanel
+            // 
+            this.drawPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.drawPanel.Location = new System.Drawing.Point(0, 0);
+            this.drawPanel.Name = "drawPanel";
+            this.drawPanel.Size = new System.Drawing.Size(974, 886);
+            this.drawPanel.TabIndex = 6;
+            this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
+            // 
             // AnimationView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -174,12 +174,13 @@ namespace MapTool.View
             this.Name = "AnimationView";
             this.Size = new System.Drawing.Size(1246, 888);
             this.Enter += new System.EventHandler(this.AnimationView_Enter);
+            this.Leave += new System.EventHandler(this.AnimationView_Leave);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

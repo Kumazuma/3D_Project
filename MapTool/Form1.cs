@@ -30,7 +30,7 @@ namespace MapTool
             m_renderView = new DockView<View.RenderView>();
             GraphicsDevice.Initialize(m_renderView.Content, 1920, 1080);
             SkyBox skyBox = new SkyBox(GraphicsDevice.Instance);
-            GraphicsDevice.Instance.Add(RenderGroup.PRIORITY, skyBox);
+            GraphicsDevice.Instance.Add( skyBox);
 
             Doc.Document.Instance.World = skyBox;
             Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;
@@ -133,7 +133,7 @@ namespace MapTool
                             dialog.Interval,
                             dialog.MaxHeight
                         );
-                    GraphicsDevice.Instance.Add(RenderGroup.NONALPHA, terrain);
+                    GraphicsDevice.Instance.Add( terrain);
                     terrain.Name = "Terrain";
                     Doc.Document.Instance.AddObject(terrain);
                     //m_mapObjTreePanel.Content.
@@ -152,7 +152,7 @@ namespace MapTool
             }
             var path = fileDialog.FileName;
             var xmesh = new MapToolRender.StaticXMeshObj(MapToolRender.GraphicsDevice.Instance, path);
-            GraphicsDevice.Instance.Add(RenderGroup.NONALPHA, xmesh);
+            GraphicsDevice.Instance.Add( xmesh);
             xmesh.Name = "XMesh";
             Doc.Document.Instance.AddObject(xmesh);
         }

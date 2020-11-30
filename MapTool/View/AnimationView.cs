@@ -19,6 +19,7 @@ namespace MapTool.View
         Timer m_timer;
         Stopwatch stopWatch = new Stopwatch();
         TimeSpan lastTimeSpan;
+        bool m_playing;
         public AnimationView()
         {
             InitializeComponent();
@@ -33,13 +34,14 @@ namespace MapTool.View
             stopWatch.Start();
             lastTimeSpan = stopWatch.Elapsed;
             m_timer.Start();
+            m_playing = true;
         }
         private void OnTimerTick(object sender, EventArgs e)
         {
             var timeSpan = stopWatch.Elapsed;
             var delta = timeSpan - lastTimeSpan;
             lastTimeSpan = timeSpan;
-            if (animMeshObj != null)
+            if (animMeshObj != null && m_playing)
             {
                 animMeshObj.Update((int)(delta.TotalSeconds * 1000));
                 MapToolRender.GraphicsDevice.Instance.Render(drawPanel, animMeshObj, camera);
@@ -86,7 +88,7 @@ namespace MapTool.View
 
         private void AnimMeshObj_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (animMeshObj != null)
+            if (animMeshObj != null && m_playing)
             {
                 MapToolRender.GraphicsDevice.Instance.Render(drawPanel, animMeshObj, camera);
             }
@@ -128,6 +130,12 @@ namespace MapTool.View
             {
                 Doc.Document.Instance.SelectedObject = animMeshObj;
             }
+            m_playing = true;
+        }
+
+        private void AnimationView_Leave(object sender, EventArgs e)
+        {
+            m_playing = false;
         }
     }
 }

@@ -30,7 +30,6 @@ namespace MapTool.View
                     mapObj = sender as MapToolRender.MapObject;
                     idx = listBox1.Items.Add(mapObj);
                     indexTable.Add(mapObj, idx);
-                    
                     mapObj.PropertyChanged += MapObj_PropertyChanged;
                     break;
                 case "SelectedObject":
@@ -74,12 +73,29 @@ namespace MapTool.View
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            
         }
 
         private void DuplicateToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var items = listBox1.SelectedItems;
+            if (items.Count <= 0)
+            {
+                return;
+            }
 
+            var objArray = new MapToolRender.MapObject[items.Count];
+            items.CopyTo(objArray, 0);
+            foreach (var obj in objArray)
+            {
+                var o = obj as MapToolRender.RenderObject;
+                if (o == null) continue;
+                var newObj = o.Clone();
+                if (newObj == null) continue;
+                Doc.Document.Instance.AddObject(newObj);
+                MapToolRender.GraphicsDevice.Instance.Add( newObj);
+
+            }
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -88,6 +104,31 @@ namespace MapTool.View
             if(items.Count == 1)
             {
                 Doc.Document.Instance.SelectedObject = items[0];
+            }
+            else if(items.Count > 0)
+            {
+                //TODO:복수개의 이동 방법을 구현해야 한다.
+            }
+        }
+
+        private void listBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            
+        }
+
+        private void listBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            var selectedItems = listBox1.SelectedItems;
+            if (selectedItems.Count <= 0) return;
+            if (e.Button == MouseButtons.Right)
+            {
+                var pt = PointToScreen(new Point(e.X, e.Y));
+                contextMenuStrip1.Show(pt);
             }
         }
     }

@@ -87,6 +87,14 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 	}
 }
 
+auto RenderModule::ClearEntityTable() -> void
+{
+	for (auto& it : m_renderEntities)
+	{
+		it.second.clear();
+	}
+}
+
 auto RenderModule::GetDevice(IDirect3DDevice9** pOut) -> HRESULT
 {
 	try
@@ -357,6 +365,39 @@ auto RenderModule::GetFrustum() const -> Frustum const&
 	return m_frustum;
 }
 
+auto RenderModule::Render(float r, float g, float b, float a, HWND hWnd) -> void
+{
+	if (!Renderable())
+	{
+		ClearEntityTable();
+		return;
+	}
+	BeginRender(r, g, b, a);
+	for (auto& it : m_renderEntities[Kind::ENVIRONMENT])
+	{
+		it->Render(this);
+	}
+	for (auto& it : m_renderEntities[Kind::NONALPHA])
+	{
+		it->Render(this);
+	}
+	for (auto& it : m_renderEntities[Kind::ALPHA])
+	{
+		it->Render(this);
+	}
+	for (auto& it : m_renderEntities[Kind::UI])
+	{
+		it->Render(this);
+	}
+	ClearEntityTable();
+	EndRender(hWnd);
+}
+
+auto RenderModule::AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity> const& entity) -> void
+{
+	m_renderEntities[kind].push_back(entity);
+}
+
 auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 {
 	if (!Renderable())
@@ -389,9 +430,7 @@ auto RenderModule::EndRender(HWND hWnd) -> void
 	}
 	m_pDevice->EndScene();
 	hr = m_pDevice->Present(nullptr, nullptr, hWnd, 0);
-	if (Renderable())
-	{
-	}
+
 }
 
 auto RenderModule::Renderable() -> bool

@@ -29,7 +29,8 @@ auto MapToolRender::TerrainObject::Clone() -> RenderObject^
 }
 
 MapToolRender::TerrainObject::TerrainObject(TerrainObject ^ const& rhs):
-	RenderObject{ rhs }
+	RenderObject{ rhs },
+	m_texture{rhs->m_texture}
 {
 	
 }

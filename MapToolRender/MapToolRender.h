@@ -39,9 +39,8 @@ namespace MapToolRender {
 		auto Render()->void;
 		auto Render(Control^ renderView, RenderObject^ obj, Camera^ camera)->void;
 		auto ClearRenderGroup()->void;
-		auto Add(RenderGroup groupId, RenderObject^ obj)->void;
-		auto Remove(RenderGroup groupId, RenderObject^ obj)->void;
-		auto CreateStaticMesh()->StaticXMeshObj^;
+		auto Add(RenderObject^ obj)->void;
+		auto Remove(RenderObject^ obj)->void;
 		property RenderModule* Handle
 		{
 			auto get()->RenderModule* { return m_pRenderModule; }
@@ -59,7 +58,7 @@ namespace MapToolRender {
 		GraphicsDevice(Control^ renderView, unsigned width, unsigned height);
 	private:
 		Camera^ m_currentCamera;
-		Dictionary<RenderGroup, HashSet<RenderObject^>^ > m_renderObjects;
+		HashSet<RenderObject^> m_renderObjects;
 		RenderModule* m_pRenderModule;
 	};
 	public ref class MapObject abstract : public INotifyPropertyChanged
@@ -134,9 +133,4 @@ namespace MapToolRender {
 		TerrainObject(TerrainObject ^ const& rhs);
 		Texture^ m_texture;
 	};
-}
-namespace MapTool {
-	namespace Render {
-		using namespace MapToolRender;
-	}
 }

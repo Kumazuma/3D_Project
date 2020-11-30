@@ -69,7 +69,10 @@ namespace MapTool.View
             this.listBox1.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.listBox1.Size = new System.Drawing.Size(150, 150);
             this.listBox1.TabIndex = 1;
+            this.listBox1.Click += new System.EventHandler(this.listBox1_Click);
+            this.listBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseClick);
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.listBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseDown);
             // 
             // MapObjectTreePanel
             // 

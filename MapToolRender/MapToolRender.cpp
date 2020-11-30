@@ -65,37 +65,15 @@ auto MapToolRender::GraphicsDevice::Render() -> void
 
 		ApplyViewProjMatrix();
 		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-		m_pRenderModule->BeginRender(0.f, 0.f, 1.f, 1.f);
-
-		auto list = m_renderObjects[RenderGroup::PRIORITY];
-		for each (auto obj in list)
+		for each (auto obj in m_renderObjects)
 		{
 			auto* handle{ obj->Handle };
 			if (handle != nullptr)
 			{
-				handle->Render(m_pRenderModule);
+				handle->PrepareRender(m_pRenderModule);
 			}
 		}
-		list = m_renderObjects[RenderGroup::NONALPHA];
-		for each (auto obj in list)
-		{
-			auto* handle{ obj->Handle };
-			if (handle != nullptr)
-			{
-				handle->Render(m_pRenderModule);
-			}
-		}
-		list = m_renderObjects[RenderGroup::ALPHA];
-		for each (auto obj in list)
-		{
-			auto* handle{ obj->Handle };
-			if (handle != nullptr)
-			{
-				handle->Render(m_pRenderModule);
-			}
-		}
-		m_pRenderModule->EndRender();
+		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f);
 	}
 	finally
 	{
@@ -118,10 +96,8 @@ auto MapToolRender::GraphicsDevice::Render(Control^ renderView, RenderObject^ ob
 		m_pRenderModule->SetCamera(camera->PositionPtr, camera->RotationPtr);
 		m_pRenderModule->SetProj(45.f, 1.f, 0.1f, 2000.f);
 		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-		m_pRenderModule->BeginRender(0.f, 0.f, 1.f, 1.f);
-		obj->Handle->Render(m_pRenderModule);
-		m_pRenderModule->EndRender((HWND)renderView->Handle.ToPointer());
+		obj->Handle->PrepareRender(m_pRenderModule);
+		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f, (HWND)renderView->Handle.ToPointer());
 	}
 	finally
 	{
@@ -135,43 +111,16 @@ auto MapToolRender::GraphicsDevice::ClearRenderGroup() -> void
 	m_renderObjects.Clear();
 }
 
-auto MapToolRender::GraphicsDevice::Add(RenderGroup groupId, RenderObject^ obj) -> void
+auto MapToolRender::GraphicsDevice::Add( RenderObject^ obj) -> void
 {
-	if (!m_renderObjects.ContainsKey(groupId))
-	{
-		m_renderObjects.Add(groupId, gcnew HashSet<RenderObject^>());
-	}
-	m_renderObjects[groupId]->Add(obj);
-}
-
-auto MapToolRender::GraphicsDevice::Remove(RenderGroup groupId, RenderObject^ obj) -> void
-{
-	if (m_renderObjects.ContainsKey(groupId))
-	{
-		m_renderObjects[groupId]->Remove(obj);
-	}
+	m_renderObjects.Add(obj);
 
 }
-auto MapToolRender::GraphicsDevice::CreateStaticMesh() -> StaticXMeshObj^
-{
 
-	wchar_t filePath[1024]{};
-	OPENFILENAME ofn{};
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = nullptr;
-	ofn.hInstance = nullptr;
-	ofn.lpstrFilter = L"XÆÄÀÏ\0*.x\0";
-	ofn.lpstrFile = filePath;
-	ofn.nMaxFile = 1024;
-	ofn.lpstrInitialDir = nullptr;
-	ofn.Flags = OFN_FILEMUSTEXIST;
-	if (GetOpenFileNameW(&ofn) != 0)
-	{
-		marshal_context ctx;
-		System::String^ res{ ctx.marshal_as<System::String^>(filePath) };
-		return gcnew StaticXMeshObj(this, res);
-	}
-	return nullptr;
+auto MapToolRender::GraphicsDevice::Remove( RenderObject^ obj) -> void
+{
+	m_renderObjects.Remove(obj);
+
 }
 auto MapToolRender::GraphicsDevice::ApplyViewProjMatrix() -> void
 {
@@ -202,13 +151,6 @@ MapToolRender::GraphicsDevice::GraphicsDevice(Control^ renderView, unsigned widt
 	rotation->X = DirectX::XMConvertToRadians(10.f);
 	m_currentCamera->Position = position;
 	m_currentCamera->Rotation = rotation;
-	
-	auto enums = Enum::GetValues(RenderGroup::typeid);
-	for each (auto it in enums)
-	{
-		auto key = static_cast<RenderGroup>(it);
-		m_renderObjects.Add(key, gcnew HashSet<RenderObject^>{});
-	}
 }
 
 auto MapToolRender::MapObject::ToString() -> System::String^

@@ -89,22 +89,18 @@ auto StaticXMeshObject::Create(RenderModule* pRenderModule, std::wstring const& 
     return hr;
 }
 
-auto StaticXMeshObject::Render(RenderModule* pRenderModule) -> void
+auto StaticXMeshObject::PrepareRender(RenderModule* pRenderModule) -> void
 { 
-    COMPtr<IDirect3DTexture9> pTexture;
-    COMPtr<IDirect3DDevice9> pDevice;
-    pRenderModule->GetDevice(&pDevice);
-    pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_transform));
-
-    for (u32 i = 0; i < m_subsetCount; ++i)
+    for (auto it : m_entities)
     {
-        pTexture = m_textures[i];
-        if (pTexture == nullptr)
+        if (it->IsEnableAlpha())
         {
-            pRenderModule->GetDefaultTexture(&pTexture);
+            pRenderModule->AddRenderEntity(RenderModule::Kind::ALPHA, it);
         }
-        pDevice->SetTexture(0, pTexture.Get());
-        m_pMesh->DrawSubset(i);
+        else
+        {
+            pRenderModule->AddRenderEntity(RenderModule::Kind::NONALPHA, it);
+        }
     }
 }
 
@@ -112,7 +108,42 @@ auto StaticXMeshObject::Clone() const -> RenderObject*
 {
     return new StaticXMeshObject{ *this };
 }
+auto StaticXMeshObject::SetEnableSubsetAlpha(u32 idx, bool enable) -> void
+{
+    m_entities[idx]->EnableAlpha(enable);
+}
 auto StaticXMeshObject::GetMaterialCount() const -> u32
 {
     return this->m_subsetCount;
+}
+
+StaticXMeshObjectSubset::StaticXMeshObjectSubset(StaticXMeshObject* mesh, u32 idx)
+{
+    m_pMeshObject = mesh;
+    m_subsetIndex = idx;
+}
+
+auto StaticXMeshObjectSubset::Render(RenderModule* pRenderModule) -> void 
+{
+    COMPtr<IDirect3DTexture9> pTexture;
+    COMPtr<IDirect3DDevice9> pDevice;
+    pRenderModule->GetDevice(&pDevice);
+    pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_worldTransform));
+    pTexture = m_pMeshObject->m_textures[m_subsetIndex];
+    if (pTexture == nullptr)
+    {
+        pRenderModule->GetDefaultTexture(&pTexture);
+    }
+    pDevice->SetTexture(0, pTexture.Get());
+    m_pMeshObject->m_pMesh->DrawSubset(m_subsetIndex);
+}
+
+auto StaticXMeshObjectSubset::EnableAlpha(bool enabled) -> void
+{
+    m_enableAlpha = enabled;
+}
+
+auto StaticXMeshObjectSubset::IsEnableAlpha() const -> bool 
+{
+    return m_enableAlpha;
 }

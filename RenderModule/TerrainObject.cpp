@@ -3,6 +3,7 @@
 #include "QuedNode.h"
 #include "RenderModule.h"
 #include "Frustum.h"
+#include "StaticXMeshObject.h"
 #pragma comment(lib, "d3d9.lib")
 #undef max
 #undef min
@@ -178,7 +179,7 @@ auto TerrainObject::Initialize(RenderModule* pRenderModule, u32 const width, u32
 
 	m_pVertexBuffer->Unlock();
 	GenerateSubMeshBoundingBox();
-	
+	m_entity.reset(new Entity{ this });
     return S_OK;
 }
 TerrainObject::TerrainObject():
@@ -186,7 +187,8 @@ TerrainObject::TerrainObject():
     m_triangleCounts{},
     m_vertexCount{},
 	m_interval{ },
-	m_copied{ false }
+	m_copied{ false },
+	m_entity{ new Entity{ this } }
 {
 
 }
@@ -206,71 +208,14 @@ TerrainObject::TerrainObject(TerrainObject const* rhs):
 	m_depth{ rhs->m_depth },
 	m_maxHeight{ rhs->m_maxHeight },
 	m_subsetBoundingBoxes{rhs->m_subsetBoundingBoxes},
-	m_copied{true}
+	m_copied{true},
+	m_entity{ new Entity{ this } }
 {
 }
 
-auto TerrainObject::Render(RenderModule* pRenderModule) -> void
+auto TerrainObject::PrepareRender(RenderModule* pRenderModule) -> void
 {
-	COMPtr<IDirect3DDevice9> pDevice{};
-	XMMATRIX mTransform{ XMLoadFloat4x4(&m_transform) };
-	std::array<XMFLOAT3A, 8> subsetBoundingBoxes{  };
-
-	pRenderModule->GetDevice(&pDevice);
-	if (m_pTexture == nullptr)
-	{
-		COMPtr<IDirect3DTexture9> pDefaultTexture;
-		pRenderModule->GetDefaultTexture(&pDefaultTexture);
-		pDevice->SetTexture(0, pDefaultTexture.Get());
-	}
-	else
-	{
-		pDevice->SetTexture(0, m_pTexture.Get());
-	}
-	pDevice->SetFVF(FVF);
-	pDevice->SetTransform(D3DTS_WORLD,&reinterpret_cast<D3DMATRIX&>(m_transform));
-	pDevice->SetStreamSource(0, m_pVertexBuffer.Get(), 0, VERTEX_SIZE);
-	u32 zOffset{};
-	auto& rFrustum{ pRenderModule->GetFrustum() };
-	for (u32 row = 0; row < ROW_COUNT; ++row)
-	{
-		u32 xOffset{};
-		u32 zCount{};
-		u32 xCount{};
-		for (u32 cols = 0; cols < COLS_COUNT; ++cols)
-		{
-			u32 const i = row * COLS_COUNT + cols;
-			zCount = static_cast<u32>(m_triangleCounts[i].cy);
-			xCount = static_cast<u32>(m_triangleCounts[i].cx);
-			bool intersacted{false};
-			XMVector3TransformCoordStream(
-				subsetBoundingBoxes.data(),
-				sizeof(XMFLOAT3A),
-				m_subsetBoundingBoxes[i].data(),
-				sizeof(XMFLOAT3A),
-				m_subsetBoundingBoxes[i].size(),
-				mTransform
-			);
-
-			for (auto& point : subsetBoundingBoxes)
-			{
-				if (rFrustum.Intersact(XMLoadFloat3A(&point)))
-				{
-					intersacted = true;
-					break;
-				}
-			}
-			if (intersacted)
-			{
-				LONG triangleCount{ m_triangleCounts[i].cx * m_triangleCounts[i].cy * 2 };
-				pDevice->SetIndices(m_pIndexBufferes[i].Get());
-				pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, triangleCount);
-			}
-			xOffset += static_cast<u32>(m_triangleCounts[i].cx);
-		}
-		zOffset += zCount;
-	}
-
+	pRenderModule->AddRenderEntity(RenderModule::Kind::NONALPHA, std::static_pointer_cast<RenderEntity>(m_entity));
 }
 
 auto TerrainObject::Clone() const -> RenderObject*
@@ -334,6 +279,7 @@ auto TerrainObject::ResetTerrain(f32 const newMaxHeight, f32 const newInterval) 
 				&m_pVertexBuffer,
 				nullptr
 			);
+		assert(SUCCEEDED(hr));
 		m_copied = false;
 	}
 
@@ -461,4 +407,73 @@ auto TerrainObject::GenerateSubMeshBoundingBox() -> void
 auto TerrainObject::GetMaxHeight()const->f32
 {
 	return m_maxHeight;
+}
+
+TerrainObject::Entity::Entity(TerrainObject* m_pTerrain):
+	m_pTerrain{m_pTerrain}
+{
+}
+
+
+
+auto TerrainObject::Entity::Render(RenderModule* pRenderModule) -> void
+{
+	COMPtr<IDirect3DDevice9> pDevice{};
+	XMMATRIX mTransform{ XMLoadFloat4x4(&this->m_pTerrain->m_transform) };
+	std::array<XMFLOAT3A, 8> subsetBoundingBoxes{  };
+
+	pRenderModule->GetDevice(&pDevice);
+	if (this->m_pTerrain->m_pTexture == nullptr)
+	{
+		COMPtr<IDirect3DTexture9> pDefaultTexture;
+		pRenderModule->GetDefaultTexture(&pDefaultTexture);
+		pDevice->SetTexture(0, pDefaultTexture.Get());
+	}
+	else
+	{
+		pDevice->SetTexture(0, m_pTerrain->m_pTexture.Get());
+	}
+	pDevice->SetFVF(FVF);
+	pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_pTerrain->m_transform));
+	pDevice->SetStreamSource(0, m_pTerrain->m_pVertexBuffer.Get(), 0, VERTEX_SIZE);
+	u32 zOffset{};
+	auto& rFrustum{ pRenderModule->GetFrustum() };
+	for (u32 row = 0; row < ROW_COUNT; ++row)
+	{
+		u32 xOffset{};
+		u32 zCount{};
+		u32 xCount{};
+		for (u32 cols = 0; cols < COLS_COUNT; ++cols)
+		{
+			u32 const i = row * COLS_COUNT + cols;
+			zCount = static_cast<u32>(m_pTerrain->m_triangleCounts[i].cy);
+			xCount = static_cast<u32>(m_pTerrain->m_triangleCounts[i].cx);
+			bool intersacted{ false };
+			XMVector3TransformCoordStream(
+				subsetBoundingBoxes.data(),
+				sizeof(XMFLOAT3A),
+				m_pTerrain->m_subsetBoundingBoxes[i].data(),
+				sizeof(XMFLOAT3A),
+				m_pTerrain->m_subsetBoundingBoxes[i].size(),
+				mTransform
+			);
+
+			for (auto& point : subsetBoundingBoxes)
+			{
+				if (rFrustum.Intersact(XMLoadFloat3A(&point)))
+				{
+					intersacted = true;
+					break;
+				}
+			}
+			if (intersacted)
+			{
+				LONG triangleCount{ m_pTerrain->m_triangleCounts[i].cx * m_pTerrain->m_triangleCounts[i].cy * 2 };
+				pDevice->SetIndices(m_pTerrain->m_pIndexBufferes[i].Get());
+				pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_pTerrain->m_vertexCount, 0, triangleCount);
+			}
+			xOffset += static_cast<u32>(m_pTerrain->m_triangleCounts[i].cx);
+		}
+		zOffset += zCount;
+	}
 }

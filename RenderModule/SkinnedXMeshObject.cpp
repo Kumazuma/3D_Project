@@ -28,6 +28,12 @@ auto SkinnedXMeshObject::Create(RenderModule* pRenderModule, std::wstring const&
     return hr;
 }
 
+auto SkinnedXMeshObject::PrepareRender(RenderModule* pRenderModule) -> void
+{
+    pRenderModule->AddRenderEntity(RenderModule::Kind::NONALPHA, m_entity);
+
+}
+
 auto SkinnedXMeshObject::Render(RenderModule* pRenderModule) -> void
 {
     COMPtr<IDirect3DDevice9> pDevice;
@@ -122,7 +128,8 @@ auto SkinnedXMeshObject::GetAnimationCount()const -> u32
 }
 
 SkinnedXMeshObject::SkinnedXMeshObject():
-    m_pRootFrame{}
+    m_pRootFrame{},
+    m_entity{ new SkinnedMeshEntity{this} }
 {
 
 }
@@ -131,7 +138,8 @@ SkinnedXMeshObject::SkinnedXMeshObject(SkinnedXMeshObject const* rhs):
     m_pAnimCtrler{ rhs->m_pAnimCtrler->Clone() },
     m_pHierarchyLoader{rhs->m_pHierarchyLoader},
     m_meshContainters{rhs->m_meshContainters},
-    m_pRootFrame{rhs->m_pRootFrame}
+    m_pRootFrame{rhs->m_pRootFrame},
+    m_entity{new SkinnedMeshEntity{this}}
 {
     //TODO: 깊은 복사를 해야한다. HOWTO?
 }
@@ -238,4 +246,14 @@ auto SkinnedXMeshObject::UpdateFrameMatrices(Frame* const pFrame, DirectX::XMFLO
     {
         UpdateFrameMatrices(static_cast<Frame*>(pFrame->pFrameFirstChild), *pFrame->combinedTransformationMatrix);
     }
+}
+
+SkinnedMeshEntity::SkinnedMeshEntity(SkinnedXMeshObject* pObj) :
+    m_pObj{pObj}
+{
+}
+
+auto SkinnedMeshEntity::Render(RenderModule* pRenderModule) -> void
+{
+    m_pObj->Render(pRenderModule);
 }

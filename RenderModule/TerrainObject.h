@@ -1,4 +1,5 @@
 #pragma once
+#include"RenderModule.h"
 #include"RenderObject.h"
 #include"COMPtr.hpp"
 #include<vector>
@@ -9,16 +10,25 @@ class DLL_CLASS TerrainObject : public RenderObject
 	class QuadNode;
 	class LeafNode;
 	class BranchNode;
+	class Entity : public RenderEntity
+	{
+	public:
+		Entity(TerrainObject* m_pTerrain);
+		auto Render(RenderModule* pRenderModule)->void override;
+	private:
+		TerrainObject* m_pTerrain;
+	};
 public:
 	static auto Create(RenderModule* pRenderModule, u32 width, u32 height, f32 interval, f32 terrainMaxHeight, u8 const* pArray, TerrainObject** pObj)->HRESULT;
 	
-	auto Render(RenderModule* pRenderModule)->void override;
+	auto PrepareRender(RenderModule* pRenderModule)->void override;
 	auto Clone()const->RenderObject*;
 	auto SetDiffuseTexture(IDirect3DTexture9* pTexture)->void;
 	auto SetInterval(f32 value)->void;
 	auto GetInterval()const->f32;
 	auto SetMaxHeight(f32 value)->void;
 	auto GetMaxHeight()const->f32;
+
 protected:
 	auto ResetTerrain(f32 newMaxHeight, f32 newInterval)->void;
 	auto GenerateSubMeshBoundingBox()->void;
@@ -46,6 +56,7 @@ private:
 	std::array<std::array<DirectX::XMFLOAT3A, 8>, ROW_COUNT* COLS_COUNT> m_subsetBoundingBoxes;
 	
 	COMPtr<IDirect3DTexture9>  m_pTexture;
+	std::shared_ptr<Entity> m_entity;
 	std::shared_ptr< std::vector<DirectX::XMFLOAT3A>> m_pVertexPositions;
 	//Copied플래그, Copy on write를 구현하기 위한 변수
 	bool m_copied;
