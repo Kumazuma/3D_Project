@@ -135,7 +135,7 @@
       <Filter>StaticXMesh</Filter>
     </ClCompile>
     <ClCompile Include="WowMapMeshObject.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>WowMapMesh</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

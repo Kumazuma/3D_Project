@@ -69,7 +69,7 @@ auto __vectorcall Frustum::Intersact(DirectX::XMVECTOR pos, float radius)const->
 	XMVECTOR vRes = XMVector4Transform(pos, mSides);
 
 	//각 면과 내적해서 모두 음수가 아니면 절두체 밖에 있다.
-	bool res = XMVector4LessOrEqual(vRes, XMVectorSet(radius, radius, radius, radius));
+	bool res = XMVector4LessOrEqual(vRes, XMVectorSet(radius, radius,  radius, radius));
 	//side[1] dot pos > -radius
 	if (!res)
 	{

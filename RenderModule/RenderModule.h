@@ -37,7 +37,7 @@ public:
 	auto CreateSimpleColorTexture(u32 width, u32 height, const DirectX::XMFLOAT4& color, IDirect3DTexture9** pOut)->HRESULT;
 	auto GetSimpleColorTexture(DefaultColorTexture kind, IDirect3DTexture9** pOut)->HRESULT;
 	auto GetFrustum()const->Frustum const&;
-	
+	auto PrepareFrustum()->void;
 	auto Render(float r, float g, float b, float a, HWND hWnd = nullptr)->void;
 	auto AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity>const& entity)->void;
 	auto BeginRender(float r, float g, float b, float a)->void;

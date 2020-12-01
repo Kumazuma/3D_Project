@@ -73,7 +73,21 @@ namespace MapTool.View
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            if (listBox1.SelectedItems.Count <= 0)
+            {
+                return;
+            }
+            var items = new MapToolRender.MapObject[listBox1.SelectedItems.Count];
+            listBox1.SelectedItems.CopyTo(items, 0);
+            foreach(var item in items)
+            {
+                if(Doc.Document.Instance.MapObjects.Contains(item))
+                {
+                    Doc.Document.Instance.MapObjects.Remove(item);
+                    listBox1.Items.Remove(item);
+                    MapToolRender.GraphicsDevice.Instance.Remove(item as MapToolRender.RenderObject);
+                }
+            }
         }
 
         private void DuplicateToolStripMenuItem_Click(object sender, EventArgs e)

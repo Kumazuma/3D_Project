@@ -16,6 +16,9 @@
     <Filter Include="skinnedxmesh">
       <UniqueIdentifier>{fcb1042b-7e7b-4c13-a4e2-efc1639e9d59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WowMapMesh">
+      <UniqueIdentifier>{3326ee25-95b3-40ea-ba41-b205b2c935f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapToolRender.h">
@@ -50,6 +53,9 @@
     </ClInclude>
     <ClInclude Include="SkinnedXMeshObj.h">
       <Filter>skinnedxmesh</Filter>
+    </ClInclude>
+    <ClInclude Include="WowMapMesh.h">
+      <Filter>WowMapMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="SkinnedXMeshObj.cpp">
       <Filter>skinnedxmesh</Filter>
+    </ClCompile>
+    <ClCompile Include="WowMapMesh.cpp">
+      <Filter>WowMapMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

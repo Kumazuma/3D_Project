@@ -143,7 +143,6 @@ namespace MapTool
 
         private void StaticXMeshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO:
             var fileDialog = new OpenFileDialog();
             fileDialog.Filter = "X 파일(*.x)|*.x";
             if (fileDialog.ShowDialog() != DialogResult.OK)
@@ -156,6 +155,21 @@ namespace MapTool
             GraphicsDevice.Instance.Add( xmesh);
             xmesh.Name = "XMesh";
             Doc.Document.Instance.AddObject(xmesh);
+        }
+
+        private void wowMapMashToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "obj 파일(*.obj)|*.obj";
+            if (fileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            var path = fileDialog.FileName;
+            var mapMesh = new WowMapMesh(GraphicsDevice.Instance, path);
+            mapMesh.Name = "map mesh";
+            GraphicsDevice.Instance.Add(mapMesh);
+            Doc.Document.Instance.AddObject(mapMesh);
         }
     }
 }

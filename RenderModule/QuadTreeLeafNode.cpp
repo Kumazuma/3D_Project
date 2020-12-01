@@ -9,8 +9,6 @@ auto TerrainObject::LeafNode::Create(RenderModule* pRenderModule, u8 const* heig
 
 auto TerrainObject::LeafNode::Render(TerrainObject* terrain, RenderModule* renderModule) -> void
 {
-	_wassert(L"NOT IMPLEMENT YET", __FILEW__, __LINE__);
-
 }
 
 TerrainObject::LeafNode::LeafNode(

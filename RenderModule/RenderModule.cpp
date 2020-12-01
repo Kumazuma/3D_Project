@@ -365,6 +365,19 @@ auto RenderModule::GetFrustum() const -> Frustum const&
 	return m_frustum;
 }
 
+auto RenderModule::PrepareFrustum() -> void
+{
+	HRESULT hr{};
+	DirectX::XMMATRIX mView;
+	DirectX::XMMATRIX mProj;
+	hr = m_pDevice->GetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&mView));
+	assert(SUCCEEDED(hr));
+	hr = m_pDevice->GetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&mProj));
+	assert(SUCCEEDED(hr));
+
+	m_frustum.MakeFrustum(mView, mProj);
+}
+
 auto RenderModule::Render(float r, float g, float b, float a, HWND hWnd) -> void
 {
 	if (!Renderable())
@@ -405,14 +418,6 @@ auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 		return;
 	}
 	HRESULT hr{};
-	DirectX::XMMATRIX mView;
-	DirectX::XMMATRIX mProj;
-	hr = m_pDevice->GetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&mView));
-	assert(SUCCEEDED(hr));
-	hr = m_pDevice->GetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&mProj));
-	assert(SUCCEEDED(hr));
-
-	m_frustum.MakeFrustum(mView, mProj);
 	hr = m_pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_STENCIL | D3DCLEAR_ZBUFFER, D3DCOLOR_COLORVALUE(r,g,b,a), 1.f, 0);
 	assert(SUCCEEDED(hr));
 	hr = m_pDevice->BeginScene();
@@ -421,8 +426,6 @@ auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 
 auto RenderModule::EndRender(HWND hWnd) -> void
 {
-
-
 	HRESULT hr;
 	if (hWnd == nullptr)
 	{
@@ -430,7 +433,6 @@ auto RenderModule::EndRender(HWND hWnd) -> void
 	}
 	m_pDevice->EndScene();
 	hr = m_pDevice->Present(nullptr, nullptr, hWnd, 0);
-
 }
 
 auto RenderModule::Renderable() -> bool

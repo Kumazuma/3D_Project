@@ -41,6 +41,7 @@ namespace MapTool
             this.추가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TerrainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.StaticXMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wowMapMashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,7 +106,8 @@ namespace MapTool
             // 
             this.추가ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.TerrainToolStripMenuItem,
-            this.StaticXMeshToolStripMenuItem});
+            this.StaticXMeshToolStripMenuItem,
+            this.wowMapMashToolStripMenuItem});
             this.추가ToolStripMenuItem.Name = "추가ToolStripMenuItem";
             this.추가ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.추가ToolStripMenuItem.Text = "추가";
@@ -123,6 +125,13 @@ namespace MapTool
             this.StaticXMeshToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.StaticXMeshToolStripMenuItem.Text = "스태틱 X 메시";
             this.StaticXMeshToolStripMenuItem.Click += new System.EventHandler(this.StaticXMeshToolStripMenuItem_Click);
+            // 
+            // wowMapMashToolStripMenuItem
+            // 
+            this.wowMapMashToolStripMenuItem.Name = "wowMapMashToolStripMenuItem";
+            this.wowMapMashToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.wowMapMashToolStripMenuItem.Text = "WoW Map 메시";
+            this.wowMapMashToolStripMenuItem.Click += new System.EventHandler(this.wowMapMashToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -155,6 +164,7 @@ namespace MapTool
         private System.Windows.Forms.ToolStripMenuItem 추가ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TerrainToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem StaticXMeshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem wowMapMashToolStripMenuItem;
     }
 }
 

@@ -64,6 +64,7 @@ auto MapToolRender::GraphicsDevice::Render() -> void
 		m_pRenderModule->GetDevice(&pDevice);
 
 		ApplyViewProjMatrix();
+		m_pRenderModule->PrepareFrustum();
 		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 		for each (auto obj in m_renderObjects)
 		{
@@ -95,6 +96,7 @@ auto MapToolRender::GraphicsDevice::Render(Control^ renderView, RenderObject^ ob
 		m_pRenderModule->GetDevice(&pDevice);
 		m_pRenderModule->SetCamera(camera->PositionPtr, camera->RotationPtr);
 		m_pRenderModule->SetProj(45.f, 1.f, 0.1f, 2000.f);
+		m_pRenderModule->PrepareFrustum();
 		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 		obj->Handle->PrepareRender(m_pRenderModule);
 		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f, (HWND)renderView->Handle.ToPointer());
