@@ -28,9 +28,12 @@ namespace MapTool.View
             {
                 case "MapObjects":
                     mapObj = sender as MapToolRender.MapObject;
-                    idx = listBox1.Items.Add(mapObj);
-                    indexTable.Add(mapObj, idx);
-                    mapObj.PropertyChanged += MapObj_PropertyChanged;
+                    if(Doc.Document.Instance.MapObjects.Contains(mapObj))
+                    {
+                        idx = listBox1.Items.Add(mapObj);
+                        indexTable.Add(mapObj, idx);
+                        mapObj.PropertyChanged += MapObj_PropertyChanged;
+                    }
                     break;
                 case "SelectedObject":
                     mapObj = Doc.Document.Instance.SelectedObject as MapToolRender.MapObject;
@@ -82,7 +85,7 @@ namespace MapTool.View
             {
                 if(Doc.Document.Instance.MapObjects.Contains(item))
                 {
-                    Doc.Document.Instance.MapObjects.Remove(item);
+                    Doc.Document.Instance.RemoveObject(item);
                     listBox1.Items.Remove(item);
                     //TODO: 트리에서 삭제되었을 때 메인 프레임에서 삭제되었음을 알 수 있게 처리 해야함
 

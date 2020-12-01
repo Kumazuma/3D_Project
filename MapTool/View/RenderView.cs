@@ -134,5 +134,10 @@ namespace MapTool.View
             m_prevMousePosition = newPrevPos;
             Render();
         }
+
+        private void RenderView_SizeChanged(object sender, EventArgs e)
+        {
+            Render();
+        }
     }
 }

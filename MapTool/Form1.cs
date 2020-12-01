@@ -107,6 +107,13 @@ namespace MapTool
                 case "SelectedObject":
                     m_propertyView.Content.SelectedObject = Doc.Document.Instance.SelectedObject;
                     break;
+                case "MapObjects":
+                    if(!Doc.Document.Instance.MapObjects.Contains(sender as MapObject))
+                    {
+                        renderObjects.Remove(sender as RenderObject);
+                        m_renderView.Content.Render();
+                    }
+                    break;
             }
         }
 

@@ -36,6 +36,7 @@ namespace MapTool.View
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "RenderView";
+            this.SizeChanged += new System.EventHandler(this.RenderView_SizeChanged);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RenderView_MouseDown);
             this.MouseLeave += new System.EventHandler(this.RenderView_MouseLeave);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RenderView_MouseMove);
