@@ -6,6 +6,29 @@
 #include <array>
 #undef max
 #undef min
+template<size_t stride, size_t count>
+inline __m256 __vectorcall Load256(void* source)
+{
+    __m256 res{};
+    unsigned char* s{ reinterpret_cast<unsigned char*>(source) };
+    for (size_t i = 0; i < count; ++i)
+    {
+        res.m256_f32[i] = *reinterpret_cast<float*>(s);
+        s += stride;
+    }
+    return res;
+}
+template<size_t stride, size_t count>
+inline void __vectorcall Store256(__m256 source, void* dest)
+{
+    unsigned char* destination{ reinterpret_cast<unsigned char*>(dest) };
+    for (size_t i = 0; i < count; ++i)
+    {
+        *reinterpret_cast<float*>(destination) = source.m256_f32[i];
+        destination += stride;
+    }
+}
+
 using namespace DirectX;
 WowMapMeshObject::WowMapMeshObject(RenderModule* pRenderModule, std::wstring const& path):
     RenderObject{}
@@ -134,20 +157,65 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
             fileStream.ignore(1024, '\n');
         }
     }
-    //Z축을 뒤집는다. 최적화를 믿자. SIMD가 안 적용될 수가 없다.
-    for (auto& it : positions)
+    //Z축을 뒤집는다.
+    __m256 _1{ -1.f ,-1.f , -1.f , -1.f , -1.f , -1.f, - 1.f ,-1.f };
+    __m256 Zs{};
+    u32 length = positions.size() / 8;
+    for (u32 i = 0; i < length; ++i)
     {
-        it.z *= -1.f;
+        Zs = Load256<sizeof(DirectX::XMFLOAT3A), 8>(&positions[i * 8].z);
+        Zs = _mm256_mul_ps(Zs, _1);
+        Store256<sizeof(DirectX::XMFLOAT3A), 8>(Zs, &positions[i * 8].z);
     }
-    //UV의 V를 뒤집어 줘야 한다.
-    for (auto& it : UVs)
+    length *= 8;
+    for (u32 i = 0; i < positions.size() - length; ++i)
     {
-        it.y = 1.f - it.y;
+        Zs.m256_f32[i] = positions[i + length].z;
     }
+    Zs = _mm256_mul_ps(Zs, _1);
+    for (u32 i = 0; i < positions.size() - length; ++i)
+    {
+        positions[i + length].z = Zs.m256_f32[i];
+    }
+
     //normal의 Z값을 뒤집어 줘야 한다.
-    for (auto& it : normals)
+    length = normals.size() / 8;
+    for (u32 i = 0; i < length; ++i)
     {
-        it.z *= -1.f;
+        Zs = Load256<sizeof(DirectX::XMFLOAT3A), 8>(&normals[i * 8].z);
+        Zs = _mm256_mul_ps(Zs, _1);
+        Store256<sizeof(DirectX::XMFLOAT3A), 8>(Zs, &normals[i * 8].z);
+    }
+    length *= 8;
+    for (u32 i = 0; i < normals.size() - length; ++i)
+    {
+        Zs.m256_f32[i] = normals[i + length].z;
+    }
+    Zs = _mm256_mul_ps(Zs, _1);
+    for (u32 i = 0; i < normals.size() - length; ++i)
+    {
+        normals[i + length].z = Zs.m256_f32[i];
+    }
+
+    //-1에서 1로 바꾸고
+    //UV의 V를 뒤집어 줘야 한다.
+    _1 = _mm256_mul_ps(_1, _1);
+    length = UVs.size() / 8;
+    for (u32 i = 0; i < length; ++i)
+    {
+        Zs = Load256<sizeof(DirectX::XMFLOAT2A), 8>(&UVs[i * 8].y);
+        Zs = _mm256_sub_ps(_1 , Zs);
+        Store256<sizeof(DirectX::XMFLOAT2A), 8>(Zs, &UVs[i * 8].y);
+    }
+    length *= 8;
+    for (u32 i = 0; i < UVs.size() - length; ++i)
+    {
+        Zs.m256_f32[i] = UVs[i + length].y;
+    }
+    Zs = _mm256_sub_ps(_1, Zs);
+    for (u32 i = 0; i < UVs.size() - length; ++i)
+    {
+        UVs[i + length].y = Zs.m256_f32[i];
     }
     //버텍스 버퍼를 구축하자.
     std::vector<VERTEX<FVF>> vertices;

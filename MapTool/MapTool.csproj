@@ -111,6 +111,12 @@
     <Compile Include="View\AnimationView.Designer.cs">
       <DependentUpon>AnimationView.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\ColiiderEditView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="View\ColiiderEditView.Designer.cs">
+      <DependentUpon>ColiiderEditView.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\ProjectDirectoryPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -149,6 +155,9 @@
     </Compile>
     <EmbeddedResource Include="View\AnimationView.resx">
       <DependentUpon>AnimationView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\ColiiderEditView.resx">
+      <DependentUpon>ColiiderEditView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\MapObjectTreePanel.resx">
       <DependentUpon>MapObjectTreePanel.cs</DependentUpon>
