@@ -5,7 +5,7 @@
 #include "COMPtr.hpp"
 #include <d3dx9.h>
 class SimpleBoxEntity;
-class SimpleBoxObject: public RenderObject
+class DLL_CLASS SimpleBoxObject: public RenderObject
 {
 	friend class SimpleBoxEntity;
 public:

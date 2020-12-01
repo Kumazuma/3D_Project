@@ -1,24 +1,36 @@
 #include "pch.h"
 #include "BoxMeshObj.h"
-
-MapToolRender::BoxColliderMeshObject::BoxColliderMeshObject(GraphicsDevice^ device, System::String^ filePath)
+#include <RenderModule/SimpleColliderBoxObject.h>
+MapToolRender::BoxColliderMeshObject::BoxColliderMeshObject(GraphicsDevice^ device)
 {
-    throw gcnew System::NotImplementedException();
+    HRESULT hr{};
+    SimpleBoxObject* pBox{};
+    hr = SimpleBoxObject::Create(device->Handle, 1.f, 1.f, 1.f, &pBox);
+    if (FAILED(hr))
+    {
+        throw gcnew System::Exception(L"error!!!!");
+    }
+    m_pNativeObject = pBox;
 }
 
-MapToolRender::BoxColliderMeshObject::BoxColliderMeshObject(BoxColliderMeshObject^ const& rhs)
+MapToolRender::BoxColliderMeshObject::BoxColliderMeshObject(BoxColliderMeshObject^ const& rhs):
+    RenderObject(rhs),
+    m_collider{  }
 {
-    throw gcnew System::NotImplementedException();
+    if (rhs->m_collider != nullptr)
+    {
+        m_collider = static_cast<MapToolCore::BoxCollider^>(rhs->m_collider->Clone());
+    }
 }
 auto MapToolRender::BoxColliderMeshObject::Clone() -> RenderObject^ 
 {
-    throw gcnew System::NotImplementedException();
+    return gcnew BoxColliderMeshObject(this);
 }
 auto MapToolRender::BoxColliderMeshObject::Collider::get()->MapToolCore::BoxCollider^
 {
-    throw gcnew System::NotImplementedException();
+    return m_collider;
 }
 auto MapToolRender::BoxColliderMeshObject::Collider::set(MapToolCore::BoxCollider^ obj)-> void
 {
-    throw gcnew System::NotImplementedException();
+    m_collider = obj;
 }

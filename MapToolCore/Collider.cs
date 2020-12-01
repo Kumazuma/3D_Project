@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MapToolCore
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class Collider: INotifyPropertyChanged
+    public abstract class Collider: INotifyPropertyChanged
     {
         protected Offset offset;
         PropertyChangedEventHandler m_offsetPropertyChangedEventHandler;
@@ -18,6 +18,15 @@ namespace MapToolCore
             m_offsetPropertyChangedEventHandler = new PropertyChangedEventHandler(OnOffsetPropertyChanged);
             offset = new Offset();
             offset.PropertyChanged += m_offsetPropertyChangedEventHandler;
+        }
+        protected Collider(Collider collider)
+        {
+            m_offsetPropertyChangedEventHandler = new PropertyChangedEventHandler(OnOffsetPropertyChanged);
+            offset = new Offset();
+            offset.PropertyChanged += m_offsetPropertyChangedEventHandler;
+            offset.X = collider.Offset.X;
+            offset.Y = collider.Offset.Y;
+            offset.Z = collider.Offset.Z;
         }
         private void OnOffsetPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -36,6 +45,7 @@ namespace MapToolCore
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Offset"));
             }
         }
+        public abstract Collider Clone();
         protected void BroadcastPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -99,6 +109,17 @@ namespace MapToolCore
             height = 1.0f;
             depth = 1.0f;
         }
+        public BoxCollider(BoxCollider rhs):
+            base(rhs)
+        {
+            width = rhs.width;
+            height = rhs.height;
+            depth = rhs.depth;
+        }
+        public override Collider Clone()
+        {
+            return new BoxCollider (this);
+        }
         [CategoryAttribute("Box")]
         public float Width
         {
@@ -136,6 +157,15 @@ namespace MapToolCore
         public SphareCollider()
         {
             radius = 1.0f;
+        }
+        public SphareCollider(SphareCollider rhs) :
+            base(rhs)
+        {
+            radius = rhs.radius;
+        }
+        public override Collider Clone()
+        {
+            return new SphareCollider(this);
         }
         [CategoryAttribute("Sphare")]
         public float Radius

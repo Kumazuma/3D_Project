@@ -6,7 +6,7 @@ namespace MapToolRender
 	public ref class BoxColliderMeshObject : public RenderObject
 	{
 	public:
-		BoxColliderMeshObject(GraphicsDevice^ device, System::String^ filePath);
+		BoxColliderMeshObject(GraphicsDevice^ device);
 	protected:
 		BoxColliderMeshObject(BoxColliderMeshObject^ const& rhs);
 	public:
