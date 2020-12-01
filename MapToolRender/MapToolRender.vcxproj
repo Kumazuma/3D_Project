@@ -97,6 +97,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <DisableSpecificWarnings>4793;4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>RenderModule.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -110,6 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <DisableSpecificWarnings>4793;4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>RenderModule.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -123,6 +125,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <DisableSpecificWarnings>4793;4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>RenderModule.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -136,12 +139,14 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <DisableSpecificWarnings>4793;4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>RenderModule.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BoxMeshObj.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="MapToolRender.h" />
     <ClInclude Include="pch.h" />
@@ -157,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="BoxMeshObj.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="MapToolRender.cpp" />

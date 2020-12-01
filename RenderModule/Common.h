@@ -5,6 +5,7 @@
 #define DLL_CLASS _declspec(dllimport)
 #endif
 #include "typedef.hpp"
+#define __BEGINE_NAMESPACE(namespace_) namespace namespace_{
 inline bool operator == (DirectX::XMFLOAT3 const& lhs, DirectX::XMFLOAT3 const& rhs)
 {
 	return

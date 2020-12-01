@@ -14,21 +14,24 @@ namespace MapTool.View
 {
     public partial class AnimationView : UserControl
     {
+        List<RenderObject> objList = new List<RenderObject>();
         MapToolRender.SkinnedXMeshObj animMeshObj;
         MapToolRender.Camera camera;
         Timer m_timer;
         Stopwatch stopWatch = new Stopwatch();
         TimeSpan lastTimeSpan;
+        RenderView renderView;
         bool m_playing;
         string m_currentJsonPath = null;
         public AnimationView()
         {
             InitializeComponent();
             camera = new MapToolRender.Camera();
-            var position = camera.Position;
-            var rotation = camera.Rotation;
-            camera.Position = position;
-            camera.Rotation = rotation;
+            renderView = new RenderView();
+            renderView.Parent = splitContainer1.Panel2;
+            renderView.RenderObjects = objList;
+            renderView.Dock = DockStyle.Fill;
+            splitContainer1.Panel2.Controls.Add(renderView);
             m_timer = new Timer();
             m_timer.Interval = 16;
             m_timer.Tick += OnTimerTick;
@@ -45,8 +48,9 @@ namespace MapTool.View
             if (animMeshObj != null && m_playing)
             {
                 animMeshObj.Update((int)(delta.TotalSeconds * 1000));
-                MapToolRender.GraphicsDevice.Instance.Render(drawPanel, animMeshObj, camera);
+                renderView.Render();
             }
+            
         }
 
         private void btnXFileOpen_Click_1(object sender, EventArgs e)
@@ -62,6 +66,9 @@ namespace MapTool.View
             animMeshObj = new MapToolRender.SkinnedXMeshObj(MapToolRender.GraphicsDevice.Instance, openFileDialog.FileName);
             animMeshObj.PropertyChanged += AnimMeshObj_PropertyChanged;
             Doc.Document.Instance.SelectedObject = animMeshObj;
+            objList.Clear();
+            objList.Add(animMeshObj);
+            
             var animCount = animMeshObj.AnimationCount;
             comboAnim.Items.Clear();
             AnimIndex.Items.Clear();
@@ -77,7 +84,8 @@ namespace MapTool.View
         {
             if (animMeshObj != null && m_playing)
             {
-                MapToolRender.GraphicsDevice.Instance.Render(drawPanel, animMeshObj, camera);
+                renderView.Render();
+
             }
         }
 
@@ -145,10 +153,12 @@ namespace MapTool.View
                 return;
             }
             dataGridView1.Rows.Clear();
+            objList.Clear();
             string path= System.IO.Path.Combine(MapToolCore.Environment.Instance.ProjectDirectory, xMeshPath);
             animMeshObj = Doc.MeshManager.Instance.GetSkinnedMesh(path);
             animMeshObj.PropertyChanged += AnimMeshObj_PropertyChanged;
             Doc.Document.Instance.SelectedObject = animMeshObj;
+            objList.Add(animMeshObj);
             var animCount = animMeshObj.AnimationCount;
             comboAnim.Items.Clear();
             AnimIndex.Items.Clear();
@@ -248,15 +258,6 @@ namespace MapTool.View
                 animMeshObj.PlayAnimIdx((uint)comboAnim.SelectedIndex);
             }
         }
-
-        private void drawPanel_Paint(object sender, PaintEventArgs e)
-        {
-            if(animMeshObj != null)
-            {
-                MapToolRender.GraphicsDevice.Instance.Render(drawPanel, animMeshObj, camera);
-            }
-        }
-
         private void AnimationView_Enter(object sender, EventArgs e)
         {
             if (animMeshObj != null)

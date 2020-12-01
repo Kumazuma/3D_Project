@@ -1,6 +1,7 @@
 #pragma once
 #include"typedef.hpp"
-#include"RenderModule.h"
+#include"RenderEntity.h"
+
 #include"RenderObject.h"
 #include"COMPtr.hpp"
 #include<memory>

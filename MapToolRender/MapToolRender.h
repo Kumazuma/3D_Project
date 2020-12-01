@@ -36,19 +36,10 @@ namespace MapToolRender {
 			}
 
 		}
-		auto Render()->void;
-		auto Render(Control^ renderView, RenderObject^ obj, Camera^ camera)->void;
-		auto ClearRenderGroup()->void;
-		auto Add(RenderObject^ obj)->void;
-		auto Remove(RenderObject^ obj)->void;
+		auto Render(Control^ drawPanel, IEnumerable<RenderObject^>^ objs, Camera^ camera)->void;
 		property RenderModule* Handle
 		{
 			auto get()->RenderModule* { return m_pRenderModule; }
-		}
-		property Camera^ CurrentCamera
-		{
-			auto get()->Camera^ { return m_currentCamera; }
-			auto set(Camera^ value)->void { m_currentCamera = value; Render(); }
 		}
 	private:
 		auto ApplyViewProjMatrix()->void;
@@ -57,8 +48,6 @@ namespace MapToolRender {
 		static GraphicsDevice^ s_instance;
 		GraphicsDevice(Control^ renderView, unsigned width, unsigned height);
 	private:
-		Camera^ m_currentCamera;
-		HashSet<RenderObject^> m_renderObjects;
 		RenderModule* m_pRenderModule;
 	};
 	public ref class MapObject abstract : public INotifyPropertyChanged

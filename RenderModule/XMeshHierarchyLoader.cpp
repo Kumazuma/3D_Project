@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "XMeshHierarchyLoader.h"
+#include"UnicodeHelper.h"
 using namespace DirectX;
 auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateFrame(LPCSTR szName, D3DXFRAME** ppNewFrame) -> HRESULT 
 {
@@ -9,6 +10,10 @@ auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateFrame(LPCSTR szName, D
     }
     SkinnedXMeshObject::Frame* pNewFrame{ new SkinnedXMeshObject::Frame {} };
     AllocateName(&pNewFrame->Name, szName);
+    if (szName != nullptr)
+    {
+        pNewFrame->name = ConvertUTF8ToWide(szName);
+    }
     pNewFrame->combinedTransformationMatrix.reset(new XMFLOAT4X4{});
     XMStoreFloat4x4(pNewFrame->combinedTransformationMatrix.get(),
         XMMatrixIdentity());
@@ -104,13 +109,12 @@ auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateMeshContainer(
     XMFLOAT4X4 defaultMatrix{};
     pNewMeshContainer->frameCombinedMatries.assign(pNewMeshContainer->boneCount, nullptr);
     pNewMeshContainer->frameOffsetMatries.assign(pNewMeshContainer->boneCount, defaultMatrix);
-    pNewMeshContainer->renderingMatries.assign(pNewMeshContainer->boneCount, defaultMatrix);
+    
     for (u32 i = 0; i < pNewMeshContainer->boneCount; ++i)
     {
         pNewMeshContainer->frameOffsetMatries[i] = 
             reinterpret_cast<XMFLOAT4X4 const&>(*pSkinInfo->GetBoneOffsetMatrix(i));
         // 메쉬를 그리기 위한 뼈대들은 고유의 인덱스 값을 가지고 있음. 그래서 순회하면서 행렬 정보를 차례대로 얻어올 수 있다.
-
     }
     *ppNewMeshContainer = pNewMeshContainer;
     m_containers.emplace(pNewMeshContainer, std::unique_ptr<CustomMeshContainer>{ (CustomMeshContainer*)pNewMeshContainer});

@@ -1,6 +1,8 @@
 #pragma once
 #include"RenderObject.h"
-#include"RenderModule.h"
+#include"RenderEntity.h"
+#include <memory>
+#include "COMPtr.hpp"
 #include <d3dx9.h>
 class SimpleBoxEntity;
 class SimpleBoxObject: public RenderObject

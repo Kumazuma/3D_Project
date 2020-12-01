@@ -1,5 +1,6 @@
 #include "pch.h"
 #include<wincodec.h>
+#include"RenderEntity.h"
 #include "RenderModule.h"
 #include <vector>
 #include "TerrainObject.h"

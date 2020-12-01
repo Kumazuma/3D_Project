@@ -85,6 +85,10 @@ auto MapToolRender::TextureFileEditor::EditValue(ITypeDescriptorContext^ context
 auto MapToolRender::CubeTextureFileEditor::EditValue(ITypeDescriptorContext^ context, System::IServiceProvider^ provider, System::Object^ value) -> System::Object^ 
 {
     System::Object^ text = FileNameEditor::EditValue(context, provider, value);
+    if (text == nullptr)
+    {
+        return text;
+    }
     if (text->GetType() == System::String::typeid)
     {
         return gcnew CubeTexture(MapToolRender::GraphicsDevice::Instance, static_cast<System::String^>(text));

@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include <fstream>
 #include <array>
+#include "RenderModule.h"
 #undef max
 #undef min
 template<size_t stride, size_t count>
@@ -160,7 +161,8 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     //Z축을 뒤집는다.
     __m256 _1{ -1.f ,-1.f , -1.f , -1.f , -1.f , -1.f, - 1.f ,-1.f };
     __m256 Zs{};
-    u32 length = positions.size() / 8;
+    assert(positions.size() <= std::numeric_limits<u32>::max());
+    u32 length = static_cast<u32>(positions.size() / 8);
     for (u32 i = 0; i < length; ++i)
     {
         Zs = Load256<sizeof(DirectX::XMFLOAT3A), 8>(&positions[i * 8].z);

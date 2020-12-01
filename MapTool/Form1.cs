@@ -21,7 +21,8 @@ namespace MapTool
         DockView<PropertyGrid> m_propertyView;
         DockView<View.ProjectDirectoryPanel> m_projectDirectoryView;
         DockView<View.AnimationView> m_animationJsonEditView;
-
+        DockView<View.ColiiderEditView> m_colliderEditView;
+        HashSet<RenderObject> renderObjects = new HashSet<RenderObject>();
         public Form1()
         {
             InitializeComponent();
@@ -30,7 +31,7 @@ namespace MapTool
             m_renderView = new DockView<View.RenderView>();
             GraphicsDevice.Initialize(m_renderView.Content, 1920, 1080);
             SkyBox skyBox = new SkyBox(GraphicsDevice.Instance);
-            GraphicsDevice.Instance.Add( skyBox);
+            renderObjects.Add(skyBox);
 
             Doc.Document.Instance.World = skyBox;
             Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;
@@ -42,11 +43,13 @@ namespace MapTool
             m_propertyView = new DockView<PropertyGrid>();
             m_projectDirectoryView = new DockView<View.ProjectDirectoryPanel>();
             m_animationJsonEditView = new DockView<View.AnimationView>();
+            m_colliderEditView = new DockView<View.ColiiderEditView>();
             m_mapObjTreePanel.TabText = "트리";
             m_renderView.TabText = "렌더";
             m_projectDirectoryView.TabText = "디렉토리";
             m_propertyView.TabText = "속성";
             m_animationJsonEditView.TabText = "애니메이션";
+            m_colliderEditView.TabText = "콜라이더";
             m_propertyView.Content.AllowDrop = true;
             m_propertyView.Content.DragEnter += PropertyView_DragEnter;
             m_propertyView.Content.DragDrop += PropertyView_DragDrop;
@@ -56,17 +59,22 @@ namespace MapTool
             m_propertyView.Show(dockPanel1, DockState.DockRight);
             m_projectDirectoryView.Show(dockPanel1, DockState.DockBottom);
             m_animationJsonEditView.Show(dockPanel1, DockState.Document);
+            m_colliderEditView.Show(dockPanel1, DockState.Document);
+            m_renderView.Activate();
             m_renderView.CloseButtonVisible = false;
             m_renderView.CloseButton = false;
             m_renderView.IsFloat = false;
             m_animationJsonEditView.CloseButtonVisible = false;
             m_animationJsonEditView.CloseButton = false;
             m_animationJsonEditView.IsFloat = false;
+            m_colliderEditView.CloseButtonVisible = false;
+            m_colliderEditView.CloseButton= false;
+            m_colliderEditView.IsFloat = false;
 
             //GraphicsDevice.Instance.Render();
-            m_renderView.Content.Paint += Form1_Paint;
+            m_renderView.Content.RenderObjects = renderObjects;
 
-            
+
         }
 
         
@@ -102,10 +110,6 @@ namespace MapTool
             }
         }
 
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-            GraphicsDevice.Instance.Render();
-        }
 
         public class DockView<T>:  WeifenLuo.WinFormsUI.Docking.DockContent where T : Control, new ()
         {
@@ -133,9 +137,10 @@ namespace MapTool
                             dialog.Interval,
                             dialog.MaxHeight
                         );
-                    GraphicsDevice.Instance.Add( terrain);
+                    renderObjects.Add(terrain);
                     terrain.Name = "Terrain";
                     Doc.Document.Instance.AddObject(terrain);
+                    m_renderView.Content.Render();
                     //m_mapObjTreePanel.Content.
                 }
             }
@@ -152,9 +157,10 @@ namespace MapTool
             var path = fileDialog.FileName;
 
             var xmesh = Doc.MeshManager.Instance.GetStaticMesh(path);
-            GraphicsDevice.Instance.Add( xmesh);
+            renderObjects.Add(xmesh);
             xmesh.Name = "XMesh";
             Doc.Document.Instance.AddObject(xmesh);
+            m_renderView.Content.Render();
         }
 
         private void wowMapMashToolStripMenuItem_Click(object sender, EventArgs e)
@@ -168,8 +174,9 @@ namespace MapTool
             var path = fileDialog.FileName;
             var mapMesh = new WowMapMesh(GraphicsDevice.Instance, path);
             mapMesh.Name = "map mesh";
-            GraphicsDevice.Instance.Add(mapMesh);
+            renderObjects.Add(mapMesh);
             Doc.Document.Instance.AddObject(mapMesh);
+            m_renderView.Content.Render();
         }
     }
 }

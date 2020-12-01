@@ -18,12 +18,28 @@ namespace MapTool.View
             Rotating,
             MovingForward
         }
-
+        MapToolRender.Camera camera;
+        IEnumerable<MapToolRender.RenderObject> mapObjects;
         MouseOperation m_mouseOperation = MouseOperation.None;
         Point? m_prevMousePosition = null;
         public RenderView()
         {
             InitializeComponent();
+            camera = new MapToolRender.Camera();
+        }
+        public void Render()
+        {
+            if (mapObjects == null) return;
+            MapToolRender.GraphicsDevice.Instance.Render(this, mapObjects, camera);
+        }
+        public IEnumerable<MapToolRender.RenderObject> RenderObjects
+        {
+            get => mapObjects;
+            set
+            {
+                mapObjects = value;
+                Render();
+            }
         }
 
         private void RenderView_MouseDown(object sender, MouseEventArgs e)
@@ -60,7 +76,6 @@ namespace MapTool.View
         private void RenderView_Move(object sender, EventArgs e)
         {
             
-            
         }
 
         private void RenderView_MouseMove(object sender, MouseEventArgs e)
@@ -81,13 +96,13 @@ namespace MapTool.View
                     {
                         deltaX /= (float)Size.Width * 0.01f;
                         newPrevPos.X = nowMousePoint.X;
-                        MapToolRender.GraphicsDevice.Instance.CurrentCamera.MoveRight(-deltaX);
+                        camera.MoveRight(-deltaX);
                     }
                     if (Math.Abs(deltaY) >= 1.0f)
                     {
                         deltaY /= (float)Size.Height * 0.01f;
                         newPrevPos.Y = nowMousePoint.Y;
-                        MapToolRender.GraphicsDevice.Instance.CurrentCamera.MoveUp(deltaY);
+                        camera.MoveUp(deltaY);
                     }
                     break;
                 case MouseOperation.Rotating:
@@ -95,13 +110,13 @@ namespace MapTool.View
                     {
                         deltaX /= (float)Size.Width * 0.01f;
                         newPrevPos.X = nowMousePoint.X;
-                        MapToolRender.GraphicsDevice.Instance.CurrentCamera.RotationY(-deltaX);
+                        camera.RotationY(-deltaX);
                     }
                     if (Math.Abs(deltaY) >= 1.0f)
                     {
                         deltaY /= (float)Size.Height * 0.01f;
                         newPrevPos.Y = nowMousePoint.Y;
-                        MapToolRender.GraphicsDevice.Instance.CurrentCamera.RotationX(-deltaY);
+                        camera.RotationX(-deltaY);
                     }
                     break;
                 case MouseOperation.MovingForward:
@@ -110,14 +125,14 @@ namespace MapTool.View
                     {
                         deltaY /= (float)Size.Height * 0.01f;
                         newPrevPos.Y = nowMousePoint.Y;
-                        MapToolRender.GraphicsDevice.Instance.CurrentCamera.MoveForward(deltaY);
+                        camera.MoveForward(deltaY);
                     }
                     break;
                 default:
                     break;
             }
             m_prevMousePosition = newPrevPos;
-            MapToolRender.GraphicsDevice.Instance.Render();
+            Render();
         }
     }
 }

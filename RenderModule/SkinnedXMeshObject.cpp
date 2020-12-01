@@ -31,33 +31,18 @@ auto SkinnedXMeshObject::Create(RenderModule* pRenderModule, std::wstring const&
 auto SkinnedXMeshObject::PrepareRender(RenderModule* pRenderModule) -> void
 {
     pRenderModule->AddRenderEntity(RenderModule::Kind::NONALPHA, m_entity);
-
 }
 
 auto SkinnedXMeshObject::Render(RenderModule* pRenderModule) -> void
 {
     COMPtr<IDirect3DDevice9> pDevice;
     pRenderModule->GetDevice(&pDevice);
-    m_pAnimCtrler->AdjustAnimationToFrame();
-    UpdateFrameMatrices(
-        static_cast<Frame*>(m_pRootFrame),
-        ToFloat4x4(XMMatrixRotationY(XMConvertToRadians(180.f)))
-    );
-
+    
     pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_transform));
 
     for (auto& iter : m_meshContainters)
     {
-        for (u32 i = 0; i < iter->boneCount; ++i)
-        {
-            XMMATRIX mRenderingMatrix{};
-            XMMATRIX mFrameOffset{};
-            XMMATRIX mFrameCombinedMatrix{};
-            mFrameOffset = XMLoadFloat4x4(&iter->frameOffsetMatries[i]);
-            mFrameCombinedMatrix = XMLoadFloat4x4(iter->frameCombinedMatries[i].get());
-            mRenderingMatrix = mFrameOffset * mFrameCombinedMatrix;
-            XMStoreFloat4x4(&iter->renderingMatries[i], mRenderingMatrix);
-        }
+        auto& rRenderingMatries{ m_renderedMatrices[iter] };
 
         void* pSrcVtx = nullptr;
         void* pDestVtx = nullptr;
@@ -68,11 +53,10 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule) -> void
 
         // 소프트웨어 스키닝을 수행하는 함수(스키닝 뿐 아니라 애니메이션 변경 시, 뼈대들과 정점 정보들의 변경을 동시에 수행하기도 함)
         iter->pSkinInfo->UpdateSkinnedMesh(
-            reinterpret_cast<D3DXMATRIX const*>(iter->renderingMatries.data()),	// 최종 뼈의 변환상태 행렬
+            reinterpret_cast<D3DXMATRIX const*>(rRenderingMatries.data()),	// 최종 뼈의 변환상태 행렬
             nullptr,						// 원래 상태로 되돌리기 위한 상태 행렬(원래는 위 행렬의 역행렬을 구해서 넣어줘야 하지만 안넣어줘도 상관 없음)
             pSrcVtx,						// 변하지 않는 원본 메쉬의 정점 정보
             pDestVtx);						// 변환된 정보를 담기 위한 메쉬의 정점 정보
-
 
         for (u32 i = 0; i < iter->NumMaterials; ++i)
         {
@@ -90,14 +74,14 @@ auto SkinnedXMeshObject::Clone() const -> RenderObject*
     return new SkinnedXMeshObject{ this };
 }
 
-auto SkinnedXMeshObject::FindFrameTransfromByName(std::string const& frameName, XMFLOAT4X4 * const pOut) ->HRESULT
+auto SkinnedXMeshObject::FindFrameTransfromByName(std::wstring const& frameName, XMFLOAT4X4 * const pOut) ->HRESULT
 {
     if (pOut == nullptr)
     {
         return E_POINTER;
     }
-    const auto findResIt{ m_renderedMatrices.find(frameName) };
-    if(findResIt == m_renderedMatrices.end())
+    const auto findResIt{ m_combinedOffsetMatrices.find(frameName) };
+    if(findResIt == m_combinedOffsetMatrices.end())
     {
         return E_FAIL;
     }
@@ -119,7 +103,25 @@ auto SkinnedXMeshObject::SetAnimationSet(u32 idx) -> void
 auto SkinnedXMeshObject::PlayAnimation(f32 timeDelta) -> void
 {
     m_pAnimCtrler->AdvanceTime(timeDelta);
-    
+    m_pAnimCtrler->AdjustAnimationToFrame();
+    UpdateFrameMatrices(
+        static_cast<Frame*>(m_pRootFrame),
+        ToFloat4x4(XMMatrixIdentity())
+    );
+    for (auto& iter : m_meshContainters)
+    {
+        auto& rRenderingMatries{ m_renderedMatrices[iter] };
+        for (u32 i = 0; i < iter->boneCount; ++i)
+        {
+            XMMATRIX mRenderingMatrix{};
+            XMMATRIX mFrameOffset{};
+            XMMATRIX mFrameCombinedMatrix{};
+            mFrameOffset = XMLoadFloat4x4(&iter->frameOffsetMatries[i]);
+            mFrameCombinedMatrix = XMLoadFloat4x4(iter->frameCombinedMatries[i].get());
+            mRenderingMatrix = mFrameOffset * mFrameCombinedMatrix;
+            XMStoreFloat4x4(&rRenderingMatries[i], mRenderingMatrix);
+        }
+    }
 }
 
 auto SkinnedXMeshObject::GetAnimationCount()const -> u32
@@ -139,7 +141,9 @@ SkinnedXMeshObject::SkinnedXMeshObject(SkinnedXMeshObject const* rhs):
     m_pHierarchyLoader{rhs->m_pHierarchyLoader},
     m_meshContainters{rhs->m_meshContainters},
     m_pRootFrame{rhs->m_pRootFrame},
-    m_entity{new SkinnedMeshEntity{this}}
+    m_entity{new SkinnedMeshEntity{this}},
+    m_combinedOffsetMatrices{rhs->m_combinedOffsetMatrices},
+    m_renderedMatrices{rhs->m_renderedMatrices}
 {
     //TODO: 깊은 복사를 해야한다. HOWTO?
 }
@@ -204,6 +208,11 @@ auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring co
     );
     InitializeFrameMatrix(static_cast<Frame*>(m_pRootFrame));
 
+    for (auto& iter : m_meshContainters)
+    {
+        m_renderedMatrices[iter].assign(iter->boneCount, XMFLOAT4X4{});
+    }
+    
     return S_OK;
 }
 
@@ -237,7 +246,7 @@ auto SkinnedXMeshObject::UpdateFrameMatrices(Frame* const pFrame, DirectX::XMFLO
     mParentTransform = XMLoadFloat4x4(&parentTransform);
     mCombindTransform = mCombindTransform * mParentTransform;
     XMStoreFloat4x4(pFrame->combinedTransformationMatrix.get(), mCombindTransform);
-    
+    XMStoreFloat4x4(&m_combinedOffsetMatrices[pFrame->name], mCombindTransform);
     if (pFrame->pFrameSibling != nullptr)
     {
         UpdateFrameMatrices(static_cast<Frame*>(pFrame->pFrameSibling), parentTransform);

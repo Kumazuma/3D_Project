@@ -2,8 +2,10 @@
 #include<d3d9.h>
 #include"Common.h"
 #include"RenderObject.h"
-#include"RenderModule.h"
-
+#include"RenderEntity.h"
+#include<unordered_map>
+#include<vector>
+#include<memory>
 #include"COMPtr.hpp"
 class WowMapMeshSubset;
 class WowMapMeshEntity;

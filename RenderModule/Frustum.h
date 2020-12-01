@@ -3,7 +3,6 @@
 class Frustum
 {
 public:
-
 	auto __vectorcall MakeFrustum(DirectX::XMMATRIX view, DirectX::XMMATRIX proj)->void;
 	/// <summary>
 	/// 월드 공간에 있는 점이 절두체 안에 있는 지 판별한다.

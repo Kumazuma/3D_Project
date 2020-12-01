@@ -38,10 +38,8 @@ namespace MapTool.View
             this.btnJsonOpen = new System.Windows.Forms.Button();
             this.btnJSONSave = new System.Windows.Forms.Button();
             this.comboAnim = new System.Windows.Forms.ComboBox();
-            this.drawPanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -59,10 +57,6 @@ namespace MapTool.View
             this.splitContainer1.Panel1.Controls.Add(this.dataGridView1);
             this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel1);
             this.splitContainer1.Panel1.Controls.Add(this.comboAnim);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.drawPanel);
             this.splitContainer1.Size = new System.Drawing.Size(1246, 888);
             this.splitContainer1.SplitterDistance = 266;
             this.splitContainer1.TabIndex = 0;
@@ -102,7 +96,7 @@ namespace MapTool.View
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.84615F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.15385F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 71F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 72F));
             this.tableLayoutPanel1.Controls.Add(this.btnXFileOpen, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnJsonOpen, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnJSONSave, 2, 0);
@@ -129,7 +123,7 @@ namespace MapTool.View
             this.btnJsonOpen.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnJsonOpen.Location = new System.Drawing.Point(84, 3);
             this.btnJsonOpen.Name = "btnJsonOpen";
-            this.btnJsonOpen.Size = new System.Drawing.Size(99, 38);
+            this.btnJsonOpen.Size = new System.Drawing.Size(98, 38);
             this.btnJsonOpen.TabIndex = 3;
             this.btnJsonOpen.Text = "JSON파일 열기";
             this.btnJsonOpen.UseVisualStyleBackColor = true;
@@ -138,9 +132,9 @@ namespace MapTool.View
             // btnJSONSave
             // 
             this.btnJSONSave.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnJSONSave.Location = new System.Drawing.Point(189, 3);
+            this.btnJSONSave.Location = new System.Drawing.Point(188, 3);
             this.btnJSONSave.Name = "btnJSONSave";
-            this.btnJSONSave.Size = new System.Drawing.Size(66, 38);
+            this.btnJSONSave.Size = new System.Drawing.Size(67, 38);
             this.btnJSONSave.TabIndex = 5;
             this.btnJSONSave.Text = "JSON 저장";
             this.btnJSONSave.UseVisualStyleBackColor = true;
@@ -157,15 +151,6 @@ namespace MapTool.View
             this.comboAnim.TabIndex = 7;
             this.comboAnim.SelectedIndexChanged += new System.EventHandler(this.comboAnim_SelectedIndexChanged);
             // 
-            // drawPanel
-            // 
-            this.drawPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.drawPanel.Location = new System.Drawing.Point(0, 0);
-            this.drawPanel.Name = "drawPanel";
-            this.drawPanel.Size = new System.Drawing.Size(974, 886);
-            this.drawPanel.TabIndex = 6;
-            this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
-            // 
             // AnimationView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -176,7 +161,6 @@ namespace MapTool.View
             this.Enter += new System.EventHandler(this.AnimationView_Enter);
             this.Leave += new System.EventHandler(this.AnimationView_Leave);
             this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -193,7 +177,6 @@ namespace MapTool.View
         private System.Windows.Forms.Button btnJsonOpen;
         private System.Windows.Forms.Button btnJSONSave;
         private System.Windows.Forms.ComboBox comboAnim;
-        private System.Windows.Forms.Panel drawPanel;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewComboBoxColumn AnimIndex;
         private System.Windows.Forms.DataGridViewTextBoxColumn animStringID;

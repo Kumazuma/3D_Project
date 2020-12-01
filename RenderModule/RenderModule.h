@@ -63,8 +63,3 @@ private:
 	u32 m_height;
 	HWND m_hwnd;
 };
-struct DLL_CLASS RenderEntity
-{
-	virtual ~RenderEntity() = default;
-	virtual auto Render(RenderModule*) -> void = 0;
-};

@@ -1,6 +1,7 @@
 #pragma once
 #include"RenderObject.h"
-#include "RenderModule.h"
+#include"RenderEntity.h"
+
 #include "MeshObject.h"
 #include <vector>
 #include <memory>
@@ -19,7 +20,7 @@ public:
 	auto PrepareRender(RenderModule* pRenderModule)->void;
 	auto Render(RenderModule* pRenderModule)->void;
 	auto Clone()const->RenderObject*;
-	auto FindFrameTransfromByName(std::string const& frameName, DirectX::XMFLOAT4X4* const pOut)->HRESULT;
+	auto FindFrameTransfromByName(std::wstring const& frameName, DirectX::XMFLOAT4X4* const pOut)->HRESULT;
 	auto IsAnimationSetEnd()->bool;
 	auto SetAnimationSet(u32 idx)->void;
 	auto PlayAnimation(f32 timeDelta)->void;
@@ -32,15 +33,17 @@ protected:
 	auto UpdateFrameMatrices(Frame* pFrame, DirectX::XMFLOAT4X4 const& mat)->void;
 private:
 	D3DXFRAME* m_pRootFrame;
+	std::unordered_map<CustomMeshContainer*, std::vector< DirectX::XMFLOAT4X4>> m_renderedMatrices;
+	std::unordered_map<std::wstring, DirectX::XMFLOAT4X4> m_combinedOffsetMatrices;
 	std::shared_ptr<HierarchyLoader> m_pHierarchyLoader;
 	std::unique_ptr<AnimationController> m_pAnimCtrler;
 	std::vector<CustomMeshContainer* > m_meshContainters;
-	std::unordered_map<std::string, DirectX::XMFLOAT4X4> m_renderedMatrices;
 	std::shared_ptr<SkinnedMeshEntity> m_entity;
 };
 struct SkinnedXMeshObject::Frame : public D3DXFRAME
 {
 	std::shared_ptr<DirectX::XMFLOAT4X4> combinedTransformationMatrix;
+	std::wstring name;
 };
 struct SkinnedXMeshObject::CustomMeshContainer : public D3DXMESHCONTAINER
 {
@@ -50,7 +53,6 @@ struct SkinnedXMeshObject::CustomMeshContainer : public D3DXMESHCONTAINER
 
 	std::vector< DirectX::XMFLOAT4X4> frameOffsetMatries;
 	std::vector<std::shared_ptr<DirectX::XMFLOAT4X4> > frameCombinedMatries;
-	std::vector< DirectX::XMFLOAT4X4> renderingMatries;
 	std::vector<D3DXMATERIAL> materials;
 	std::vector<DWORD> adjacency;
 };

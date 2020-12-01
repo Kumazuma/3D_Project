@@ -19,6 +19,12 @@
     <Filter Include="WowMapMesh">
       <UniqueIdentifier>{3326ee25-95b3-40ea-ba41-b205b2c935f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ColliderBoxMeshObject">
+      <UniqueIdentifier>{db0af452-b41e-4c11-ae6f-2a7bebb45e89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ColliderSphareMeshObject">
+      <UniqueIdentifier>{00b92b80-2e42-4a8f-b929-4dad1af90614}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapToolRender.h">
@@ -56,6 +62,9 @@
     </ClInclude>
     <ClInclude Include="WowMapMesh.h">
       <Filter>WowMapMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxMeshObj.h">
+      <Filter>ColliderBoxMeshObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +109,9 @@
     </ClCompile>
     <ClCompile Include="WowMapMesh.cpp">
       <Filter>WowMapMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxMeshObj.cpp">
+      <Filter>ColliderBoxMeshObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

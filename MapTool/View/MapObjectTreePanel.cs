@@ -44,8 +44,7 @@ namespace MapTool.View
                     }
                     break;
             }
-            MapToolRender.GraphicsDevice.Instance.Render();
-
+            
         }
 
         private void MapObj_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -85,7 +84,8 @@ namespace MapTool.View
                 {
                     Doc.Document.Instance.MapObjects.Remove(item);
                     listBox1.Items.Remove(item);
-                    MapToolRender.GraphicsDevice.Instance.Remove(item as MapToolRender.RenderObject);
+                    //TODO: 트리에서 삭제되었을 때 메인 프레임에서 삭제되었음을 알 수 있게 처리 해야함
+
                 }
             }
         }
@@ -107,7 +107,7 @@ namespace MapTool.View
                 var newObj = o.Clone();
                 if (newObj == null) continue;
                 Doc.Document.Instance.AddObject(newObj);
-                MapToolRender.GraphicsDevice.Instance.Add( newObj);
+                //TODO: 트리에서 복제되었을 때 메인 프레임에서 삭제되었음을 알 수 있게 처리 해야함
 
             }
         }

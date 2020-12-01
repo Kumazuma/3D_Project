@@ -30,94 +30,35 @@ namespace MapTool.View
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.label3 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.comboColliderType = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnSaveFile = new System.Windows.Forms.Button();
             this.btnOpenFile = new System.Windows.Forms.Button();
             this.btnLoadXMesh = new System.Windows.Forms.Button();
-            this.renderView = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
             // 
+            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel2);
+            this.splitContainer1.Panel1.Controls.Add(this.propertyGrid1);
             this.splitContainer1.Panel1.Controls.Add(this.comboColliderType);
-            this.splitContainer1.Panel1.Controls.Add(this.label2);
             this.splitContainer1.Panel1.Controls.Add(this.label1);
             this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel1);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.renderView);
-            this.splitContainer1.Size = new System.Drawing.Size(1836, 1180);
+            this.splitContainer1.Size = new System.Drawing.Size(1836, 469);
             this.splitContainer1.SplitterDistance = 612;
             this.splitContainer1.TabIndex = 0;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 6;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel2.Controls.Add(this.label3, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.numericUpDown1, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label4, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.numericUpDown2, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label5, 4, 0);
-            this.tableLayoutPanel2.Controls.Add(this.numericUpDown3, 5, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(91, 132);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(519, 27);
-            this.tableLayoutPanel2.TabIndex = 4;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label3.Location = new System.Drawing.Point(3, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(17, 27);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "X:";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.DecimalPlaces = 6;
-            this.numericUpDown1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.numericUpDown1.Location = new System.Drawing.Point(26, 3);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(143, 21);
-            this.numericUpDown1.TabIndex = 3;
             // 
             // comboColliderType
             // 
@@ -126,17 +67,9 @@ namespace MapTool.View
             this.comboColliderType.FormattingEnabled = true;
             this.comboColliderType.Location = new System.Drawing.Point(90, 106);
             this.comboColliderType.Name = "comboColliderType";
-            this.comboColliderType.Size = new System.Drawing.Size(519, 20);
+            this.comboColliderType.Size = new System.Drawing.Size(517, 20);
             this.comboColliderType.TabIndex = 2;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(43, 139);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 12);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "오프셋";
+            this.comboColliderType.SelectedIndexChanged += new System.EventHandler(this.comboColliderType_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -162,86 +95,51 @@ namespace MapTool.View
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(612, 100);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(610, 100);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // btnSaveFile
             // 
             this.btnSaveFile.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnSaveFile.Location = new System.Drawing.Point(207, 3);
+            this.btnSaveFile.Location = new System.Drawing.Point(206, 3);
             this.btnSaveFile.Name = "btnSaveFile";
-            this.btnSaveFile.Size = new System.Drawing.Size(198, 94);
+            this.btnSaveFile.Size = new System.Drawing.Size(197, 94);
             this.btnSaveFile.TabIndex = 0;
             this.btnSaveFile.Text = "콜라이더 파일 저장";
             this.btnSaveFile.UseVisualStyleBackColor = true;
+            this.btnSaveFile.Click += new System.EventHandler(this.btnSaveFile_Click);
             // 
             // btnOpenFile
             // 
             this.btnOpenFile.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnOpenFile.Location = new System.Drawing.Point(3, 3);
             this.btnOpenFile.Name = "btnOpenFile";
-            this.btnOpenFile.Size = new System.Drawing.Size(198, 94);
+            this.btnOpenFile.Size = new System.Drawing.Size(197, 94);
             this.btnOpenFile.TabIndex = 1;
             this.btnOpenFile.Text = "콜라이더 파일 열기";
             this.btnOpenFile.UseVisualStyleBackColor = true;
+            this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click);
             // 
             // btnLoadXMesh
             // 
             this.btnLoadXMesh.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnLoadXMesh.Location = new System.Drawing.Point(411, 3);
+            this.btnLoadXMesh.Location = new System.Drawing.Point(409, 3);
             this.btnLoadXMesh.Name = "btnLoadXMesh";
             this.btnLoadXMesh.Size = new System.Drawing.Size(198, 94);
             this.btnLoadXMesh.TabIndex = 2;
             this.btnLoadXMesh.Text = "LoadXMesh";
             this.btnLoadXMesh.UseVisualStyleBackColor = true;
+            this.btnLoadXMesh.Click += new System.EventHandler(this.btnLoadXMesh_Click);
             // 
-            // renderView
+            // propertyGrid1
             // 
-            this.renderView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.renderView.Location = new System.Drawing.Point(0, 0);
-            this.renderView.Name = "renderView";
-            this.renderView.Size = new System.Drawing.Size(1220, 1180);
-            this.renderView.TabIndex = 0;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label4.Location = new System.Drawing.Point(175, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(17, 27);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "Y:";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // numericUpDown2
-            // 
-            this.numericUpDown2.DecimalPlaces = 6;
-            this.numericUpDown2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.numericUpDown2.Location = new System.Drawing.Point(198, 3);
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(143, 21);
-            this.numericUpDown2.TabIndex = 3;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label5.Location = new System.Drawing.Point(347, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(17, 27);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "Z:";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // numericUpDown3
-            // 
-            this.numericUpDown3.DecimalPlaces = 6;
-            this.numericUpDown3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.numericUpDown3.Location = new System.Drawing.Point(370, 3);
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(146, 21);
-            this.numericUpDown3.TabIndex = 3;
+            this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.propertyGrid1.Location = new System.Drawing.Point(5, 132);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(600, 332);
+            this.propertyGrid1.TabIndex = 5;
             // 
             // ColiiderEditView
             // 
@@ -249,18 +147,12 @@ namespace MapTool.View
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
             this.Name = "ColiiderEditView";
-            this.Size = new System.Drawing.Size(1836, 1180);
+            this.Size = new System.Drawing.Size(1836, 469);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
-            this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -268,20 +160,12 @@ namespace MapTool.View
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.Panel renderView;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btnOpenFile;
         private System.Windows.Forms.Button btnLoadXMesh;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.ComboBox comboColliderType;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnSaveFile;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown numericUpDown2;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.NumericUpDown numericUpDown3;
+        private System.Windows.Forms.PropertyGrid propertyGrid1;
     }
 }

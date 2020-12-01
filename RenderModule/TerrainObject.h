@@ -1,5 +1,6 @@
 #pragma once
-#include"RenderModule.h"
+#include"RenderEntity.h"
+
 #include"RenderObject.h"
 #include"COMPtr.hpp"
 #include<vector>

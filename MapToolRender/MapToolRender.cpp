@@ -51,9 +51,11 @@ auto MapToolRender::GraphicsDevice::GetSaveFilePath(System::Windows::Forms::Cont
 	// TODO: 여기에 return 문을 삽입합니다.
 	return nullptr;
 }
-auto MapToolRender::GraphicsDevice::Render() -> void
+auto MapToolRender::GraphicsDevice::Render(Control^ drawPanel, IEnumerable<RenderObject^>^ objs, Camera^ camera) -> void
 {
 	System::Threading::Monitor::Enter(this);
+	m_pRenderModule->SetCamera(camera->PositionPtr, camera->RotationPtr);
+	m_pRenderModule->SetProj(45.f, 1.f, 0.1f, 2000.f);
 	try
 	{
 		if (!m_pRenderModule->Renderable())
@@ -66,7 +68,7 @@ auto MapToolRender::GraphicsDevice::Render() -> void
 		ApplyViewProjMatrix();
 		m_pRenderModule->PrepareFrustum();
 		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-		for each (auto obj in m_renderObjects)
+		for each (auto obj in objs)
 		{
 			auto* handle{ obj->Handle };
 			if (handle != nullptr)
@@ -74,60 +76,17 @@ auto MapToolRender::GraphicsDevice::Render() -> void
 				handle->PrepareRender(m_pRenderModule);
 			}
 		}
-		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f);
+		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f, (HWND) drawPanel->Handle.ToPointer() );
 	}
 	finally
 	{
 		System::Threading::Monitor::Exit(this);
 	}
-}
-
-auto MapToolRender::GraphicsDevice::Render(Control^ renderView, RenderObject^ obj, Camera^ camera)->void
-{
-	System::Threading::Monitor::Enter(this);
-	try
-	{
-		
-		COMPtr<IDirect3DDevice9> pDevice;
-		if (!m_pRenderModule->Renderable())
-		{
-			return;
-		}
-		m_pRenderModule->GetDevice(&pDevice);
-		m_pRenderModule->SetCamera(camera->PositionPtr, camera->RotationPtr);
-		m_pRenderModule->SetProj(45.f, 1.f, 0.1f, 2000.f);
-		m_pRenderModule->PrepareFrustum();
-		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-		obj->Handle->PrepareRender(m_pRenderModule);
-		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f, (HWND)renderView->Handle.ToPointer());
-	}
-	finally
-	{
-		System::Threading::Monitor::Exit(this);
-	}
-	
-}
-
-auto MapToolRender::GraphicsDevice::ClearRenderGroup() -> void
-{
-	m_renderObjects.Clear();
-}
-
-auto MapToolRender::GraphicsDevice::Add( RenderObject^ obj) -> void
-{
-	m_renderObjects.Add(obj);
-
-}
-
-auto MapToolRender::GraphicsDevice::Remove( RenderObject^ obj) -> void
-{
-	m_renderObjects.Remove(obj);
 
 }
 auto MapToolRender::GraphicsDevice::ApplyViewProjMatrix() -> void
 {
-	m_pRenderModule->SetCamera(m_currentCamera->PositionPtr, m_currentCamera->RotationPtr);
-	m_pRenderModule->SetProj(45.f, 1.f, 0.1f, 2000.f);
+	
 }
 
 MapToolRender::GraphicsDevice::!GraphicsDevice()
@@ -145,14 +104,6 @@ MapToolRender::GraphicsDevice::GraphicsDevice(Control^ renderView, unsigned widt
 	RenderModule* pOut{};
 	RenderModule::Create((HWND)hwnd, width, height, &pOut);
 	m_pRenderModule = pOut;
-	m_currentCamera = gcnew Camera();
-	auto position = m_currentCamera->Position;
-	auto rotation = m_currentCamera->Rotation;
-	position->Y = 1.f;
-	position->Z = -1.f;
-	rotation->X = DirectX::XMConvertToRadians(10.f);
-	m_currentCamera->Position = position;
-	m_currentCamera->Rotation = rotation;
 }
 
 auto MapToolRender::MapObject::ToString() -> System::String^
