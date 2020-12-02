@@ -5,8 +5,51 @@
 #include <fstream>
 #include <array>
 #include "RenderModule.h"
+#include "hash_helper_for_f32x3.h"
+#include "Common.h"
 #undef max
 #undef min
+//_CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef float _ARGUMENT_TYPE_NAME;
+//_CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef size_t _RESULT_TYPE_NAME;
+//_NODISCARD size_t operator()(const float _Keyval) const noexcept {
+//    return _Hash_representation(_Keyval == 0.0F ? 0.0F : _Keyval); // map -0 to 0
+//}
+namespace std
+{
+    using Vertex = RenderObject::VERTEX<RenderObject::FVF_TEX>;
+
+    template<>
+    struct hash<Vertex>
+    {
+        size_t operator()(const Vertex& _Keyval)const noexcept {
+            return
+                std::_Hash_representation<float>(_Keyval.vPosition.x == 0.f ? 0.f : _Keyval.vPosition.x) ^
+                std::_Hash_representation<float>(_Keyval.vPosition.y == 0.f ? 0.f : _Keyval.vPosition.y) ^
+                std::_Hash_representation<float>(_Keyval.vPosition.x == 0.f ? 0.f : _Keyval.vPosition.y) ^
+                std::_Hash_representation<float>(_Keyval.vNormal.x == 0.f ? 0.f : _Keyval.vNormal.x) ^
+                std::_Hash_representation<float>(_Keyval.vNormal.y == 0.f ? 0.f : _Keyval.vNormal.y) ^
+                std::_Hash_representation<float>(_Keyval.vNormal.x == 0.f ? 0.f : _Keyval.vNormal.y) ^
+                std::_Hash_representation<float>(_Keyval.vUV.x == 0.f ? 0.f : _Keyval.vUV.x) ^
+                std::_Hash_representation<float>(_Keyval.vUV.y == 0.f ? 0.f : _Keyval.vUV.y)
+                ;
+        }
+    };
+    template<>
+    struct equal_to<Vertex>
+    {
+        _CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef Vertex _FIRST_ARGUMENT_TYPE_NAME;
+        _CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef Vertex _SECOND_ARGUMENT_TYPE_NAME;
+        _CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef bool _RESULT_TYPE_NAME;
+        bool operator()(const Vertex& _Left, const Vertex& _Right) const {
+            
+            return
+                ::equal( _Left.vPosition , _Right.vPosition) &&
+                ::equal(_Left.vNormal, _Right.vNormal)&&
+                ::equal(_Left.vUV, _Right.vUV);
+        }
+    };
+}
+
 template<size_t stride, size_t count>
 inline __m256 __vectorcall Load256(void* source)
 {
@@ -76,14 +119,19 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     std::vector<XMFLOAT3A> positions;
     std::vector<XMFLOAT2A> UVs;
     std::vector<XMFLOAT3A> normals;
-    std::unordered_map<std::wstring, std::vector<std::array<XMINT3, 3 > > > groups;
+    std::unordered_map<std::wstring, std::vector<std::array<XMUINT3, 3 > > > groups;
     std::unordered_map<std::wstring, std::wstring > materialNames;
+    std::unordered_map<VERTEX<FVF>, size_t> itemIndexTable;
+
+    std::equal_to<std::Vertex> asd;
+    std::equal_to<std::Vertex> asd2{ asd };
+    asd = asd2;
 
     std::wstring currentGroup;
     std::wstring currentMaterial;
     std::wstring materialLibName;
     std::ifstream fileStream;
-    std::unordered_map<std::wstring, std::vector<std::array<XMINT3, 3 > > >::iterator it{ groups.end() };
+    std::unordered_map<std::wstring, std::vector<std::array<XMUINT3, 3 > > >::iterator it{ groups.end() };
     fileStream.open(path);
     if (!fileStream.is_open())
     {
@@ -92,6 +140,7 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     std::string token;
     while (!fileStream.eof())
     {
+        token.clear();
         fileStream >> token;
         if (token.empty())
         {
@@ -126,11 +175,11 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
             std::string groupName;
             fileStream >> groupName;
             currentGroup = ConvertUTF8ToWide(groupName);
-            it = groups.emplace(currentGroup, std::vector<std::array<XMINT3, 3> >{}).first;
+            it = groups.emplace(currentGroup, std::vector<std::array<XMUINT3, 3> >{}).first;
         }
         else if (token == OBJ_TOKEN_FACE)
         {
-            std::array<XMINT3, 3> triangle{};
+            std::array<XMUINT3, 3> triangle{};
             for (auto& v : triangle)
             {
                 fileStream >> v.x;
@@ -224,15 +273,7 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     vertices.reserve(positions.size());
     const u32 minCount{static_cast<u32>( std::min(UVs.size(), std::min(positions.size(), normals.size())) )};
     m_pVertexPositions = std::make_unique<std::vector<XMFLOAT3A> >();
-    for (u32 i = 0; i < minCount; ++i)
-    {
-        VERTEX<FVF> newVertex{};
-        newVertex.vNormal = normals[i];
-        newVertex.vUV = UVs[i];
-        newVertex.vPosition = positions[i];
-        vertices.emplace_back(newVertex);
-        m_pVertexPositions->emplace_back(positions[i]);
-    }
+
     for (auto& it : groups)
     {
         std::vector<Index<INDEX_TYPE> > indices;
@@ -242,38 +283,24 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
             Index<INDEX_TYPE> newIndex{};
             for (u32 i = 0; i < 3; ++i)
             {
-                if (triangle[i].x == triangle[i].y && triangle[i].y == triangle[i].z)
+                auto& pos = positions[triangle[i].x - 1];
+                auto& uv = UVs[triangle[i].y - 1];
+                auto& normal = normals[triangle[i].z - 1];
+                VERTEX<FVF> newItem{};
+                newItem.vNormal = normal;
+                newItem.vUV = uv;
+                newItem.vPosition = pos;
+
+                auto findIt = itemIndexTable.find(newItem);
+
+                if (findIt == itemIndexTable.end())
                 {
-                    newIndex[i] = triangle[i].x - 1;
+                    size_t newVertexIndex{ m_pVertexPositions->size() };
+                    vertices.emplace_back(newItem);
+                    m_pVertexPositions->emplace_back(pos);
+                    findIt = itemIndexTable.emplace(newItem, newVertexIndex).first;
                 }
-                else
-                {
-                    auto& pos = positions[triangle[i].x - 1];
-                    auto& uv = UVs[triangle[i].y - 1];
-                    auto& normal = normals[triangle[i].z - 1];
-                    auto findIt = std::find_if(
-                        vertices.begin() + minCount,
-                        vertices.end(),
-                        [pos, uv, normal](VERTEX<FVF> const& item)->bool
-                        {
-                            return
-                                item.vPosition == pos &&
-                                item.vUV == uv &&
-                                item.vNormal == normal;
-                        });
-                    if (findIt == vertices.end())
-                    {
-                        VERTEX<FVF> newVertex{};
-                        newVertex.vNormal = normal;
-                        newVertex.vUV = uv;
-                        newVertex.vPosition = pos;
-                        vertices.emplace_back(newVertex);
-                        m_pVertexPositions->emplace_back(pos);
-                        findIt = vertices.end() - 1;
-                    }
-                    newIndex[i] = findIt - vertices.begin();
-                }
-                
+                newIndex[i] = findIt->second;
             }
             indices.emplace_back(newIndex);
         }
@@ -335,6 +362,7 @@ auto WowMapMeshObject::ParseMtlFile(RenderModule* pRenderModule, std::wstring co
     std::string token;
     while (!fileStream.eof())
     {
+        token.clear();
         fileStream >> token;
         if (token == "newmtl")
         {
@@ -424,7 +452,7 @@ auto WowMapMeshObject::PrepareRender(RenderModule* pRenderModule) -> void
     XMMATRIX mWorldTransform{ XMLoadFloat4x4(&m_transform) };
     XMVECTOR t = XMVector3TransformCoord(XMLoadFloat3A(&m_center), mWorldTransform);
     XMVECTOR radius = XMVector3TransformNormal(XMVectorSet(m_radius, m_radius, m_radius, 0.f), mWorldTransform);
-
+    int s = 0;
     if (!frustum.Intersact(t, m_radius))
     {
         return;
@@ -434,6 +462,7 @@ auto WowMapMeshObject::PrepareRender(RenderModule* pRenderModule) -> void
         XMVECTOR t = XMVector3TransformCoord(XMLoadFloat3A(&it->GetSubset()->GetCenter() ), XMLoadFloat4x4(&m_transform));
         if (frustum.Intersact(t, m_radius))
         {
+            ++s;
             pRenderModule->AddRenderEntity(RenderModule::Kind::NONALPHA, it);
         }
     }

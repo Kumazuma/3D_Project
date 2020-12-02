@@ -16,14 +16,16 @@ public:
 	auto GetTransform()const->DirectX::XMFLOAT4X4 const&;
 protected:
 	DirectX::XMFLOAT4X4 m_transform;
-protected:
+public:
 	static constexpr unsigned long FVF_TEX = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;
-	static constexpr unsigned long FVF_TEX3D = D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXCOORDSIZE3(0);;
+	static constexpr unsigned long FVF_NAVI = D3DFVF_XYZ | D3DFVF_DIFFUSE;
+	static constexpr unsigned long FVF_TEX3D = D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXCOORDSIZE3(0);
 	template<unsigned long FVFTYPE>
 	struct VERTEX;
 	template<>
 	struct VERTEX<FVF_TEX>
 	{
+		VERTEX(VERTEX const&)noexcept = default;
 		DirectX::XMFLOAT3 vPosition;
 		DirectX::XMFLOAT3 vNormal;
 		DirectX::XMFLOAT2 vUV;
@@ -34,6 +36,13 @@ protected:
 		DirectX::XMFLOAT3 vPosition;
 		DirectX::XMFLOAT3 vUV;
 	};
+	template<>
+	struct VERTEX<FVF_NAVI>
+	{
+		DirectX::XMFLOAT3 vPosition;
+		DirectX::XMFLOAT2 vUV;
+	};
+
 	template<unsigned long INDEXTYPE>
 	struct MetaIndexData{};
 	template<>

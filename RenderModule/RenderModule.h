@@ -20,7 +20,7 @@ struct RenderEntity;
 class DLL_CLASS RenderModule
 {
 public:
-	enum class Kind{ENVIRONMENT, NONALPHA, ALPHA, UI};
+	enum class Kind{ENVIRONMENT, NONALPHA,  ALPHA, NAVIMASH, UI};
 	static auto Create(HWND hWindow, u32 width, u32 height, RenderModule** pOut)->HRESULT;
 public:
 	auto GetDevice(IDirect3DDevice9** pOut)->HRESULT;

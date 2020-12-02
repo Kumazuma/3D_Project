@@ -5,30 +5,38 @@
 #define DLL_CLASS _declspec(dllimport)
 #endif
 #include "typedef.hpp"
-#define __BEGINE_NAMESPACE(namespace_) namespace namespace_{
-inline bool operator == (DirectX::XMFLOAT3 const& lhs, DirectX::XMFLOAT3 const& rhs)
+
+inline constexpr bool operator == (DirectX::XMFLOAT3 const& lhs, DirectX::XMFLOAT3 const& rhs)
 {
 	return
 		lhs.x == rhs.x &&
 		lhs.y == rhs.y &&
 		lhs.z == rhs.z;
 }
-inline bool operator != (DirectX::XMFLOAT3 const& lhs, DirectX::XMFLOAT3 const& rhs)
+inline constexpr bool operator != (DirectX::XMFLOAT3 const& lhs, DirectX::XMFLOAT3 const& rhs)
 {
 	return
 		lhs.x != rhs.x ||
 		lhs.y != rhs.y ||
 		lhs.z != rhs.z;
 }
-inline bool operator == (DirectX::XMFLOAT2 const& lhs, DirectX::XMFLOAT2 const& rhs)
+inline constexpr bool operator == (DirectX::XMFLOAT2 const& lhs, DirectX::XMFLOAT2 const& rhs)
 {
 	return
 		lhs.x == rhs.x &&
 		lhs.y == rhs.y;
 }
-inline bool operator != (DirectX::XMFLOAT2 const& lhs, DirectX::XMFLOAT2 const& rhs)
+inline constexpr bool operator != (DirectX::XMFLOAT2 const& lhs, DirectX::XMFLOAT2 const& rhs)
 {
 	return
 		lhs.x != rhs.x ||
 		lhs.y != rhs.y;
+}
+inline constexpr auto equal(DirectX::XMFLOAT3 const& lhs, DirectX::XMFLOAT3 const& rhs)->bool
+{
+	return lhs == rhs;
+}
+inline constexpr auto equal(DirectX::XMFLOAT2 const& lhs, DirectX::XMFLOAT2 const& rhs)->bool
+{
+	return lhs == rhs;
 }

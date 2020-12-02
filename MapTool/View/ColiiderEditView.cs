@@ -14,7 +14,6 @@ namespace MapTool.View
     public partial class ColiiderEditView : UserControl
     {
         private RenderView renderView;
-        private Collider collider;
         private HashSet<RenderObject> renderObjects;
         private RenderObject renderObject;
         private BoxColliderMeshObject boxMeshObject;
@@ -35,16 +34,13 @@ namespace MapTool.View
             sphareMeshObject = new SphareMesh(GraphicsDevice.Instance);
             boxMeshObject.Collider = new MapToolCore.BoxCollider();
             sphareMeshObject.Collider = new MapToolCore.SphareCollider();
-
             boxMeshObject.PropertyChanged += BoxMeshObject_PropertyChanged;
             sphareMeshObject.PropertyChanged += BoxMeshObject_PropertyChanged;
         }
-
         private void BoxMeshObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             renderView.Render();
         }
-
         private void comboColliderType_SelectedIndexChanged(object sender, EventArgs e)
         {
             renderObjects.Remove(boxMeshObject);
@@ -81,7 +77,7 @@ namespace MapTool.View
             }
             var path = fileDialog.FileName;
 
-            var xmesh = Doc.MeshManager.Instance.GetStaticMesh(path);
+            var xmesh = Doc.MeshManager.Instance.GetSkinnedMesh(path);
             xmesh.Name = "XMesh";
             renderObject = xmesh;
             //TODO:콜라이더 메시도 같이 보일 수 있게 해줘야 함.
@@ -103,8 +99,6 @@ namespace MapTool.View
         {
             if (renderObject == null)
                 return;
-
         }
-
     }
 }

@@ -37,6 +37,9 @@
     <Filter Include="SimpleMesh\Sphere">
       <UniqueIdentifier>{dc86e64a-ff11-4f8d-9717-0c0d12c621fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NavMesh">
+      <UniqueIdentifier>{70f3f6ae-e5f2-4517-9df8-c789b26e4032}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -102,6 +105,12 @@
     <ClInclude Include="SimpleColliderSphareObject.h">
       <Filter>SimpleMesh\Sphere</Filter>
     </ClInclude>
+    <ClInclude Include="NavMesh.h">
+      <Filter>NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="hash_helper_for_f32x3.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -154,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="SimpleColliderSphareObject.cpp">
       <Filter>SimpleMesh\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMesh.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
