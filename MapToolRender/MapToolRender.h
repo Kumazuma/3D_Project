@@ -52,6 +52,9 @@ namespace MapToolRender {
 	};
 	public ref class MapObject abstract : public INotifyPropertyChanged
 	{
+	protected:
+		MapObject() {}
+		MapObject(MapObject^ rhs);
 	public:
 		virtual event PropertyChangedEventHandler^ PropertyChanged;
 		[CategoryAttribute("속성")]
@@ -63,8 +66,8 @@ namespace MapToolRender {
 		virtual auto Update(int ms)->void {}
 		virtual auto ToString()->System::String^ override;
 	protected:
-		MapObject() {}
-		MapObject(MapObject^ rhs);
+		auto BroadcastPropertyChanged(System::String^ propertyName)->void;
+	protected:
 		System::String^ m_name;
 	};
 	public ref class RenderObject abstract: public MapObject

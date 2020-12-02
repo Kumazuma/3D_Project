@@ -111,6 +111,11 @@ auto MapToolRender::MapObject::ToString() -> System::String^
 	return String::Format("{0}({1})", m_name, GetType());
 }
 
+auto MapToolRender::MapObject::BroadcastPropertyChanged(System::String^ propertyName) -> void
+{
+	PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs(propertyName));
+}
+
 MapToolRender::MapObject::MapObject(MapObject^rhs):
 	m_name{rhs->m_name}
 {

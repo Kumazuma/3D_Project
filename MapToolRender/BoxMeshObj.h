@@ -16,7 +16,11 @@ namespace MapToolRender
 			auto get()->MapToolCore::BoxCollider^;
 			auto set(MapToolCore::BoxCollider^ )->void;
 		}
+	protected:
+		auto OnColliderChangedChanged(System::Object^ sener, System::ComponentModel::PropertyChangedEventArgs^ e)->void;
+		auto OnBoxObjChanged(System::Object^ sener, System::ComponentModel::PropertyChangedEventArgs^ e)->void;
 	private:
 		MapToolCore::BoxCollider^ m_collider;
+		System::ComponentModel::PropertyChangedEventHandler^ m_propertyChangedhandler;
 	};
 }

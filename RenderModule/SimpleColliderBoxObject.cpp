@@ -25,6 +25,8 @@ auto SimpleBoxObject::SetColor(float r, float g, float b, float a) -> void
 {
 	m_color = XMFLOAT4{ r,g,b,a };
 	m_material.Diffuse = D3DCOLORVALUE{ r,g,b,a };
+	m_material.Ambient = D3DCOLORVALUE{ r,g,b,a };
+	m_material.Specular = D3DCOLORVALUE{ r,g,b,a };
 }
 
 auto SimpleBoxObject::GetColor() const -> XMFLOAT4 const&
@@ -39,45 +41,39 @@ auto SimpleBoxObject::Clone() const -> RenderObject*
 
 auto SimpleBoxObject::PrepareRender(RenderModule* pRenderModule) -> void
 {
-
+	pRenderModule->AddRenderEntity(RenderModule::Kind::ALPHA, m_entity);
 }
 
 auto SimpleBoxObject::GetWidth() const -> f32
 {
-	return m_width;
+	return m_size.x;
 }
 
 auto SimpleBoxObject::GetHeight() const -> f32
 {
-	return m_height;
+	return m_size.y;
 }
 
 auto SimpleBoxObject::GetDepth() const -> f32
 {
-	return m_depth;
+	return m_size.z;
 }
 
-auto SimpleBoxObject::SetWidth(f32 val)  -> void
+auto SimpleBoxObject::SetSize(f32 width, f32 height, f32 depth) -> void
 {
-	m_width = val;
+	m_size = XMFLOAT3A{ width, height, depth };
 }
 
-auto SimpleBoxObject::SetHeight(f32 val)  -> void
+auto SimpleBoxObject::SetOffset(f32 x, f32 y, f32 z) -> void
 {
-	m_height = val;
-}
-
-auto SimpleBoxObject::SetDepth(f32 val)  -> void
-{
-	m_depth = val;
-
+	m_offset = XMFLOAT3A{ x,y,z };
 }
 
 auto SimpleBoxObject::Initialize(RenderModule* pRenderModule, f32 width, f32 height, f32 depth) -> HRESULT
 {
-	m_height = height;
-	m_width = width;
-	m_depth = depth;
+	m_size = XMFLOAT3A{ width, height, depth };
+	m_offset = XMFLOAT3A{ 0,0,0 };
+
 	HRESULT hr{ E_FAIL };
 
 	COMPtr<IDirect3DDevice9> pDevice;
@@ -94,9 +90,8 @@ auto SimpleBoxObject::Initialize(RenderModule* pRenderModule, f32 width, f32 hei
 
 SimpleBoxObject::SimpleBoxObject():
 	RenderObject{},
-	m_width{},
-	m_height{},
-	m_depth{},
+	m_size{},
+	m_offset{},
 	m_material{},
 	m_pMesh{},
 	m_entity{new SimpleBoxEntity{this}}
@@ -106,9 +101,8 @@ SimpleBoxObject::SimpleBoxObject():
 SimpleBoxObject::SimpleBoxObject(SimpleBoxObject const& rhs):
 	RenderObject{rhs},
 	m_entity{ new SimpleBoxEntity {this} },
-	m_width{ rhs.m_width},
-	m_height{ rhs.m_height},
-	m_depth{ rhs.m_depth},
+	m_size{ rhs.m_size },
+	m_offset{ rhs.m_offset },
 	m_material{rhs.m_material},
 	m_color{rhs.m_color},
 	m_pMesh{rhs.m_pMesh}
@@ -123,24 +117,32 @@ SimpleBoxEntity::SimpleBoxEntity(SimpleBoxObject* pObj):
 auto SimpleBoxEntity::Render(RenderModule* pRenderModule) -> void
 {
 	auto meterial{ m_obj->m_material };
-	auto width{ m_obj->m_width };
-	auto height{ m_obj->m_height };
-	auto depth{ m_obj->m_depth };
+	auto size{ m_obj->m_size };
+	auto offset{ m_obj->m_offset };
+
 	auto* pTransfrom{ &m_obj->m_transform };
 	auto pMesh{ m_obj->m_pMesh };
 	DWORD fillMode;
+	DWORD cullMode;
 	COMPtr<IDirect3DDevice9> pDevice;
-	pDevice->GetRenderState(D3DRS_FILLMODE, &fillMode);
-	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	COMPtr<IDirect3DTexture9> pRedTexture;
 	pRenderModule->GetDevice(&pDevice);
-	pDevice->SetMaterial(&meterial);
+	pRenderModule->GetSimpleColorTexture(DefaultColorTexture::RED, &pRedTexture);
+	pDevice->GetRenderState(D3DRS_FILLMODE, &fillMode);
+	pDevice->GetRenderState(D3DRS_CULLMODE, &cullMode);
+	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	XMMATRIX mSize{ XMMatrixScaling(width , height, depth) };
+	pDevice->SetMaterial(&meterial);
+	pDevice->SetTexture(0, pRedTexture.Get());
+	XMMATRIX mSize{ XMMatrixScaling(size.x , size.y, size.z) };
+	XMMATRIX mOffset{ XMMatrixTranslation(offset.x,offset.y,offset.z) };
 	XMMATRIX mTransform{ XMLoadFloat4x4(pTransfrom) };
-	mTransform = mSize * mTransform;
+	mTransform = mSize * mOffset * mTransform;
 	auto* pWorld{ reinterpret_cast<D3DMATRIX*>(&mTransform) };
 
 	pDevice->SetTransform(D3DTS_WORLD, pWorld);//vertex shader
 	pMesh->DrawSubset(0);
 	pDevice->SetRenderState(D3DRS_FILLMODE, fillMode);
+	pDevice->SetRenderState(D3DRS_CULLMODE, cullMode);
 }

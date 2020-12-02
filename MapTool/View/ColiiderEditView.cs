@@ -15,9 +15,9 @@ namespace MapTool.View
     {
         private RenderView renderView;
         private Collider collider;
-        private List<RenderObject> renderObjects;
+        private HashSet<RenderObject> renderObjects;
         private RenderObject renderObject;
-        private RenderObject boxMeshObject;
+        private BoxColliderMeshObject boxMeshObject;
         private RenderObject sphareMeshObject;
 
         public ColiiderEditView()
@@ -29,22 +29,42 @@ namespace MapTool.View
             renderView.Parent = splitContainer1.Panel2;
             splitContainer1.Panel2.Controls.Add(renderView);
             renderView.Dock = System.Windows.Forms.DockStyle.Fill;
-            renderObjects = new List<RenderObject>();
+            renderObjects = new HashSet<RenderObject>();
             renderView.RenderObjects = renderObjects;
+            boxMeshObject = new BoxColliderMeshObject(GraphicsDevice.Instance);
+            boxMeshObject.PropertyChanged += BoxMeshObject_PropertyChanged;
+        }
+
+        private void BoxMeshObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            renderView.Render();
         }
 
         private void comboColliderType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch(comboColliderType.SelectedItem as string)
+            renderObjects.Remove(boxMeshObject);
+            RenderObject colObj = null;
+            switch (comboColliderType.SelectedItem as string)
             {
                 case "Box":
                     collider = new MapToolCore.BoxCollider();
+                    boxMeshObject.Collider = collider as BoxCollider;
+                    colObj = boxMeshObject;
                     break;
                 case "Sphare":
                     collider = new MapToolCore.SphareCollider();
                     break;
             }
-            propertyGrid1.SelectedObject = collider;
+            if(colObj != null)
+            {
+                propertyGrid1.SelectedObject = colObj;
+                renderObjects.Add(colObj);
+            }
+            renderView.Render();
+        }
+
+        private void Collider_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
         }
 
         private void btnLoadXMesh_Click(object sender, EventArgs e)

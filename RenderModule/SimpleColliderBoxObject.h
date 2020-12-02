@@ -18,18 +18,15 @@ public:
 	auto GetWidth()const->f32;
 	auto GetHeight()const->f32;
 	auto GetDepth()const->f32;
-	auto SetWidth(f32 val)->void;
-	auto SetHeight(f32 val)->void;
-	auto SetDepth(f32 val)->void;
+	auto SetSize(f32 width, f32 height, f32 depth)->void;
+	auto SetOffset(f32 x, f32 y, f32 z)->void;
 protected:
 	auto Initialize(RenderModule* pRenderModule, f32 width, f32 height, f32 depth)->HRESULT;
 	SimpleBoxObject();
 	SimpleBoxObject(SimpleBoxObject const& rhs);
 private:
-
-	f32 m_width;
-	f32 m_depth;
-	f32 m_height;
+	DirectX::XMFLOAT3A m_size;
+	DirectX::XMFLOAT3A m_offset;
 	DirectX::XMFLOAT4 m_color;
 	D3DMATERIAL9 m_material;
 	COMPtr<ID3DXMesh> m_pMesh;

@@ -36,7 +36,7 @@ namespace MapTool.Doc
                 throw new ArgumentNullException();
             }
             path = System.IO.Path.GetFullPath(path);
-            if (m_skinnedMeshs.ContainsKey(path))
+            if (m_staticMeshs.ContainsKey(path))
             {
                 return m_staticMeshs[path];
             }
