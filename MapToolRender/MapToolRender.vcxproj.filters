@@ -66,6 +66,9 @@
     <ClInclude Include="BoxMeshObj.h">
       <Filter>ColliderBoxMeshObject</Filter>
     </ClInclude>
+    <ClInclude Include="SphareMeshObj.h">
+      <Filter>ColliderSphareMeshObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MapToolRender.cpp">
@@ -112,6 +115,9 @@
     </ClCompile>
     <ClCompile Include="BoxMeshObj.cpp">
       <Filter>ColliderBoxMeshObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SphareMeshObj.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

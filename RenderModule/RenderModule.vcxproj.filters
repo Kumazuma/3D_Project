@@ -28,6 +28,15 @@
     <Filter Include="WowMapMesh">
       <UniqueIdentifier>{96f05a3e-7036-44f4-bd82-5d2f18f29976}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SimpleMesh">
+      <UniqueIdentifier>{47c9368a-1e28-4322-a547-460248fe59f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SimpleMesh\Box">
+      <UniqueIdentifier>{0f48f121-bf89-4404-ac50-452e0ef49b39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SimpleMesh\Sphere">
+      <UniqueIdentifier>{dc86e64a-ff11-4f8d-9717-0c0d12c621fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -46,9 +55,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="MeshObject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleColliderBoxObject.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Frustum.h">
@@ -90,6 +96,12 @@
     <ClInclude Include="RenderEntity.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleColliderBoxObject.h">
+      <Filter>SimpleMesh\Box</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleColliderSphareObject.h">
+      <Filter>SimpleMesh\Sphere</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -105,9 +117,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MeshObject.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleColliderBoxObject.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Frustum.cpp">
@@ -139,6 +148,12 @@
     </ClCompile>
     <ClCompile Include="WowMapMeshObject.cpp">
       <Filter>WowMapMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleColliderBoxObject.cpp">
+      <Filter>SimpleMesh\Box</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleColliderSphareObject.cpp">
+      <Filter>SimpleMesh\Sphere</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

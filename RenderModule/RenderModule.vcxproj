@@ -183,6 +183,7 @@
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="SimpleColliderBoxObject.h" />
+    <ClInclude Include="SimpleColliderSphareObject.h" />
     <ClInclude Include="SkinnedXMeshObject.h" />
     <ClInclude Include="SkyBoxObject.h" />
     <ClInclude Include="StaticXMeshObject.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="SimpleColliderBoxObject.cpp" />
+    <ClCompile Include="SimpleColliderSphareObject.cpp" />
     <ClCompile Include="SkinnedXMeshObject.cpp" />
     <ClCompile Include="SkyBoxObject.cpp" />
     <ClCompile Include="StaticXMeshObject.cpp" />

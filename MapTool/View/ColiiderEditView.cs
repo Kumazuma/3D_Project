@@ -18,7 +18,7 @@ namespace MapTool.View
         private HashSet<RenderObject> renderObjects;
         private RenderObject renderObject;
         private BoxColliderMeshObject boxMeshObject;
-        private RenderObject sphareMeshObject;
+        private SphareMesh sphareMeshObject;
 
         public ColiiderEditView()
         {
@@ -32,7 +32,12 @@ namespace MapTool.View
             renderObjects = new HashSet<RenderObject>();
             renderView.RenderObjects = renderObjects;
             boxMeshObject = new BoxColliderMeshObject(GraphicsDevice.Instance);
+            sphareMeshObject = new SphareMesh(GraphicsDevice.Instance);
+            boxMeshObject.Collider = new MapToolCore.BoxCollider();
+            sphareMeshObject.Collider = new MapToolCore.SphareCollider();
+
             boxMeshObject.PropertyChanged += BoxMeshObject_PropertyChanged;
+            sphareMeshObject.PropertyChanged += BoxMeshObject_PropertyChanged;
         }
 
         private void BoxMeshObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -43,16 +48,15 @@ namespace MapTool.View
         private void comboColliderType_SelectedIndexChanged(object sender, EventArgs e)
         {
             renderObjects.Remove(boxMeshObject);
+            renderObjects.Remove(sphareMeshObject);
             RenderObject colObj = null;
             switch (comboColliderType.SelectedItem as string)
             {
                 case "Box":
-                    collider = new MapToolCore.BoxCollider();
-                    boxMeshObject.Collider = collider as BoxCollider;
                     colObj = boxMeshObject;
                     break;
                 case "Sphare":
-                    collider = new MapToolCore.SphareCollider();
+                    colObj = sphareMeshObject;
                     break;
             }
             if(colObj != null)
