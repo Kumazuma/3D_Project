@@ -6,6 +6,7 @@
 #include <d3dx9.h>
 #include <vector>
 #include <unordered_map>
+#include "hash_helper_for_f32x3.h"
 class NavMeshEntity;
 
 class DLL_CLASS NavMeshRenderingObject : public RenderObject
@@ -14,6 +15,7 @@ class DLL_CLASS NavMeshRenderingObject : public RenderObject
 	using Entity = NavMeshEntity;
 	static constexpr unsigned long FVF = FVF_NAVI;
 	static constexpr D3DFORMAT INDEX_FMT = D3DFMT_INDEX16;
+	using Triangle = Index<INDEX_FMT>;
 	using Vertex = VERTEX<FVF>;
 protected:
 	NavMeshRenderingObject(RenderModule*);
@@ -23,14 +25,14 @@ public:
 	static auto Create(RenderModule* pRenderModule, NavMeshRenderingObject** pOut)->HRESULT;
 public:
 	auto Clone()const->RenderObject*;
-	auto PushPoint(f32 x, f32 y, f32 z);
+	auto PushPoint(DirectX::XMFLOAT3 const& pt, DirectX::XMFLOAT3 const& cameraAt, DirectX::XMFLOAT3 const& rotation);
 	auto PrepareRender(RenderModule* pRenderModule)->void override;
 private:
 	//조립 중인 포인트
-	std::vector<unsigned short> m_positionIndexing;
-	//std::unordered_map<DirectX::XMFLOAT3, unsigned short> m_table;
+	std::vector<u16> m_positionIndexing;
+	std::unordered_map<DirectX::XMFLOAT3, size_t> m_table;
 	std::vector<Vertex > m_vertices;
-	std::vector<Index< INDEX_FMT> > m_triangles;
+	std::vector<Triangle > m_triangles;
 	std::shared_ptr<NavMeshEntity> m_entity;
 };
 class NavMeshEntity : public RenderEntity

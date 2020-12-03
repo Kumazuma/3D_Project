@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapToolCore", "MapToolCore\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tool", "Tool", "{AC4D4AAB-1C1C-43C6-BC10-F769ED623193}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "Utility\Utility.vcxproj", "{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,16 @@ Global
 		{CC5ED826-3386-4240-8316-C09A6D07390B}.Release|x64.Build.0 = Release|x64
 		{CC5ED826-3386-4240-8316-C09A6D07390B}.Release|x86.ActiveCfg = Release|Any CPU
 		{CC5ED826-3386-4240-8316-C09A6D07390B}.Release|x86.Build.0 = Release|Any CPU
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}.Debug|x64.ActiveCfg = Debug|x64
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}.Debug|x64.Build.0 = Debug|x64
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}.Debug|x86.ActiveCfg = Debug|Win32
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}.Debug|x86.Build.0 = Debug|Win32
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}.Release|Any CPU.ActiveCfg = Release|Win32
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}.Release|x64.ActiveCfg = Release|x64
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}.Release|x64.Build.0 = Release|x64
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}.Release|x86.ActiveCfg = Release|Win32
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

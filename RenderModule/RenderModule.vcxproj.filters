@@ -40,6 +40,15 @@
     <Filter Include="NavMesh">
       <UniqueIdentifier>{70f3f6ae-e5f2-4517-9df8-c789b26e4032}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{2eb06ef1-35fd-459e-badc-092173103f03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ray">
+      <UniqueIdentifier>{8f061563-0cf4-46e2-9f1c-a918742f0504}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3DLine">
+      <UniqueIdentifier>{9f904e9a-7578-490f-8e86-af8982d1b1a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -111,6 +120,18 @@
     <ClInclude Include="hash_helper_for_f32x3.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="intersact.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Ray.h">
+      <Filter>Ray</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Line3D.h">
+      <Filter>3DLine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -164,8 +185,17 @@
     <ClCompile Include="SimpleColliderSphareObject.cpp">
       <Filter>SimpleMesh\Sphere</Filter>
     </ClCompile>
-    <ClCompile Include="NavMesh.cpp">
+    <ClCompile Include="intersact.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Ray.cpp">
+      <Filter>Ray</Filter>
+    </ClCompile>
+    <ClCompile Include="Line3D.cpp">
+      <Filter>3DLine</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMesh.cpp">
+      <Filter>NavMesh</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

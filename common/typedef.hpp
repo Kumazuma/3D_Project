@@ -5,7 +5,9 @@ using HLSLfloat4 = DirectX::XMFLOAT4;
 using HLSLfloat2 = DirectX::XMFLOAT2;
 using HLSLMatrix = DirectX::XMMATRIX;
 using f32x3 = DirectX::XMFLOAT3;
-
+using f32x3A = DirectX::XMFLOAT3A;
+using f32x4 = DirectX::XMFLOAT4;
+using f32x44 = DirectX::XMFLOAT4X4;
 using i64 = long long;
 using i32 = long;
 using i16 = short;

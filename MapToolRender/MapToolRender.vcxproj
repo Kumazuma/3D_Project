@@ -148,8 +148,10 @@
   <ItemGroup>
     <ClInclude Include="BoxMeshObj.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Line3D.h" />
     <ClInclude Include="MapToolRender.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Ray.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SkinnedXMeshObj.h" />
     <ClInclude Include="SkyBox.h" />
@@ -173,6 +175,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="SkinnedXMeshObj.cpp" />
     <ClCompile Include="SkyBox.cpp" />

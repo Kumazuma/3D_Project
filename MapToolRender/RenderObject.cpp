@@ -1,6 +1,8 @@
 #include"pch.h"
 #include<RenderModule/RenderObject.h>
 #include"MapToolRender.h"
+#include"Ray.h"
+#include<RenderModule/Ray.h>
 #pragma unmanaged
 void CreateWorldTransform(
 	DirectX::XMFLOAT4X4* matrix,
@@ -8,7 +10,6 @@ void CreateWorldTransform(
 	DirectX::XMFLOAT3 const& rotation,
 	DirectX::XMFLOAT3 const& scale)
 {
-	
 	DirectX::XMMATRIX mScale{ DirectX::XMMatrixScaling(scale.x, scale.y,scale.z) };
 	DirectX::XMMATRIX mRotation{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) };
 	DirectX::XMMATRIX mWorld{ mScale * mRotation };
@@ -44,6 +45,16 @@ namespace MapToolRender
 			delete this->m_pNativeObject;
 			this->m_pNativeObject = nullptr;
 		}
+	}
+	auto RenderObject::RayPick(Ray^ ray) -> Position^
+	{
+		float out;
+		if (m_pNativeObject->RayPicking(ray->Handle, &out))
+		{
+			auto t = ray->Handle->GetPosition(out);
+			return gcnew Position(t.x, t.y, t.z);
+		}
+		return nullptr;
 	}
 	auto MapToolRender::RenderObject::OnTransformChanged(Object^ obj, PropertyChangedEventArgs^ e) -> void
 	{
@@ -94,5 +105,9 @@ namespace MapToolRender
 	auto RenderObject::Transform::get()->MapToolRender::Transform^
 	{
 		return m_transform;
+	}
+	auto RenderObject::IsRayPick::get()->bool
+	{
+		return m_pNativeObject->CanRayPicking();
 	}
 }

@@ -2,11 +2,14 @@
 #include "WowMapMeshObject.h"
 #include "UnicodeHelper.h"
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
 #include <fstream>
 #include <array>
 #include "RenderModule.h"
 #include "hash_helper_for_f32x3.h"
 #include "Common.h"
+#include "intersact.h"
+#include <sstream>
 #undef max
 #undef min
 //_CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef float _ARGUMENT_TYPE_NAME;
@@ -211,39 +214,39 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     __m256 _1{ -1.f ,-1.f , -1.f , -1.f , -1.f , -1.f, - 1.f ,-1.f };
     __m256 Zs{};
     assert(positions.size() <= std::numeric_limits<u32>::max());
-    u32 length = static_cast<u32>(positions.size() / 8);
-    for (u32 i = 0; i < length; ++i)
+    size_t length = positions.size() / 8;
+    for (size_t i = 0; i < length; ++i)
     {
         Zs = Load256<sizeof(DirectX::XMFLOAT3A), 8>(&positions[i * 8].z);
         Zs = _mm256_mul_ps(Zs, _1);
         Store256<sizeof(DirectX::XMFLOAT3A), 8>(Zs, &positions[i * 8].z);
     }
     length *= 8;
-    for (u32 i = 0; i < positions.size() - length; ++i)
+    for (size_t i = 0; i < positions.size() - length; ++i)
     {
         Zs.m256_f32[i] = positions[i + length].z;
     }
     Zs = _mm256_mul_ps(Zs, _1);
-    for (u32 i = 0; i < positions.size() - length; ++i)
+    for (size_t i = 0; i < positions.size() - length; ++i)
     {
         positions[i + length].z = Zs.m256_f32[i];
     }
 
     //normal의 Z값을 뒤집어 줘야 한다.
     length = normals.size() / 8;
-    for (u32 i = 0; i < length; ++i)
+    for (size_t i = 0; i < length; ++i)
     {
         Zs = Load256<sizeof(DirectX::XMFLOAT3A), 8>(&normals[i * 8].z);
         Zs = _mm256_mul_ps(Zs, _1);
         Store256<sizeof(DirectX::XMFLOAT3A), 8>(Zs, &normals[i * 8].z);
     }
     length *= 8;
-    for (u32 i = 0; i < normals.size() - length; ++i)
+    for (size_t i = 0; i < normals.size() - length; ++i)
     {
         Zs.m256_f32[i] = normals[i + length].z;
     }
     Zs = _mm256_mul_ps(Zs, _1);
-    for (u32 i = 0; i < normals.size() - length; ++i)
+    for (size_t i = 0; i < normals.size() - length; ++i)
     {
         normals[i + length].z = Zs.m256_f32[i];
     }
@@ -252,19 +255,19 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     //UV의 V를 뒤집어 줘야 한다.
     _1 = _mm256_mul_ps(_1, _1);
     length = UVs.size() / 8;
-    for (u32 i = 0; i < length; ++i)
+    for (size_t i = 0; i < length; ++i)
     {
         Zs = Load256<sizeof(DirectX::XMFLOAT2A), 8>(&UVs[i * 8].y);
         Zs = _mm256_sub_ps(_1 , Zs);
         Store256<sizeof(DirectX::XMFLOAT2A), 8>(Zs, &UVs[i * 8].y);
     }
     length *= 8;
-    for (u32 i = 0; i < UVs.size() - length; ++i)
+    for (size_t i = 0; i < UVs.size() - length; ++i)
     {
         Zs.m256_f32[i] = UVs[i + length].y;
     }
     Zs = _mm256_sub_ps(_1, Zs);
-    for (u32 i = 0; i < UVs.size() - length; ++i)
+    for (size_t i = 0; i < UVs.size() - length; ++i)
     {
         UVs[i + length].y = Zs.m256_f32[i];
     }
@@ -308,15 +311,17 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
         {
             std::swap(triangle[0], triangle[2]);
         }
-        WowMapMeshSubset subset{ pRenderModule,*m_pVertexPositions, materialNames[it.first], std::move(indices) };
+        WowMapMeshSubset subset{ pRenderModule, m_pVertexPositions, materialNames[it.first], std::move(indices) };
         m_subsets.emplace(it.first, std::make_shared<WowMapMeshSubset>(std::move(subset)));
     }
     //
+    vertices.shrink_to_fit();
+    m_pVertexPositions->shrink_to_fit();
     COMPtr<IDirect3DDevice9> pDevice;
     pRenderModule->GetDevice(&pDevice);
     hr = pDevice->CreateVertexBuffer(
         vertices.size() * VERTEX_SIZE,
-        0,
+        D3DUSAGE_WRITEONLY,
         FVF,
         D3DPOOL_MANAGED,
         &m_pVertexBuffers,
@@ -460,11 +465,18 @@ auto WowMapMeshObject::PrepareRender(RenderModule* pRenderModule) -> void
     for (auto& it : m_entities)
     {
         XMVECTOR t = XMVector3TransformCoord(XMLoadFloat3A(&it->GetSubset()->GetCenter() ), XMLoadFloat4x4(&m_transform));
-        if (frustum.Intersact(t, m_radius))
+        float radius{ it->GetSubset()->GetRadius() };
+        if (frustum.Intersact(t, radius))
         {
             ++s;
             pRenderModule->AddRenderEntity(RenderModule::Kind::NONALPHA, it);
         }
+    }
+    if (s != 0)
+    {
+        std::stringstream ss;
+        ss << "culling state: " << s << '/' << m_entities.size() << '\n';
+        OutputDebugStringA(ss.str().c_str());
     }
 }
 
@@ -482,15 +494,59 @@ auto WowMapMeshObject::GetCenter() const -> DirectX::XMFLOAT3A const&
     return m_center;
 }
 
-WowMapMeshSubset::WowMapMeshSubset(RenderModule* pRenderModule, std::vector<DirectX::XMFLOAT3A> const& vertexPositions, std::wstring const& materialName, std::vector<Triangle>&& indices):
-    m_materialName{materialName}
+auto WowMapMeshObject::CanRayPicking() const -> bool 
+{
+    return true;
+}
+
+auto WowMapMeshObject::RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLOAT3 const& rayDirection, f32* pOut) -> bool 
+{
+    XMVECTOR vRayAt{ XMLoadFloat3(&rayAt) };
+    XMVECTOR vRayDir{ XMLoadFloat3(&rayDirection) };
+    XMVECTOR vSphare{ XMLoadFloat3(&m_center) };
+    //모든 버텍스를 월드 트랜스폼을 적용하느니, 레이를 변경시키자.
+    XMMATRIX mWorldInverse{ XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_transform)) };
+    vRayAt = XMVector3TransformCoord(vRayAt, mWorldInverse);
+    vRayDir = XMVector3TransformNormal(vRayDir, mWorldInverse);
+    f32 t{};
+    if (!Intersact(vRayAt, vRayDir, vSphare, m_radius, &t))
+    {
+        return false;
+    }
+    t = std::numeric_limits<f32>::max();
+    f32 t2{ std::numeric_limits<f32>::max() };
+
+    for (auto& it : m_subsets)
+    {
+        vSphare = XMLoadFloat3(&it.second->GetCenter());
+        f32 radius{ it.second->GetRadius() };
+        f32 t3{};
+        if (Intersact(vRayAt, vRayDir, vSphare, radius, &t3) )
+        {
+            if (it.second->RayPicking(vRayAt, vRayDir, &t2) && t2 < t)
+            {
+                t = t2;
+            }
+        }
+    }
+    if (t != std::numeric_limits<f32>::max())
+    {
+        *pOut = t;
+    }
+    return false;
+}
+
+WowMapMeshSubset::WowMapMeshSubset(RenderModule* pRenderModule, std::shared_ptr<std::vector<DirectX::XMFLOAT3A> > const & vertexPositions, std::wstring const& materialName, std::vector<Triangle>&& indices):
+    m_materialName{materialName},
+    m_pVertexPositions{vertexPositions}
 {
     COMPtr<IDirect3DDevice9> pDevice;
     pRenderModule->GetDevice(&pDevice);
+    auto const& rVertexPositions{ *vertexPositions };
     HRESULT hr{};
     hr = pDevice->CreateIndexBuffer(
         WowMapMeshObject::INDEX_SIZE * indices.size(),
-        0,
+        D3DUSAGE_WRITEONLY,
         WowMapMeshObject::INDEX_TYPE,
         D3DPOOL_MANAGED,
         &m_pIndexBuffer,
@@ -512,16 +568,18 @@ WowMapMeshSubset::WowMapMeshSubset(RenderModule* pRenderModule, std::vector<Dire
         XMVECTOR vPos;
         for (u32 i = 0; i < 3; ++i)
         {
-            vPos = XMLoadFloat3A(&vertexPositions[triangle[i]]);
+            vPos = XMLoadFloat3A(&rVertexPositions[triangle[i]]);
             vMax = XMVectorMax(vPos, vMax);
             vMin = XMVectorMin(vPos, vMin);
         }
     }
     XMVECTOR vCenter{ (vMin + vMax) * 0.5f };
     XMStoreFloat(&m_radius, XMVector3Length(vCenter - vMin));
+    //m_radius *= 0.01f;
     XMStoreFloat3A(&m_center, vCenter);
 
     m_indices.swap(indices);
+    m_indices.shrink_to_fit();
 }
 
 WowMapMeshSubset::WowMapMeshSubset(WowMapMeshSubset&& rhs) noexcept:
@@ -564,7 +622,25 @@ auto WowMapMeshSubset::GetCenter() const -> DirectX::XMFLOAT3A const&
     return m_center;
 }
 
-
+auto __vectorcall WowMapMeshSubset::RayPicking(DirectX::XMVECTOR rayAt, DirectX::XMVECTOR rayDirection, f32* pOut) -> bool
+{
+    std::vector<XMFLOAT3A> const& rVertexPositions{ *m_pVertexPositions };
+    f32 t{std::numeric_limits<f32>::max()};
+    bool res{ false };
+    for (auto& triangleIndices : m_indices)
+    {
+        XMVECTOR V0{ XMLoadFloat3A(&rVertexPositions[triangleIndices[0]]) };
+        XMVECTOR V1{ XMLoadFloat3A(&rVertexPositions[triangleIndices[1]]) };
+        XMVECTOR V2{ XMLoadFloat3A(&rVertexPositions[triangleIndices[2]]) };
+        f32 t2{};
+        if (DirectX::TriangleTests::Intersects(rayAt, rayDirection,V0,V1,V2, t2) && t2 < t)
+        {
+            t2 = t;
+            res = true;
+        }
+    }
+    return res;
+}
 WowMapMeshEntity::WowMapMeshEntity(
     WowMapMeshObject* obj,
     std::wstring const& subsetName,

@@ -40,12 +40,20 @@ public:
 	auto PrepareFrustum()->void;
 	auto Render(float r, float g, float b, float a, HWND hWnd = nullptr)->void;
 	auto AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity>const& entity)->void;
-	auto BeginRender(float r, float g, float b, float a)->void;
-	
-	auto EndRender(HWND hWnd = nullptr)->void;
+	static auto ConvertProjToWorld(
+		DirectX::XMFLOAT3 const& cameraPos,
+		DirectX::XMFLOAT3 const& cameraRotation,
+		float angle,
+		float aspect,
+		float nearZ,
+		float farZ,
+		DirectX::XMFLOAT3 const& pos
+		)->DirectX::XMFLOAT3;
 	auto Renderable()->bool;
 protected:
 	RenderModule();
+	auto BeginRender(float r, float g, float b, float a)->void;
+	auto EndRender(HWND hWnd = nullptr)->void;
 	auto Initialize(HWND hWindow, u32 width, u32 height)->HRESULT;
 	auto ClearEntityTable()->void;
 private:

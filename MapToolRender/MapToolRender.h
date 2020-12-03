@@ -21,6 +21,8 @@ namespace MapToolRender {
 	ref class Texture;
 	ref struct Transform;
 	ref class StaticXMeshObj;
+	ref class Ray;
+	
 	public ref class GraphicsDevice sealed
 	{
 	public:
@@ -37,6 +39,7 @@ namespace MapToolRender {
 
 		}
 		auto Render(Control^ drawPanel, IEnumerable<RenderObject^>^ objs, Camera^ camera)->void;
+		auto CreateMouseRay(Control^ drawPanel, Camera^ camera, System::Drawing::Point^ mousePt)->Ray^;
 		property RenderModule* Handle
 		{
 			auto get()->RenderModule* { return m_pRenderModule; }
@@ -84,6 +87,10 @@ namespace MapToolRender {
 		{
 			auto get()->::RenderObject*;
 		}
+		property bool IsRayPick
+		{
+			auto get()->bool;
+		}
 		virtual auto Clone()->RenderObject^ = 0;
 
 	protected:
@@ -91,6 +98,7 @@ namespace MapToolRender {
 		RenderObject(RenderObject^  obj);
 		!RenderObject();
 		~RenderObject();
+		auto RayPick(Ray^ ray)->Position^;
 		auto OnTransformChanged(Object^ obj, PropertyChangedEventArgs^ e)->void;
 		auto OnPropertyChanged(String^ info)->void
 		{

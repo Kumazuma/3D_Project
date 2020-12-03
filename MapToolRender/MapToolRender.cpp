@@ -17,6 +17,7 @@ using namespace msclr::interop;
 #include <RenderModule/RenderModule.h>
 #include "COMPtr.hpp"
 #include "XMeshObj.h"
+#include "Ray.h"
 using namespace DirectX;
 auto MapToolRender::GraphicsDevice::Initialize(System::Windows::Forms::Control^ renderView, unsigned width, unsigned height) -> void
 {
@@ -83,6 +84,26 @@ auto MapToolRender::GraphicsDevice::Render(Control^ drawPanel, IEnumerable<Rende
 		System::Threading::Monitor::Exit(this);
 	}
 
+}
+auto MapToolRender::GraphicsDevice::CreateMouseRay(Control^ drawPanel, Camera^ camera, System::Drawing::Point^ mousePt) -> Ray^
+{
+	float x{ static_cast<float>(mousePt->X) };
+	float y{ static_cast<float>(mousePt->Y) };
+	float width{ drawPanel->Width };
+	float height{ drawPanel->Height };
+	x = 2.f * x / width - 1.f;
+	y = -1.f * (2.f * y / width - 1.f);
+
+	DirectX::XMFLOAT3 pos = RenderModule::ConvertProjToWorld(
+		*camera->PositionPtr,
+		*camera->RotationPtr,
+		45.f,
+		1.f,
+		0.1f,
+		2000.f,
+		{x, y, 1.f}
+		);
+	return gcnew Ray{ camera->PositionPtr, &pos };
 }
 auto MapToolRender::GraphicsDevice::ApplyViewProjMatrix() -> void
 {

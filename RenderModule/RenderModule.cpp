@@ -412,6 +412,12 @@ auto RenderModule::AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity> cons
 	m_renderEntities[kind].push_back(entity);
 }
 
+auto RenderModule::ConvertProjToWorld(DirectX::XMFLOAT3 const& cameraPos, DirectX::XMFLOAT3 const& cameraRotation, float angle, float aspect, float nearZ, float farZ, DirectX::XMFLOAT3 const& pos) -> DirectX::XMFLOAT3
+{
+	return DirectX::XMFLOAT3();
+}
+
+
 auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 {
 	if (!Renderable())

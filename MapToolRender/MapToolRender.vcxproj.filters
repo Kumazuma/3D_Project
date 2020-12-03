@@ -25,6 +25,12 @@
     <Filter Include="ColliderSphareMeshObject">
       <UniqueIdentifier>{00b92b80-2e42-4a8f-b929-4dad1af90614}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Ray">
+      <UniqueIdentifier>{36ea9be0-704b-4573-963a-0cdf57513168}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Line3D">
+      <UniqueIdentifier>{d4cbdcc3-fb09-4609-8b35-648df162401e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapToolRender.h">
@@ -68,6 +74,12 @@
     </ClInclude>
     <ClInclude Include="SphareMeshObj.h">
       <Filter>ColliderSphareMeshObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Ray.h">
+      <Filter>Ray</Filter>
+    </ClInclude>
+    <ClInclude Include="Line3D.h">
+      <Filter>Line3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="SphareMeshObj.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Ray.cpp">
+      <Filter>Ray</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

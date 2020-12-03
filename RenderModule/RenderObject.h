@@ -4,6 +4,7 @@
 #include<DirectXMath.h>
 class RenderModule;
 class Frustum;
+class Ray;
 struct DLL_CLASS RenderObject
 {
 protected:
@@ -12,8 +13,12 @@ public:
 	virtual ~RenderObject() = default;
 	virtual auto PrepareRender(RenderModule* pDevice)->void = 0;
 	virtual auto Clone()const->RenderObject* = 0;
+	virtual auto CanRayPicking()const->bool;
+	virtual auto RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLOAT3 const& rayDirection, f32* pOut)->bool;
+	auto RayPicking(Ray* pRay, f32* pOut)->bool;
 	auto SetTransform(DirectX::XMFLOAT4X4 const& transform)->void;
 	auto GetTransform()const->DirectX::XMFLOAT4X4 const&;
+
 protected:
 	DirectX::XMFLOAT4X4 m_transform;
 public:
@@ -40,7 +45,7 @@ public:
 	struct VERTEX<FVF_NAVI>
 	{
 		DirectX::XMFLOAT3 vPosition;
-		DirectX::XMFLOAT2 vUV;
+		DWORD diffuseColor;
 	};
 
 	template<unsigned long INDEXTYPE>
