@@ -30,6 +30,8 @@ namespace MapTool
 
             m_renderView = new DockView<View.RenderView>();
             GraphicsDevice.Initialize(m_renderView.Content, 800, 600);
+            m_renderView.Content.Initialize(800, 600);
+
             SkyBox skyBox = new SkyBox(GraphicsDevice.Instance);
             renderObjects.Add(skyBox);
 

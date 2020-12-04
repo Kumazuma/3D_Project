@@ -25,6 +25,8 @@ namespace MapTool.View
             comboColliderType.Items.Add("Box");
             comboColliderType.Items.Add("Sphare");
             renderView = new RenderView();
+            renderView.Initialize(800, 600);
+
             renderView.Parent = splitContainer1.Panel2;
             splitContainer1.Panel2.Controls.Add(renderView);
             renderView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -36,6 +38,7 @@ namespace MapTool.View
             sphareMeshObject.Collider = new MapToolCore.SphareCollider();
             boxMeshObject.PropertyChanged += BoxMeshObject_PropertyChanged;
             sphareMeshObject.PropertyChanged += BoxMeshObject_PropertyChanged;
+
         }
         private void BoxMeshObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {

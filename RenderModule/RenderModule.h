@@ -38,7 +38,7 @@ public:
 	auto GetSimpleColorTexture(DefaultColorTexture kind, IDirect3DTexture9** pOut)->HRESULT;
 	auto GetFrustum()const->Frustum const&;
 	auto PrepareFrustum()->void;
-	auto Render(float r, float g, float b, float a, HWND hWnd = nullptr)->void;
+	auto Render(float r, float g, float b, float a, IDirect3DSwapChain9* pSwapChain)->void;
 	auto AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity>const& entity)->void;
 	auto ConvertProjToWorld(
 		DirectX::XMFLOAT3 const& cameraPos,
@@ -53,7 +53,7 @@ public:
 protected:
 	RenderModule();
 	auto BeginRender(float r, float g, float b, float a)->void;
-	auto EndRender(HWND hWnd = nullptr)->void;
+	auto EndRender(IDirect3DSwapChain9* pSwapChain)->void;
 	auto Initialize(HWND hWindow, u32 width, u32 height)->HRESULT;
 	auto ClearEntityTable()->void;
 private:
@@ -66,6 +66,7 @@ private:
 	COMPtr<IDirect3DTexture9> m_pGreenTexture;
 	COMPtr<IDirect3DTexture9> m_pBlueTexture;
 	COMPtr<IWICImagingFactory> m_pImageFactory;
+	COMPtr<IDirect3DSwapChain9> m_defaultSwapChain;
 	Frustum m_frustum;
 	u32 m_width;
 	u32 m_height;

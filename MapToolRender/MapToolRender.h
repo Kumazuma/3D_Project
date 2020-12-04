@@ -22,7 +22,8 @@ namespace MapToolRender {
 	ref struct Transform;
 	ref class StaticXMeshObj;
 	ref class Ray;
-	
+	ref class SwapChain;
+
 	public ref class GraphicsDevice sealed
 	{
 	public:
@@ -38,7 +39,7 @@ namespace MapToolRender {
 			}
 
 		}
-		auto Render(Control^ drawPanel, IEnumerable<RenderObject^>^ objs, Camera^ camera)->void;
+		auto Render(SwapChain^ swapChain, IEnumerable<RenderObject^>^ objs, Camera^ camera)->void;
 		auto CreateMouseRay(Control^ drawPanel, Camera^ camera, System::Drawing::Point^ mousePt)->Ray^;
 		property RenderModule* Handle
 		{

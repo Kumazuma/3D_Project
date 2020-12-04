@@ -79,7 +79,8 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 		CreateSimpleColorTexture(64, 64, { 1.0f, 0.f, 0.f, 1.f }, &m_pRedTexture);
 		CreateSimpleColorTexture(64, 64, { 0.f, 1.0f, 0.f, 1.f }, &m_pGreenTexture);
 		CreateSimpleColorTexture(64, 64, { 0.f, 0.f, 1.f, 1.f }, &m_pBlueTexture);
-
+		m_pDevice->GetSwapChain(0, &m_defaultSwapChain);
+		
 		return S_OK;
 	}
 	catch (HRESULT hr)
@@ -379,13 +380,16 @@ auto RenderModule::PrepareFrustum() -> void
 	m_frustum.MakeFrustum(mView, mProj);
 }
 
-auto RenderModule::Render(float r, float g, float b, float a, HWND hWnd) -> void
+auto RenderModule::Render(float r, float g, float b, float a, IDirect3DSwapChain9* pSwapChain) -> void
 {
 	if (!Renderable())
 	{
 		ClearEntityTable();
 		return;
 	}
+	COMPtr<IDirect3DSurface9> backbuffer;
+	pSwapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &backbuffer);
+	m_pDevice->SetRenderTarget(0, backbuffer.Get());
 	BeginRender(r, g, b, a);
 	for (auto& it : m_renderEntities[Kind::ENVIRONMENT])
 	{
@@ -411,7 +415,7 @@ auto RenderModule::Render(float r, float g, float b, float a, HWND hWnd) -> void
 	m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
 	ClearEntityTable();
-	EndRender(hWnd);
+	EndRender(pSwapChain);
 }
 
 auto RenderModule::AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity> const& entity) -> void
@@ -462,15 +466,15 @@ auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 	assert(SUCCEEDED(hr));
 }
 
-auto RenderModule::EndRender(HWND hWnd) -> void
+auto RenderModule::EndRender(IDirect3DSwapChain9* pSwapChain) -> void
 {
 	HRESULT hr;
-	if (hWnd == nullptr)
+	if (pSwapChain == nullptr)
 	{
-		hWnd = m_hwnd;
+		pSwapChain = m_defaultSwapChain.Get();
 	}
 	m_pDevice->EndScene();
-	hr = m_pDevice->Present(nullptr, nullptr, hWnd, 0);
+	pSwapChain->Present(nullptr, nullptr, nullptr, nullptr, 0);
 }
 
 auto RenderModule::Renderable() -> bool

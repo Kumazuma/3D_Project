@@ -28,6 +28,8 @@ namespace MapTool.View
             InitializeComponent();
             camera = new MapToolRender.Camera();
             renderView = new RenderView();
+            renderView.Initialize(800, 600);
+
             renderView.Parent = splitContainer1.Panel2;
             renderView.RenderObjects = objList;
             renderView.Dock = DockStyle.Fill;
@@ -39,6 +41,8 @@ namespace MapTool.View
             lastTimeSpan = stopWatch.Elapsed;
             m_timer.Start();
             m_playing = true;
+            
+
         }
         private void OnTimerTick(object sender, EventArgs e)
         {

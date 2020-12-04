@@ -98,6 +98,7 @@
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>4793;4251</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>RenderModule.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -112,6 +113,7 @@
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>4793;4251</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>RenderModule.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -126,6 +128,7 @@
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>4793;4251</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>RenderModule.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -140,6 +143,7 @@
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>4793;4251</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>RenderModule.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -148,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="BoxMeshObj.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ControlSwapChain.h" />
     <ClInclude Include="Line3D.h" />
     <ClInclude Include="MapToolRender.h" />
     <ClInclude Include="NaviMesh.h" />
@@ -168,6 +173,7 @@
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="BoxMeshObj.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ControlSwapChain.cpp" />
     <ClCompile Include="Line3D.cpp" />
     <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="MapToolRender.cpp" />

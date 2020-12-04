@@ -34,6 +34,9 @@
     <Filter Include="NaviMesh">
       <UniqueIdentifier>{a5ab8f2a-6396-4bba-950f-34b13ea4ef7e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SwapChain">
+      <UniqueIdentifier>{f967e36b-d6d5-4eca-8494-3c49d084ce2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapToolRender.h">
@@ -86,6 +89,9 @@
     </ClInclude>
     <ClInclude Include="NaviMesh.h">
       <Filter>NaviMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlSwapChain.h">
+      <Filter>SwapChain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="Line3D.cpp">
       <Filter>Line3D</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlSwapChain.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

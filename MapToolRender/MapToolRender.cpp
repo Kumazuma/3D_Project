@@ -15,6 +15,7 @@
 using namespace msclr::interop;
 #include "MapToolRender.h"
 #include <RenderModule/RenderModule.h>
+#include "ControlSwapChain.h"
 #include "COMPtr.hpp"
 #include "XMeshObj.h"
 #include "Ray.h"
@@ -52,7 +53,7 @@ auto MapToolRender::GraphicsDevice::GetSaveFilePath(System::Windows::Forms::Cont
 	// TODO: 여기에 return 문을 삽입합니다.
 	return nullptr;
 }
-auto MapToolRender::GraphicsDevice::Render(Control^ drawPanel, IEnumerable<RenderObject^>^ objs, Camera^ camera) -> void
+auto MapToolRender::GraphicsDevice::Render(SwapChain^ swapChain, IEnumerable<RenderObject^>^ objs, Camera^ camera) -> void
 {
 	System::Threading::Monitor::Enter(this);
 	m_pRenderModule->SetCamera(camera->PositionPtr, camera->RotationPtr);
@@ -77,7 +78,7 @@ auto MapToolRender::GraphicsDevice::Render(Control^ drawPanel, IEnumerable<Rende
 				handle->PrepareRender(m_pRenderModule);
 			}
 		}
-		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f, (HWND) drawPanel->Handle.ToPointer() );
+		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f, swapChain->Native);
 	}
 	finally
 	{
