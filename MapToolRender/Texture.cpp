@@ -19,13 +19,9 @@ MapToolRender::Texture::Texture(GraphicsDevice^ device,  System::String^ filePat
 		return;
 	}
 	m_pTexture = pTexture;
-
-
-	System::String^ projectDirectory{ MapToolCore::Environment::Instance->ProjectDirectory };
-	System::String^ currentDirectory{ System::IO::Path::GetFullPath(projectDirectory) };
 	System::String^ fileFullPath{ System::IO::Path::GetFullPath(filePath) };
-	System::String^ path{ MapToolCore::Utility::GetRelativePath(currentDirectory, fileFullPath) };
-	m_filePath = path;
+	//System::String^ path{ MapToolCore::Utility::GetRelativePath(currentDirectory, fileFullPath) };
+	m_filePath = fileFullPath;
 	D3DSURFACE_DESC surfaceDesc{};
 	m_pTexture->GetLevelDesc(0, &surfaceDesc);
 	m_width = surfaceDesc.Width;
@@ -63,12 +59,8 @@ MapToolRender::CubeTexture::CubeTexture(GraphicsDevice^ device, System::String^ 
 	hr = device->Handle->CreateCubeTexture(szFilePath, &pTexture);
 	assert(SUCCEEDED(hr));
 	m_pTexture = pTexture;
-
-	System::String^ projectDirectory{ MapToolCore::Environment::Instance->ProjectDirectory };
-	System::String^ currentDirectory{ System::IO::Path::GetFullPath(projectDirectory) };
 	System::String^ fileFullPath{ System::IO::Path::GetFullPath(filePath) };
-	System::String^ path{ MapToolCore::Utility::GetRelativePath(currentDirectory, fileFullPath) };
-	m_filePath = path;
+	m_filePath = fileFullPath;
 	D3DSURFACE_DESC surfaceDesc{};
 	m_pTexture->GetLevelDesc(0, &surfaceDesc);
 	m_width = surfaceDesc.Width;

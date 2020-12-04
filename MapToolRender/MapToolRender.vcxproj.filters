@@ -31,6 +31,9 @@
     <Filter Include="Line3D">
       <UniqueIdentifier>{d4cbdcc3-fb09-4609-8b35-648df162401e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NaviMesh">
+      <UniqueIdentifier>{a5ab8f2a-6396-4bba-950f-34b13ea4ef7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapToolRender.h">
@@ -80,6 +83,9 @@
     </ClInclude>
     <ClInclude Include="Line3D.h">
       <Filter>Line3D</Filter>
+    </ClInclude>
+    <ClInclude Include="NaviMesh.h">
+      <Filter>NaviMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +139,12 @@
     </ClCompile>
     <ClCompile Include="Ray.cpp">
       <Filter>Ray</Filter>
+    </ClCompile>
+    <ClCompile Include="NaviMesh.cpp">
+      <Filter>NaviMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Line3D.cpp">
+      <Filter>Line3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -36,12 +36,14 @@ namespace MapTool
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.파일ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.열기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.저장ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.종료ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.추가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TerrainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.StaticXMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wowMapMashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.naviMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.projectDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -78,7 +80,8 @@ namespace MapTool
             // 
             this.파일ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.열기ToolStripMenuItem,
-            this.저장ToolStripMenuItem,
+            this.projectDirectoryToolStripMenuItem,
+            this.SaveToolStripMenuItem,
             this.종료ToolStripMenuItem});
             this.파일ToolStripMenuItem.Name = "파일ToolStripMenuItem";
             this.파일ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
@@ -87,19 +90,20 @@ namespace MapTool
             // 열기ToolStripMenuItem
             // 
             this.열기ToolStripMenuItem.Name = "열기ToolStripMenuItem";
-            this.열기ToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.열기ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.열기ToolStripMenuItem.Text = "열기";
             // 
-            // 저장ToolStripMenuItem
+            // SaveToolStripMenuItem
             // 
-            this.저장ToolStripMenuItem.Name = "저장ToolStripMenuItem";
-            this.저장ToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
-            this.저장ToolStripMenuItem.Text = "저장";
+            this.SaveToolStripMenuItem.Name = "SaveToolStripMenuItem";
+            this.SaveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.SaveToolStripMenuItem.Text = "저장";
+            this.SaveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
             // 
             // 종료ToolStripMenuItem
             // 
             this.종료ToolStripMenuItem.Name = "종료ToolStripMenuItem";
-            this.종료ToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.종료ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.종료ToolStripMenuItem.Text = "종료";
             // 
             // 추가ToolStripMenuItem
@@ -107,7 +111,8 @@ namespace MapTool
             this.추가ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.TerrainToolStripMenuItem,
             this.StaticXMeshToolStripMenuItem,
-            this.wowMapMashToolStripMenuItem});
+            this.wowMapMashToolStripMenuItem,
+            this.naviMeshToolStripMenuItem});
             this.추가ToolStripMenuItem.Name = "추가ToolStripMenuItem";
             this.추가ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.추가ToolStripMenuItem.Text = "추가";
@@ -115,23 +120,37 @@ namespace MapTool
             // TerrainToolStripMenuItem
             // 
             this.TerrainToolStripMenuItem.Name = "TerrainToolStripMenuItem";
-            this.TerrainToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.TerrainToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.TerrainToolStripMenuItem.Text = "터레인";
             this.TerrainToolStripMenuItem.Click += new System.EventHandler(this.TerrainToolStripMenuItem_Click);
             // 
             // StaticXMeshToolStripMenuItem
             // 
             this.StaticXMeshToolStripMenuItem.Name = "StaticXMeshToolStripMenuItem";
-            this.StaticXMeshToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.StaticXMeshToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.StaticXMeshToolStripMenuItem.Text = "스태틱 X 메시";
             this.StaticXMeshToolStripMenuItem.Click += new System.EventHandler(this.StaticXMeshToolStripMenuItem_Click);
             // 
             // wowMapMashToolStripMenuItem
             // 
             this.wowMapMashToolStripMenuItem.Name = "wowMapMashToolStripMenuItem";
-            this.wowMapMashToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.wowMapMashToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.wowMapMashToolStripMenuItem.Text = "WoW Map 메시";
             this.wowMapMashToolStripMenuItem.Click += new System.EventHandler(this.wowMapMashToolStripMenuItem_Click);
+            // 
+            // naviMeshToolStripMenuItem
+            // 
+            this.naviMeshToolStripMenuItem.Name = "naviMeshToolStripMenuItem";
+            this.naviMeshToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.naviMeshToolStripMenuItem.Text = "Navi 메시";
+            this.naviMeshToolStripMenuItem.Click += new System.EventHandler(this.naviMeshToolStripMenuItem_Click);
+            // 
+            // projectDirectoryToolStripMenuItem
+            // 
+            this.projectDirectoryToolStripMenuItem.Name = "projectDirectoryToolStripMenuItem";
+            this.projectDirectoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.projectDirectoryToolStripMenuItem.Text = "기준 폴더";
+            this.projectDirectoryToolStripMenuItem.Click += new System.EventHandler(this.projectDirectoryToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -158,12 +177,14 @@ namespace MapTool
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 파일ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 열기ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 저장ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SaveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 종료ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 추가ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TerrainToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem StaticXMeshToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem wowMapMashToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem naviMeshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem projectDirectoryToolStripMenuItem;
     }
 }
 

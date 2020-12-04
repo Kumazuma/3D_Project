@@ -87,21 +87,25 @@ auto MapToolRender::GraphicsDevice::Render(Control^ drawPanel, IEnumerable<Rende
 }
 auto MapToolRender::GraphicsDevice::CreateMouseRay(Control^ drawPanel, Camera^ camera, System::Drawing::Point^ mousePt) -> Ray^
 {
+	auto clientSize{ drawPanel->ClientSize };
 	float x{ static_cast<float>(mousePt->X) };
 	float y{ static_cast<float>(mousePt->Y) };
-	float width{ drawPanel->Width };
-	float height{ drawPanel->Height };
-	x = 2.f * x / width - 1.f;
-	y = -1.f * (2.f * y / width - 1.f);
-
-	DirectX::XMFLOAT3 pos = RenderModule::ConvertProjToWorld(
+	
+	float width{ static_cast<float>(clientSize.Width) };
+	float height{ static_cast<float>(clientSize.Height) };
+	x = x / width;// 0~1f;
+	x = x * 2.f;//0~2.f;
+	x = x - 1.f; // -1 ~ 1
+	y = -1.f * (2.f * y / height - 1.f);
+	
+	DirectX::XMFLOAT3 pos = m_pRenderModule->ConvertProjToWorld(
 		*camera->PositionPtr,
 		*camera->RotationPtr,
 		45.f,
 		1.f,
 		0.1f,
 		2000.f,
-		{x, y, 1.f}
+		{x, y, 0.f}
 		);
 	return gcnew Ray{ camera->PositionPtr, &pos };
 }

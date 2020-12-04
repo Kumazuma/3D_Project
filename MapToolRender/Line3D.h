@@ -14,13 +14,11 @@ namespace MapToolRender
 	public ref class Line3D: public RenderObject
 	{
 	public:
-		Line3D(Position^ rayStart, Position^ rayAt);
-		Line3D(DirectX::XMFLOAT3* rayStart, DirectX::XMFLOAT3* rayAt);
-		!Ray();
-		auto Create3DLine(GraphicsDevice^ graphicsDev)->Line3D^;
+		Line3D(GraphicsDevice^ graphicsDevice, Position^ startPosition, Position^ endPosition);
+		Line3D(GraphicsDevice^ graphicsDevice, DirectX::XMFLOAT3* startPosition, DirectX::XMFLOAT3* endPosition);
+		Line3D(Line3D^ rhs);
 	public:
-		property ::Ray* Handle {auto get()->::Ray* { return m_pNative; }}
-	private:
-		::Ray* m_pNative;
+		auto Clone()->RenderObject^ override;
+
 	};
 }

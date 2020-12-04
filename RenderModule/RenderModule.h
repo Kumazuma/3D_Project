@@ -40,7 +40,7 @@ public:
 	auto PrepareFrustum()->void;
 	auto Render(float r, float g, float b, float a, HWND hWnd = nullptr)->void;
 	auto AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity>const& entity)->void;
-	static auto ConvertProjToWorld(
+	auto ConvertProjToWorld(
 		DirectX::XMFLOAT3 const& cameraPos,
 		DirectX::XMFLOAT3 const& cameraRotation,
 		float angle,

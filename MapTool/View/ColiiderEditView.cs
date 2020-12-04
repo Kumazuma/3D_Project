@@ -78,6 +78,7 @@ namespace MapTool.View
             var path = fileDialog.FileName;
 
             var xmesh = Doc.MeshManager.Instance.GetSkinnedMesh(path);
+            xmesh.Update(1);
             xmesh.Name = "XMesh";
             renderObject = xmesh;
             //TODO:콜라이더 메시도 같이 보일 수 있게 해줘야 함.

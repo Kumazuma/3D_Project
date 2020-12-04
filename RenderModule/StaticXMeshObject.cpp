@@ -143,7 +143,6 @@ StaticXMeshObjectSubset::StaticXMeshObjectSubset(StaticXMeshObject* mesh, u32 id
     m_pMeshObject = mesh;
     m_subsetIndex = idx;
     m_enableAlpha = false;
-    
 }
 
 auto StaticXMeshObjectSubset::Render(RenderModule* pRenderModule) -> void 

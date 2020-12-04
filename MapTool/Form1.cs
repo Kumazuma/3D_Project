@@ -73,11 +73,51 @@ namespace MapTool
 
             //GraphicsDevice.Instance.Render();
             m_renderView.Content.RenderObjects = renderObjects;
-
+            m_renderView.Content.MouseClick += RederView_MouseClick;
 
         }
 
-        
+        private void RederView_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (ModifierKeys != 0)
+                return;
+            var point = new Point(e.X, e.Y);
+            var contextMesh = new ContextMenuStrip();
+
+            contextMesh.Show(m_renderView.Content, point);
+            if (m_propertyView.Content.SelectedObject == null)
+            {
+                return;
+            }
+            if(m_propertyView.Content.SelectedObject.GetType() != typeof(NaviMesh))
+            {
+                return;
+            }
+            var selectedObject = m_propertyView.Content.SelectedObject as NaviMesh;
+            if (!renderObjects.Contains(selectedObject))
+            {
+                return;
+            }
+            
+            var ray = GraphicsDevice.Instance.CreateMouseRay(m_renderView.Content, m_renderView.Content.CurrentCamera, point);
+            float t = float.MaxValue;
+            foreach(var renderObj in renderObjects)
+            {
+                if (!renderObj.IsRayPick) continue;
+                float? res = renderObj.RayPick(ray);
+                if (res == null) continue;
+                if(res.Value < t)
+                {
+                    t = res.Value;
+                }
+            }
+            if(t != float.MaxValue)
+            {
+                var p = ray.GetPosition(t);
+                selectedObject.PushPoint(p.X, p.Y, p.Z, m_renderView.Content.CurrentCamera);
+                m_renderView.Content.Render();
+            }
+        }
 
         private void PropertyView_DragDrop(object sender, DragEventArgs e)
         {
@@ -174,16 +214,46 @@ namespace MapTool
         {
             var fileDialog = new OpenFileDialog();
             fileDialog.Filter = "obj 파일(*.obj)|*.obj";
+            fileDialog.Multiselect = true;
             if (fileDialog.ShowDialog() != DialogResult.OK)
             {
                 return;
             }
-            var path = fileDialog.FileName;
-            var mapMesh = new WowMapMesh(GraphicsDevice.Instance, path);
-            mapMesh.Name = "map mesh";
-            renderObjects.Add(mapMesh);
-            Doc.Document.Instance.AddObject(mapMesh);
+            var paths = fileDialog.FileNames;
+            foreach(var path in paths)
+            {
+                var mapMesh = new WowMapMesh(GraphicsDevice.Instance, path);
+                mapMesh.Name = "map mesh";
+                renderObjects.Add(mapMesh);
+                Doc.Document.Instance.AddObject(mapMesh);
+            }
             m_renderView.Content.Render();
+        }
+
+        private void naviMeshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var naviMesh = new NaviMesh(GraphicsDevice.Instance);
+            renderObjects.Add(naviMesh);
+            naviMesh.Name = "Navi Mesh";
+            Doc.Document.Instance.AddObject(naviMesh);
+            m_renderView.Content.Render();
+        }
+
+        private void projectDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var folderDialog = new FolderBrowserDialog();
+            folderDialog.SelectedPath = System.IO.Path.GetFullPath(MapToolCore.Environment.Instance.ProjectDirectory);
+            if (folderDialog.ShowDialog() != DialogResult.OK) return;
+            MapToolCore.Environment.Instance.ProjectDirectory = folderDialog.SelectedPath;
+        }
+
+        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var saveDialog = new SaveFileDialog { Filter = "" };
+            if (saveDialog.ShowDialog() != DialogResult.OK) return;
+
+            var objs = Doc.Document.Instance.MapObjects;
+            
         }
     }
 }

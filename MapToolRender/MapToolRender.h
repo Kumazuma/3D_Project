@@ -92,13 +92,12 @@ namespace MapToolRender {
 			auto get()->bool;
 		}
 		virtual auto Clone()->RenderObject^ = 0;
-
+		auto RayPick(Ray^ ray)->System::Nullable<float>;
 	protected:
 		RenderObject();
 		RenderObject(RenderObject^  obj);
 		!RenderObject();
 		~RenderObject();
-		auto RayPick(Ray^ ray)->Position^;
 		auto OnTransformChanged(Object^ obj, PropertyChangedEventArgs^ e)->void;
 		auto OnPropertyChanged(String^ info)->void
 		{

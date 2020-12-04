@@ -4,7 +4,7 @@
 #include<array>
 #include<memory>
 class Line3DEntity;
-class Line3D : public RenderObject
+class DLL_CLASS Line3D : public RenderObject
 {
 	friend class Line3DEntity;
 	static constexpr DWORD FVF = FVF_NAVI;
@@ -16,7 +16,7 @@ protected:
 	Line3D(Line3D const& rhs);
 	Line3D(Line3D && rhs) noexcept;
 public:
-	auto Create(RenderModule* renderModule, DirectX::XMFLOAT3 const& start, DirectX::XMFLOAT3 const& end, Line3D** pOut)->HRESULT;
+	static auto Create(RenderModule* renderModule, DirectX::XMFLOAT3 const& start, DirectX::XMFLOAT3 const& end, Line3D** pOut)->HRESULT;
 	auto GetStartPositin()const->DirectX::XMFLOAT3;
 	auto GetEndPositin()const->DirectX::XMFLOAT3;
 	auto Clone()const->RenderObject*;

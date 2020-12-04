@@ -38,6 +38,7 @@ public:
 	auto GetCenter()const->DirectX::XMFLOAT3A const&;
 	auto CanRayPicking()const->bool override;
 	auto RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLOAT3 const& rayDirection, f32* pOut)->bool override;
+
 private:
 	auto ParseOBJFile(RenderModule* pRenderModule, std::wstring const& path, std::wstring* pOutMeterialFilePath)->void;
 	auto ParseMtlFile(RenderModule* pRenderModule, std::wstring const& path)->void;
@@ -54,7 +55,6 @@ private:
 class WowMapMeshSubset
 {
 	using Triangle = WowMapMeshObject::Index<WowMapMeshObject::INDEX_TYPE>;
-	
 public:
 	WowMapMeshSubset(RenderModule* renderModule, std::shared_ptr<std::vector<DirectX::XMFLOAT3A> > const & vertexPositions, std::wstring const& materialName, std::vector<Triangle>&& indices);
 	WowMapMeshSubset(WowMapMeshSubset&& rhs)noexcept;

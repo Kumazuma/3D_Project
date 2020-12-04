@@ -114,7 +114,6 @@ WowMapMeshObject::WowMapMeshObject(RenderModule* pRenderModule, std::wstring con
     XMVECTOR vCenter{ (vMin + vMax) * 0.5f };
     XMStoreFloat(&m_radius, XMVector3Length(vCenter - vMin));
     XMStoreFloat3A(&m_center, vCenter);
-
 }
 auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring const& path, std::wstring* pOutMeterialFilePath) -> void
 {
@@ -532,6 +531,7 @@ auto WowMapMeshObject::RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLO
     if (t != std::numeric_limits<f32>::max())
     {
         *pOut = t;
+        return true;
     }
     return false;
 }
@@ -587,7 +587,9 @@ WowMapMeshSubset::WowMapMeshSubset(WowMapMeshSubset&& rhs) noexcept:
     m_materialName{std::move(rhs.m_materialName)},
     m_pIndexBuffer{std::move(rhs.m_pIndexBuffer)},
     m_radius{std::move(rhs.m_radius)},
-    m_center{std::move(rhs.m_center)}
+    m_center{std::move(rhs.m_center)},
+    m_pVertexPositions{std::move(rhs.m_pVertexPositions) }
+
 {
     
 }
@@ -635,9 +637,13 @@ auto __vectorcall WowMapMeshSubset::RayPicking(DirectX::XMVECTOR rayAt, DirectX:
         f32 t2{};
         if (DirectX::TriangleTests::Intersects(rayAt, rayDirection,V0,V1,V2, t2) && t2 < t)
         {
-            t2 = t;
+            t = t2;
             res = true;
         }
+    }
+    if (res)
+    {
+        *pOut = t;
     }
     return res;
 }

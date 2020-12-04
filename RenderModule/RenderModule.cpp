@@ -395,7 +395,12 @@ auto RenderModule::Render(float r, float g, float b, float a, HWND hWnd) -> void
 	{
 		it->Render(this);
 	}
+	m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	for (auto& it : m_renderEntities[Kind::ALPHA])
+	{
+		it->Render(this);
+	}
+	for (auto& it : m_renderEntities[Kind::NAVIMASH])
 	{
 		it->Render(this);
 	}
@@ -403,6 +408,8 @@ auto RenderModule::Render(float r, float g, float b, float a, HWND hWnd) -> void
 	{
 		it->Render(this);
 	}
+	m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+
 	ClearEntityTable();
 	EndRender(hWnd);
 }
@@ -414,7 +421,31 @@ auto RenderModule::AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity> cons
 
 auto RenderModule::ConvertProjToWorld(DirectX::XMFLOAT3 const& cameraPos, DirectX::XMFLOAT3 const& cameraRotation, float angle, float aspect, float nearZ, float farZ, DirectX::XMFLOAT3 const& pos) -> DirectX::XMFLOAT3
 {
-	return DirectX::XMFLOAT3();
+	XMVECTOR vPosition{ XMLoadFloat3(&cameraPos) };
+	XMVECTOR vForward{ XMVectorSet(0.f, 0.f, 1.f, 0.f) };
+	XMVECTOR vUp{ XMVectorSet(0.f, 1.f, 0.f, 0.f) };
+	XMMATRIX mWorld{ XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&cameraRotation)) };
+	vForward = XMVector3TransformNormal(vForward, mWorld);
+	vUp = XMVector3TransformCoord(vUp, mWorld);
+
+	XMMATRIX mView{ XMMatrixLookAtLH(
+		vPosition,
+		vPosition + vForward,
+		vUp
+	) };
+	aspect =
+		static_cast<float>(GetWidth()) /
+		static_cast<float>(GetHeight());
+	XMMATRIX mProj{ XMMatrixPerspectiveFovLH(XMConvertToRadians(angle), aspect, nearZ, farZ) };
+	XMMATRIX mProjInverse{ XMMatrixInverse(nullptr, mProj) };
+	XMMATRIX mViewInverse{ XMMatrixInverse(nullptr, mView) };
+
+	XMVECTOR vPos{ XMLoadFloat3(&pos) };
+	vPos = XMVector3TransformCoord(vPos, mProjInverse);
+	vPos = XMVector3TransformCoord(vPos, mViewInverse);
+	XMFLOAT3 res{};
+	XMStoreFloat3(&res, vPos);
+	return res;
 }
 
 

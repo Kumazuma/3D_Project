@@ -46,15 +46,14 @@ namespace MapToolRender
 			this->m_pNativeObject = nullptr;
 		}
 	}
-	auto RenderObject::RayPick(Ray^ ray) -> Position^
+	auto RenderObject::RayPick(Ray^ ray) -> System::Nullable<float>
 	{
 		float out;
 		if (m_pNativeObject->RayPicking(ray->Handle, &out))
 		{
-			auto t = ray->Handle->GetPosition(out);
-			return gcnew Position(t.x, t.y, t.z);
+			return System::Nullable<float>(out);
 		}
-		return nullptr;
+		return System::Nullable<float>();
 	}
 	auto MapToolRender::RenderObject::OnTransformChanged(Object^ obj, PropertyChangedEventArgs^ e) -> void
 	{

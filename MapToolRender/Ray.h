@@ -16,7 +16,8 @@ namespace MapToolRender
 		Ray(Position^ rayStart, Position^ rayAt);
 		Ray(DirectX::XMFLOAT3* rayStart, DirectX::XMFLOAT3* rayAt);
 		!Ray();
-		auto Create3DLine(GraphicsDevice^ graphicsDev)->Line3D^;
+		auto Create3DLine(GraphicsDevice^ graphicsDev, float length)->Line3D^;
+		auto GetPosition(float t)->Position^;
 	public:
 		property ::Ray* Handle {auto get()->::Ray* { return m_pNative; }}
 	private:

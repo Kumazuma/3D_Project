@@ -86,13 +86,10 @@ auto MapToolRender::Camera::MoveRight(float delta) -> void
 }
 auto MapToolRender::Camera::RotationX(float delta) -> void
 {
-	m_pRotation->x += delta;
 	m_rotation->X += delta;
-
 }
 auto MapToolRender::Camera::RotationY(float delta) -> void
 {
-	m_pRotation->y += delta;
 	m_rotation->Y += delta;
 }
 auto MapToolRender::Camera::Position::get()->MapToolRender::Position^
@@ -102,7 +99,6 @@ auto MapToolRender::Camera::Position::get()->MapToolRender::Position^
 auto MapToolRender::Camera::Position::set(MapToolRender::Position^ value)->void
 {
 	m_position = value;
-
 	m_pPosition->x = value->X;
 	m_pPosition->y = value->Y;
 	m_pPosition->z = value->Z;
@@ -123,8 +119,5 @@ auto MapToolRender::Camera::RotationPtr::get()->DirectX::XMFLOAT3*
 }
 auto MapToolRender::Camera::PositionPtr::get()->DirectX::XMFLOAT3*
 {
-	m_pPosition->x = m_position->X;
-	m_pPosition->y = m_position->Y;
-	m_pPosition->z = m_position->Z;
 	return m_pPosition;
 }

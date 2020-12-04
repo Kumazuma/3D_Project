@@ -32,6 +32,10 @@ namespace MapTool.View
             if (mapObjects == null) return;
             MapToolRender.GraphicsDevice.Instance.Render(this, mapObjects, camera);
         }
+        public MapToolRender.Camera CurrentCamera
+        {
+            get => camera;
+        }
         public IEnumerable<MapToolRender.RenderObject> RenderObjects
         {
             get => mapObjects;
@@ -53,7 +57,7 @@ namespace MapTool.View
             {
                 m_mouseOperation = MouseOperation.MovingForward;
             }
-            else
+            else if ((ModifierKeys & Keys.Shift) != 0)
             {
                 m_mouseOperation = MouseOperation.Rotating;
             }
