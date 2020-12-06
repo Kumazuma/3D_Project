@@ -96,7 +96,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Doc\Document.cs" />
+    <Compile Include="Doc\MapFile\MapFile.cs" />
+    <Compile Include="Doc\MapFile\MapFileSave.cs" />
     <Compile Include="Doc\MeshManager.cs" />
+    <Compile Include="Doc\MapFile\MpaFileCollection.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
