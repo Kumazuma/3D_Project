@@ -1,0 +1,35 @@
+#include "pch.h"
+#include "MonsterStateComponent.hpp"
+#include "MonsterState.hpp"
+IMPLEMENT_COM_TAG(Kumazuma::MS2::MonsterStateComponent);
+Kumazuma::MS2::MonsterStateComponent::MonsterStateComponent(std::unique_ptr<MonsterState> firstState):
+    Component(MonsterStateComponent::TAG),
+    m_pState{std::move(firstState)}
+{
+}
+
+void Kumazuma::MS2::MonsterStateComponent::Update(const Kumazuma::Game::UpdateEvent& event)
+{
+    if (m_pState != nullptr)
+    {
+        std::shared_ptr<Kumazuma::Game::Object> pObj{ GetObj().lock() };
+        //auto pNextState = m_pState->GetNextState();
+        //if (pNextState == nullptr)
+        //{
+        //    return;
+        //}
+        //m_pState.reset(pNextState);
+        //m_pState->Action(event.GetDelta(), pObj);
+    }
+}
+
+Kumazuma::Game::Component* Kumazuma::MS2::MonsterStateComponent::Clone() const
+{
+    return new MonsterStateComponent{ std::unique_ptr<MonsterState>{this->m_pState->Clone()} };
+}
+
+Kumazuma::Game::Component* Kumazuma::Game::ComponentFactory<Kumazuma::MS2::MonsterStateComponent>::Create() const
+{
+    std::unique_ptr<Kumazuma::MS2::MonsterState> clone{ m_pClonableState->Clone() };
+    return new Kumazuma::MS2::MonsterStateComponent{ std::move(clone) };
+}

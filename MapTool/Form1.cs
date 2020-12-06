@@ -29,12 +29,6 @@ namespace MapTool
         {
             InitializeComponent();
 
-            string a = System.IO.Path.GetFullPath(".");
-            string b = System.IO.Path.GetFullPath("../text.txt");
-            string c = System.IO.Path.GetFullPath("./text.txt");
-            string b1 = MapToolCore.Utility.GetRelativePath(a, b);
-            string c1 = MapToolCore.Utility.GetRelativePath(a, c);
-
             MapToolCore.Environment.Instance.ProjectDirectory =System.IO.Path.GetFullPath(".");
 
             m_renderView = new DockView<View.RenderView>();
@@ -237,7 +231,7 @@ namespace MapTool
                 foreach (var path in paths)
                 {
                     var mapMesh = new WowMapMesh(GraphicsDevice.Instance, path);
-                    mapMesh.Name = "map mesh";
+                    mapMesh.Name = System.IO.Path.GetFileNameWithoutExtension(path);
                     res.Add(mapMesh);
                     
                 }

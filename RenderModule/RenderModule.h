@@ -50,6 +50,7 @@ public:
 		DirectX::XMFLOAT3 const& pos
 		)->DirectX::XMFLOAT3;
 	auto Renderable()->bool;
+	auto GetDefaultSwapChain(IDirect3DSwapChain9** ppSwapChain)->void;
 protected:
 	RenderModule();
 	auto BeginRender(float r, float g, float b, float a)->void;

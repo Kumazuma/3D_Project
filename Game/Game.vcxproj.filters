@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="app.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="kzEventTag.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectTag.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Env.cpp" />
+    <ClCompile Include="CameraComponent.cpp">
+      <Filter>Component\Camera</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="vector.hpp" />
+    <ClInclude Include="app.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="constvar.hpp">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="kzEnum.hpp">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="kzEventTag.hpp">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectTag.hpp">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="typedef.hpp">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="macro.hpp">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScene.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.hpp">
+      <Filter>ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\json.hpp">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="Env.hpp">
+      <Filter>Env</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraComponent.hpp">
+      <Filter>Component\Camera</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Game.ico">
+      <Filter>App</Filter>
+    </Image>
+    <Image Include="small.ico">
+      <Filter>App</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="App">
+      <UniqueIdentifier>{590148db-e567-4d62-ac22-eda90625c63e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{fb11b23a-d111-4497-a0db-2fbfc521ea4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ResourceManager">
+      <UniqueIdentifier>{8028a757-54bd-4ac0-b1f1-2d8b6635df4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Env">
+      <UniqueIdentifier>{c1d40c3e-970c-4f26-a07c-91b0960bf304}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\NewFilter1">
+      <UniqueIdentifier>{64b95bbd-7449-498a-b700-ef8709d926d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component">
+      <UniqueIdentifier>{f5d1a8e0-e3b3-4427-8db6-2ae949959eb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Camera">
+      <UniqueIdentifier>{1600f547-1474-4c4a-b2e1-0451c3bc7185}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint">
+      <Filter>App</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Game.rc">
+      <Filter>App</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

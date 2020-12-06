@@ -30,7 +30,7 @@ namespace MapTool.Doc
                             new JProperty("x", (obj as WowMapMesh).Transform.Scale.X),
                             new JProperty("y", (obj as WowMapMesh).Transform.Scale.Y),
                             new JProperty("z", (obj as WowMapMesh).Transform.Scale.Z))),
-                        new JProperty("rotations",
+                        new JProperty("rotation",
                             new JObject(
                                 new JProperty("x", (obj as WowMapMesh).Transform.Rotation.X),
                                 new JProperty("y", (obj as WowMapMesh).Transform.Rotation.Y),
@@ -61,7 +61,7 @@ namespace MapTool.Doc
                             new JProperty("x", (obj as NaviMesh).Transform.Scale.X),
                             new JProperty("y", (obj as NaviMesh).Transform.Scale.Y),
                             new JProperty("z", (obj as NaviMesh).Transform.Scale.Z))),
-                        new JProperty("rotations",
+                        new JProperty("rotation",
                             new JObject(
                                 new JProperty("x", (obj as NaviMesh).Transform.Rotation.X),
                                 new JProperty("y", (obj as NaviMesh).Transform.Rotation.Y),

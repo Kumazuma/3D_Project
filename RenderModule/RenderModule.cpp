@@ -486,3 +486,9 @@ auto RenderModule::Renderable() -> bool
 	}
 	return hr == S_OK;
 }
+auto RenderModule::GetDefaultSwapChain(IDirect3DSwapChain9** ppSwapChain) -> void
+{
+	if (ppSwapChain==nullptr)return;
+	*ppSwapChain = m_defaultSwapChain.Get();
+	m_defaultSwapChain->AddRef();
+}
