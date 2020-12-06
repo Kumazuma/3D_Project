@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using MapToolRender;
 namespace MapTool.View
 {
     public partial class MapObjectTreePanel : UserControl
@@ -17,18 +17,18 @@ namespace MapTool.View
         {
             InitializeComponent();
             listBox1.Items.Add(Doc.Document.Instance.World);
-             
+
             Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;
         }
         private void Document_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             int idx = 0;
             MapToolRender.MapObject mapObj = null;
-            switch(e.PropertyName)
+            switch (e.PropertyName)
             {
                 case "MapObjects":
                     mapObj = sender as MapToolRender.MapObject;
-                    if(Doc.Document.Instance.MapObjects.Contains(mapObj))
+                    if (Doc.Document.Instance.MapObjects.Contains(mapObj))
                     {
                         idx = listBox1.Items.Add(mapObj);
                         indexTable.Add(mapObj, idx);
@@ -37,7 +37,7 @@ namespace MapTool.View
                     break;
                 case "SelectedObject":
                     mapObj = Doc.Document.Instance.SelectedObject as MapToolRender.MapObject;
-                    if(mapObj == null)
+                    if (mapObj == null)
                     {
                         return;
                     }
@@ -47,19 +47,19 @@ namespace MapTool.View
                     }
                     break;
             }
-            
+
         }
 
         private void MapObj_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            
+
         }
 
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if(e.Node.Tag != null)
+            if (e.Node.Tag != null)
             {
-                switch(e.Button)
+                switch (e.Button)
                 {
                     case MouseButtons.Left:
                         Doc.Document.Instance.SelectedObject = e.Node.Tag;
@@ -70,7 +70,7 @@ namespace MapTool.View
                         break;
                 }
             }
-            
+
         }
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -81,9 +81,9 @@ namespace MapTool.View
             }
             var items = new MapToolRender.MapObject[listBox1.SelectedItems.Count];
             listBox1.SelectedItems.CopyTo(items, 0);
-            foreach(var item in items)
+            foreach (var item in items)
             {
-                if(Doc.Document.Instance.MapObjects.Contains(item))
+                if (Doc.Document.Instance.MapObjects.Contains(item))
                 {
                     Doc.Document.Instance.RemoveObject(item);
                     listBox1.Items.Remove(item);
@@ -118,19 +118,20 @@ namespace MapTool.View
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             var items = listBox1.SelectedItems;
-            if(items.Count == 1)
+            if (items.Count == 1)
             {
                 Doc.Document.Instance.SelectedObject = items[0];
             }
-            else if(items.Count > 0)
+            else if (items.Count > 0)
             {
                 //TODO:복수개의 이동 방법을 구현해야 한다.
+                Doc.Document.Instance.SelectedObject = new MultiSelectObject(items);
             }
         }
 
         private void listBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            
+
         }
 
         private void listBox1_Click(object sender, EventArgs e)
@@ -146,6 +147,47 @@ namespace MapTool.View
             {
                 var pt = PointToScreen(new Point(e.X, e.Y));
                 contextMenuStrip1.Show(pt);
+            }
+        }
+        public class MultiSelectObject : MapToolRender.MapObject
+        {
+            MapToolRender.RenderObject[] renderObjects;
+            MapToolRender.Transform[] baseTransforms;
+            MapToolRender.Transform dummyTransform;
+            public MultiSelectObject(System.Collections.IList renderObjects)
+            {
+                int objectCount = renderObjects.Count;
+
+                this.renderObjects = new MapToolRender.RenderObject[objectCount];
+                baseTransforms = new MapToolRender.Transform[objectCount];
+
+                for(int i = 0; i < objectCount; ++i)
+                {
+                    this.renderObjects[i] = renderObjects[i] as RenderObject;
+                    baseTransforms[i] = this.renderObjects[i].Transform.Clone();
+                }
+                dummyTransform = new Transform();
+                dummyTransform.PropertyChanged += DummyTransform_PropertyChanged;
+            }
+            public Transform Transform{ get => dummyTransform; }
+
+            private void DummyTransform_PropertyChanged(object sender, PropertyChangedEventArgs e)
+            {
+                int objectCount = renderObjects.Length;
+                for (int i = 0; i < objectCount; ++i)
+                {
+                    var newTransform = baseTransforms[i].Clone();
+                    newTransform.Position.X += dummyTransform.Position.X;
+                    newTransform.Position.Y += dummyTransform.Position.Y;
+                    newTransform.Position.Z += dummyTransform.Position.Z;
+                    newTransform.Scale.X = dummyTransform.Scale.X;
+                    newTransform.Scale.Y = dummyTransform.Scale.Y;
+                    newTransform.Scale.Z = dummyTransform.Scale.Z;
+                    newTransform.Rotation.X += dummyTransform.Rotation.X;
+                    newTransform.Rotation.Y += dummyTransform.Rotation.Y;
+                    newTransform.Rotation.Z += dummyTransform.Rotation.Z;
+                    renderObjects[i].Transform = newTransform;
+                }
             }
         }
     }

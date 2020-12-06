@@ -131,6 +131,10 @@ MapToolRender::Transform::Transform(Transform^  rhs)
     this->scale->PropertyChanged += m_scaleChangedHandler;
     this->position->PropertyChanged += m_positionChangedHandler;
 }
+auto MapToolRender::Transform::Clone() -> Transform^
+{
+    return gcnew Transform(this);
+}
 /*
         MapToolRender::Rotation^ rotation;
         MapToolRender::Scale^ scale;
@@ -200,6 +204,7 @@ MapToolRender::Scale::Scale(float x, float y, float z):
 MapToolRender::Scale::Scale(Scale^  rhs):
     Scale{ rhs->x,rhs->y, rhs->z }
 {
+
 }
 
 MapToolRender::Rotation::Rotation():

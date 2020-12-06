@@ -30,6 +30,8 @@ namespace MapTool.Doc
         public string FilePath
         {
             get => filePath;
+            set => filePath = value;
+
         }
         public string SkyBoxTexturePath
         {
@@ -38,8 +40,20 @@ namespace MapTool.Doc
         }
         string FormatString(string path)
         {
-            MapToolCore.Utility.GetRelativePath( )
-            return path;
+            if (path == null) return null;
+            string currentProjectDirectory = MapToolCore.Environment.Instance.ProjectDirectory;
+            path = System.IO.Path.GetFullPath(path);
+            path = MapToolCore.Utility.GetRelativePath(currentProjectDirectory, path);
+            
+            if(path.StartsWith(".."))
+            {
+                path = System.IO.Path.PathSeparator + path;
+            }
+            else
+            {
+                path = path.Substring(1);
+            }
+            return path.Replace('\\', '/');
         }
     }
 }

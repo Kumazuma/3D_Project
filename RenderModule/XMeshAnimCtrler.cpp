@@ -23,6 +23,9 @@ SkinnedXMeshObject::AnimationController::AnimationController(AnimationController
     m_period{ rhs->m_period },
     m_pAnimCtrl{ rhs->m_pAnimCtrl }
 {
+    ID3DXAnimationSet* animSet{};
+    m_pAnimCtrl->GetAnimationSetByName("", &animSet);
+ 
     m_pAnimCtrl->CloneAnimationController(
         m_pAnimCtrl->GetMaxNumAnimationOutputs(),
         m_pAnimCtrl->GetMaxNumAnimationSets(),

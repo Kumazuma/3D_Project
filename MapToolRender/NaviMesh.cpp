@@ -39,3 +39,33 @@ auto MapToolRender::NaviMesh::WeldDistance::set(float value)->void
 	obj->SetWeldDistance(value);
 	this->OnPropertyChanged("WeldDistance");
 }
+auto MapToolRender::NaviMesh::Vertices::get()->cli::array<Position^>^
+{
+	auto obj{ static_cast<::NavMeshRenderingObject*>(m_pNativeObject) };
+	unsigned int count{ obj->GetVertexCount() };
+	std::vector<DirectX::XMFLOAT4> rawVertices(count, DirectX::XMFLOAT4{});
+	
+	obj->GetVertices(rawVertices.data(), count * sizeof(DirectX::XMFLOAT4));
+	cli::array<Position^>^ res = gcnew cli::array<Position^>(count);
+	for (unsigned int i = 0; i < count; ++i)
+	{
+		auto& vertex{ rawVertices[i] };
+		res[i] = gcnew Position(vertex.x, vertex.y, vertex.z);
+	}
+	return res;
+}
+auto MapToolRender::NaviMesh::Indices::get()->cli::array<unsigned short>^
+{
+	auto obj{ static_cast<::NavMeshRenderingObject*>(m_pNativeObject) };
+	unsigned int count{ obj->GetIndexCount() };
+	std::vector<unsigned short> rawIndices(count, unsigned short{});
+
+	obj->GetIndices(rawIndices.data(), count * sizeof(unsigned short));
+	cli::array<unsigned short>^ res = gcnew cli::array<unsigned short>(count);
+	
+	for (unsigned int i = 0; i < count; ++i)
+	{
+		res[i] = rawIndices[i];
+	}
+	return res;
+}

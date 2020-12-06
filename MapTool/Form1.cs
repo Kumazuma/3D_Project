@@ -23,17 +23,25 @@ namespace MapTool
         DockView<View.AnimationView> m_animationJsonEditView;
         DockView<View.ColiiderEditView> m_colliderEditView;
         HashSet<RenderObject> renderObjects = new HashSet<RenderObject>();
-        string m_currentJsonPath = null;
+        Doc.MapFile file;
+        SkyBox skyBox;
         public Form1()
         {
             InitializeComponent();
+
+            string a = System.IO.Path.GetFullPath(".");
+            string b = System.IO.Path.GetFullPath("../text.txt");
+            string c = System.IO.Path.GetFullPath("./text.txt");
+            string b1 = MapToolCore.Utility.GetRelativePath(a, b);
+            string c1 = MapToolCore.Utility.GetRelativePath(a, c);
+
             MapToolCore.Environment.Instance.ProjectDirectory =System.IO.Path.GetFullPath(".");
 
             m_renderView = new DockView<View.RenderView>();
             GraphicsDevice.Initialize(m_renderView.Content, 800, 600);
             m_renderView.Content.Initialize(800, 600);
 
-            SkyBox skyBox = new SkyBox(GraphicsDevice.Instance);
+            skyBox = new SkyBox(GraphicsDevice.Instance);
             renderObjects.Add(skyBox);
 
             Doc.Document.Instance.World = skyBox;
@@ -213,7 +221,7 @@ namespace MapTool
             m_renderView.Content.Render();
         }
 
-        private void wowMapMashToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void wowMapMashToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var fileDialog = new OpenFileDialog();
             fileDialog.Filter = "obj 파일(*.obj)|*.obj";
@@ -223,10 +231,22 @@ namespace MapTool
                 return;
             }
             var paths = fileDialog.FileNames;
-            foreach(var path in paths)
+            var task = new System.Threading.Tasks.Task<WowMapMesh[]>(() =>
             {
-                var mapMesh = new WowMapMesh(GraphicsDevice.Instance, path);
-                mapMesh.Name = "map mesh";
+                List<WowMapMesh> res = new List<WowMapMesh>(paths.Length);
+                foreach (var path in paths)
+                {
+                    var mapMesh = new WowMapMesh(GraphicsDevice.Instance, path);
+                    mapMesh.Name = "map mesh";
+                    res.Add(mapMesh);
+                    
+                }
+                return res.ToArray();
+            });
+            task.Start();
+            var mapMeshs= await task;
+            foreach(var mapMesh in mapMeshs)
+            {
                 renderObjects.Add(mapMesh);
                 Doc.Document.Instance.AddObject(mapMesh);
             }
@@ -252,6 +272,35 @@ namespace MapTool
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if(file != null)
+            {
+                var res = MessageBox.Show("기존 파일을 덮어씌우겠습니까?", "파일 저장", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (res != DialogResult.Yes)
+                {
+                    file = null;
+                }
+            }
+            if (file == null)
+            {
+                var dialog = new SaveFileDialog();
+                dialog.Filter = "map file(*.json)|*.json;";
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                file = new Doc.MapFile();
+                file.FilePath = dialog.FileName;
+            }
+            if(skyBox.SkyBoxTexture != null)
+            {
+                file.SkyBoxTexturePath = skyBox.SkyBoxTexture.FilePath;
+            }
+            file.Nodes.Clear();
+            foreach(var item in Doc.Document.Instance.MapObjects)
+            {
+                file.Nodes.Add(item);
+            }
+            file.Save();
             //if (m_currentJsonPath != null)
             //{
             //    var res = MessageBox.Show("기존 파일을 덮어씌우겠습니까?", "파일 저장", MessageBoxButtons.YesNo, MessageBoxIcon.Question);

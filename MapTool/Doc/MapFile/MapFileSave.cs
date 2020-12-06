@@ -7,6 +7,7 @@ using MapToolRender;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 namespace MapTool.Doc
 {
     public partial class MapFile
@@ -17,32 +18,23 @@ namespace MapTool.Doc
             (
                 new JProperty("type", "OBJ_MESH"),
                 new JProperty("name", obj.Name),
-                new JProperty
-                (
-                    "transform",
-                    new JObject
-                    (
-                        "position",
-                        new JObject
-                        (
-                            new JProperty("x", (obj as WowMapMesh).Transform.Position.X),
-                            new JProperty("y", (obj as WowMapMesh).Transform.Position.Y),
-                            new JProperty("z", (obj as WowMapMesh).Transform.Position.Z)
-                        ),
-                        "scale",
-                        new JObject
-                        (
+                new JProperty("transform",
+                    new JObject(
+                        new JProperty("position",
+                            new JObject(
+                                new JProperty("x", (obj as WowMapMesh).Transform.Position.X),
+                                new JProperty("y", (obj as WowMapMesh).Transform.Position.Y),
+                                new JProperty("z", (obj as WowMapMesh).Transform.Position.Z))),
+                        new JProperty("scale",
+                            new JObject(
                             new JProperty("x", (obj as WowMapMesh).Transform.Scale.X),
                             new JProperty("y", (obj as WowMapMesh).Transform.Scale.Y),
-                            new JProperty("z", (obj as WowMapMesh).Transform.Scale.Z)
-                        ),
-                        "rotations",
-                        new JObject
-                        (
-                            new JProperty("x", (obj as WowMapMesh).Transform.Rotation.X),
-                            new JProperty("y", (obj as WowMapMesh).Transform.Rotation.Y),
-                            new JProperty("z", (obj as WowMapMesh).Transform.Rotation.Z)
-                        )
+                            new JProperty("z", (obj as WowMapMesh).Transform.Scale.Z))),
+                        new JProperty("rotations",
+                            new JObject(
+                                new JProperty("x", (obj as WowMapMesh).Transform.Rotation.X),
+                                new JProperty("y", (obj as WowMapMesh).Transform.Rotation.Y),
+                                new JProperty("z", (obj as WowMapMesh).Transform.Rotation.Z)))
                     )
                 ),
                 new JProperty("path", this.FormatString( (obj as WowMapMesh).MeshFilePath) )
@@ -50,14 +42,49 @@ namespace MapTool.Doc
         JObject WriteNaviMesh(MapObject obj)
         {
             var naviMesh = obj as NaviMesh;
+            var indices = naviMesh.Indices;
+            var vertices = naviMesh.Vertices;
             
-            return null;
+            return new JObject
+            (
+                new JProperty("type", "NAVI_MESH"),
+                new JProperty("name", obj.Name),
+                new JProperty("transform",
+                    new JObject(
+                        new JProperty("position",
+                            new JObject(
+                                new JProperty("x", (obj as NaviMesh).Transform.Position.X),
+                                new JProperty("y", (obj as NaviMesh).Transform.Position.Y),
+                                new JProperty("z", (obj as NaviMesh).Transform.Position.Z))),
+                        new JProperty("scale",
+                            new JObject(
+                            new JProperty("x", (obj as NaviMesh).Transform.Scale.X),
+                            new JProperty("y", (obj as NaviMesh).Transform.Scale.Y),
+                            new JProperty("z", (obj as NaviMesh).Transform.Scale.Z))),
+                        new JProperty("rotations",
+                            new JObject(
+                                new JProperty("x", (obj as NaviMesh).Transform.Rotation.X),
+                                new JProperty("y", (obj as NaviMesh).Transform.Rotation.Y),
+                                new JProperty("z", (obj as NaviMesh).Transform.Rotation.Z)))
+                    )
+                ),
+                new JProperty("vertices", new JArray(
+                    from vertex in vertices select new JObject(
+                            new JProperty("x", vertex.X),
+                            new JProperty("y", vertex.Y),
+                            new JProperty("z", vertex.Z)
+                        )
+                    )
+                ),
+                new JProperty("indices", new JArray(indices))
+            );
         }
-        public void Save(string filePath)
+        public void Save()
         {
             var writeFunctionTable = new Dictionary<Type, WriteObjectInJson> {
 
-                { typeof(WowMapMesh),WriteWowObjMesh }
+                { typeof(WowMapMesh),WriteWowObjMesh },
+                { typeof(NaviMesh), WriteNaviMesh }
             };
             Stream fileStream = null;
             StreamWriter streamWriter = null;

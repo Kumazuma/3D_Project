@@ -173,7 +173,7 @@ auto NavMeshRenderingObject::PushPoint(DirectX::XMFLOAT3 const& pt, DirectX::XMF
         }
         XMVECTOR vNormal{ -XMVector3Cross(vTriangle[1] - vTriangle[0], vTriangle[2] - vTriangle[0]) };
         f32 dotRes{};
-        XMStoreFloat(&dotRes, XMVector3Dot(cameraTransform.r[2], vNormal));
+        XMStoreFloat(&dotRes, XMVector3Dot(XMVectorSet(0.f, 0.f, 1.f, 0.f), vNormal));
         if(dotRes < 0)//0보다 작으면 둔각으로서 정점찍은 순서가 틀렸다.
         {
             std::swap(m_positionIndexing[1], m_positionIndexing[2]);//그러니까 1번이랑 2번의 순서를 바꿔주자.
@@ -227,6 +227,7 @@ auto NavMeshRenderingObject::GetVertices(DirectX::XMFLOAT4* const pBuffer, u32 b
     for (auto& vertex : m_vertices)
     {
         *it = XMFLOAT4{ vertex.vPosition.x, vertex.vPosition.y ,vertex.vPosition.z ,1.f };
+        ++it;
     }
     return S_OK;
 }

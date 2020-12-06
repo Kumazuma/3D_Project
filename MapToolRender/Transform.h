@@ -148,6 +148,7 @@ namespace MapToolRender
 	public:
 		Transform();
 		Transform(Transform^  rhs);
+		auto Clone()->Transform^;
 		[CategoryAttribute("Transform"), Browsable(true)]
 		property MapToolRender::Rotation^ Rotation
 		{

@@ -22,5 +22,9 @@ namespace MapToolRender
 		{
 			auto get()->cli::array<Position^>^;
 		}
+		property cli::array<unsigned short>^ Indices
+		{
+			auto get()->cli::array<unsigned short>^;
+		}
 	};
 }
