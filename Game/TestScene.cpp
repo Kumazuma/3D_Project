@@ -71,7 +71,6 @@ void TestScene::Loaded()
 		.Component<CameraComponent>()
 		.Component<Game::TransformComponent>();
 	m_pCameraObject = NewObject(objFac);
-	m_pCameraObject->GetComponent(Game::TransformComponent::TAG)->SetPosition({ -2800.0f, 80.0f, 266.0f });
 }
 auto TestScene::Update(f32 timeDelta) -> void
 {
