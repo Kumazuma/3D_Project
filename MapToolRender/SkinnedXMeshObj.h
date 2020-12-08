@@ -3,6 +3,7 @@
 #include "TextureCollection.h"
 namespace MapToolRender
 {
+	using namespace System::Collections::Generic;
 	public ref class SkinnedXMeshObj : public RenderObject
 	{
 	public:
@@ -18,9 +19,15 @@ namespace MapToolRender
 		{
 			auto get()->System::String^;
 		}
+		[ReadOnlyAttribute(true)]
+		property array<System::String^>^ FrameNames
+		{
+			auto get()->array<System::String^>^;
+		}
 	protected:
 		SkinnedXMeshObj(SkinnedXMeshObj^ const& rhs);
 	private:
+		array<System::String^>^ m_frameNames;
 		System::String^ m_filePath;
 	};
 }

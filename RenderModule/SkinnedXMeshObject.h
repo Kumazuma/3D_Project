@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <set>
 class SkinnedMeshEntity;
 class DLL_CLASS SkinnedXMeshObject : public XMeshObject
 {
@@ -25,6 +26,7 @@ public:
 	auto SetAnimationSet(u32 idx)->void;
 	auto PlayAnimation(f32 timeDelta)->void;
 	auto GetAnimationCount()const->u32;
+	auto GetFrameNamesRef()const->std::set<std::wstring> const&;
 protected:
 	SkinnedXMeshObject();
 	SkinnedXMeshObject(SkinnedXMeshObject const* rhs);
@@ -35,10 +37,11 @@ private:
 	D3DXFRAME* m_pRootFrame;
 	std::unordered_map<CustomMeshContainer*, std::vector< DirectX::XMFLOAT4X4>> m_renderedMatrices;
 	std::unordered_map<std::wstring, DirectX::XMFLOAT4X4> m_combinedOffsetMatrices;
+	std::shared_ptr<std::set<std::wstring> > m_pFrameNames;
 	std::shared_ptr<HierarchyLoader> m_pHierarchyLoader;
+	std::shared_ptr<SkinnedMeshEntity> m_entity;
 	std::unique_ptr<AnimationController> m_pAnimCtrler;
 	std::vector<CustomMeshContainer* > m_meshContainters;
-	std::shared_ptr<SkinnedMeshEntity> m_entity;
 };
 struct SkinnedXMeshObject::Frame : public D3DXFRAME
 {

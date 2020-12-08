@@ -380,7 +380,7 @@ auto RenderModule::PrepareFrustum() -> void
 	m_frustum.MakeFrustum(mView, mProj);
 }
 
-auto RenderModule::Render(float r, float g, float b, float a, IDirect3DSwapChain9* pSwapChain) -> void
+auto RenderModule::Render(float r, float g, float b, float a, HWND hWnd) -> void
 {
 	if (!Renderable())
 	{
@@ -388,8 +388,6 @@ auto RenderModule::Render(float r, float g, float b, float a, IDirect3DSwapChain
 		return;
 	}
 	COMPtr<IDirect3DSurface9> backbuffer;
-	pSwapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &backbuffer);
-	m_pDevice->SetRenderTarget(0, backbuffer.Get());
 	BeginRender(r, g, b, a);
 	for (auto& it : m_renderEntities[Kind::ENVIRONMENT])
 	{
@@ -415,7 +413,7 @@ auto RenderModule::Render(float r, float g, float b, float a, IDirect3DSwapChain
 	m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
 	ClearEntityTable();
-	EndRender(pSwapChain);
+	EndRender(hWnd);
 }
 
 auto RenderModule::AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity> const& entity) -> void
@@ -466,15 +464,11 @@ auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 	assert(SUCCEEDED(hr));
 }
 
-auto RenderModule::EndRender(IDirect3DSwapChain9* pSwapChain) -> void
+auto RenderModule::EndRender(HWND hWnd) -> void
 {
 	HRESULT hr;
-	if (pSwapChain == nullptr)
-	{
-		pSwapChain = m_defaultSwapChain.Get();
-	}
 	m_pDevice->EndScene();
-	pSwapChain->Present(nullptr, nullptr, nullptr, nullptr, 0);
+	m_pDevice->Present(nullptr, nullptr, hWnd, nullptr);
 }
 
 auto RenderModule::Renderable() -> bool

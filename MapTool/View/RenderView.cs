@@ -30,18 +30,12 @@ namespace MapTool.View
         }
         public void Initialize(uint backBufferWidth, uint backBufferHeight)
         {
-            swapChain = new MapToolRender.SwapChain(
-                MapToolRender.GraphicsDevice.Instance,
-                this,
-                backBufferWidth,
-                backBufferHeight,
-                MapToolRender.SwapChain.PixelFormat.R8G8B8A8,
-                false);
+            
         }
         public void Render()
         {
             if (mapObjects == null) return;
-            MapToolRender.GraphicsDevice.Instance.Render(swapChain, mapObjects, camera);
+            MapToolRender.GraphicsDevice.Instance.Render(this, mapObjects, camera);
         }
         public MapToolRender.Camera CurrentCamera
         {

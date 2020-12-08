@@ -39,7 +39,7 @@ namespace MapToolRender {
 			}
 
 		}
-		auto Render(SwapChain^ swapChain, IEnumerable<RenderObject^>^ objs, Camera^ camera)->void;
+		auto Render(System::Windows::Forms::Control^, IEnumerable<RenderObject^>^ objs, Camera^ camera)->void;
 		auto CreateMouseRay(Control^ drawPanel, Camera^ camera, System::Drawing::Point^ mousePt)->Ray^;
 		property RenderModule* Handle
 		{

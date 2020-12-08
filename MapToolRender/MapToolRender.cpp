@@ -53,7 +53,7 @@ auto MapToolRender::GraphicsDevice::GetSaveFilePath(System::Windows::Forms::Cont
 	// TODO: 여기에 return 문을 삽입합니다.
 	return nullptr;
 }
-auto MapToolRender::GraphicsDevice::Render(SwapChain^ swapChain, IEnumerable<RenderObject^>^ objs, Camera^ camera) -> void
+auto MapToolRender::GraphicsDevice::Render(System::Windows::Forms::Control^ control, IEnumerable<RenderObject^>^ objs, Camera^ camera) -> void
 {
 	System::Threading::Monitor::Enter(this);
 	m_pRenderModule->SetCamera(camera->PositionPtr, camera->RotationPtr);
@@ -78,7 +78,7 @@ auto MapToolRender::GraphicsDevice::Render(SwapChain^ swapChain, IEnumerable<Ren
 				handle->PrepareRender(m_pRenderModule);
 			}
 		}
-		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f, swapChain->Native);
+		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f, (HWND)control->Handle.ToPointer());
 	}
 	finally
 	{

@@ -14,7 +14,7 @@ namespace MapToolRender {
 		TextureFileEditor::typeid,
 		System::Drawing::Design::UITypeEditor::typeid)]
 	[TypeConverter(TextureConverter::typeid)]
-	public ref class Texture: public TextureConverter
+	public ref class Texture
 	{
 	public:
 		Texture(GraphicsDevice^ device, System::String^ filePath);

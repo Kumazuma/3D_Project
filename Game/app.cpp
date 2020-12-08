@@ -63,10 +63,10 @@ App::App(HINSTANCE hInstance)
     {
         throw E_FAIL;
     }
-
+    
     m_renderModule.reset(renderModule);
     Kumazuma::Client::ResourceManager::Initialize(m_renderModule);
-
+    
     Kumazuma::Game::TimerManager::Initialize();
     auto pInputManager = InputManager::Instance();
     pInputManager->Bind(PLAYER_INPUT::FIRE, 'Z');
@@ -75,9 +75,9 @@ App::App(HINSTANCE hInstance)
     pInputManager->Bind(PLAYER_INPUT::MOVE_LEFT, VK_LEFT);
     pInputManager->Bind(PLAYER_INPUT::MOVE_RIGHT, VK_RIGHT);
     pInputManager->Bind(PLAYER_INPUT::PASS_SCENE, VK_RETURN);
-
-}
-
+    
+}   
+    
 App::~App()
 {
     m_mainWindow.Disconnect();
@@ -180,7 +180,7 @@ auto App::Loop()->int
             m_renderModule->PrepareFrustum();
             //pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-            m_renderModule->Render(0.f, 0.f, 1.f, 1.f, swapChain.Get() );
+            m_renderModule->Render(0.f, 0.f, 1.f, 1.f, m_mainWindow.GetHandle());
             runtime->GC();
             if (m_isRunning == false)
             {

@@ -225,21 +225,21 @@ namespace MapTool
                 return;
             }
             var paths = fileDialog.FileNames;
-            var task = new System.Threading.Tasks.Task<WowMapMesh[]>(() =>
+            var watcherTask = new System.Threading.Tasks.Task<List<WowMapMesh> >(() =>
             {
+                //var taskFactory = ();
                 List<WowMapMesh> res = new List<WowMapMesh>(paths.Length);
-                foreach (var path in paths)
+
+                var parallet = System.Threading.Tasks.Parallel.ForEach(paths, (string path) =>
                 {
-                    var mapMesh = new WowMapMesh(GraphicsDevice.Instance, path);
-                    mapMesh.Name = System.IO.Path.GetFileNameWithoutExtension(path);
-                    res.Add(mapMesh);
-                    
-                }
-                return res.ToArray();
+                    var mesh = new WowMapMesh(GraphicsDevice.Instance, path) { Name = System.IO.Path.GetFileNameWithoutExtension(path) };
+                    lock (res) { res.Add(mesh); }
+                });
+                return res;
             });
-            task.Start();
-            var mapMeshs= await task;
-            foreach(var mapMesh in mapMeshs)
+            watcherTask.Start();
+            var meshes = await watcherTask;
+            foreach (var mapMesh in meshes)
             {
                 renderObjects.Add(mapMesh);
                 Doc.Document.Instance.AddObject(mapMesh);

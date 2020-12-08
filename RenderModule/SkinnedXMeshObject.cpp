@@ -87,7 +87,6 @@ auto SkinnedXMeshObject::FindFrameTransfromByName(std::wstring const& frameName,
     }
     *pOut = findResIt->second;
     return S_OK;
-
 }
 
 auto SkinnedXMeshObject::IsAnimationSetEnd() -> bool
@@ -129,6 +128,12 @@ auto SkinnedXMeshObject::GetAnimationCount()const -> u32
     return m_pAnimCtrler->GetAnimCount();
 }
 
+auto SkinnedXMeshObject::GetFrameNamesRef() const -> std::set<std::wstring> const&
+{
+    // TODO: 여기에 return 문을 삽입합니다.
+    return *m_pFrameNames;
+}
+
 SkinnedXMeshObject::SkinnedXMeshObject():
     m_pRootFrame{},
     m_entity{ new SkinnedMeshEntity{this} }
@@ -143,7 +148,8 @@ SkinnedXMeshObject::SkinnedXMeshObject(SkinnedXMeshObject const* rhs):
     m_pRootFrame{rhs->m_pRootFrame},
     m_entity{new SkinnedMeshEntity{this}},
     m_combinedOffsetMatrices{rhs->m_combinedOffsetMatrices},
-    m_renderedMatrices{rhs->m_renderedMatrices}
+    m_renderedMatrices{rhs->m_renderedMatrices},
+    m_pFrameNames{rhs->m_pFrameNames}
 {
     //TODO: 깊은 복사를 해야한다. HOWTO?
 }
@@ -191,8 +197,19 @@ auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring co
         nullptr,
         &m_pRootFrame,
         &pAnimationController);
+    std::string errmsg{};
+    switch (hr)
+    {
+    case D3DERR_INVALIDCALL:
+        errmsg = "D3DERR_INVALIDCALL";
+        break;
+    case E_OUTOFMEMORY:
+        errmsg = "E_OUTOFMEMORY";
+        break;
+    }
     if (FAILED(hr))
     {
+        OutputDebugStringA(errmsg.c_str());
         return hr;
     }
     hr = AnimationController::Create(pAnimationController.Get(), &pAnimCtrler);
@@ -204,8 +221,9 @@ auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring co
     m_pAnimCtrler.reset(pAnimCtrler);
     UpdateFrameMatrices(
         static_cast<Frame*>(m_pRootFrame),
-        ToFloat4x4(XMMatrixRotationY(XMConvertToRadians(180.f)))
+        ToFloat4x4(XMMatrixIdentity())
     );
+    m_pFrameNames.reset(new std::set<std::wstring>{});
     InitializeFrameMatrix(static_cast<Frame*>(m_pRootFrame));
 
     for (auto& iter : m_meshContainters)
@@ -225,6 +243,7 @@ auto SkinnedXMeshObject::InitializeFrameMatrix(Frame* pFrame)->void
         {
             char const* pBoneName{ pMeshContainer->pSkinInfo->GetBoneName(i) };
             Frame* pBone{ static_cast<Frame*>(D3DXFrameFind(m_pRootFrame, pBoneName)) };
+            m_pFrameNames->emplace(pBone->name);
             pMeshContainer->frameCombinedMatries[i] = pBone->combinedTransformationMatrix;
         }
         m_meshContainters.push_back(pMeshContainer);
@@ -233,7 +252,6 @@ auto SkinnedXMeshObject::InitializeFrameMatrix(Frame* pFrame)->void
         InitializeFrameMatrix(static_cast<Frame*>(pFrame->pFrameSibling));
     if (pFrame->pFrameFirstChild != nullptr)
         InitializeFrameMatrix(static_cast<Frame*>(pFrame->pFrameFirstChild));
-
 }
 
 auto SkinnedXMeshObject::UpdateFrameMatrices(Frame* const pFrame, DirectX::XMFLOAT4X4 const& parentTransform)->void
