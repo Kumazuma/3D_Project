@@ -23,6 +23,7 @@ namespace MapTool.View
         RenderView renderView;
         bool m_playing;
         string m_currentJsonPath = null;
+        Doc.AnimationMeshMeta meta = new Doc.AnimationMeshMeta();
         public AnimationView()
         {
             InitializeComponent();
@@ -69,6 +70,7 @@ namespace MapTool.View
             }
             animMeshObj = new MapToolRender.SkinnedXMeshObj(MapToolRender.GraphicsDevice.Instance, openFileDialog.FileName);
             animMeshObj.PropertyChanged += AnimMeshObj_PropertyChanged;
+            meta.MeshFilePath = openFileDialog.FileName;
             Doc.Document.Instance.SelectedObject = animMeshObj;
             objList.Clear();
             objList.Add(animMeshObj);
@@ -81,6 +83,10 @@ namespace MapTool.View
                 var idx = $"{i}";
                 comboAnim.Items.Add(idx);
                 AnimIndex.Items.Add(idx);
+            }
+            foreach(var obj in listColliders.Items)
+            {
+                (obj as MapToolCore.Collider).FrameNames = animMeshObj.FrameNames;
             }
         }
 
@@ -214,45 +220,19 @@ namespace MapTool.View
                 m_currentJsonPath = null;
                 return;
             }
-            var table= new Dictionary<string, int>();
-            var set = new HashSet<int>();
+            meta.AnimationTable.Clear();
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 if(row.Cells[0].Value == null)
                 {
                     continue;
                 }
-                var number = int.Parse(row.Cells[0].Value as string);
+                var number = uint.Parse(row.Cells[0].Value as string);
                 var idx = row.Cells[1].Value as string;
-                if (set.Contains(number))
-                {
-                    continue;
-                }
-                if(table.ContainsKey(idx))
-                {
-                    continue;
-                }
-                set.Add(number);
-                table.Add(idx, number);
-            }
-            
-            var streamWriter = new System.IO.StreamWriter(fileStream);
-            var writer = new Newtonsoft.Json.JsonTextWriter(streamWriter);
-            writer.WriteStartObject();
-            writer.WritePropertyName("x_file_path");
-            var relativePath = MapToolCore.Utility.GetRelativePath(MapToolCore.Environment.Instance.ProjectDirectory, animMeshObj.MeshFilePath);
-            writer.WriteValue(relativePath);
-            writer.WritePropertyName("animations");
-            writer.WriteStartObject();
-            foreach(var item in table)
-            {
-                writer.WritePropertyName(item.Key);
-                writer.WriteValue(item.Value);
-            }
-            writer.WriteEndObject();
-            writer.WriteEndObject();
-            writer.Close();
 
+                meta.AnimationTable.Add(new Doc.AnimationTableItem(number, idx));
+            }
+            meta.Save(m_currentJsonPath);
         }
 
         private void comboAnim_SelectedIndexChanged(object sender, EventArgs e)
@@ -277,7 +257,19 @@ namespace MapTool.View
         }
         private void btnAddCollider_Click(object sender, EventArgs e)
         {
-            
+            var collider = new MapToolCore.Collider();
+            listColliders.Items.Add(collider);
+            pgCollider.SelectedObject = collider;
+            if(animMeshObj != null)
+            {
+                collider.FrameNames = animMeshObj.FrameNames;
+            }
+
+        }
+
+        private void listColliders_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            pgCollider.SelectedObject = listColliders.SelectedItem;
         }
     }
 }

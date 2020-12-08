@@ -15,10 +15,10 @@ MapToolRender::SphareMesh::SphareMesh(GraphicsDevice^ device)
     m_propertyChangedhandler = gcnew PropertyChangedEventHandler(this, &SphareMesh::OnColliderChangedChanged);
     PropertyChanged += gcnew PropertyChangedEventHandler(this, &MapToolRender::SphareMesh::OnSelfChanged);
 }
-
+//TODO:
 MapToolRender::SphareMesh::SphareMesh(SphareMesh^ const& rhs):
     RenderObject(this),
-    m_collider(static_cast<MapToolCore::SphareCollider^>(rhs->m_collider->Clone()))
+    m_collider(nullptr)
 {
     PropertyChanged += gcnew PropertyChangedEventHandler(this, &MapToolRender::SphareMesh::OnSelfChanged);
 

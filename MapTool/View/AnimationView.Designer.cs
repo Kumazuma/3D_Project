@@ -40,11 +40,11 @@ namespace MapTool.View
             this.AnimIndex = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.animStringID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.comboAnim = new System.Windows.Forms.ComboBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.pgCollider = new System.Windows.Forms.PropertyGrid();
-            this.btnAddCollider = new System.Windows.Forms.Button();
             this.listColliders = new System.Windows.Forms.ListBox();
+            this.btnAddCollider = new System.Windows.Forms.Button();
+            this.comboAnim = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -83,7 +83,7 @@ namespace MapTool.View
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.84615F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.15385F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 74F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
             this.tableLayoutPanel1.Controls.Add(this.btnXFileOpen, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnJsonOpen, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnJSONSave, 2, 0);
@@ -110,7 +110,7 @@ namespace MapTool.View
             this.btnJsonOpen.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnJsonOpen.Location = new System.Drawing.Point(83, 3);
             this.btnJsonOpen.Name = "btnJsonOpen";
-            this.btnJsonOpen.Size = new System.Drawing.Size(97, 38);
+            this.btnJsonOpen.Size = new System.Drawing.Size(96, 38);
             this.btnJsonOpen.TabIndex = 3;
             this.btnJsonOpen.Text = "JSON파일 열기";
             this.btnJsonOpen.UseVisualStyleBackColor = true;
@@ -119,9 +119,9 @@ namespace MapTool.View
             // btnJSONSave
             // 
             this.btnJSONSave.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnJSONSave.Location = new System.Drawing.Point(186, 3);
+            this.btnJSONSave.Location = new System.Drawing.Point(185, 3);
             this.btnJSONSave.Name = "btnJSONSave";
-            this.btnJSONSave.Size = new System.Drawing.Size(69, 38);
+            this.btnJSONSave.Size = new System.Drawing.Size(70, 38);
             this.btnJSONSave.TabIndex = 5;
             this.btnJSONSave.Text = "JSON 저장";
             this.btnJSONSave.UseVisualStyleBackColor = true;
@@ -187,17 +187,6 @@ namespace MapTool.View
             this.tabPage2.Text = "콜라이더";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // comboAnim
-            // 
-            this.comboAnim.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboAnim.FormattingEnabled = true;
-            this.comboAnim.Location = new System.Drawing.Point(3, 53);
-            this.comboAnim.Name = "comboAnim";
-            this.comboAnim.Size = new System.Drawing.Size(258, 20);
-            this.comboAnim.TabIndex = 7;
-            this.comboAnim.SelectedIndexChanged += new System.EventHandler(this.comboAnim_SelectedIndexChanged);
-            // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -225,6 +214,17 @@ namespace MapTool.View
             this.pgCollider.Size = new System.Drawing.Size(245, 307);
             this.pgCollider.TabIndex = 0;
             // 
+            // listColliders
+            // 
+            this.listColliders.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listColliders.FormattingEnabled = true;
+            this.listColliders.ItemHeight = 12;
+            this.listColliders.Location = new System.Drawing.Point(0, 23);
+            this.listColliders.Name = "listColliders";
+            this.listColliders.Size = new System.Drawing.Size(245, 438);
+            this.listColliders.TabIndex = 1;
+            this.listColliders.SelectedIndexChanged += new System.EventHandler(this.listColliders_SelectedIndexChanged);
+            // 
             // btnAddCollider
             // 
             this.btnAddCollider.Dock = System.Windows.Forms.DockStyle.Top;
@@ -236,15 +236,16 @@ namespace MapTool.View
             this.btnAddCollider.UseVisualStyleBackColor = true;
             this.btnAddCollider.Click += new System.EventHandler(this.btnAddCollider_Click);
             // 
-            // listColliders
+            // comboAnim
             // 
-            this.listColliders.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listColliders.FormattingEnabled = true;
-            this.listColliders.ItemHeight = 12;
-            this.listColliders.Location = new System.Drawing.Point(0, 23);
-            this.listColliders.Name = "listColliders";
-            this.listColliders.Size = new System.Drawing.Size(245, 438);
-            this.listColliders.TabIndex = 1;
+            this.comboAnim.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboAnim.FormattingEnabled = true;
+            this.comboAnim.Location = new System.Drawing.Point(3, 53);
+            this.comboAnim.Name = "comboAnim";
+            this.comboAnim.Size = new System.Drawing.Size(258, 20);
+            this.comboAnim.TabIndex = 7;
+            this.comboAnim.SelectedIndexChanged += new System.EventHandler(this.comboAnim_SelectedIndexChanged);
             // 
             // AnimationView
             // 

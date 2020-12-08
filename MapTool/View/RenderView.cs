@@ -22,12 +22,18 @@ namespace MapTool.View
         IEnumerable<MapToolRender.RenderObject> mapObjects;
         MouseOperation m_mouseOperation = MouseOperation.None;
         Point? m_prevMousePosition = null;
-        MapToolRender.SwapChain swapChain;
         public RenderView()
         {
             InitializeComponent();
             camera = new MapToolRender.Camera();
+            this.Paint += RenderView_Paint;
         }
+
+        private void RenderView_Paint(object sender, PaintEventArgs e)
+        {
+            Render();
+        }
+
         public void Initialize(uint backBufferWidth, uint backBufferHeight)
         {
             

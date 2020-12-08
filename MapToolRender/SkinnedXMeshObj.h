@@ -20,6 +20,7 @@ namespace MapToolRender
 			auto get()->System::String^;
 		}
 		[ReadOnlyAttribute(true)]
+		[BrowsableAttribute(false)]
 		property array<System::String^>^ FrameNames
 		{
 			auto get()->array<System::String^>^;

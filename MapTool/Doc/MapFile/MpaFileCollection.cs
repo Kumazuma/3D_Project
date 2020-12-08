@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MapToolRender;
 namespace MapTool.Doc
 {
     public partial class MapFile

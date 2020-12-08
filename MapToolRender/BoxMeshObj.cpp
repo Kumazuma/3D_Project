@@ -24,7 +24,7 @@ MapToolRender::BoxColliderMeshObject::BoxColliderMeshObject(BoxColliderMeshObjec
 {
     if (rhs->m_collider != nullptr)
     {
-        m_collider = static_cast<MapToolCore::BoxCollider^>(rhs->m_collider->Clone());
+        //m_collider = static_cast<MapToolCore::BoxCollider^>(rhs->m_collider->Clone());
         m_collider->PropertyChanged += m_propertyChangedhandler;
     }
     this->PropertyChanged += gcnew System::ComponentModel::PropertyChangedEventHandler(this, &MapToolRender::BoxColliderMeshObject::OnBoxObjChanged);

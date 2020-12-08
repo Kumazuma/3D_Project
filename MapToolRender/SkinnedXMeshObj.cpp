@@ -60,7 +60,5 @@ auto MapToolRender::SkinnedXMeshObj::MeshFilePath::get()-> System::String^
 }
 auto MapToolRender::SkinnedXMeshObj::FrameNames::get()->array<System::String^>^
 {
-    auto s = gcnew array<String^>(m_frameNames->Length);
-    m_frameNames->CopyTo(s, 0);
-    return s;
+    return m_frameNames;
 }
