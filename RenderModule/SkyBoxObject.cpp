@@ -247,4 +247,5 @@ auto SkyBoxEntity::Render(RenderModule* pRenderModule) -> void
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, zWriteEnable);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 	pDevice->SetRenderState(D3DRS_LIGHTING, lighting);
+	pDevice->Clear(0, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0, 1.f, 0);
 }

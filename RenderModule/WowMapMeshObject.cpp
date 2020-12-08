@@ -135,11 +135,14 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     std::ifstream fileStream;
     std::unordered_map<std::wstring, std::vector<std::array<XMUINT3, 3 > > >::iterator it{ groups.end() };
     fileStream.open(path);
+    fileStream.sync_with_stdio(false);
+    
     if (!fileStream.is_open())
     {
         throw E_FAIL;
     }
     std::string token;
+    token.reserve(1024);
     while (!fileStream.eof())
     {
         token.clear();

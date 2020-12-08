@@ -19,6 +19,7 @@ namespace MapTool
         DockView<View.MapObjectTreePanel> m_mapObjTreePanel;
         DockView<View.RenderView> m_renderView;
         DockView<PropertyGrid> m_propertyView;
+        
         DockView<View.ProjectDirectoryPanel> m_projectDirectoryView;
         DockView<View.AnimationView> m_animationJsonEditView;
         DockView<View.ColiiderEditView> m_colliderEditView;
@@ -295,73 +296,6 @@ namespace MapTool
                 file.Nodes.Add(item);
             }
             file.Save();
-            //if (m_currentJsonPath != null)
-            //{
-            //    var res = MessageBox.Show("기존 파일을 덮어씌우겠습니까?", "파일 저장", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            //    if (res != DialogResult.Yes)
-            //        m_currentJsonPath = null;
-            //}
-            //if (m_currentJsonPath == null)
-            //{
-            //    var dialog = new SaveFileDialog();
-            //    dialog.Filter = "anim meta data(*.json)|*.json;";
-            //    if (dialog.ShowDialog() != DialogResult.OK)
-            //    {
-            //        return;
-            //    }
-            //    m_currentJsonPath = dialog.FileName;
-            //}
-
-            //System.IO.Stream fileStream = null;
-            //try
-            //{
-            //    fileStream = System.IO.File.OpenWrite(m_currentJsonPath);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex);
-            //    MessageBox.Show("파일을 열지 못 했습니다.");
-            //    m_currentJsonPath = null;
-            //    return;
-            //}
-            //var table = new Dictionary<string, int>();
-            //var set = new HashSet<int>();
-            //foreach (DataGridViewRow row in dataGridView1.Rows)
-            //{
-            //    if (row.Cells[0].Value == null)
-            //    {
-            //        continue;
-            //    }
-            //    var number = int.Parse(row.Cells[0].Value as string);
-            //    var idx = row.Cells[1].Value as string;
-            //    if (set.Contains(number))
-            //    {
-            //        continue;
-            //    }
-            //    if (table.ContainsKey(idx))
-            //    {
-            //        continue;
-            //    }
-            //    set.Add(number);
-            //    table.Add(idx, number);
-            //}
-
-            //var streamWriter = new System.IO.StreamWriter(fileStream);
-            //var writer = new Newtonsoft.Json.JsonTextWriter(streamWriter);
-            //writer.WriteStartObject();
-            //writer.WritePropertyName("x_file_path");
-            //var relativePath = MapToolCore.Utility.GetRelativePath(MapToolCore.Environment.Instance.ProjectDirectory, animMeshObj.MeshFilePath);
-            //writer.WriteValue(relativePath);
-            //writer.WritePropertyName("animations");
-            //writer.WriteStartObject();
-            //foreach (var item in table)
-            //{
-            //    writer.WritePropertyName(item.Key);
-            //    writer.WriteValue(item.Value);
-            //}
-            //writer.WriteEndObject();
-            //writer.WriteEndObject();
-            //writer.Close();
         }
     }
 }

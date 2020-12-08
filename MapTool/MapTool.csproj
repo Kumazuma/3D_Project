@@ -120,6 +120,12 @@
     <Compile Include="View\ColiiderEditView.Designer.cs">
       <DependentUpon>ColiiderEditView.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\NaviMeshController.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="View\NaviMeshController.Designer.cs">
+      <DependentUpon>NaviMeshController.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\ProjectDirectoryPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -164,6 +170,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\MapObjectTreePanel.resx">
       <DependentUpon>MapObjectTreePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\NaviMeshController.resx">
+      <DependentUpon>NaviMeshController.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\ProjectDirectoryPanel.resx">
       <DependentUpon>ProjectDirectoryPanel.cs</DependentUpon>

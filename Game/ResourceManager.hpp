@@ -3,6 +3,7 @@
 #include<string>
 #include<unordered_map>
 #include<mutex>
+#include<shared_mutex>
 #include "WowMapMeshObject.h"
 
 class WowMapMeshObject;
@@ -29,7 +30,7 @@ namespace Kumazuma
 		private:
 			std::shared_ptr<RenderModule> m_pRenderModule;
 			std::unordered_map < std::wstring, std::unique_ptr<WowMapMeshObject> >m_objMeshs;
-			std::mutex m_mutex;
+			std::shared_mutex m_mutex;
 			
 		private:
 			static std::shared_ptr<ResourceManager> s_instance;

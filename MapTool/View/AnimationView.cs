@@ -275,5 +275,9 @@ namespace MapTool.View
         {
             m_playing = false;
         }
+        private void btnAddCollider_Click(object sender, EventArgs e)
+        {
+            
+        }
     }
 }

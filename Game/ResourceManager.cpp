@@ -48,9 +48,12 @@ auto Kumazuma::Client::ResourceManager::Release() -> void
 
 auto Kumazuma::Client::ResourceManager::LoadOBJMesh(std::wstring const& path) -> std::unique_ptr<WowMapMeshObject>
 {
-    std::lock_guard<decltype(m_mutex)> lockguard{ m_mutex };
+    m_mutex.lock_shared();
     auto it = m_objMeshs.find(path);
-    if (it == m_objMeshs.end())
+    auto const isExist{ it != m_objMeshs.end() };
+    m_mutex.unlock_shared();
+
+    if (isExist == false)
     {
         WowMapMeshObject* pNewmesh{};
         WowMapMeshObject::Create(m_pRenderModule.get(), path, &pNewmesh);
@@ -58,10 +61,12 @@ auto Kumazuma::Client::ResourceManager::LoadOBJMesh(std::wstring const& path) ->
         {
             return nullptr;
         }
+        m_mutex.lock();
         it = m_objMeshs.emplace(
             path,
             std::unique_ptr<WowMapMeshObject>{pNewmesh}
         ).first;
+        m_mutex.unlock();
     }
     std::unique_ptr<WowMapMeshObject> res{ static_cast<WowMapMeshObject*>(it->second->Clone()) };
     return res;

@@ -11,6 +11,8 @@
 #include"ResourceManager.hpp"
 #include"UnicodeHelper.h"
 #include"SkyBoxObject.h"
+#include <future>
+
 #include"constvar.hpp"
 using namespace Kumazuma::Client;
 using namespace DirectX;
@@ -28,6 +30,7 @@ void TestScene::Loaded()
 	auto renderObj{ App::Instance()->GetRenderModule() };
 	auto resourceMgr{ ResourceManager::Instance() };
 	auto base_dir{ Enviroment::GetValue<std::wstring>(Enviroment::BASE_DIR) };
+
 	SkyBoxObject* skyboxObj{};
 	COMPtr<IDirect3DCubeTexture9> pCubeTexture{};
 	SkyBoxObject::Create(renderObj.get(), &skyboxObj);
@@ -36,6 +39,7 @@ void TestScene::Loaded()
 	m_skybox.reset(skyboxObj);
 	for (auto it : m_file[u8"objects"])
 	{
+
 		if (it[u8"type"] == u8"OBJ_MESH")
 		{
 			std::wstring path{ ConvertUTF8ToWide(it[u8"path"]) };
@@ -125,6 +129,7 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 	std::shared_ptr<std::atomic<LOAD_STATE>> threadState, std::shared_ptr<std::wstring> msg, std::shared_ptr<bool> die) -> void
 {
 	*threadState = LOAD_STATE::PROGRESSING;
+	std::vector<std::future<void> > loaders;
 	try
 	{
 		auto resourceMgr{ ResourceManager::Instance() };
@@ -142,8 +147,14 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 			if (it[u8"type"] == u8"OBJ_MESH")
 			{
 				std::wstring path{ ConvertUTF8ToWide(it[u8"path"]) };
-				auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
+				loaders.emplace_back(std::async(std::launch::async, [resourceMgr, base_dir, path]() {
+						auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
+					}));
 			}
+		}
+		for (auto& it : loaders)
+		{
+			it.wait();
 		}
 		App::Instance()->LoadScene<TestScene>(file);
 		*threadState = LOAD_STATE::COMPLETE;
