@@ -10,11 +10,15 @@ void CreateWorldTransform(
 	DirectX::XMFLOAT3 const& rotation,
 	DirectX::XMFLOAT3 const& scale)
 {
-	DirectX::XMMATRIX mScale{ DirectX::XMMatrixScaling(scale.x, scale.y,scale.z) };
-	DirectX::XMMATRIX mRotation{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) };
-	DirectX::XMMATRIX mWorld{ mScale * mRotation };
-	mWorld.r[3] = DirectX::XMVectorSetW(DirectX::XMLoadFloat3(&position), 1.f);
-	DirectX::XMStoreFloat4x4(matrix, mWorld);
+	using namespace DirectX;
+	XMVECTOR vRotation{XMLoadFloat3(&rotation)};
+	vRotation = vRotation * 180.f /XM_PI;
+
+	XMMATRIX mScale{ XMMatrixScaling(scale.x, scale.y,scale.z) };
+	XMMATRIX mRotation{ XMMatrixRotationRollPitchYawFromVector(vRotation) };
+	XMMATRIX mWorld{ mScale * mRotation };
+	mWorld.r[3] = XMVectorSetW(XMLoadFloat3(&position), 1.f);
+	XMStoreFloat4x4(matrix, mWorld);
 }
 #pragma managed
 namespace MapToolRender
@@ -60,15 +64,17 @@ namespace MapToolRender
 		DirectX::XMFLOAT3 position;
 		DirectX::XMFLOAT3 scale;
 		DirectX::XMFLOAT3 rotation;
-		position.x = m_transform->Position->X;
-		position.y = m_transform->Position->Y;
-		position.z = m_transform->Position->Z;
+		position.x = m_transform->Position.X;
+		position.y = m_transform->Position.Y;
+		position.z = m_transform->Position.Z;
 
-		scale.x = m_transform->Scale->X;
-		scale.y = m_transform->Scale->Y;
-		scale.z = m_transform->Scale->Z;
+		scale.x = m_transform->Scale.X;
+		scale.y = m_transform->Scale.Y;
+		scale.z = m_transform->Scale.Z;
 
-		m_transform->Rotation->GetValueToRadian(&rotation);
+		rotation.x = m_transform->Rotation.X;
+		rotation.y = m_transform->Rotation.Y;
+		rotation.z = m_transform->Rotation.Z;
 		DirectX::XMFLOAT4X4 worldMatrix;
 		CreateWorldTransform(&worldMatrix, position, rotation, scale);
 		m_pNativeObject->SetTransform(worldMatrix);
@@ -89,14 +95,17 @@ namespace MapToolRender
 		DirectX::XMFLOAT3 position;
 		DirectX::XMFLOAT3 scale;
 		DirectX::XMFLOAT3 rotation;
-		position.x = m_transform->Position->X;
-		position.y = m_transform->Position->Y;
-		position.z = m_transform->Position->Z;
+		position.x = m_transform->Position.X;
+		position.y = m_transform->Position.Y;
+		position.z = m_transform->Position.Z;
 
-		scale.x = m_transform->Scale->X;
-		scale.y = m_transform->Scale->Y;
-		scale.z = m_transform->Scale->Z;
-		m_transform->Rotation->GetValueToRadian(&rotation);
+		scale.x = m_transform->Scale.X;
+		scale.y = m_transform->Scale.Y;
+		scale.z = m_transform->Scale.Z;
+
+		rotation.x = m_transform->Rotation.X;
+		rotation.y = m_transform->Rotation.Y;
+		rotation.z = m_transform->Rotation.Z;
 		DirectX::XMFLOAT4X4 worldMatrix;
 		CreateWorldTransform(&worldMatrix, position, rotation, scale);
 		m_pNativeObject->SetTransform(worldMatrix);

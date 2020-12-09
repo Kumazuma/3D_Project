@@ -34,8 +34,8 @@ auto MapToolRender::WowMapMesh::MeshFilePath::get()->System::String^
     return m_filePath;
 }
 
-auto MapToolRender::WowMapMesh::Center::get()->Position^
+auto MapToolRender::WowMapMesh::Center::get()->MapToolCore::Position
 {
     DirectX::XMFLOAT3 position = static_cast<WowMapMeshObject*>(m_pNativeObject)->GetCenter();
-    return gcnew Position(position.x, position.y, position.z);
+    return MapToolCore::Position(position.x, position.y, position.z);
 }

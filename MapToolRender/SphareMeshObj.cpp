@@ -12,18 +12,25 @@ MapToolRender::SphareMesh::SphareMesh(GraphicsDevice^ device)
         throw gcnew System::Exception("Could not create Sphare Mesh!");
     }
     m_pNativeObject = sphareObj;
-    m_propertyChangedhandler = gcnew PropertyChangedEventHandler(this, &SphareMesh::OnColliderChangedChanged);
-    PropertyChanged += gcnew PropertyChangedEventHandler(this, &MapToolRender::SphareMesh::OnSelfChanged);
 }
 //TODO:
 MapToolRender::SphareMesh::SphareMesh(SphareMesh^ const& rhs):
     RenderObject(this),
     m_collider(nullptr)
 {
-    PropertyChanged += gcnew PropertyChangedEventHandler(this, &MapToolRender::SphareMesh::OnSelfChanged);
 }
 
 auto MapToolRender::SphareMesh::Clone() -> RenderObject^ 
 {
     return gcnew SphareMesh{ this };
+}
+
+auto MapToolRender::SphareMesh::Radius::get() -> float
+{
+    return m_radius;
+}
+
+auto MapToolRender::SphareMesh::Radius::set(float value) -> void
+{
+    m_radius = value;
 }

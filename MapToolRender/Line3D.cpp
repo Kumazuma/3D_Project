@@ -1,14 +1,14 @@
 #include "pch.h"
 #include "Line3D.h"
 #include <RenderModule/Line3D.h>
-MapToolRender::Line3D::Line3D(GraphicsDevice^ graphicsDevice, Position^ startPosition, Position^ endPosition)
+MapToolRender::Line3D::Line3D(GraphicsDevice^ graphicsDevice, MapToolCore::Position startPosition, MapToolCore::Position endPosition)
 {
     HRESULT hr{};
     ::Line3D* pNativeObj{};
     hr = ::Line3D::Create(
         graphicsDevice->Handle,
-        {startPosition->X,startPosition->Y ,startPosition->Z },
-        { endPosition->X,endPosition->Y ,endPosition->Z },
+        {startPosition.X,startPosition.Y ,startPosition.Z },
+        { endPosition.X,endPosition.Y ,endPosition.Z },
         &pNativeObj
         );
     if (FAILED(hr))

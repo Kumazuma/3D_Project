@@ -39,8 +39,8 @@ MapToolRender::Camera::Camera()
 {
 	m_pPosition = new DirectX::XMFLOAT3{ 0.f, 0.f, 0.f };
 	m_pRotation = new DirectX::XMFLOAT3{ 0.f, 0.f, 0.f };
-	m_position = gcnew MapToolRender::Position;
-	m_rotation = gcnew MapToolRender::Rotation;
+	m_position = MapToolCore::Position(0.f, 0.f, 0.f);
+	m_rotation = MapToolCore::Rotation(0.f, 0.f, 0.f);
 }
 
 MapToolRender::Camera::~Camera()
@@ -63,58 +63,59 @@ MapToolRender::Camera::!Camera()
 auto MapToolRender::Camera::MoveUp(float delta) -> void
 {
 	::MoveUp(m_pPosition, m_pRotation, delta);
-	m_position->X = m_pPosition->x;
-	m_position->Y = m_pPosition->y;
-	m_position->Z = m_pPosition->z;
+	m_position.X = m_pPosition->x;
+	m_position.Y = m_pPosition->y;
+	m_position.Z = m_pPosition->z;
 }
 
 auto MapToolRender::Camera::MoveForward(float delta) -> void
 {
 	::MoveForward(m_pPosition, m_pRotation, delta);
-	m_position->X = m_pPosition->x;
-	m_position->Y = m_pPosition->y;
-	m_position->Z = m_pPosition->z;
+	m_position.X = m_pPosition->x;
+	m_position.Y = m_pPosition->y;
+	m_position.Z = m_pPosition->z;
 }
 
 auto MapToolRender::Camera::MoveRight(float delta) -> void
 {
 	::MoveRight(m_pPosition, m_pRotation, delta);
-	m_position->X = m_pPosition->x;
-	m_position->Y = m_pPosition->y;
-	m_position->Z = m_pPosition->z;
+	m_position.X = m_pPosition->x;
+	m_position.Y = m_pPosition->y;
+	m_position.Z = m_pPosition->z;
 
 }
 auto MapToolRender::Camera::RotationX(float delta) -> void
 {
-	m_rotation->X += delta;
+	m_rotation.X += delta;
 }
 auto MapToolRender::Camera::RotationY(float delta) -> void
 {
-	m_rotation->Y += delta;
+	m_rotation.Y += delta;
 }
-auto MapToolRender::Camera::Position::get()->MapToolRender::Position^
+auto MapToolRender::Camera::Position::get()->MapToolCore::Position
 {
 	return m_position;
 }
-auto MapToolRender::Camera::Position::set(MapToolRender::Position^ value)->void
+auto MapToolRender::Camera::Position::set(MapToolCore::Position value)->void
 {
 	m_position = value;
-	m_pPosition->x = value->X;
-	m_pPosition->y = value->Y;
-	m_pPosition->z = value->Z;
+	m_pPosition->x = value.X;
+	m_pPosition->y = value.Y;
+	m_pPosition->z = value.Z;
 }
-auto MapToolRender::Camera::Rotation::get()->MapToolRender::Rotation^
+auto MapToolRender::Camera::Rotation::get()->MapToolCore::Rotation
 {
 	return m_rotation;
 }
-auto MapToolRender::Camera::Rotation::set(MapToolRender::Rotation^ value)->void
+auto MapToolRender::Camera::Rotation::set(MapToolCore::Rotation value)->void
 {
 	m_rotation = value;
-	m_rotation->GetValueToRadian(m_pRotation);
+	m_pRotation->x = value.X;
+	m_pRotation->y = value.Y;
+	m_pRotation->z = value.Z;
 }
 auto MapToolRender::Camera::RotationPtr::get()->DirectX::XMFLOAT3*
 {
-	m_rotation->GetValueToRadian(m_pRotation);
 	return m_pRotation;
 }
 auto MapToolRender::Camera::PositionPtr::get()->DirectX::XMFLOAT3*

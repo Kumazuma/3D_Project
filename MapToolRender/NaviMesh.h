@@ -18,9 +18,9 @@ namespace MapToolRender
 	public:
 		auto Clone()->RenderObject^ override;
 		auto PushPoint(float x, float y, float z, Camera^ camera)->void;
-		property cli::array<Position^>^ Vertices
+		property cli::array<MapToolCore::Position>^ Vertices
 		{
-			auto get()->cli::array<Position^>^;
+			auto get()->cli::array<MapToolCore::Position>^;
 		}
 		property cli::array<unsigned short>^ Indices
 		{

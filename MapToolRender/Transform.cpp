@@ -1,175 +1,49 @@
 #include "pch.h"
 #include "Transform.h"
 
-MapToolRender::Position::Position():
-    Position{0.f,0.f,0.f}
-{
-    
-}
-
-MapToolRender::Position::Position(float x, float y, float z):
-    x{ x },
-    y{ y },
-    z{ z }
-{
-    
-}
-MapToolRender::Position::Position(Position^  rhs):
-    Position{rhs->x,rhs->y, rhs->z}
-{
-}
-auto MapToolRender::Position::X::get()->float
-{
-    return x;
-}
-auto MapToolRender::Position::X::set(float value)->void
-{
-    x = value;
-    OnPropertyChanged(L"X");
-}
-auto MapToolRender::Position::Y::get()->float
-{
-    return y;
-}
-auto MapToolRender::Position::Y::set(float value)->void
-{
-    y = value;
-    OnPropertyChanged(L"Y");
-}
-auto MapToolRender::Position::Z::get()->float
-{
-    return z;
-}
-auto MapToolRender::Position::Z::set(float value)->void
-{
-    z = value;
-    OnPropertyChanged(L"Z");
-}
-
-auto MapToolRender::Scale::X::get()->float
-{
-    return x;
-}
-auto MapToolRender::Scale::X::set(float value)->void
-{
-    x = value;
-    OnPropertyChanged(L"X");
-}
-auto MapToolRender::Scale::Y::get()->float
-{
-    return y;
-}
-auto MapToolRender::Scale::Y::set(float value)->void
-{
-    y = value;
-    OnPropertyChanged(L"Y");
-}
-auto MapToolRender::Scale::Z::get()->float
-{
-    return z;
-}
-auto MapToolRender::Scale::Z::set(float value)->void
-{
-    z = value;
-    OnPropertyChanged(L"Z");
-}
-
-auto MapToolRender::Rotation::X::get()->float
-{
-    return x;
-}
-auto MapToolRender::Rotation::X::set(float value)->void
-{
-    x = value;
-    OnPropertyChanged(L"X");
-}
-auto MapToolRender::Rotation::Y::get()->float
-{
-    return y;
-}
-auto MapToolRender::Rotation::Y::set(float value)->void
-{
-    y = value;
-    OnPropertyChanged(L"Y");
-}
-auto MapToolRender::Rotation::Z::get()->float
-{
-    return z;
-}
-auto MapToolRender::Rotation::Z::set(float value)->void
-{
-    z = value;
-    OnPropertyChanged(L"Z");
-}
-
 MapToolRender::Transform::Transform()
 {
-    this->m_positionChangedHandler = gcnew PropertyChangedEventHandler(this, &Transform::OnChangedPosition);
-    this->m_rotationChangedHandler = gcnew PropertyChangedEventHandler(this, &Transform::OnChangedRotation);
-    this->m_scaleChangedHandler = gcnew PropertyChangedEventHandler(this, &Transform::OnChangedScale);
+    this->rotation = MapToolCore::Rotation(0.f, 0.f, 0.f);
+    this->scale = MapToolCore::Scale(1.f, 1.f, 1.f);
+    this->position =  MapToolCore::Position(0.f, 0.f, 0.f);
 
-    this->rotation = gcnew MapToolRender::Rotation();
-    this->scale = gcnew MapToolRender::Scale();
-    this->position = gcnew MapToolRender::Position();
-
-    this->rotation->PropertyChanged += m_rotationChangedHandler;
-    this->scale->PropertyChanged += m_scaleChangedHandler;
-    this->position->PropertyChanged += m_positionChangedHandler;
 
 }
 MapToolRender::Transform::Transform(Transform^  rhs)
 {
-    this->m_positionChangedHandler = gcnew PropertyChangedEventHandler(this, &Transform::OnChangedPosition);
-    this->m_rotationChangedHandler = gcnew PropertyChangedEventHandler(this, &Transform::OnChangedRotation);
-    this->m_scaleChangedHandler = gcnew PropertyChangedEventHandler(this, &Transform::OnChangedScale);
+    this->rotation = MapToolCore::Rotation(rhs->rotation.X, rhs->rotation.Y, rhs->rotation.Z);
+    this->scale = MapToolCore::Scale(rhs->scale.X, rhs->scale.Y, rhs->scale.Z);
+    this->position =  MapToolCore::Position( rhs->position.X, rhs->position.Y, rhs->position.Z);
 
-    this->rotation = gcnew MapToolRender::Rotation(rhs->rotation);
-    this->scale = gcnew MapToolRender::Scale(rhs->scale);
-    this->position = gcnew MapToolRender::Position( rhs->position);
-
-    this->rotation->PropertyChanged += m_rotationChangedHandler;
-    this->scale->PropertyChanged += m_scaleChangedHandler;
-    this->position->PropertyChanged += m_positionChangedHandler;
 }
 auto MapToolRender::Transform::Clone() -> Transform^
 {
     return gcnew Transform(this);
 }
-/*
-        MapToolRender::Rotation^ rotation;
-        MapToolRender::Scale^ scale;
-        MapToolRender::Position^ position;
-*/
-auto MapToolRender::Transform::Rotation::get()->MapToolRender::Rotation^
+auto MapToolRender::Transform::Rotation::get()->MapToolCore::Rotation
 {
     return rotation;
 }
-auto MapToolRender::Transform::Rotation::set(MapToolRender::Rotation^ value)->void
+auto MapToolRender::Transform::Rotation::set(MapToolCore::Rotation value)->void
 {
-    rotation->PropertyChanged -= m_rotationChangedHandler;
     rotation = value;
-    rotation->PropertyChanged += m_rotationChangedHandler;
     OnPropertyChanged(L"Rotation");
 }
-auto MapToolRender::Transform::Position::get()->MapToolRender::Position^
+auto MapToolRender::Transform::Position::get()->MapToolCore::Position
 {
     return position;
 }
-auto MapToolRender::Transform::Position::set(MapToolRender::Position^ value)->void
+auto MapToolRender::Transform::Position::set(MapToolCore::Position value)->void
 {
-    position->PropertyChanged -= m_positionChangedHandler;
     position = value;
-    position->PropertyChanged += m_positionChangedHandler;
     OnPropertyChanged(L"Position");
 }
-auto MapToolRender::Transform::Scale::set(MapToolRender::Scale^ value)->void
+auto MapToolRender::Transform::Scale::set(MapToolCore::Scale value)->void
 {
-    scale->PropertyChanged -= m_scaleChangedHandler;
     scale = value;
-    scale->PropertyChanged += m_scaleChangedHandler;
     OnPropertyChanged(L"Scale");
 }
-auto MapToolRender::Transform::Scale::get()->MapToolRender::Scale^
+auto MapToolRender::Transform::Scale::get()->MapToolCore::Scale
 {
     return scale;
 }
@@ -188,41 +62,6 @@ void MapToolRender::Transform::OnChangedPosition(Object^ obj, PropertyChangedEve
     OnPropertyChanged("Position");
 }
 
-MapToolRender::Scale::Scale():
-    Scale{1.f, 1.f, 1.f}
-{
-}
-
-MapToolRender::Scale::Scale(float x, float y, float z):
-    x{ x },
-    y{ y },
-    z{ z }
-{
-    
-}
-
-MapToolRender::Scale::Scale(Scale^  rhs):
-    Scale{ rhs->x,rhs->y, rhs->z }
-{
-
-}
-
-MapToolRender::Rotation::Rotation():
-    Rotation{0.f, 0.f, 0.f}
-{
-}
-
-MapToolRender::Rotation::Rotation(float x, float y, float z):
-    x{ x },
-    y{ y },
-    z{ z }
-{
-}
-
-MapToolRender::Rotation::Rotation(Rotation^  rhs) :
-    Rotation{ rhs->x,rhs->y, rhs->z }
-{
-}
 #pragma unmanaged
 #include<DirectXMath.h>
 auto GetValueToRadian(float x, float y, float z, DirectX::XMFLOAT3* pOut)->void
@@ -233,7 +72,7 @@ auto GetValueToRadian(float x, float y, float z, DirectX::XMFLOAT3* pOut)->void
     XMStoreFloat3(pOut, vRotation);
 }
 #pragma managed
-auto MapToolRender::Rotation::GetValueToRadian(DirectX::XMFLOAT3* pOut) -> void
-{
-    ::GetValueToRadian(x, y, z, pOut);
-}
+//auto MapToolRender::Rotation::GetValueToRadian(DirectX::XMFLOAT3* pOut) -> void
+//{
+//    ::GetValueToRadian(x, y, z, pOut);
+//}

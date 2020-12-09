@@ -16,11 +16,6 @@ namespace MapToolRender
 			auto get()->float;
 			auto set(float value)->void;
 		}
-		property MapToolCore::Offset^ Offset
-		{
-			auto get()->MapToolCore::Offset^;
-			auto set(MapToolCore::Offset^ value)->void;
-		}
 		
 	protected:
 	private:

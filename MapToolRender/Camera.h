@@ -28,20 +28,20 @@ namespace MapToolRender
 		{
 			auto get()->DirectX::XMFLOAT3*;
 		}
-		property Position^ Position
+		property MapToolCore::Position Position
 		{
-			auto get()->MapToolRender::Position^;
-			auto set(MapToolRender::Position^ value)->void;
+			auto get()->MapToolCore::Position;
+			auto set(MapToolCore::Position value)->void;
 		}
-		property Rotation^ Rotation
+		property MapToolCore::Rotation Rotation
 		{
-			auto get()->MapToolRender::Rotation^;
-			auto set(MapToolRender::Rotation^ value)->void;
+			auto get()->MapToolCore::Rotation;
+			auto set(MapToolCore::Rotation value)->void;
 		}
 		
 	private:
-		MapToolRender::Position^ m_position;
-		MapToolRender::Rotation^ m_rotation;
+		MapToolCore::Position m_position;
+		MapToolCore::Rotation m_rotation;
 		DirectX::XMFLOAT3* m_pPosition;
 		DirectX::XMFLOAT3* m_pRotation;
 	};

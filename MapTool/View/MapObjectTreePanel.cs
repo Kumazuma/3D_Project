@@ -176,17 +176,24 @@ namespace MapTool.View
                 int objectCount = renderObjects.Length;
                 for (int i = 0; i < objectCount; ++i)
                 {
-                    var newTransform = baseTransforms[i].Clone();
-                    newTransform.Position.X += dummyTransform.Position.X;
-                    newTransform.Position.Y += dummyTransform.Position.Y;
-                    newTransform.Position.Z += dummyTransform.Position.Z;
-                    newTransform.Scale.X = dummyTransform.Scale.X;
-                    newTransform.Scale.Y = dummyTransform.Scale.Y;
-                    newTransform.Scale.Z = dummyTransform.Scale.Z;
-                    newTransform.Rotation.X += dummyTransform.Rotation.X;
-                    newTransform.Rotation.Y += dummyTransform.Rotation.Y;
-                    newTransform.Rotation.Z += dummyTransform.Rotation.Z;
-                    renderObjects[i].Transform = newTransform;
+                    MapToolCore.Position position = baseTransforms[i].Position;
+                    MapToolCore.Scale scale = baseTransforms[i].Scale;
+                    MapToolCore.Rotation rotation = baseTransforms[i].Rotation;
+                    position.X += dummyTransform.Position.X;
+                    position.Y += dummyTransform.Position.Y;
+                    position.Z += dummyTransform.Position.Z;
+
+                    scale.X = dummyTransform.Scale.X;
+                    scale.Y = dummyTransform.Scale.Y;
+                    scale.Z = dummyTransform.Scale.Z;
+
+                    rotation.X += dummyTransform.Rotation.X;
+                    rotation.Y += dummyTransform.Rotation.Y;
+                    rotation.Z += dummyTransform.Rotation.Z;
+
+                    renderObjects[i].Transform.Position = position;
+                    renderObjects[i].Transform.Rotation = rotation;
+                    renderObjects[i].Transform.Scale = scale;
                 }
             }
         }

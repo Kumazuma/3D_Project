@@ -7,14 +7,12 @@ namespace DirectX
 }
 namespace MapToolRender
 {
-	ref class Position;
-	ref class Rotation;
 	ref class Line3D;
 	ref class GraphicsDevice;
 	public ref class Line3D: public RenderObject
 	{
 	public:
-		Line3D(GraphicsDevice^ graphicsDevice, Position^ startPosition, Position^ endPosition);
+		Line3D(GraphicsDevice^ graphicsDevice, MapToolCore::Position startPosition, MapToolCore::Position endPosition);
 		Line3D(GraphicsDevice^ graphicsDevice, DirectX::XMFLOAT3* startPosition, DirectX::XMFLOAT3* endPosition);
 		Line3D(Line3D^ rhs);
 	public:

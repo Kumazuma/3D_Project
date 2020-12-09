@@ -12,9 +12,9 @@ namespace MapToolRender
 		{
 			auto get()->System::String^;
 		}
-		property Position^ Center
+		property MapToolCore::Position Center
 		{
-			auto get()->Position^;
+			auto get()->MapToolCore::Position;
 		}
 	protected:
 		WowMapMesh(WowMapMesh^ const& rhs);

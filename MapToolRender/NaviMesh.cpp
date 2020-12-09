@@ -39,18 +39,18 @@ auto MapToolRender::NaviMesh::WeldDistance::set(float value)->void
 	obj->SetWeldDistance(value);
 	this->OnPropertyChanged("WeldDistance");
 }
-auto MapToolRender::NaviMesh::Vertices::get()->cli::array<Position^>^
+auto MapToolRender::NaviMesh::Vertices::get()->cli::array<MapToolCore::Position>^
 {
 	auto obj{ static_cast<::NavMeshRenderingObject*>(m_pNativeObject) };
 	unsigned int count{ obj->GetVertexCount() };
 	std::vector<DirectX::XMFLOAT4> rawVertices(count, DirectX::XMFLOAT4{});
 	
 	obj->GetVertices(rawVertices.data(), count * sizeof(DirectX::XMFLOAT4));
-	cli::array<Position^>^ res = gcnew cli::array<Position^>(count);
+	cli::array<MapToolCore::Position>^ res = gcnew cli::array<MapToolCore::Position>(count);
 	for (unsigned int i = 0; i < count; ++i)
 	{
 		auto& vertex{ rawVertices[i] };
-		res[i] = gcnew Position(vertex.x, vertex.y, vertex.z);
+		res[i] = MapToolCore::Position(vertex.x, vertex.y, vertex.z);
 	}
 	return res;
 }

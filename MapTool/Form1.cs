@@ -193,6 +193,7 @@ namespace MapTool
                     renderObjects.Add(terrain);
                     terrain.Name = "Terrain";
                     Doc.Document.Instance.AddObject(terrain);
+                    terrain.PropertyChanged += RenderObj_PropertyChanged;
                     m_renderView.Content.Render();
                     //m_mapObjTreePanel.Content.
                 }
@@ -212,7 +213,13 @@ namespace MapTool
             var xmesh = Doc.MeshManager.Instance.GetStaticMesh(path);
             renderObjects.Add(xmesh);
             xmesh.Name = "XMesh";
+            xmesh.PropertyChanged += RenderObj_PropertyChanged;
             Doc.Document.Instance.AddObject(xmesh);
+            m_renderView.Content.Render();
+        }
+
+        private void RenderObj_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
             m_renderView.Content.Render();
         }
 
@@ -243,6 +250,7 @@ namespace MapTool
             foreach (var mapMesh in meshes)
             {
                 renderObjects.Add(mapMesh);
+                mapMesh.PropertyChanged += RenderObj_PropertyChanged;
                 Doc.Document.Instance.AddObject(mapMesh);
             }
             m_renderView.Content.Render();
