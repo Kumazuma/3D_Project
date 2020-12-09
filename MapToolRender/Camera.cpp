@@ -8,7 +8,9 @@ void MoveForward(DirectX::XMFLOAT3* pPosition, DirectX::XMFLOAT3* pRotation,  fl
 	using namespace DirectX;
 	XMVECTOR vPos{ XMLoadFloat3(pPosition) };
 	XMVECTOR vDir{ XMVectorSet(0.f,0.f,1.f,0.f) };
-	XMMATRIX mWorldMat{ XMMatrixRotationRollPitchYaw(pRotation->x, pRotation->y, pRotation->z) };
+	XMVECTOR vRot{ XMLoadFloat3(pRotation) };
+	vRot = vRot * (XM_2PI / 360.f);
+	XMMATRIX mWorldMat{ XMMatrixRotationRollPitchYawFromVector(vRot) };
 	vDir = XMVector3TransformNormal(vDir, mWorldMat);
 	vPos += vDir * delta;
 	XMStoreFloat3(pPosition, vPos);
@@ -18,7 +20,9 @@ void MoveRight(DirectX::XMFLOAT3* pPosition, DirectX::XMFLOAT3* pRotation, float
 	using namespace DirectX;
 	XMVECTOR vPos{ XMLoadFloat3(pPosition) };
 	XMVECTOR vDir{ XMVectorSet(1.f,0.f,0.f,0.f) };
-	XMMATRIX mWorldMat{ XMMatrixRotationRollPitchYaw(pRotation->x, pRotation->y, pRotation->z) };
+	XMVECTOR vRot{ XMLoadFloat3(pRotation) };
+	vRot = vRot * (XM_2PI / 360.f);
+	XMMATRIX mWorldMat{ XMMatrixRotationRollPitchYawFromVector(vRot) };
 	vDir = XMVector3TransformNormal(vDir, mWorldMat);
 	vPos += vDir * delta;
 	XMStoreFloat3(pPosition, vPos);
@@ -28,7 +32,9 @@ void MoveUp(DirectX::XMFLOAT3* pPosition, DirectX::XMFLOAT3* pRotation, float de
 	using namespace DirectX;
 	XMVECTOR vPos{ XMLoadFloat3(pPosition) };
 	XMVECTOR vDir{ XMVectorSet(0.f,1.f,0.f,0.f) };
-	XMMATRIX mWorldMat{ XMMatrixRotationRollPitchYaw(pRotation->x, pRotation->y, pRotation->z) };
+	XMVECTOR vRot{ XMLoadFloat3(pRotation) };
+	vRot = vRot * (XM_2PI / 360.f);
+	XMMATRIX mWorldMat{ XMMatrixRotationRollPitchYawFromVector(vRot) };
 	vDir = XMVector3TransformNormal(vDir, mWorldMat);
 	vPos += vDir * delta;
 	XMStoreFloat3(pPosition, vPos);
@@ -62,7 +68,7 @@ MapToolRender::Camera::!Camera()
 
 auto MapToolRender::Camera::MoveUp(float delta) -> void
 {
-	::MoveUp(m_pPosition, m_pRotation, delta);
+	::MoveUp(PositionPtr, RotationPtr, delta);
 	m_position.X = m_pPosition->x;
 	m_position.Y = m_pPosition->y;
 	m_position.Z = m_pPosition->z;
@@ -70,7 +76,7 @@ auto MapToolRender::Camera::MoveUp(float delta) -> void
 
 auto MapToolRender::Camera::MoveForward(float delta) -> void
 {
-	::MoveForward(m_pPosition, m_pRotation, delta);
+	::MoveForward(PositionPtr, RotationPtr, delta);
 	m_position.X = m_pPosition->x;
 	m_position.Y = m_pPosition->y;
 	m_position.Z = m_pPosition->z;
@@ -78,7 +84,7 @@ auto MapToolRender::Camera::MoveForward(float delta) -> void
 
 auto MapToolRender::Camera::MoveRight(float delta) -> void
 {
-	::MoveRight(m_pPosition, m_pRotation, delta);
+	::MoveRight(PositionPtr, RotationPtr, delta);
 	m_position.X = m_pPosition->x;
 	m_position.Y = m_pPosition->y;
 	m_position.Z = m_pPosition->z;
@@ -116,9 +122,15 @@ auto MapToolRender::Camera::Rotation::set(MapToolCore::Rotation value)->void
 }
 auto MapToolRender::Camera::RotationPtr::get()->DirectX::XMFLOAT3*
 {
+	m_pRotation->x = m_rotation.X;
+	m_pRotation->y = m_rotation.Y;
+	m_pRotation->z = m_rotation.Z;
 	return m_pRotation;
 }
 auto MapToolRender::Camera::PositionPtr::get()->DirectX::XMFLOAT3*
 {
+	m_pPosition->x = m_position.X;
+	m_pPosition->y = m_position.Y;
+	m_pPosition->z = m_position.Z;
 	return m_pPosition;
 }

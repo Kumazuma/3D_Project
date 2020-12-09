@@ -257,7 +257,7 @@ auto RenderModule::SetCamera(DirectX::XMFLOAT3 const* pCameraPos, DirectX::XMFLO
 	XMVECTOR vForward{XMVectorSet(0.f, 0.f, 1.f, 0.f)};
 	XMVECTOR vUp{ XMVectorSet(0.f, 1.f, 0.f, 0.f) };
 	XMVECTOR vRotation{ XMLoadFloat3(pRotation) };
-	vRotation = vRotation * 360 / XM_2PI;
+	vRotation = vRotation * XM_2PI / 360;
 	XMMATRIX mWorld{ XMMatrixRotationRollPitchYawFromVector(vRotation) };
 	vForward = XMVector3TransformNormal(vForward, mWorld);
 	vUp = XMVector3TransformCoord(vUp, mWorld);
