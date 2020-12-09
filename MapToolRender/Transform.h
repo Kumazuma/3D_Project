@@ -9,9 +9,8 @@ namespace MapToolRender
 	using namespace System::Collections::Generic;
 	using namespace System::Windows::Forms;
 	using namespace System::ComponentModel;
-	using namespace System::ComponentModel;
 	[TypeConverter(ExpandableObjectConverter::typeid)]
-	public ref struct Position: public INotifyPropertyChanged, public ExpandableObjectConverter
+	public ref struct Position: public INotifyPropertyChanged
 	{
 		virtual event PropertyChangedEventHandler^ PropertyChanged;
 	public:
@@ -55,7 +54,7 @@ namespace MapToolRender
 	};
 	//플레이 애니메이션을 렌더 때 진행해야 한다.
 	[TypeConverter(ExpandableObjectConverter::typeid)]
-	public ref struct Scale : public INotifyPropertyChanged, public ExpandableObjectConverter
+	public ref struct Scale : public INotifyPropertyChanged
 	{
 		virtual event PropertyChangedEventHandler^ PropertyChanged;
 	public:
@@ -98,7 +97,7 @@ namespace MapToolRender
 		float z;
 	};
 	[TypeConverter(ExpandableObjectConverter::typeid)]
-	public ref struct Rotation : public INotifyPropertyChanged, public ExpandableObjectConverter
+	public ref struct Rotation : public INotifyPropertyChanged
 	{
 		virtual event PropertyChangedEventHandler^ PropertyChanged;
 	public:
@@ -142,7 +141,7 @@ namespace MapToolRender
 		float z;
 	};
 	[TypeConverter(ExpandableObjectConverter::typeid)]
-	public ref struct Transform : public INotifyPropertyChanged, public ExpandableObjectConverter
+	public ref struct Transform : public INotifyPropertyChanged
 	{
 		virtual event PropertyChangedEventHandler^ PropertyChanged;
 	public:

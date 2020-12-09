@@ -21,37 +21,9 @@ MapToolRender::SphareMesh::SphareMesh(SphareMesh^ const& rhs):
     m_collider(nullptr)
 {
     PropertyChanged += gcnew PropertyChangedEventHandler(this, &MapToolRender::SphareMesh::OnSelfChanged);
-
 }
 
 auto MapToolRender::SphareMesh::Clone() -> RenderObject^ 
 {
     return gcnew SphareMesh{ this };
-}
-
-auto MapToolRender::SphareMesh::OnColliderChangedChanged(System::Object^ sener, System::ComponentModel::PropertyChangedEventArgs^ e) -> void
-{
-    RenderObject::OnPropertyChanged("Collider");
-}
-
-auto MapToolRender::SphareMesh::OnSelfChanged(System::Object^ sener, System::ComponentModel::PropertyChangedEventArgs^ e) -> void
-{
-    auto sphareObj{ static_cast<SimpleSphareObject*>(m_pNativeObject) };
-    sphareObj->SetOffset(m_collider->Offset->X, m_collider->Offset->Y, m_collider->Offset->Z);
-    sphareObj->SetRadius(m_collider->Radius);
-
-}
-auto MapToolRender::SphareMesh::Collider::set(MapToolCore::SphareCollider^ value)->void
-{
-    if (m_collider != nullptr)
-    {
-        m_collider->PropertyChanged -= m_propertyChangedhandler;
-    }
-    m_collider = value;
-    m_collider->PropertyChanged += m_propertyChangedhandler;
-    RenderObject::OnPropertyChanged("Collider");
-}
-auto MapToolRender::SphareMesh::Collider::get()->MapToolCore::SphareCollider^
-{
-    return m_collider;
 }

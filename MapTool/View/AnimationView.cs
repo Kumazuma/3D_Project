@@ -14,7 +14,8 @@ namespace MapTool.View
 {
     public partial class AnimationView : UserControl
     {
-        List<RenderObject> objList = new List<RenderObject>();
+        Dictionary<MapToolCore.Collider, RenderObject> collderNRenderObject = new Dictionary<MapToolCore.Collider, RenderObject>();
+        HashSet<RenderObject> objList = new HashSet<RenderObject>();
         MapToolRender.SkinnedXMeshObj animMeshObj;
         MapToolRender.Camera camera;
         Timer m_timer;
@@ -264,7 +265,26 @@ namespace MapTool.View
             {
                 collider.FrameNames = animMeshObj.FrameNames;
             }
+            collider.PropertyChanged += Collider_PropertyChanged;
+        }
 
+        private void Collider_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var collider = sender as MapToolCore.Collider;
+            if (collider == null) return;
+            if (e.PropertyName != "Attribute") return;
+            objList.Remove(collderNRenderObject[collider]);
+            collderNRenderObject.Remove(collider);
+            switch (collider.Type)
+            {
+                case MapToolCore.ColliderType.Box:
+                    //TODO:여기에서 박스 렌더 오브젝트를 넣어준다.
+                    break;
+                case MapToolCore.ColliderType.Sphare:
+                    //TODO:여기에서 스페어 렌더 오브젝트를 넣어준다.
+                    break;
+            }
+            renderView.Render();
         }
 
         private void listColliders_SelectedIndexChanged(object sender, EventArgs e)

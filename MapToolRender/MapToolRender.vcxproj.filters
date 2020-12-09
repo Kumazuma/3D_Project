@@ -140,9 +140,6 @@
     <ClCompile Include="BoxMeshObj.cpp">
       <Filter>ColliderBoxMeshObject</Filter>
     </ClCompile>
-    <ClCompile Include="SphareMeshObj.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Ray.cpp">
       <Filter>Ray</Filter>
     </ClCompile>
@@ -154,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="ControlSwapChain.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SphareMeshObj.cpp">
+      <Filter>ColliderSphareMeshObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

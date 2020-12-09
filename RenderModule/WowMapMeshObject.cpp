@@ -133,20 +133,42 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     std::wstring currentMaterial;
     std::wstring materialLibName;
     std::ifstream fileStream;
+    std::stringstream stream;
+    
     std::unordered_map<std::wstring, std::vector<std::array<XMUINT3, 3 > > >::iterator it{ groups.end() };
     fileStream.open(path);
-    fileStream.sync_with_stdio(false);
     
+
     if (!fileStream.is_open())
     {
         throw E_FAIL;
     }
+
+    fileStream.sync_with_stdio(false);
+    fileStream.seekg(0, fileStream.end);
+    size_t const size = fileStream.tellg();
+    fileStream.seekg(0, fileStream.beg);
+    size_t readSize{ 0 };
+    std::vector<char> mem;
+    mem.assign(size, 0x00);
+    while (readSize != size)
+    {
+        readSize = fileStream
+            .read(mem.data() + readSize, (size - readSize))
+            .tellg();
+    }
+    stream.str(mem.data());
+    stream.seekg(0, fileStream.beg);
+
+    mem.clear();
+    mem.shrink_to_fit();
+
     std::string token;
     token.reserve(1024);
-    while (!fileStream.eof())
+    while (!stream.eof())
     {
         token.clear();
-        fileStream >> token;
+        stream >> token;
         if (token.empty())
         {
             continue;
@@ -154,31 +176,31 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
         if (token == OBJ_TOKEN_VERTEX)
         {
             XMFLOAT3A pos;
-            fileStream >> pos.x >> pos.y >> pos.z;
+            stream >> pos.x >> pos.y >> pos.z;
             positions.push_back(pos);
         }
         else if (token == OBJ_TOKEN_NORMAL)
         {
             XMFLOAT3A normal;
-            fileStream >> normal.x >> normal.y >> normal.z;
+            stream >> normal.x >> normal.y >> normal.z;
             normals.push_back(normal);
         }
         else if (token == OBJ_TOKEN_UV)
         {
             XMFLOAT2A uv;
-            fileStream >> uv.x >> uv.y;
+            stream >> uv.x >> uv.y;
             UVs.push_back(uv);
         }
         else if (token == OBJ_TOKEN_OBJ)
         {
             //처리 안 해도 될 듯
-            fileStream.ignore(1024, '\n');
+            stream.ignore(1024, '\n');
         }
         else if (token == OBJ_TOKEN_GROUP)
         {
             //새 그룹이 생기면 인덱스 버퍼를 바꾼다.
             std::string groupName;
-            fileStream >> groupName;
+            stream >> groupName;
             currentGroup = ConvertUTF8ToWide(groupName);
             it = groups.emplace(currentGroup, std::vector<std::array<XMUINT3, 3> >{}).first;
         }
@@ -187,29 +209,29 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
             std::array<XMUINT3, 3> triangle{};
             for (auto& v : triangle)
             {
-                fileStream >> v.x;
-                fileStream.ignore(1);
-                fileStream >> v.y;
-                fileStream.ignore(1);
-                fileStream >> v.z;
+                stream >> v.x;
+                stream.ignore(1);
+                stream >> v.y;
+                stream.ignore(1);
+                stream >> v.z;
             }
             it->second.emplace_back(triangle);
         }
         else if (token == OBJ_TOKEN_MATERIAL_NAME)
         {
             std::string matName;
-            fileStream >> matName;
+            stream >> matName;
             materialNames[currentGroup] = ConvertUTF8ToWide(matName);
         }
         else if (token == OBJ_TOKEN_MATERIAL_LIB)
         {
             std::string libName;
-            fileStream >> libName;
+            stream >> libName;
             materialLibName = ConvertUTF8ToWide(libName);
         }
         else
         {
-            fileStream.ignore(1024, '\n');
+            stream.ignore(1024, '\n');
         }
     }
     //Z축을 뒤집는다.

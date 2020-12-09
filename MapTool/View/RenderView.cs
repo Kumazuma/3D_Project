@@ -79,7 +79,6 @@ namespace MapTool.View
         {
             m_mouseOperation = MouseOperation.None;
             m_prevMousePosition = null;
-
         }
 
         private void RenderView_MouseUp(object sender, MouseEventArgs e)

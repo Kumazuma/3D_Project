@@ -11,16 +11,22 @@ namespace MapToolRender
 		SphareMesh(SphareMesh^ const& rhs);
 	public:
 		auto Clone()->RenderObject^ override;
-		property MapToolCore::SphareCollider^ Collider
+		property float Radius
 		{
-			auto get()->MapToolCore::SphareCollider^;
-			auto set(MapToolCore::SphareCollider^)->void;
+			auto get()->float;
+			auto set(float value)->void;
 		}
+		property MapToolCore::Offset^ Offset
+		{
+			auto get()->MapToolCore::Offset^;
+			auto set(MapToolCore::Offset^ value)->void;
+		}
+		
 	protected:
-		auto OnColliderChangedChanged(System::Object^ sener, System::ComponentModel::PropertyChangedEventArgs^ e)->void;
-		auto OnSelfChanged(System::Object^ sener, System::ComponentModel::PropertyChangedEventArgs^ e)->void;
 	private:
-		MapToolCore::SphareCollider^ m_collider;
+		MapToolCore::Collider^ m_collider;
 		System::ComponentModel::PropertyChangedEventHandler^ m_propertyChangedhandler;
+		float m_radius;
+
 	};
 }
