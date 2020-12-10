@@ -22,6 +22,8 @@ public:
 	auto Render(RenderModule* pRenderModule)->void;
 	auto Clone()const->RenderObject*;
 	auto FindFrameTransfromByName(std::wstring const& frameName, DirectX::XMFLOAT4X4* const pOut)->HRESULT;
+	auto FindFrameTransfromByName(std::wstring const& frameName)->DirectX::XMFLOAT4X4 const*;
+
 	auto IsAnimationSetEnd()->bool;
 	auto SetAnimationSet(u32 idx)->void;
 	auto PlayAnimation(f32 timeDelta)->void;

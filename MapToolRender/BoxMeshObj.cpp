@@ -44,7 +44,7 @@ auto MapToolRender::BoxColliderMeshObject::OnBoxObjChanged(System::Object^ sener
     {
         auto boxObj{ static_cast<SimpleBoxObject*>(m_pNativeObject) };
         boxObj->SetSize(m_collider->Width, m_collider->Height, m_collider->Depth);
-        boxObj->SetOffset(m_collider->Offset->X, m_collider->Offset->Y, m_collider->Offset->Z);
+        boxObj->SetOffset(m_collider->Offset.X, m_collider->Offset.Y, m_collider->Offset.Z);
     }
     
 }

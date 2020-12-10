@@ -89,6 +89,16 @@ auto SkinnedXMeshObject::FindFrameTransfromByName(std::wstring const& frameName,
     return S_OK;
 }
 
+auto SkinnedXMeshObject::FindFrameTransfromByName(std::wstring const& frameName) -> DirectX::XMFLOAT4X4 const*
+{
+    const auto findResIt{ m_combinedOffsetMatrices.find(frameName) };
+    if (findResIt == m_combinedOffsetMatrices.end())
+    {
+        return nullptr;
+    }
+    return &findResIt->second;
+}
+
 auto SkinnedXMeshObject::IsAnimationSetEnd() -> bool
 {
     return m_pAnimCtrler->IsAnimationSetEnd();

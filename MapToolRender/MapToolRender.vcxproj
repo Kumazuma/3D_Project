@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="BoxMeshObj.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CollderRenderObject.h" />
     <ClInclude Include="ControlSwapChain.h" />
     <ClInclude Include="Line3D.h" />
     <ClInclude Include="MapToolRender.h" />

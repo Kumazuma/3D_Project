@@ -4,7 +4,7 @@
 #include"Ray.h"
 #include<RenderModule/Ray.h>
 #pragma unmanaged
-void CreateWorldTransform(
+inline void CreateWorldTransform(
 	DirectX::XMFLOAT4X4* matrix,
 	DirectX::XMFLOAT3 const& position,
 	DirectX::XMFLOAT3 const& rotation,
@@ -50,6 +50,26 @@ namespace MapToolRender
 			this->m_pNativeObject = nullptr;
 		}
 	}
+	auto RenderObject::UpdateTransform() -> void
+	{
+		DirectX::XMFLOAT3 position;
+		DirectX::XMFLOAT3 scale;
+		DirectX::XMFLOAT3 rotation;
+		position.x = m_transform->Position.X;
+		position.y = m_transform->Position.Y;
+		position.z = m_transform->Position.Z;
+
+		scale.x = m_transform->Scale.X;
+		scale.y = m_transform->Scale.Y;
+		scale.z = m_transform->Scale.Z;
+
+		rotation.x = m_transform->Rotation.X;
+		rotation.y = m_transform->Rotation.Y;
+		rotation.z = m_transform->Rotation.Z;
+		DirectX::XMFLOAT4X4 worldMatrix;
+		CreateWorldTransform(&worldMatrix, position, rotation, scale);
+		m_pNativeObject->SetTransform(worldMatrix);
+	}
 	auto RenderObject::RayPick(Ray^ ray) -> System::Nullable<float>
 	{
 		float out;
@@ -61,26 +81,8 @@ namespace MapToolRender
 	}
 	auto MapToolRender::RenderObject::OnTransformChanged(Object^ obj, PropertyChangedEventArgs^ e) -> void
 	{
-		DirectX::XMFLOAT3 position;
-		DirectX::XMFLOAT3 scale;
-		DirectX::XMFLOAT3 rotation;
-		position.x = m_transform->Position.X;
-		position.y = m_transform->Position.Y;
-		position.z = m_transform->Position.Z;
-
-		scale.x = m_transform->Scale.X;
-		scale.y = m_transform->Scale.Y;
-		scale.z = m_transform->Scale.Z;
-
-		rotation.x = m_transform->Rotation.X;
-		rotation.y = m_transform->Rotation.Y;
-		rotation.z = m_transform->Rotation.Z;
-		DirectX::XMFLOAT4X4 worldMatrix;
-		CreateWorldTransform(&worldMatrix, position, rotation, scale);
-		m_pNativeObject->SetTransform(worldMatrix);
-
+		UpdateTransform();
 		OnPropertyChanged("Transform");
-
 	}
 	auto RenderObject::Handle::get()->::RenderObject*
 	{
@@ -91,24 +93,8 @@ namespace MapToolRender
 		m_transform->PropertyChanged -= m_transformChangedHandler;
 		m_transform = value;
 		m_transform->PropertyChanged += m_transformChangedHandler;
+		UpdateTransform();
 		OnPropertyChanged("Transform");
-		DirectX::XMFLOAT3 position;
-		DirectX::XMFLOAT3 scale;
-		DirectX::XMFLOAT3 rotation;
-		position.x = m_transform->Position.X;
-		position.y = m_transform->Position.Y;
-		position.z = m_transform->Position.Z;
-
-		scale.x = m_transform->Scale.X;
-		scale.y = m_transform->Scale.Y;
-		scale.z = m_transform->Scale.Z;
-
-		rotation.x = m_transform->Rotation.X;
-		rotation.y = m_transform->Rotation.Y;
-		rotation.z = m_transform->Rotation.Z;
-		DirectX::XMFLOAT4X4 worldMatrix;
-		CreateWorldTransform(&worldMatrix, position, rotation, scale);
-		m_pNativeObject->SetTransform(worldMatrix);
 	}
 	auto RenderObject::Transform::get()->MapToolRender::Transform^
 	{

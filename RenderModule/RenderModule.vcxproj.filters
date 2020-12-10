@@ -52,6 +52,9 @@
     <Filter Include="HWNDRenderTarget">
       <UniqueIdentifier>{201d53aa-3d53-45b1-a594-02fcc95e8fc8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Matrix">
+      <UniqueIdentifier>{aebe2664-1584-4544-a622-dec171e9cef6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">

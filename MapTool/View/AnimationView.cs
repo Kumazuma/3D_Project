@@ -14,6 +14,8 @@ namespace MapTool.View
 {
     public partial class AnimationView : UserControl
     {
+        enum AnimationPlayState { Play, Stop};
+        AnimationPlayState animationState = AnimationPlayState.Play;
         Dictionary<MapToolCore.Collider, RenderObject> collderNRenderObject = new Dictionary<MapToolCore.Collider, RenderObject>();
         HashSet<RenderObject> objList = new HashSet<RenderObject>();
         MapToolRender.SkinnedXMeshObj animMeshObj;
@@ -32,10 +34,10 @@ namespace MapTool.View
             renderView = new RenderView();
             renderView.Initialize(800, 600);
 
-            renderView.Parent = splitContainer1.Panel2;
+            renderView.Parent = this.tableLayoutPanel2;
             renderView.RenderObjects = objList;
             renderView.Dock = DockStyle.Fill;
-            splitContainer1.Panel2.Controls.Add(renderView);
+            this.tableLayoutPanel2.Controls.Add(this.renderView, 0, 1);
             m_timer = new Timer();
             m_timer.Interval = 16;
             m_timer.Tick += OnTimerTick;
@@ -51,9 +53,18 @@ namespace MapTool.View
             var timeSpan = stopWatch.Elapsed;
             var delta = timeSpan - lastTimeSpan;
             lastTimeSpan = timeSpan;
-            if (animMeshObj != null && m_playing)
+            
+            if (animMeshObj != null && m_playing )
             {
-                animMeshObj.Update((int)(delta.TotalSeconds * 1000));
+                if(animationState == AnimationPlayState.Play)
+                {
+                    animMeshObj.Update((int)(delta.TotalSeconds * 1000));
+                    foreach (var it in collderNRenderObject)
+                    {
+                        if (it.Key.FrameName == null) continue;
+                        (it.Value as ColliderRenderObject).SetFrameMatrix(animMeshObj, it.Key.FrameName);
+                    }
+                }
                 renderView.Render();
             }
             
@@ -96,7 +107,6 @@ namespace MapTool.View
             if (animMeshObj != null && m_playing)
             {
                 renderView.Render();
-
             }
         }
 
@@ -271,17 +281,39 @@ namespace MapTool.View
         private void Collider_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var collider = sender as MapToolCore.Collider;
+            RenderObject newObject = null;
             if (collider == null) return;
-            if (e.PropertyName != "Attribute") return;
-            objList.Remove(collderNRenderObject[collider]);
-            collderNRenderObject.Remove(collider);
-            switch (collider.Type)
+            switch (e.PropertyName)
             {
-                case MapToolCore.ColliderType.Box:
-                    //TODO:여기에서 박스 렌더 오브젝트를 넣어준다.
+                case "Attribute":
+                    (collderNRenderObject[collider] as ColliderRenderObject).SetAttribute(collider.Attribute);
                     break;
-                case MapToolCore.ColliderType.Sphare:
-                    //TODO:여기에서 스페어 렌더 오브젝트를 넣어준다.
+                case "Type":
+                    if(collderNRenderObject.ContainsKey(collider))
+                    {
+                        objList.Remove(collderNRenderObject[collider]);
+                        collderNRenderObject.Remove(collider);
+                    }
+                    switch (collider.Type)
+                    {
+                        case MapToolCore.ColliderType.Box:
+                            //TODO:여기에서 박스 렌더 오브젝트를 넣어준다.
+                            break;
+                        case MapToolCore.ColliderType.Sphare:
+                            newObject = new SphareMesh(GraphicsDevice.Instance);
+                            break;
+                    }
+                    if(newObject != null)
+                    {
+                        collderNRenderObject.Add(collider, newObject);
+                        objList.Add(newObject);
+                    }
+                    break;
+                case "FrameName":
+                    (collderNRenderObject[collider] as ColliderRenderObject).SetFrameMatrix(animMeshObj, collider.FrameName);
+                    break;
+                case "Offset":
+                    (collderNRenderObject[collider] as ColliderRenderObject).Offset = collider.Offset;
                     break;
             }
             renderView.Render();
@@ -290,6 +322,16 @@ namespace MapTool.View
         private void listColliders_SelectedIndexChanged(object sender, EventArgs e)
         {
             pgCollider.SelectedObject = listColliders.SelectedItem;
+        }
+
+        private void btnPlayAnim_Click(object sender, EventArgs e)
+        {
+            animationState = AnimationPlayState.Play;
+        }
+
+        private void btnStopAnim_Click(object sender, EventArgs e)
+        {
+            animationState = AnimationPlayState.Stop;
         }
     }
 }

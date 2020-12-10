@@ -99,6 +99,7 @@ namespace MapToolRender {
 		RenderObject(RenderObject^  obj);
 		!RenderObject();
 		~RenderObject();
+		virtual auto UpdateTransform()->void;
 		auto OnTransformChanged(Object^ obj, PropertyChangedEventArgs^ e)->void;
 		auto OnPropertyChanged(String^ info)->void
 		{

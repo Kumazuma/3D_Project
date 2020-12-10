@@ -19,12 +19,6 @@
     <Filter Include="WowMapMesh">
       <UniqueIdentifier>{3326ee25-95b3-40ea-ba41-b205b2c935f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ColliderBoxMeshObject">
-      <UniqueIdentifier>{db0af452-b41e-4c11-ae6f-2a7bebb45e89}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ColliderSphareMeshObject">
-      <UniqueIdentifier>{00b92b80-2e42-4a8f-b929-4dad1af90614}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Ray">
       <UniqueIdentifier>{36ea9be0-704b-4573-963a-0cdf57513168}</UniqueIdentifier>
     </Filter>
@@ -36,6 +30,21 @@
     </Filter>
     <Filter Include="SwapChain">
       <UniqueIdentifier>{f967e36b-d6d5-4eca-8494-3c49d084ce2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CollderRenderObject">
+      <UniqueIdentifier>{5c621363-3756-4b40-90fe-aee7e9c3c67d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CollderObject">
+      <UniqueIdentifier>{00aa77f2-892b-4ae9-be76-a4dd485a3f15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CollderObject\ColliderSphareMeshObject">
+      <UniqueIdentifier>{00b92b80-2e42-4a8f-b929-4dad1af90614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CollderObject\ColliderBoxMeshObject">
+      <UniqueIdentifier>{db0af452-b41e-4c11-ae6f-2a7bebb45e89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CollderObject\common">
+      <UniqueIdentifier>{d81b2ccc-6ba8-4772-ab09-2aeda33af163}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -73,10 +82,10 @@
       <Filter>WowMapMesh</Filter>
     </ClInclude>
     <ClInclude Include="BoxMeshObj.h">
-      <Filter>ColliderBoxMeshObject</Filter>
+      <Filter>CollderObject\ColliderBoxMeshObject</Filter>
     </ClInclude>
     <ClInclude Include="SphareMeshObj.h">
-      <Filter>ColliderSphareMeshObject</Filter>
+      <Filter>CollderObject\ColliderSphareMeshObject</Filter>
     </ClInclude>
     <ClInclude Include="Line3D.h">
       <Filter>Line3D</Filter>
@@ -92,6 +101,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CollderRenderObject.h">
+      <Filter>CollderObject\common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -135,7 +147,7 @@
       <Filter>WowMapMesh</Filter>
     </ClCompile>
     <ClCompile Include="BoxMeshObj.cpp">
-      <Filter>ColliderBoxMeshObject</Filter>
+      <Filter>CollderObject\ColliderBoxMeshObject</Filter>
     </ClCompile>
     <ClCompile Include="NaviMesh.cpp">
       <Filter>NaviMesh</Filter>
@@ -147,7 +159,7 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SphareMeshObj.cpp">
-      <Filter>ColliderSphareMeshObject</Filter>
+      <Filter>CollderObject\ColliderSphareMeshObject</Filter>
     </ClCompile>
     <ClCompile Include="Ray.cpp">
       <Filter>Ray</Filter>

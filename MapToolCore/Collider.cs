@@ -36,23 +36,24 @@ namespace MapToolCore
         protected string frameName;
         protected ColliderAttribute attribute;
         protected ICollection<string> frameNames;
+        PropertyChangedEventHandler attributePropertyChangedEventHandler;
         PropertyChangedEventHandler m_offsetPropertyChangedEventHandler;
         public event PropertyChangedEventHandler PropertyChanged;
         
         public Collider()
         {
             m_offsetPropertyChangedEventHandler = new PropertyChangedEventHandler(OnOffsetPropertyChanged);
+            attributePropertyChangedEventHandler = new PropertyChangedEventHandler(OnAttributePropertyChanged);
             offset = new Offset();
-            offset.PropertyChanged += m_offsetPropertyChangedEventHandler;
         }
         protected Collider(Collider collider)
         {
             m_offsetPropertyChangedEventHandler = new PropertyChangedEventHandler(OnOffsetPropertyChanged);
-            offset = new Offset();
-            offset.PropertyChanged += m_offsetPropertyChangedEventHandler;
-            offset.X = collider.Offset.X;
-            offset.Y = collider.Offset.Y;
-            offset.Z = collider.Offset.Z;
+            offset = collider.offset;
+        }
+        private void OnAttributePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Attribute"));
         }
         private void OnOffsetPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -71,7 +72,12 @@ namespace MapToolCore
         public string FrameName
         {
             get => frameName;
-            set => frameName = value;
+            set 
+            {
+                frameName = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FrameName"));
+
+            }
         }
 
         [CategoryAttribute("Common")]
@@ -81,6 +87,10 @@ namespace MapToolCore
             set
             {
                 type = value;
+                if(attribute != null)
+                {
+                    attribute.PropertyChanged -= attributePropertyChangedEventHandler;
+                }
                 switch (type)
                 {
                     case ColliderType.None:
@@ -93,8 +103,13 @@ namespace MapToolCore
                         attribute = new SphareColliderAttribute();
                         break;
                 }
+                if(attribute != null)
+                {
+                    attribute.PropertyChanged += attributePropertyChangedEventHandler;
+                }
                 BroadcastPropertyChanged("Type");
                 BroadcastPropertyChanged("Attribute");
+                
             }
         }
         [CategoryAttribute("Common")]
@@ -106,11 +121,7 @@ namespace MapToolCore
             get => offset;
             set
             {
-                if(value == null) return;
-                this.offset.PropertyChanged -= m_offsetPropertyChangedEventHandler;
                 this.offset = value;
-                this.offset.PropertyChanged += m_offsetPropertyChangedEventHandler;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Offset"));
             }
         }
         protected void BroadcastPropertyChanged(string propertyName)
@@ -118,52 +129,7 @@ namespace MapToolCore
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class Offset: INotifyPropertyChanged
-    {
-        float x;
-        float y;
-        float z;
-        public Offset():
-            this(0.0f, 0.0f, 0.0f)
-        {
-        }
-        public Offset(float x, float y, float z)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-        public float X
-        {
-            get => x;
-            set
-            {
-                x = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("X"));
-            }
-        }
-        public float Y
-        {
-            get => y;
-            set
-            {
-                y = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Y"));
-            }
-        }
-        public float Z
-        {
-            get => z;
-            set
-            {
-                z = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Z"));
-            }
-        }
-        
-        public event PropertyChangedEventHandler PropertyChanged;
-    }
+
     public class BoxColliderAttribute : ColliderAttribute
     {
         private float width;

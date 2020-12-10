@@ -45,8 +45,13 @@ namespace MapTool.View
             this.listColliders = new System.Windows.Forms.ListBox();
             this.btnAddCollider = new System.Windows.Forms.Button();
             this.comboAnim = new System.Windows.Forms.ComboBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnPlayAnim = new System.Windows.Forms.Button();
+            this.btnStopAnim = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -57,6 +62,8 @@ namespace MapTool.View
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -71,6 +78,10 @@ namespace MapTool.View
             this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel1);
             this.splitContainer1.Panel1.Controls.Add(this.tabControl1);
             this.splitContainer1.Panel1.Controls.Add(this.comboAnim);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel2);
             this.splitContainer1.Size = new System.Drawing.Size(1246, 888);
             this.splitContainer1.SplitterDistance = 266;
             this.splitContainer1.TabIndex = 0;
@@ -83,7 +94,7 @@ namespace MapTool.View
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.84615F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.15385F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 76F));
             this.tableLayoutPanel1.Controls.Add(this.btnXFileOpen, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnJsonOpen, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnJSONSave, 2, 0);
@@ -99,7 +110,7 @@ namespace MapTool.View
             this.btnXFileOpen.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnXFileOpen.Location = new System.Drawing.Point(3, 3);
             this.btnXFileOpen.Name = "btnXFileOpen";
-            this.btnXFileOpen.Size = new System.Drawing.Size(74, 38);
+            this.btnXFileOpen.Size = new System.Drawing.Size(73, 38);
             this.btnXFileOpen.TabIndex = 4;
             this.btnXFileOpen.Text = "X파일 열기";
             this.btnXFileOpen.UseVisualStyleBackColor = true;
@@ -108,7 +119,7 @@ namespace MapTool.View
             // btnJsonOpen
             // 
             this.btnJsonOpen.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnJsonOpen.Location = new System.Drawing.Point(83, 3);
+            this.btnJsonOpen.Location = new System.Drawing.Point(82, 3);
             this.btnJsonOpen.Name = "btnJsonOpen";
             this.btnJsonOpen.Size = new System.Drawing.Size(96, 38);
             this.btnJsonOpen.TabIndex = 3;
@@ -119,9 +130,9 @@ namespace MapTool.View
             // btnJSONSave
             // 
             this.btnJSONSave.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnJSONSave.Location = new System.Drawing.Point(185, 3);
+            this.btnJSONSave.Location = new System.Drawing.Point(184, 3);
             this.btnJSONSave.Name = "btnJSONSave";
-            this.btnJSONSave.Size = new System.Drawing.Size(70, 38);
+            this.btnJSONSave.Size = new System.Drawing.Size(71, 38);
             this.btnJSONSave.TabIndex = 5;
             this.btnJSONSave.Text = "JSON 저장";
             this.btnJSONSave.UseVisualStyleBackColor = true;
@@ -247,6 +258,50 @@ namespace MapTool.View
             this.comboAnim.TabIndex = 7;
             this.comboAnim.SelectedIndexChanged += new System.EventHandler(this.comboAnim_SelectedIndexChanged);
             // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.flowLayoutPanel1, 0, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(974, 886);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.btnPlayAnim);
+            this.flowLayoutPanel1.Controls.Add(this.btnStopAnim);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(968, 41);
+            this.flowLayoutPanel1.TabIndex = 0;
+            // 
+            // btnPlayAnim
+            // 
+            this.btnPlayAnim.Location = new System.Drawing.Point(3, 3);
+            this.btnPlayAnim.Name = "btnPlayAnim";
+            this.btnPlayAnim.Size = new System.Drawing.Size(75, 23);
+            this.btnPlayAnim.TabIndex = 0;
+            this.btnPlayAnim.Text = "재생";
+            this.btnPlayAnim.UseVisualStyleBackColor = true;
+            this.btnPlayAnim.Click += new System.EventHandler(this.btnPlayAnim_Click);
+            // 
+            // btnStopAnim
+            // 
+            this.btnStopAnim.Location = new System.Drawing.Point(84, 3);
+            this.btnStopAnim.Name = "btnStopAnim";
+            this.btnStopAnim.Size = new System.Drawing.Size(75, 23);
+            this.btnStopAnim.TabIndex = 1;
+            this.btnStopAnim.Text = "정지";
+            this.btnStopAnim.UseVisualStyleBackColor = true;
+            this.btnStopAnim.Click += new System.EventHandler(this.btnStopAnim_Click);
+            // 
             // AnimationView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -257,6 +312,7 @@ namespace MapTool.View
             this.Enter += new System.EventHandler(this.AnimationView_Enter);
             this.Leave += new System.EventHandler(this.AnimationView_Leave);
             this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -268,6 +324,8 @@ namespace MapTool.View
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -290,5 +348,9 @@ namespace MapTool.View
         private System.Windows.Forms.PropertyGrid pgCollider;
         private System.Windows.Forms.ListBox listColliders;
         private System.Windows.Forms.Button btnAddCollider;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button btnPlayAnim;
+        private System.Windows.Forms.Button btnStopAnim;
     }
 }

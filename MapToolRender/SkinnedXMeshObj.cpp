@@ -62,3 +62,18 @@ auto MapToolRender::SkinnedXMeshObj::FrameNames::get()->array<System::String^>^
 {
     return m_frameNames;
 }
+auto MapToolRender::SkinnedXMeshObj::Frames::get()->SkinnedXMeshFrameCollections^
+{
+    return gcnew SkinnedXMeshFrameCollections(this->m_pNativeObject);
+}
+
+MapToolRender::SkinnedXMeshFrameCollections::SkinnedXMeshFrameCollections(::RenderObject* pMesh)
+{
+    this->pMesh = pMesh;    
+}
+auto MapToolRender::SkinnedXMeshFrameCollections::default::get(String ^ id)->DirectX::XMFLOAT4X4 const*
+{
+    marshal_context ctx;
+    std::wstring szFrameId{ ctx.marshal_as<std::wstring>(id) };
+    return static_cast<::SkinnedXMeshObject*>(this->pMesh)->FindFrameTransfromByName(szFrameId);
+}
