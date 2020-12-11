@@ -122,6 +122,7 @@ namespace MapToolCore
             set
             {
                 this.offset = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Offset"));
             }
         }
         protected void BroadcastPropertyChanged(string propertyName)

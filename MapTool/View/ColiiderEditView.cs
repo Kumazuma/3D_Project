@@ -34,7 +34,6 @@ namespace MapTool.View
             renderView.RenderObjects = renderObjects;
             boxMeshObject = new BoxColliderMeshObject(GraphicsDevice.Instance);
             sphareMeshObject = new SphareMesh(GraphicsDevice.Instance);
-            boxMeshObject.Collider = new MapToolCore.BoxCollider();
             //sphareMeshObject.Collider = new MapToolCore.SphareCollider();
             boxMeshObject.PropertyChanged += BoxMeshObject_PropertyChanged;
             sphareMeshObject.PropertyChanged += BoxMeshObject_PropertyChanged;

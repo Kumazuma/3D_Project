@@ -7,10 +7,7 @@ using MapToolRender;
 namespace MapTool.Doc
 {
     
-    class ColliderList
-    {
-
-    }
+    
     /// <summary>
     /// 애니메이션 메시에 대한 메타 데이터
     /// </summary>

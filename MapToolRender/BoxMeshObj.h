@@ -1,26 +1,50 @@
 #pragma once
 #include "MapToolRender.h"
 #include "TextureCollection.h"
+#include "CollderRenderObject.h"
 namespace MapToolRender
 {
-	public ref class BoxColliderMeshObject : public RenderObject
+	public ref class BoxColliderMeshObject : public ColliderRenderObject
 	{
 	public:
 		BoxColliderMeshObject(GraphicsDevice^ device);
 	protected:
 		BoxColliderMeshObject(BoxColliderMeshObject^ const& rhs);
 	public:
+		~BoxColliderMeshObject();
+		!BoxColliderMeshObject();
+	public:
 		auto Clone()->RenderObject^ override;
-		property MapToolCore::BoxCollider^ Collider
+		auto SetFrameMatrix(SkinnedXMeshObj^ skinnedMesh, String^ frameName)->void override;
+		auto SetAttribute(MapToolCore::ColliderAttribute^ attribute)->void override;
+		property float Width
 		{
-			auto get()->MapToolCore::BoxCollider^;
-			auto set(MapToolCore::BoxCollider^ )->void;
+			auto get()->float;
+			auto set(float value)->void;
+		}
+		property float Height
+		{
+			auto get()->float;
+			auto set(float value)->void;
+		}
+		property float Depth
+		{
+			auto get()->float;
+			auto set(float value)->void;
+		}
+		property MapToolCore::Offset Offset
+		{
+			auto get()->MapToolCore::Offset override;
+			auto set(MapToolCore::Offset offset)->void override;
 		}
 	protected:
-		auto OnColliderChangedChanged(System::Object^ sener, System::ComponentModel::PropertyChangedEventArgs^ e)->void;
-		auto OnBoxObjChanged(System::Object^ sener, System::ComponentModel::PropertyChangedEventArgs^ e)->void;
+		auto UpdateTransform()->void override;
 	private:
-		MapToolCore::BoxCollider^ m_collider;
+		DirectX::XMFLOAT4X4* m_pParentMatrix;
 		System::ComponentModel::PropertyChangedEventHandler^ m_propertyChangedhandler;
+		float m_width;
+		float m_height;
+		float m_depth;
+		MapToolCore::Offset m_offset;
 	};
 }

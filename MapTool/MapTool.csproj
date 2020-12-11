@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Doc\AnimMeshMeta\AnimMeshMeta.cs" />
     <Compile Include="Doc\AnimMeshMeta\AnimationTable.cs" />
+    <Compile Include="Doc\AnimMeshMeta\ColliderList.cs" />
     <Compile Include="Doc\Document.cs" />
     <Compile Include="Doc\MapFile\MapFile.cs" />
     <Compile Include="Doc\MapFile\MapFileSave.cs" />

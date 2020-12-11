@@ -107,6 +107,24 @@ auto SkinnedXMeshObject::IsAnimationSetEnd() -> bool
 auto SkinnedXMeshObject::SetAnimationSet(u32 idx) -> void
 {
     m_pAnimCtrler->PlayAnimationSet(idx);
+    UpdateFrameMatrices(
+        static_cast<Frame*>(m_pRootFrame),
+        ToFloat4x4(XMMatrixIdentity())
+    );
+    for (auto& iter : m_meshContainters)
+    {
+        auto& rRenderingMatries{ m_renderedMatrices[iter] };
+        for (u32 i = 0; i < iter->boneCount; ++i)
+        {
+            XMMATRIX mRenderingMatrix{};
+            XMMATRIX mFrameOffset{};
+            XMMATRIX mFrameCombinedMatrix{};
+            mFrameOffset = XMLoadFloat4x4(&iter->frameOffsetMatries[i]);
+            mFrameCombinedMatrix = XMLoadFloat4x4(iter->frameCombinedMatries[i].get());
+            mRenderingMatrix = mFrameOffset * mFrameCombinedMatrix;
+            XMStoreFloat4x4(&rRenderingMatries[i], mRenderingMatrix);
+        }
+    }
 }
 
 auto SkinnedXMeshObject::PlayAnimation(f32 timeDelta) -> void
@@ -235,12 +253,30 @@ auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring co
     );
     m_pFrameNames.reset(new std::set<std::wstring>{});
     InitializeFrameMatrix(static_cast<Frame*>(m_pRootFrame));
-
+    XMFLOAT4X4 identity{};
+    identity(0, 0) = identity(1, 1)= identity(2, 2)= identity(3, 3)= 1.f;
     for (auto& iter : m_meshContainters)
     {
         m_renderedMatrices[iter].assign(iter->boneCount, XMFLOAT4X4{});
     }
-    
+    UpdateFrameMatrices(
+        static_cast<Frame*>(m_pRootFrame),
+        ToFloat4x4(XMMatrixIdentity())
+    );
+    for (auto& iter : m_meshContainters)
+    {
+        auto& rRenderingMatries{ m_renderedMatrices[iter] };
+        for (u32 i = 0; i < iter->boneCount; ++i)
+        {
+            XMMATRIX mRenderingMatrix{};
+            XMMATRIX mFrameOffset{};
+            XMMATRIX mFrameCombinedMatrix{};
+            mFrameOffset = XMLoadFloat4x4(&iter->frameOffsetMatries[i]);
+            mFrameCombinedMatrix = XMLoadFloat4x4(iter->frameCombinedMatries[i].get());
+            mRenderingMatrix = mFrameOffset * mFrameCombinedMatrix;
+            XMStoreFloat4x4(&rRenderingMatries[i], mRenderingMatrix);
+        }
+    }
     return S_OK;
 }
 

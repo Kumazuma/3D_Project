@@ -15,7 +15,7 @@ namespace MapTool.View
     public partial class AnimationView : UserControl
     {
         enum AnimationPlayState { Play, Stop};
-        AnimationPlayState animationState = AnimationPlayState.Play;
+        AnimationPlayState animationState = AnimationPlayState.Stop;
         Dictionary<MapToolCore.Collider, RenderObject> collderNRenderObject = new Dictionary<MapToolCore.Collider, RenderObject>();
         HashSet<RenderObject> objList = new HashSet<RenderObject>();
         MapToolRender.SkinnedXMeshObj animMeshObj;
@@ -218,19 +218,6 @@ namespace MapTool.View
                 }
                 m_currentJsonPath = dialog.FileName;
             }
-            
-            System.IO.Stream fileStream = null;
-            try
-            {
-                fileStream = System.IO.File.OpenWrite(m_currentJsonPath);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex);
-                MessageBox.Show("파일을 열지 못 했습니다.");
-                m_currentJsonPath = null;
-                return;
-            }
             meta.AnimationTable.Clear();
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
@@ -243,6 +230,12 @@ namespace MapTool.View
 
                 meta.AnimationTable.Add(new Doc.AnimationTableItem(number, idx));
             }
+            foreach(var obj in listColliders.Items)
+            {
+                var collider = obj as MapToolCore.Collider;
+                if (collider == null) continue;
+            }
+            
             meta.Save(m_currentJsonPath);
         }
 
@@ -281,7 +274,7 @@ namespace MapTool.View
         private void Collider_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var collider = sender as MapToolCore.Collider;
-            RenderObject newObject = null;
+            ColliderRenderObject newObject = null;
             if (collider == null) return;
             switch (e.PropertyName)
             {
@@ -297,7 +290,7 @@ namespace MapTool.View
                     switch (collider.Type)
                     {
                         case MapToolCore.ColliderType.Box:
-                            //TODO:여기에서 박스 렌더 오브젝트를 넣어준다.
+                            newObject = new BoxColliderMeshObject(GraphicsDevice.Instance);
                             break;
                         case MapToolCore.ColliderType.Sphare:
                             newObject = new SphareMesh(GraphicsDevice.Instance);
@@ -305,17 +298,33 @@ namespace MapTool.View
                     }
                     if(newObject != null)
                     {
+                        newObject.Offset = collider.Offset;
+                        if(collider.FrameName != null && animMeshObj != null)
+                        {
+                            newObject.SetFrameMatrix(animMeshObj, collider.FrameName);
+                        }
                         collderNRenderObject.Add(collider, newObject);
                         objList.Add(newObject);
                     }
                     break;
                 case "FrameName":
-                    (collderNRenderObject[collider] as ColliderRenderObject).SetFrameMatrix(animMeshObj, collider.FrameName);
+                    if(collderNRenderObject.ContainsKey(collider))
+                    {
+                        (collderNRenderObject[collider] as ColliderRenderObject).SetFrameMatrix(animMeshObj, collider.FrameName);
+                    }
                     break;
                 case "Offset":
-                    (collderNRenderObject[collider] as ColliderRenderObject).Offset = collider.Offset;
+                    if (collderNRenderObject.ContainsKey(collider))
+                    {
+                        (collderNRenderObject[collider] as ColliderRenderObject).Offset = collider.Offset;
+                    }
                     break;
             }
+            if(pgCollider.SelectedObject == collider)
+            {
+                pgCollider.Refresh();
+            }
+
             renderView.Render();
         }
 
