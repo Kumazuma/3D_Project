@@ -47,5 +47,13 @@ namespace MapToolCore
         {
             return $"({x}, {y}, {z})";
         }
+        public static Rotation Parse(JObject jObj)
+        {
+            Rotation res = new Rotation();
+            res.x = jObj.Value<float>("x");
+            res.y = jObj.Value<float>("y");
+            res.z = jObj.Value<float>("z");
+            return res;
+        }
     }
 }

@@ -38,7 +38,7 @@ namespace MapToolCore
 
             if (path.StartsWith(".."))
             {
-                path = Path.PathSeparator + path;
+                path = Path.DirectorySeparatorChar + path;
             }
             else
             {

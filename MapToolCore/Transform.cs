@@ -55,6 +55,13 @@ namespace MapToolCore
             {"scale", scale.Serialize() },
             {"rotation", rotation.Serialize() }
         };
-
+        public static Transform Parse(JObject jObj)
+        {
+            Transform res = new Transform();
+            res.position = Position.Parse(jObj["position"] as JObject);
+            res.rotation = Rotation.Parse(jObj["rotation"] as JObject);
+            res.scale = Scale.Parse(jObj["scale"] as JObject);
+            return res;
+        }
     }
 }

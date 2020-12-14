@@ -48,6 +48,28 @@ namespace MapTool.View
             
 
         }
+        private void LoadXMesh(string xMeshPath)
+        {
+            objList.Remove(animMeshObj);
+            animMeshObj = new MapToolRender.SkinnedXMeshObj(MapToolRender.GraphicsDevice.Instance, xMeshPath);
+            animMeshObj.PropertyChanged += AnimMeshObj_PropertyChanged;
+            meta.MeshFilePath = xMeshPath;
+            Doc.Document.Instance.SelectedObject = animMeshObj;
+            objList.Add(animMeshObj);
+            var animCount = animMeshObj.AnimationCount;
+            comboAnim.Items.Clear();
+            AnimIndex.Items.Clear();
+            for (var i = 0u; i < animCount; ++i)
+            {
+                var idx = $"{i}";
+                comboAnim.Items.Add(idx);
+                AnimIndex.Items.Add(idx);
+            }
+            foreach (var obj in listColliders.Items)
+            {
+                (obj as MapToolCore.Collider).FrameNames = animMeshObj.FrameNames;
+            }
+        }
         private void OnTimerTick(object sender, EventArgs e)
         {
             var timeSpan = stopWatch.Elapsed;
@@ -80,26 +102,7 @@ namespace MapTool.View
             {
                 return;
             }
-            animMeshObj = new MapToolRender.SkinnedXMeshObj(MapToolRender.GraphicsDevice.Instance, openFileDialog.FileName);
-            animMeshObj.PropertyChanged += AnimMeshObj_PropertyChanged;
-            meta.MeshFilePath = openFileDialog.FileName;
-            Doc.Document.Instance.SelectedObject = animMeshObj;
-            objList.Clear();
-            objList.Add(animMeshObj);
-            
-            var animCount = animMeshObj.AnimationCount;
-            comboAnim.Items.Clear();
-            AnimIndex.Items.Clear();
-            for (var i = 0u; i < animCount;++i)
-            {
-                var idx = $"{i}";
-                comboAnim.Items.Add(idx);
-                AnimIndex.Items.Add(idx);
-            }
-            foreach(var obj in listColliders.Items)
-            {
-                (obj as MapToolCore.Collider).FrameNames = animMeshObj.FrameNames;
-            }
+            LoadXMesh(openFileDialog.FileName);
         }
 
         private void AnimMeshObj_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -118,82 +121,59 @@ namespace MapTool.View
             {
                 return;
             }
-            System.IO.Stream fileStream = null;
             try
             {
-                fileStream = System.IO.File.OpenRead(dialog.FileName);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                MessageBox.Show("파일을 열지 못 했습니다.");
-                return;
-            }
-            var streamReader = new System.IO.StreamReader(fileStream);
-            var reader = new Newtonsoft.Json.JsonTextReader(streamReader);
-            string propertyName;
-            string xMeshPath = "";
-            var animTable = new Dictionary<string, int>();
-            try
-            {
-                if (!reader.Read()) throw new Exception("failed parsing");
-                if (reader.TokenType != Newtonsoft.Json.JsonToken.StartObject) throw new Exception("failed parsing");
-                while(true)
+                var newMetaFile = Doc.AnimationMeshMeta.Load(dialog.FileName);
+                //TODO: 파일 데이터를 읽어, X파일을 로딩한다.
+                if (newMetaFile.MeshFilePath == null || newMetaFile.MeshFilePath.Length == 0)
+                    throw new Exception("Mesh File is empty");
+                LoadXMesh(MapToolCore.Environment.Instance.ProjectDirectory + newMetaFile.MeshFilePath );
+                foreach(var item in newMetaFile.AnimationTable)
                 {
-                    if (!reader.Read()) throw new Exception("failed parsing");
-                    if (reader.TokenType == Newtonsoft.Json.JsonToken.EndObject) break;
-                    if (reader.TokenType != Newtonsoft.Json.JsonToken.PropertyName) throw new Exception("failed parsing");
-                    propertyName = reader.Value as string;
-                    if (propertyName == null) throw new Exception("failed parsing");
-                    if (propertyName == "x_file_path")
+                    dataGridView1.Rows.Add(item.Index.ToString(), item.ID);
+                }
+                listColliders.Items.AddRange(newMetaFile.ColliderList.ToArray());
+                
+                foreach (var item in newMetaFile.ColliderList)
+                {
+                    ColliderRenderObject newObject = null;
+                    if (animMeshObj != null)
                     {
-                        xMeshPath = reader.ReadAsString();
+                        item.FrameNames = animMeshObj.FrameNames;
                     }
-                    else if(propertyName == "animations")
+                    item.PropertyChanged += Collider_PropertyChanged;
+                    switch(item.Type)
                     {
-                        if(!reader.Read()) throw new Exception("failed parsing");
-                        if(reader.TokenType != Newtonsoft.Json.JsonToken.StartObject) throw new Exception("failed parsing");
-                        while(reader.TokenType != Newtonsoft.Json.JsonToken.EndObject)
+                        case MapToolCore.ColliderType.Box:
+                            newObject = new BoxColliderMeshObject(GraphicsDevice.Instance);
+                            break;
+                        case MapToolCore.ColliderType.Sphare:
+                            newObject = new SphareMesh(GraphicsDevice.Instance);
+                            break;
+                    }
+                    if (newObject != null)
+                    {
+
+                        newObject.SetAttribute(item.Attribute);
+                        newObject.Offset = item.Offset;
+                        newObject.Transform = item.Transform.Clone();
+                        if (item.FrameName != null && animMeshObj != null)
                         {
-                            if(!reader.Read()) throw new Exception("failed parsing");
-                            if (reader.TokenType == Newtonsoft.Json.JsonToken.EndObject) break;
-                            if (reader.TokenType != Newtonsoft.Json.JsonToken.PropertyName) throw new Exception("failed parsing");
-                            propertyName = reader.Value as string;
-                            int? number = reader.ReadAsInt32();
-                            if (number == null) throw new Exception("failed parsing");
-                            animTable.Add(propertyName, number.Value);
+                            newObject.SetFrameMatrix(animMeshObj, item.FrameName);
                         }
+                        collderNRenderObject.Add(item, newObject);
+                        objList.Add(newObject);
                     }
                 }
-
+                m_currentJsonPath = dialog.FileName;
+                meta = newMetaFile;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                MessageBox.Show("파싱에 실패했습니다.");
-                return;
+                MessageBox.Show($"파일을 열지 못했습니다.\n{ex.Message}");
+                Console.WriteLine(ex.StackTrace);
             }
-            dataGridView1.Rows.Clear();
-            objList.Clear();
-            string path= System.IO.Path.Combine(MapToolCore.Environment.Instance.ProjectDirectory, xMeshPath);
-            animMeshObj = Doc.MeshManager.Instance.GetSkinnedMesh(path);
-            animMeshObj.PropertyChanged += AnimMeshObj_PropertyChanged;
-            Doc.Document.Instance.SelectedObject = animMeshObj;
-            objList.Add(animMeshObj);
-            var animCount = animMeshObj.AnimationCount;
-            comboAnim.Items.Clear();
-            AnimIndex.Items.Clear();
-            for (var i = 0u; i < animCount; ++i)
-            {
-                var idx = $"{i}";
-                comboAnim.Items.Add(idx);
-                AnimIndex.Items.Add(idx);
-            }
-            foreach(var item in animTable)
-            {
-                dataGridView1.Rows.Add(item.Value.ToString(), item.Key);
-            }
-            m_currentJsonPath = dialog.FileName;
+            
         }
 
         private void btnJSONSave_Click_1(object sender, EventArgs e)
@@ -238,8 +218,15 @@ namespace MapTool.View
                 if (collider == null) continue;
                 meta.ColliderList.Add(collider);
             }
-            
-            meta.Save(m_currentJsonPath);
+            try
+            {
+                meta.Save(m_currentJsonPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"파일 저장에 실패하였습니다.\n{ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+            }
         }
 
         private void comboAnim_SelectedIndexChanged(object sender, EventArgs e)

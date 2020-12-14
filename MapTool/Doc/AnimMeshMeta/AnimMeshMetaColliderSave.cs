@@ -35,7 +35,7 @@ namespace MapTool.Doc
             jCollider["transform"] = collider.Transform.Serialize();
             jCollider["offset"] = collider.Offset.Serialize();
             jCollider["width"] = attribute.Width;
-            jCollider["heigth"] = attribute.Height;
+            jCollider["height"] = attribute.Height;
             jCollider["depth"] = attribute.Depth;
             return jCollider;
         }

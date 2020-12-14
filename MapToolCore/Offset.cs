@@ -51,5 +51,13 @@ namespace MapToolCore
             {"y", Y },
             {"z", Z }
         };
+        public static Offset Parse(JObject jObj)
+        {
+            Offset res = new Offset();
+            res.x = jObj.Value<float>("x");
+            res.y = jObj.Value<float>("y");
+            res.z = jObj.Value<float>("z");
+            return res;
+        }
     }
 }
