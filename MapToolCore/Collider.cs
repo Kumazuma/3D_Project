@@ -36,19 +36,22 @@ namespace MapToolCore
         protected string frameName;
         protected ColliderAttribute attribute;
         protected ICollection<string> frameNames;
+        protected Transform transform;
         PropertyChangedEventHandler attributePropertyChangedEventHandler;
-        PropertyChangedEventHandler m_offsetPropertyChangedEventHandler;
+        PropertyChangedEventHandler transformPropertyChangedEventHandler;
         public event PropertyChangedEventHandler PropertyChanged;
         
         public Collider()
         {
-            m_offsetPropertyChangedEventHandler = new PropertyChangedEventHandler(OnOffsetPropertyChanged);
             attributePropertyChangedEventHandler = new PropertyChangedEventHandler(OnAttributePropertyChanged);
+            transformPropertyChangedEventHandler = new PropertyChangedEventHandler(OnTransformPropertyChanged);
             offset = new Offset();
+            transform = new Transform();
+            transform.PropertyChanged +=transformPropertyChangedEventHandler;
+
         }
         protected Collider(Collider collider)
         {
-            m_offsetPropertyChangedEventHandler = new PropertyChangedEventHandler(OnOffsetPropertyChanged);
             offset = collider.offset;
         }
         private void OnAttributePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -58,6 +61,10 @@ namespace MapToolCore
         private void OnOffsetPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Offset"));
+        }
+        private void OnTransformPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Transform"));
         }
         [Browsable(false)]
         public ICollection<string> FrameNames
@@ -77,6 +84,18 @@ namespace MapToolCore
                 frameName = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FrameName"));
 
+            }
+        }
+        [CategoryAttribute("Common")]
+        public Transform Transform
+        {
+            get => transform;
+            set
+            {
+                transform.PropertyChanged -= transformPropertyChangedEventHandler;
+                transform = value;
+                transform.PropertyChanged += transformPropertyChangedEventHandler;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Transform"));
             }
         }
 

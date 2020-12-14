@@ -7,7 +7,7 @@ using MapToolRender;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
+using MapToolCore;
 namespace MapTool.Doc
 {
     public partial class MapFile
@@ -37,7 +37,7 @@ namespace MapTool.Doc
                                 new JProperty("z", (obj as WowMapMesh).Transform.Rotation.Z)))
                     )
                 ),
-                new JProperty("path", this.FormatString( (obj as WowMapMesh).MeshFilePath) )
+                new JProperty("path", Utility.FormatString( (obj as WowMapMesh).MeshFilePath) )
             );
         JObject WriteNaviMesh(MapObject obj)
         {
@@ -89,9 +89,9 @@ namespace MapTool.Doc
             Stream fileStream = null;
             StreamWriter streamWriter = null;
             var tokenWriter = new JTokenWriter();
-            var jObj = new JObject(new JProperty("skybox", this.FormatString(this.skyboxTexturePath)) );
+            var jObj = new JObject(new JProperty("skybox", Utility.FormatString(this.skyboxTexturePath)) );
             var jObjects = new JArray();
-            fileStream = File.OpenWrite(filePath);
+            fileStream = File.Open(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
             streamWriter = new StreamWriter(fileStream);
             foreach(var obj in this.mapObjects)
             {

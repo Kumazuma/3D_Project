@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MapToolCore;
 using MapToolRender;
 namespace MapTool.View
 {
@@ -152,14 +153,14 @@ namespace MapTool.View
         public class MultiSelectObject : MapToolRender.MapObject
         {
             MapToolRender.RenderObject[] renderObjects;
-            MapToolRender.Transform[] baseTransforms;
-            MapToolRender.Transform dummyTransform;
+            MapToolCore.Transform[] baseTransforms;
+            MapToolCore.Transform dummyTransform;
             public MultiSelectObject(System.Collections.IList renderObjects)
             {
                 int objectCount = renderObjects.Count;
 
-                this.renderObjects = new MapToolRender.RenderObject[objectCount];
-                baseTransforms = new MapToolRender.Transform[objectCount];
+                this.renderObjects = new RenderObject[objectCount];
+                baseTransforms = new MapToolCore.Transform[objectCount];
 
                 for(int i = 0; i < objectCount; ++i)
                 {

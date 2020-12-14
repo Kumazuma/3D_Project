@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace MapToolCore
 {
     [TypeConverter(typeof(ValueTypeTypeConverter<Rotation>))]
-    public struct Rotation
+    public struct Rotation: IJSONSerializable
     {
         private float x;
         private float y;
@@ -34,6 +35,14 @@ namespace MapToolCore
             get => z;
             set { z = value; }
         }
+
+        public JToken Serialize() => new JObject
+        {
+            {"x", X },
+            {"y", Y },
+            {"z", Z }
+        };
+
         public override string ToString()
         {
             return $"({x}, {y}, {z})";

@@ -19,7 +19,6 @@ namespace MapToolRender {
 	using namespace System::Windows::Forms;
 	ref class RenderObject;
 	ref class Texture;
-	ref struct Transform;
 	ref class StaticXMeshObj;
 	ref class Ray;
 	ref class SwapChain;
@@ -78,10 +77,10 @@ namespace MapToolRender {
 	{
 	public:
 		[CategoryAttribute("속성")]
-		property MapToolRender::Transform^ Transform
+		property MapToolCore::Transform^ Transform
 		{
-			auto get()->MapToolRender::Transform^;
-			auto set(MapToolRender::Transform^ value)->void;
+			auto get()->MapToolCore::Transform^;
+			auto set(MapToolCore::Transform^ value)->void;
 		}
 		[Browsable(false)]
 		property ::RenderObject* Handle
@@ -107,7 +106,7 @@ namespace MapToolRender {
 		}
 	protected:
 		PropertyChangedEventHandler^ m_transformChangedHandler;
-		MapToolRender::Transform^ m_transform;
+		MapToolCore::Transform^ m_transform;
 		::RenderObject* m_pNativeObject;
 	};
 	public ref class TerrainObject : public RenderObject

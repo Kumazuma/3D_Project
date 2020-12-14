@@ -25,7 +25,7 @@ namespace MapToolRender
 {
 	RenderObject::RenderObject():
 		m_pNativeObject{},
-		m_transform{ gcnew MapToolRender::Transform{}  }
+		m_transform{ gcnew MapToolCore::Transform{}  }
 	{
 		this->m_transformChangedHandler = gcnew PropertyChangedEventHandler(this, &MapToolRender::RenderObject::OnTransformChanged);
 		m_transform->PropertyChanged += m_transformChangedHandler;
@@ -33,7 +33,7 @@ namespace MapToolRender
 	RenderObject::RenderObject(RenderObject^  obj):
 		MapObject(obj),
 		m_pNativeObject{obj->m_pNativeObject->Clone()},
-		m_transform{ gcnew MapToolRender::Transform{obj->m_transform} }
+		m_transform{ obj->m_transform->Clone() }
 	{
 		this->m_transformChangedHandler = gcnew PropertyChangedEventHandler(this, &MapToolRender::RenderObject::OnTransformChanged);
 		m_transform->PropertyChanged += m_transformChangedHandler;
@@ -88,7 +88,7 @@ namespace MapToolRender
 	{
 		return m_pNativeObject;
 	}
-	auto RenderObject::Transform::set(MapToolRender::Transform^ value)->void
+	auto RenderObject::Transform::set(MapToolCore::Transform^ value)->void
 	{
 		m_transform->PropertyChanged -= m_transformChangedHandler;
 		m_transform = value;
@@ -96,7 +96,7 @@ namespace MapToolRender
 		UpdateTransform();
 		OnPropertyChanged("Transform");
 	}
-	auto RenderObject::Transform::get()->MapToolRender::Transform^
+	auto RenderObject::Transform::get()->MapToolCore::Transform^
 	{
 		return m_transform;
 	}

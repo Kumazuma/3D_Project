@@ -218,7 +218,9 @@ namespace MapTool.View
                 }
                 m_currentJsonPath = dialog.FileName;
             }
+
             meta.AnimationTable.Clear();
+            meta.ColliderList.Clear();
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 if(row.Cells[0].Value == null)
@@ -234,6 +236,7 @@ namespace MapTool.View
             {
                 var collider = obj as MapToolCore.Collider;
                 if (collider == null) continue;
+                meta.ColliderList.Add(collider);
             }
             
             meta.Save(m_currentJsonPath);
@@ -299,7 +302,8 @@ namespace MapTool.View
                     if(newObject != null)
                     {
                         newObject.Offset = collider.Offset;
-                        if(collider.FrameName != null && animMeshObj != null)
+                        newObject.Transform = collider.Transform.Clone();
+                        if (collider.FrameName != null && animMeshObj != null)
                         {
                             newObject.SetFrameMatrix(animMeshObj, collider.FrameName);
                         }
@@ -317,6 +321,12 @@ namespace MapTool.View
                     if (collderNRenderObject.ContainsKey(collider))
                     {
                         (collderNRenderObject[collider] as ColliderRenderObject).Offset = collider.Offset;
+                    }
+                    break;
+                case "Transform":
+                    if (collderNRenderObject.ContainsKey(collider))
+                    {
+                        (collderNRenderObject[collider] as ColliderRenderObject).Transform = collider.Transform.Clone();
                     }
                     break;
             }

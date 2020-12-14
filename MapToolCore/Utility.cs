@@ -29,7 +29,23 @@ namespace MapToolCore
             }
             return path.ToString();
         }
+        public static string FormatString(string path)
+        {
+            if (path == null) return null;
+            string currentProjectDirectory = Environment.Instance.ProjectDirectory;
+            path = System.IO.Path.GetFullPath(path);
+            path = GetRelativePath(currentProjectDirectory, path);
 
+            if (path.StartsWith(".."))
+            {
+                path = Path.PathSeparator + path;
+            }
+            else
+            {
+                path = path.Substring(1);
+            }
+            return path.Replace('\\', '/');
+        }
         private static int GetPathAttribute(string path)
         {
             DirectoryInfo di = new DirectoryInfo(path);
