@@ -1,0 +1,3 @@
+newmtl mat_8riv_brambles01
+illum 1
+map_Kd ..\..\..\world\nodxt\detail\8riv_brambles01.png

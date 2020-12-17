@@ -141,7 +141,7 @@ auto MapToolRender::GraphicsDevice::CreateMouseRay(Control^ drawPanel, Camera^ c
 	x = x * 2.f;//0~2.f;
 	x = x - 1.f; // -1 ~ 1
 	y = -1.f * (2.f * y / height - 1.f);
-	
+
 	DirectX::XMFLOAT3 pos = m_pRenderModule->ConvertProjToWorld(
 		*camera->PositionPtr,
 		*camera->RotationPtr,

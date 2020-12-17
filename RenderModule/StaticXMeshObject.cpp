@@ -168,7 +168,6 @@ auto StaticXMeshObjectSubset::Render(RenderModule* pRenderModule, IRenderer* pRe
     mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
     mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
     pEffect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
-
     pEffect->SetVector("g_vSpecular", &specularVec);
     pEffect->SetMatrix("g_mWorld", &reinterpret_cast<D3DXMATRIX&>(m_pMeshObject->m_transform));
     pEffect->SetTexture("g_diffuseTexture", pTexture.Get());

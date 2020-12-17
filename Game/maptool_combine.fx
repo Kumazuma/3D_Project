@@ -43,8 +43,8 @@ sampler SpecularMapSampler = sampler_state
 sampler AlbedoMapSampler = sampler_state
 {
 	texture = g_albedoMap;
-	minfilter = linear;
-	magfilter = linear;
+	minfilter = point;
+	magfilter = point;
 };
 float4 ps_main(PS_IN input) :COLOR0
 {
@@ -60,6 +60,7 @@ technique Default_Device
 {
 	pass combine
 	{
+		ZWriteEnable = false;
 		AlphaBlendEnable = true;
 		SrcBlend = srcalpha;
 		DestBlend = invsrcalpha;

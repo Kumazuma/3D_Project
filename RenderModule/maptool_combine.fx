@@ -60,6 +60,7 @@ technique Default_Device
 {
 	pass combine
 	{
+		ZWriteEnable = false;
 		AlphaBlendEnable = true;
 		SrcBlend = srcalpha;
 		DestBlend = invsrcalpha;
