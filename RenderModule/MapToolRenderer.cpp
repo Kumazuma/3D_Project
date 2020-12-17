@@ -12,7 +12,6 @@ constexpr StringLiteral<char> ID_LightSpecularMap{ "RT_RT_SPECULAR" };
 constexpr StringLiteral<char> ID_LightDiffuseMap{ "RT_RT_DIFFUSE" };
 constexpr StringLiteral<char> ID_DepthMap{ "RT_DEPTH" };
 
-
 MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 height):
     m_viewMatrix{  },
     m_projMatrix{  },
@@ -29,38 +28,39 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     TextureRenderTarget* pLightSpecularMap{};
     TextureRenderTarget* pLightDiffuseMap{};
     TextureRenderTarget* pDepthMap{};
-
     //Diffuse
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A8R8G8B8, &pAlbedo);
     if (FAILED(hr))throw hr;
-    m_albedoSurface.reset(pAlbedo);
+    //m_albedoSurface.reset(pAlbedo);
     //normal
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A32B32G32R32F, &pNormalMap);
     if (FAILED(hr))throw hr;
-    m_normalSurface.reset(pNormalMap);
+    //m_normalSurface.reset(pNormalMap);
     //specular
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A8R8G8B8, &pMaterialSpecularMap);
     if (FAILED(hr))throw hr;
-    m_materialSpecularSurface.reset(pMaterialSpecularMap);
+    //m_materialSpecularSurface.reset(pMaterialSpecularMap);
 
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A16B16G16R16F, &pLightDiffuseMap);
     if (FAILED(hr))throw hr;
-    m_lightDiffuseSurface.reset(pLightDiffuseMap);
+    //m_lightDiffuseSurface.reset(pLightDiffuseMap);
 
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_R32F, &pDepthMap);
     if (FAILED(hr))throw hr;
-    m_depthSurface.reset(pDepthMap);
-
+    //m_depthSurface.reset(pDepthMap);
+    
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A16B16G16R16F, &pLightSpecularMap);
     if (FAILED(hr))throw hr;
-    m_lightSpecularSurface.reset(pLightSpecularMap);
+    //m_lightSpecularSurface.reset(pLightSpecularMap);
 
     DWORD shaderFlag{ D3DXSHADER_DEBUG };
-    //m_renderTargets.emplace(ID_AlbedoRenderTarget, pAlbedo);
-    //m_renderTargets.emplace(ID_NormapTarget, pNormalMap);
-    //m_renderTargets.emplace(ID_MatSpecularTarget, pMaterialSpecularMap);
-    //m_renderTargets.emplace(ID_LightSpecularMap, pLightSpecularMap);
-    //m_renderTargets.emplace(ID_DepthMap, pDepthMap);
+    m_renderTargets.emplace(ID_AlbedoRenderTarget, pAlbedo);
+    m_renderTargets.emplace(ID_NormapTarget, pNormalMap);
+    m_renderTargets.emplace(ID_MatSpecularTarget, pMaterialSpecularMap);
+    m_renderTargets.emplace(ID_LightSpecularMap, pLightSpecularMap);
+    m_renderTargets.emplace(ID_LightDiffuseMap, pLightDiffuseMap);
+    m_renderTargets.emplace(ID_DepthMap, pDepthMap);
+    
 
     COMPtr<ID3DXBuffer> pBuffer;
     hr = D3DXCreateEffectFromFileW(pDevice.Get(), L"./maptool.fx", nullptr, nullptr, shaderFlag, nullptr, &m_effect, &pBuffer);
@@ -133,10 +133,6 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
 }
 
 MapToolRenderer::MapToolRenderer(MapToolRenderer&& rhs) noexcept:
-    m_albedoSurface{std::move(rhs.m_albedoSurface)},
-    m_normalSurface{std::move(rhs.m_normalSurface)},
-    m_materialSpecularSurface{std::move(rhs.m_materialSpecularSurface)},
-    m_lightDiffuseSurface{std::move(rhs.m_lightDiffuseSurface)},
     m_renderEntities{std::move(rhs.m_renderEntities)},
     m_viewMatrix{std::move(rhs.m_viewMatrix)},
     m_projMatrix{ std::move(rhs.m_projMatrix) },
@@ -147,8 +143,6 @@ MapToolRenderer::MapToolRenderer(MapToolRenderer&& rhs) noexcept:
     m_sprite{std::move(rhs.m_sprite)},
     m_pVertexBuffer{std::move(rhs.m_pVertexBuffer)},
     m_pIndexBuffer{std::move(rhs.m_pIndexBuffer)},
-    m_depthSurface{std::move(rhs.m_depthSurface)},
-    m_lightSpecularSurface{std::move(rhs.m_lightSpecularSurface)},
     m_renderTargets{std::move(rhs.m_renderTargets)},
     m_lights{std::move(rhs.m_lights)}
 {
@@ -221,12 +215,12 @@ auto MapToolRenderer::Render(RenderModule* const pRenderModule) -> void
     COMPtr<IDirect3DTexture9> pShadeMapTexture;
     COMPtr<IDirect3DTexture9> pDepthMapTexture;
     COMPtr<IDirect3DTexture9> pLightSpecularMapTexture;
-    m_normalSurface->GetTexture(&pNormalMapTexture);
-    m_materialSpecularSurface->GetTexture(&pSpecularMapTexture);
-    m_albedoSurface->GetTexture(&pAlbedoMapTexture);
-    m_lightDiffuseSurface->GetTexture(&pShadeMapTexture);
-    m_lightSpecularSurface->GetTexture(&pLightSpecularMapTexture);
-    m_depthSurface->GetTexture(&pDepthMapTexture);
+    m_renderTargets[ID_NormapTarget]->GetTexture(&pNormalMapTexture);
+    m_renderTargets[ID_MatSpecularTarget]->GetTexture(&pSpecularMapTexture);
+    m_renderTargets[ID_AlbedoRenderTarget]->GetTexture(&pAlbedoMapTexture);
+    m_renderTargets[ID_LightDiffuseMap]->GetTexture(&pShadeMapTexture);
+    m_renderTargets[ID_LightSpecularMap]->GetTexture(&pLightSpecularMapTexture);
+    m_renderTargets[ID_DepthMap]->GetTexture(&pDepthMapTexture);
     D3DXMATRIX tmpMat;
     D3DXMATRIX tmpMat2;
     D3DXMatrixScaling(&tmpMat, .2f, .2f, .2f);
@@ -315,13 +309,13 @@ auto MapToolRenderer::DefferedRender(RenderModule* pRenderModule) -> void
     COMPtr<IDirect3DSurface9> albedoTarget;
     COMPtr<IDirect3DSurface9> normalTarget;
     COMPtr<IDirect3DSurface9> specularTarget;
-    COMPtr<IDirect3DSurface9> shadeTarget;
     COMPtr<IDirect3DSurface9> depthTarget;
-    m_albedoSurface->GetSurface(&albedoTarget);
-    m_normalSurface->GetSurface(&normalTarget);
-    m_materialSpecularSurface->GetSurface(&specularTarget);
-    m_lightDiffuseSurface->GetSurface(&shadeTarget);
-    m_depthSurface->GetSurface(&depthTarget);
+
+    m_renderTargets[ID_NormapTarget]->GetSurface(&normalTarget);
+    m_renderTargets[ID_MatSpecularTarget]->GetSurface(&specularTarget);
+    m_renderTargets[ID_AlbedoRenderTarget]->GetSurface(&albedoTarget);
+    m_renderTargets[ID_DepthMap]->GetSurface(&depthTarget);
+
     pRenderModule->GetDevice(&pDevice);
     
     pDevice->SetRenderTarget(0, albedoTarget.Get());
@@ -363,10 +357,10 @@ auto MapToolRenderer::Lighting(RenderModule* pRenderModule) -> void
     COMPtr<IDirect3DSurface9> depthTarget;
     COMPtr<IDirect3DTexture9> normalDepthMapTexture{};
     COMPtr<IDirect3DTexture9> specularMapTexture{};
-    m_lightDiffuseSurface->GetSurface(&lightDiffuseTarget);
-    m_lightSpecularSurface->GetSurface(&lightSpecularTarget);
-    m_materialSpecularSurface->GetTexture(&specularMapTexture);
-    m_normalSurface->GetTexture(&normalDepthMapTexture);
+    m_renderTargets[ID_LightDiffuseMap]->GetSurface(&lightDiffuseTarget);
+    m_renderTargets[ID_LightSpecularMap]->GetSurface(&lightSpecularTarget);
+    m_renderTargets[ID_MatSpecularTarget]->GetTexture(&specularMapTexture);
+    m_renderTargets[ID_NormapTarget]->GetTexture(&normalDepthMapTexture);
     pRenderModule->GetDevice(&pDevice);
 
     XMMATRIX mView{ XMLoadFloat4x4(&m_viewMatrix) };
@@ -433,9 +427,9 @@ auto MapToolRenderer::Combine(RenderModule* pRenderModule) -> void
     pRenderModule->GetDefaultSwapChain(&pSwapChain);
     pRenderModule->GetDevice(&pDevice);
     pSwapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &pBackbuffer);
-    m_albedoSurface->GetTexture(&pAlbedoMapTexture);
-    m_lightSpecularSurface->GetTexture(&pLightSpecularMapTexture);
-    m_lightDiffuseSurface->GetTexture(&pLightDiffuseMapTexture);
+    m_renderTargets[ID_AlbedoRenderTarget]->GetTexture(&pAlbedoMapTexture);
+    m_renderTargets[ID_LightSpecularMap]->GetTexture(&pLightSpecularMapTexture);
+    m_renderTargets[ID_LightDiffuseMap]->GetTexture(&pLightDiffuseMapTexture);
 
     pDevice->SetRenderTarget(0, pBackbuffer.Get());
     pDevice->SetRenderTarget(1, nullptr);

@@ -58,7 +58,7 @@ NOSPECULARMAP_PS_OUT PS_NOSCPECULARMAP(NOSPECULARMAP_PS_IN input)
 	NOSPECULARMAP_PS_OUT output;
 	output.diffuse = tex2D(DiffuseTextureSampler, input.vUV);
 	output.specular = g_vSpecular;
-	output.normal = input.vNormal;
+	output.normal = input.vNormal * 0.5f + 0.5f;
 	output.normal.w = 1.f;
 	output.depth = (float4)input.vClipPosition.z / input.vClipPosition.w;
 	return output;

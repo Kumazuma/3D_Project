@@ -65,7 +65,7 @@ PS_OUT ps_directional_light(PS_IN input)
 	//if (vSpecular.w == 0.0f) return float4(0.f, 0.f, 0.f, 0.f);
 	float3 vNormal = normalize(tex2D(NormalMapSampler, input.vUV).xyz);
 	//float depth = vNormal.w;
-	//vNormal = vNormal * 2.f - 1.f;
+	vNormal = vNormal * 2.f - 1.f;
 	float depth = tex2D(DepthMapSampler, input.vUV).r;
 	float4 vPosition = mul(float4(input.vClipPosition.xy, depth, 1.f), g_mInverseViewProj);
 	float4 vLightDir = normalize(float4(g_vLightDirectionAndPower.xyz, 0.f));

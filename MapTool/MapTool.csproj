@@ -202,16 +202,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MapToolCore\MapToolCore.csproj">
-      <Project>{cc5ed826-3386-4240-8316-c09a6d07390b}</Project>
-      <Name>MapToolCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MapToolRender\MapToolRender.vcxproj">
-      <Project>{0a8ced75-4ed9-4b0e-beb6-38fd6c6649d3}</Project>
-      <Name>MapToolRender</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.7.2%28x86 및 x64%29</ProductName>

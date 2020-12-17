@@ -165,9 +165,7 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 			if (it[u8"type"] == u8"OBJ_MESH")
 			{
 				std::wstring path{ ConvertUTF8ToWide(it[u8"path"]) };
-				loaders.emplace_back(std::async(std::launch::async, [resourceMgr, base_dir, path]() {
-						auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
-					}));
+				auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
 			}
 		}
 		for (auto& it : loaders)
