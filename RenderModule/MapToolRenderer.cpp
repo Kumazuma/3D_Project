@@ -5,6 +5,13 @@
 #include <iostream>
 using namespace DirectX;
 struct PPVertexFVF { XMFLOAT3 xyz; XMFLOAT2 uv; };
+constexpr StringLiteral<char> ID_AlbedoRenderTarget{ "RT_ALBEDO" };
+constexpr StringLiteral<char> ID_NormapTarget{ "RT_NORMAL" };
+constexpr StringLiteral<char> ID_MatSpecularTarget{ "RT_MAT_SPECULAR" };
+constexpr StringLiteral<char> ID_LightSpecularMap{ "RT_RT_SPECULAR" };
+constexpr StringLiteral<char> ID_LightDiffuseMap{ "RT_RT_DIFFUSE" };
+constexpr StringLiteral<char> ID_DepthMap{ "RT_DEPTH" };
+
 
 MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 height):
     m_viewMatrix{  },
@@ -49,7 +56,11 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     m_lightSpecularSurface.reset(pLightSpecularMap);
 
     DWORD shaderFlag{ D3DXSHADER_DEBUG };
-
+    //m_renderTargets.emplace(ID_AlbedoRenderTarget, pAlbedo);
+    //m_renderTargets.emplace(ID_NormapTarget, pNormalMap);
+    //m_renderTargets.emplace(ID_MatSpecularTarget, pMaterialSpecularMap);
+    //m_renderTargets.emplace(ID_LightSpecularMap, pLightSpecularMap);
+    //m_renderTargets.emplace(ID_DepthMap, pDepthMap);
 
     COMPtr<ID3DXBuffer> pBuffer;
     hr = D3DXCreateEffectFromFileW(pDevice.Get(), L"./maptool.fx", nullptr, nullptr, shaderFlag, nullptr, &m_effect, &pBuffer);
@@ -138,6 +149,7 @@ MapToolRenderer::MapToolRenderer(MapToolRenderer&& rhs) noexcept:
     m_pIndexBuffer{std::move(rhs.m_pIndexBuffer)},
     m_depthSurface{std::move(rhs.m_depthSurface)},
     m_lightSpecularSurface{std::move(rhs.m_lightSpecularSurface)},
+    m_renderTargets{std::move(rhs.m_renderTargets)},
     m_lights{std::move(rhs.m_lights)}
 {
 

@@ -14,6 +14,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MapToolRender", "MapToolRen
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RenderModule", "RenderModule\RenderModule.vcxproj", "{8E09E8D9-324F-4DC7-BE05-A0C9ED04D25E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6EACE86B-C534-43B3-A6BF-8F4CF109F5F1} = {6EACE86B-C534-43B3-A6BF-8F4CF109F5F1}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapToolCore", "MapToolCore\MapToolCore.csproj", "{CC5ED826-3386-4240-8316-C09A6D07390B}"
 EndProject

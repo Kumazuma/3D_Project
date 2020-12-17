@@ -34,26 +34,26 @@ auto SkinnedXMeshObject::PrepareRender(IRenderer* pRenderer) -> void
     pRenderer->AddEntity(RenderModule::Kind::NONALPHA, m_entity);
 }
 auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
-{
+{                                   
     COMPtr<IDirect3DDevice9> pDevice;
-    COMPtr<ID3DXEffect> effect;
+    COMPtr<ID3DXEffect> effect;     
     pRenderModule->GetDevice(&pDevice);
-    pRenderer->GetEffect(&effect);
-
+    pRenderer->GetEffect(&effect);  
+                                    
     XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_transform) };
     mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
     mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
     effect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
-    
+                                    
     effect->SetMatrix("g_mWorld", reinterpret_cast<D3DXMATRIX*>(&this->m_transform));
     for (auto& iter : m_meshContainters)
-    {
+    {                               
         auto& rRenderingMatries{ m_renderedMatrices[iter] };
-
-        void* pSrcVtx = nullptr;
-        void* pDestVtx = nullptr;
-
-
+                                    
+        void* pSrcVtx = nullptr;    
+        void* pDestVtx = nullptr;   
+                                    
+                                    
         iter->pOriginalMesh->LockVertexBuffer(0, &pSrcVtx);
         iter->MeshData.pMesh->LockVertexBuffer(0, &pDestVtx);
 

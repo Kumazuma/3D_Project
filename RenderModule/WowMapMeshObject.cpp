@@ -52,6 +52,30 @@ namespace std
                 ::equal(_Left.vUV, _Right.vUV);
         }
     };
+    template<>
+    struct hash<DirectX::XMUINT3>
+    {
+        hash<u32> hasher;
+        size_t operator()(const DirectX::XMUINT3& _Keyval)const noexcept {
+            return
+                hasher(_Keyval.x) ^
+                hasher(_Keyval.y) ^
+                hasher(_Keyval.z);
+        }
+    };
+    template<>
+    struct equal_to<DirectX::XMUINT3>
+    {
+        _CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef DirectX::XMUINT3 _FIRST_ARGUMENT_TYPE_NAME;
+        _CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef DirectX::XMUINT3 _SECOND_ARGUMENT_TYPE_NAME;
+        _CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef bool _RESULT_TYPE_NAME;
+        bool operator()(const DirectX::XMUINT3& _Left, const DirectX::XMUINT3& _Right) const {
+            return
+                _Left.x== _Right.x &&
+                _Left.y== _Right.y &&
+                _Left.z== _Right.z;
+        }
+    };
 }
 
 template<size_t stride, size_t count>
@@ -161,7 +185,7 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     std::vector<XMFLOAT3A> normals;
     std::unordered_map<std::wstring, std::vector<std::array<XMUINT3, 3 > > > groups;
     std::unordered_map<std::wstring, std::wstring > materialNames;
-    std::unordered_map<VERTEX<FVF>, size_t> itemIndexTable;
+    std::unordered_map<DirectX::XMUINT3, size_t> itemIndexTable;
 
     std::equal_to<std::Vertex> asd;
     std::equal_to<std::Vertex> asd2{ asd };
@@ -348,22 +372,21 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
             Index<INDEX_TYPE> newIndex{};
             for (u32 i = 0; i < 3; ++i)
             {
-                auto& pos = positions[triangle[i].x - 1];
-                auto& uv = UVs[triangle[i].y - 1];
-                auto& normal = normals[triangle[i].z - 1];
-                VERTEX<FVF> newItem{};
-                newItem.vNormal = normal;
-                newItem.vUV = uv;
-                newItem.vPosition = pos;
-
-                auto findIt = itemIndexTable.find(newItem);
-
+                auto findIt = itemIndexTable.find(triangle[i]);
                 if (findIt == itemIndexTable.end())
                 {
                     size_t newVertexIndex{ m_pVertexPositions->size() };
+                    auto& pos = positions[triangle[i].x - 1];
+                    auto& uv = UVs[triangle[i].y - 1];
+                    auto& normal = normals[triangle[i].z - 1];
+                    VERTEX<FVF> newItem{};
+                    newItem.vNormal = normal;
+                    newItem.vUV = uv;
+                    newItem.vPosition = pos;
+
                     vertices.emplace_back(newItem);
                     m_pVertexPositions->emplace_back(pos);
-                    findIt = itemIndexTable.emplace(newItem, newVertexIndex).first;
+                    findIt = itemIndexTable.emplace(triangle[i], newVertexIndex).first;
                 }
                 newIndex[i] = findIt->second;
             }

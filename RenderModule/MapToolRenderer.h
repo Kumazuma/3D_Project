@@ -4,6 +4,8 @@
 #include "Renderer.h"
 #include "list.hpp"
 #include "Frustum.h"
+#include "Utility/StringLiteral.h"
+#include <map>
 class TextureRenderTarget;
 class DLL_CLASS MapToolRenderer: public IRenderer
 {
@@ -34,6 +36,7 @@ private:
 	COMPtr<ID3DXEffect> m_combineEffect;
 	
 	COMPtr<ID3DXSprite> m_sprite;
+	
 	std::unordered_map<std::wstring, D3DLIGHT9> m_lights;
 	std::unique_ptr<TextureRenderTarget> m_albedoSurface;
 	std::unique_ptr<TextureRenderTarget> m_normalSurface;
@@ -41,7 +44,7 @@ private:
 	std::unique_ptr<TextureRenderTarget> m_lightDiffuseSurface;
 	std::unique_ptr<TextureRenderTarget> m_lightSpecularSurface;
 	std::unique_ptr<TextureRenderTarget> m_depthSurface;
-
+	std::map<StringLiteral<char>, std::unique_ptr<TextureRenderTarget> > m_renderTargets;
 	std::unordered_map < RenderModule::Kind, std::list<std::shared_ptr<RenderEntity> > > m_renderEntities;
 	DirectX::XMFLOAT4X4 m_projMatrix;
 	DirectX::XMFLOAT4X4 m_viewMatrix;
