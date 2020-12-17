@@ -4,6 +4,7 @@
 #include "RenderModule.h"
 #include "Frustum.h"
 #include "StaticXMeshObject.h"
+#include "Renderer.h"
 #pragma comment(lib, "d3d9.lib")
 #undef max
 #undef min
@@ -213,9 +214,9 @@ TerrainObject::TerrainObject(TerrainObject const* rhs):
 {
 }
 
-auto TerrainObject::PrepareRender(RenderModule* pRenderModule) -> void
+auto TerrainObject::PrepareRender(IRenderer* pRenderer) -> void
 {
-	pRenderModule->AddRenderEntity(RenderModule::Kind::NONALPHA, std::static_pointer_cast<RenderEntity>(m_entity));
+	pRenderer->AddEntity(RenderModule::Kind::NONALPHA, std::static_pointer_cast<RenderEntity>(m_entity));
 }
 
 auto TerrainObject::Clone() const -> RenderObject*
@@ -414,30 +415,30 @@ TerrainObject::Entity::Entity(TerrainObject* m_pTerrain):
 {
 }
 
-
-
-auto TerrainObject::Entity::Render(RenderModule* pRenderModule) -> void
+auto TerrainObject::Entity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void 
 {
 	COMPtr<IDirect3DDevice9> pDevice{};
+	Frustum frustum;
+	COMPtr<ID3DXEffect> pEffect{};
 	XMMATRIX mTransform{ XMLoadFloat4x4(&this->m_pTerrain->m_transform) };
 	std::array<XMFLOAT3A, 8> subsetBoundingBoxes{  };
-
+	COMPtr<IDirect3DTexture9> pDiffuseTexture = m_pTerrain->m_pTexture;
 	pRenderModule->GetDevice(&pDevice);
-	if (this->m_pTerrain->m_pTexture == nullptr)
+	pRenderer->GetEffect(&pEffect);
+	if (pDiffuseTexture == nullptr)
 	{
-		COMPtr<IDirect3DTexture9> pDefaultTexture;
-		pRenderModule->GetDefaultTexture(&pDefaultTexture);
-		pDevice->SetTexture(0, pDefaultTexture.Get());
+		pRenderModule->GetDefaultTexture(&pDiffuseTexture);
 	}
-	else
-	{
-		pDevice->SetTexture(0, m_pTerrain->m_pTexture.Get());
-	}
+	pEffect->SetTexture("g_diffuseTexture", pDiffuseTexture.Get());
+	pEffect->SetMatrix("g_mWorld", &reinterpret_cast<D3DXMATRIX&>(m_pTerrain->m_transform));
+	auto specular = D3DXVECTOR4(1.f, 1.f, 1.f, 1.f);
+	pEffect->SetVector("g_vSpecular", &specular);
+	pEffect->CommitChanges();
+
 	pDevice->SetFVF(FVF);
-	pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_pTerrain->m_transform));
 	pDevice->SetStreamSource(0, m_pTerrain->m_pVertexBuffer.Get(), 0, VERTEX_SIZE);
 	u32 zOffset{};
-	auto& rFrustum{ pRenderModule->GetFrustum() };
+	pRenderer->GetFrustum(&frustum);
 	for (u32 row = 0; row < ROW_COUNT; ++row)
 	{
 		u32 xOffset{};
@@ -460,7 +461,7 @@ auto TerrainObject::Entity::Render(RenderModule* pRenderModule) -> void
 
 			for (auto& point : subsetBoundingBoxes)
 			{
-				if (rFrustum.Intersact(XMLoadFloat3A(&point)))
+				if (frustum.Intersact(XMLoadFloat3A(&point)))
 				{
 					intersacted = true;
 					break;
@@ -477,3 +478,4 @@ auto TerrainObject::Entity::Render(RenderModule* pRenderModule) -> void
 		zOffset += zCount;
 	}
 }
+

@@ -40,7 +40,7 @@ public:
 	auto RemoveLastTriangle()->void;
 	auto SetWeldDistance(f32 value)->void;
 	auto GetWeldDistance()const->f32;
-	auto PrepareRender(RenderModule* pRenderModule)->void override;
+	auto PrepareRender(IRenderer* pRenderer)->void override;
 	auto GetIndexCount()const->u32;
 	auto GetVertices(DirectX::XMFLOAT4* const pBuffer, u32 bufferSize)->HRESULT;
 	auto GetIndices(u16* const pBuffer, u32 bufferSize)->HRESULT;
@@ -56,6 +56,6 @@ class NavMeshEntity : public RenderEntity
 {
 public:
 	NavMeshEntity(NavMeshRenderingObject* pObj);
-	auto Render(RenderModule* pRenderModule)->void override;
+	auto Render(RenderModule* pRenderModule, IRenderer* pRenderer)->void override;
 	NavMeshRenderingObject* m_obj;
 };

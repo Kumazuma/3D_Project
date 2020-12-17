@@ -19,6 +19,7 @@ using namespace msclr::interop;
 #include "COMPtr.hpp"
 #include "XMeshObj.h"
 #include "Ray.h"
+#include <RenderModule/MapToolRenderer.h>
 using namespace DirectX;
 auto MapToolRender::GraphicsDevice::Initialize(System::Windows::Forms::Control^ renderView, unsigned width, unsigned height) -> void
 {
@@ -26,6 +27,19 @@ auto MapToolRender::GraphicsDevice::Initialize(System::Windows::Forms::Control^ 
 		return;
 	s_instance = gcnew MapToolRender::GraphicsDevice(renderView, width, height);
 }
+MapToolRender::GraphicsDevice::GraphicsDevice(Control^ renderView, unsigned width, unsigned height)
+{
+	void* hwnd{ renderView->Handle.ToPointer() };
+	RenderModule* pOut{};
+	MapToolRenderer* mapToolRenderer;
+	RenderModule::Create((HWND)hwnd, width, height, &pOut);
+	m_pRenderModule = pOut;
+	HRESULT hr = MapToolRenderer::Create(m_pRenderModule, width, height, &mapToolRenderer);
+	if (FAILED(hr)) throw gcnew System::Exception("can not create renderer!");
+	m_pRenderer = mapToolRenderer;
+}
+
+
 auto MapToolRender::GraphicsDevice::GetOpenFilePath(System::Windows::Forms::Control^ owner, System::String^ filter) -> System::String^
 {
 	OPENFILENAMEW ofn{};
@@ -56,29 +70,58 @@ auto MapToolRender::GraphicsDevice::GetSaveFilePath(System::Windows::Forms::Cont
 auto MapToolRender::GraphicsDevice::Render(System::Windows::Forms::Control^ control, IEnumerable<RenderObject^>^ objs, Camera^ camera) -> void
 {
 	System::Threading::Monitor::Enter(this);
-	m_pRenderModule->SetCamera(camera->PositionPtr, camera->RotationPtr);
-	m_pRenderModule->SetProj(45.f, 1.f, 0.1f, 2000.f);
+	DirectX::XMFLOAT4X4 projMatrix{};
+	DirectX::XMFLOAT4X4 viewMatrix{};
+	auto width{ m_pRenderModule->GetWidth() };
+	auto height{ m_pRenderModule->GetHeight() };
+	m_pRenderModule->GenerateProjPerspective(45.f, static_cast<float>(width) / static_cast<float>(height), 0.1f, 2000.f, &projMatrix);
+	m_pRenderModule->GenerateViewMatrix(*camera->PositionPtr, *camera->RotationPtr, &viewMatrix);
+	m_pRenderer->SetProjMatrix(projMatrix);
+	m_pRenderer->SetViewMatrix(viewMatrix);
+	COMPtr<IDirect3DDevice9> pDevice;
+	m_pRenderModule->GetDevice(&pDevice);
 	try
 	{
 		if (!m_pRenderModule->Renderable())
 		{
-			return;
+			
+			HRESULT hr = pDevice->TestCooperativeLevel();
+			if (hr == D3DERR_DEVICENOTRESET)
+			{
+				delete m_pRenderer;
+				if (m_pRenderModule->Renderable())
+				{
+					MapToolRenderer* mapToolRenderer;
+					
+					hr = MapToolRenderer::Create(
+						m_pRenderModule,
+						m_pRenderModule->GetWidth(),
+						m_pRenderModule->GetHeight(),
+						&mapToolRenderer);
+					if (FAILED(hr))throw gcnew System::Exception("could not create renderer!");
+					m_pRenderer = mapToolRenderer;
+				}
+				else
+				{
+					return;
+				}
+			}
 		}
 		COMPtr<IDirect3DDevice9> pDevice;
 		m_pRenderModule->GetDevice(&pDevice);
 
 		ApplyViewProjMatrix();
-		m_pRenderModule->PrepareFrustum();
 		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 		for each (auto obj in objs)
 		{
 			auto* handle{ obj->Handle };
 			if (handle != nullptr)
 			{
-				handle->PrepareRender(m_pRenderModule);
+				handle->PrepareRender(m_pRenderer);
 			}
 		}
-		m_pRenderModule->Render(0.f, 0.f, 1.f, 1.f, (HWND)control->Handle.ToPointer());
+		m_pRenderer->Render(m_pRenderModule);
+		pDevice->Present(nullptr, nullptr, (HWND)control->Handle.ToPointer(), nullptr);
 	}
 	finally
 	{
@@ -122,15 +165,13 @@ MapToolRender::GraphicsDevice::!GraphicsDevice()
 		delete m_pRenderModule;
 		m_pRenderModule = nullptr;
 	}
+	if (m_pRenderer != nullptr)
+	{
+		delete m_pRenderer;
+		m_pRenderer = nullptr;
+	}
 }
 
-MapToolRender::GraphicsDevice::GraphicsDevice(Control^ renderView, unsigned width, unsigned height)
-{
-	void* hwnd{ renderView->Handle.ToPointer() };
-	RenderModule* pOut{};
-	RenderModule::Create((HWND)hwnd, width, height, &pOut);
-	m_pRenderModule = pOut;
-}
 
 auto MapToolRender::MapObject::ToString() -> System::String^
 {

@@ -12,6 +12,7 @@ namespace MapToolRender
 		};
 		SwapChain(GraphicsDevice^ device, System::Windows::Forms::Control^ control, unsigned int width,unsigned int height, PixelFormat pixelFormat, bool fullscreen);
 		!SwapChain();
+		~SwapChain();
 		property IDirect3DSwapChain9* Native {auto get()->IDirect3DSwapChain9* { return m_pSwapChain; } }
 	protected:
 		IDirect3DSwapChain9* m_pSwapChain;

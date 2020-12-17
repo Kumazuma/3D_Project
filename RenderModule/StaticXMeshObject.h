@@ -19,7 +19,7 @@ protected:
 	auto Initialize(RenderModule* pRenderModule, std::wstring const& filePath)->HRESULT;
 public:
 	static auto Create(RenderModule* pRenderModule, std::wstring const& filePath, StaticXMeshObject** pOut)->HRESULT;
-	auto PrepareRender(RenderModule* pRenderModule)->void override;
+	auto PrepareRender(IRenderer* pRenderer)->void override;
 	auto GetMaterialCount()const->u32;
 	auto Clone()const->RenderObject*;
 	//특정 서브셋의 알파값을 정의한다.
@@ -35,7 +35,7 @@ class StaticXMeshObjectSubset : public RenderEntity
 {
 public:
 	StaticXMeshObjectSubset(StaticXMeshObject* mesh, u32 idx);
-	auto Render(RenderModule* pRenderModule)->void override;
+	auto Render(RenderModule* pRenderModule, IRenderer* pRenderer)->void override;
 	auto EnableAlpha(bool enabled)->void;
 	auto IsEnableAlpha()const->bool;
 private:

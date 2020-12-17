@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "RenderModule.h"
 #include "SimpleColliderSphareObject.h"
+#include "Renderer.h"
 using namespace DirectX;
 SimpleSphareObject::SimpleSphareObject(RenderModule* pRenderModule):
     m_entity{ new Entity {this} },
@@ -65,9 +66,9 @@ auto SimpleSphareObject::Clone() const -> RenderObject*
     return new SimpleSphareObject{ *this };
 }
 
-auto SimpleSphareObject::PrepareRender(RenderModule* pRenderModule) -> void 
+auto SimpleSphareObject::PrepareRender(IRenderer* pRenderer) -> void
 {
-    pRenderModule->AddRenderEntity(RenderModule::Kind::ALPHA, m_entity);
+    pRenderer->AddEntity(RenderModule::Kind::ALPHA, m_entity);
 }
 
 auto SimpleSphareObject::SetRadius(f32 radius) -> void
@@ -85,7 +86,7 @@ SimpleSphareEntity::SimpleSphareEntity(SimpleSphareObject* pObj):
 
 }
 
-auto SimpleSphareEntity::Render(RenderModule* pRenderModule) -> void 
+auto SimpleSphareEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
 {
     auto meterial{ m_obj->m_material };
     auto offsetAndRadius{ m_obj->m_offsetAndRadius };

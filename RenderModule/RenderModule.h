@@ -20,9 +20,10 @@ struct RenderEntity;
 class DLL_CLASS RenderModule
 {
 public:
-	enum class Kind{ENVIRONMENT, NONALPHA,  ALPHA, NAVIMASH, UI};
+	enum class Kind{ENVIRONMENT, TERRAIN, NONALPHA,  ALPHA, NAVIMASH, UI};
 	static auto Create(HWND hWindow, u32 width, u32 height, RenderModule** pOut)->HRESULT;
 public:
+	
 	auto GetDevice(IDirect3DDevice9** pOut)->HRESULT;
 	auto CreateTerrain(wchar_t const* szHeightMapPath, size_t len, f32 interval, f32 maxHeight, RenderObject** pOut)->HRESULT;
 	auto CreateTexture(wchar_t const* szFilePath, IDirect3DTexture9** pOut)->HRESULT;
@@ -30,16 +31,21 @@ public:
 	auto GetDefaultTexture(IDirect3DTexture9** pTexture)->HRESULT;
 	auto GetWidth()const->u32 { return m_width; }
 	auto GetHeight()const->u32 { return m_height; }
+
+	/*
 	auto SetCamera(DirectX::XMFLOAT3 const& cameraPosition, DirectX::XMFLOAT3 const& at, DirectX::XMFLOAT3 const& up)->void;
 	auto SetCamera(DirectX::XMFLOAT3 const* pCameraPos, DirectX::XMFLOAT3 const* pRotation)->void;
 	auto SetProj(float angle, float aspect, float nearZ, float farZ)->void;
 	auto SetViewProjMatrix(DirectX::XMFLOAT4X4 const& viewMatrix, DirectX::XMFLOAT4X4 const& projMatrix)->void;
+	*/
 	auto CreateSimpleColorTexture(u32 width, u32 height, const DirectX::XMFLOAT4& color, IDirect3DTexture9** pOut)->HRESULT;
 	auto GetSimpleColorTexture(DefaultColorTexture kind, IDirect3DTexture9** pOut)->HRESULT;
+	/*
 	auto GetFrustum()const->Frustum const&;
 	auto PrepareFrustum()->void;
 	auto Render(float r, float g, float b, float a, HWND hWnd)->void;
 	auto AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity>const& entity)->void;
+	*/
 	auto ConvertProjToWorld(
 		DirectX::XMFLOAT3 const& cameraPos,
 		DirectX::XMFLOAT3 const& cameraRotation,
@@ -50,7 +56,12 @@ public:
 		DirectX::XMFLOAT3 const& pos
 		)->DirectX::XMFLOAT3;
 	auto Renderable()->bool;
+	
 	auto GetDefaultSwapChain(IDirect3DSwapChain9** ppSwapChain)->void;
+	static auto GenerateViewMatrix(DirectX::XMFLOAT3 const& cameraPosition, DirectX::XMFLOAT3 const& at, DirectX::XMFLOAT3 const& up, DirectX::XMFLOAT4X4* pOut)->void;
+	static auto GenerateViewMatrix(DirectX::XMFLOAT3 const& cameraPosition, DirectX::XMFLOAT3 const& rotation, DirectX::XMFLOAT4X4* pOut)->void;
+	static auto GenerateProjPerspective(f32 angle, f32 aspect, f32 nearZ, f32 farZ, DirectX::XMFLOAT4X4* pOut)->void;
+	static auto GenerateProjOtho(f32 width, f32 height, f32 nearZ, f32 farZ, DirectX::XMFLOAT4X4* pOut)->void;
 protected:
 	RenderModule();
 	auto BeginRender(float r, float g, float b, float a)->void;

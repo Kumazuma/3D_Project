@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SkyBoxObject.h"
 #include "RenderModule.h"
+#include "Renderer.h"
 #include <DirectXMath.h>
 using namespace DirectX;
 auto SkyBoxObject::Create(RenderModule* pRenderModule, SkyBoxObject** pOut) -> HRESULT
@@ -21,9 +22,9 @@ auto SkyBoxObject::Create(RenderModule* pRenderModule, SkyBoxObject** pOut) -> H
 	return hr;
 }
 
-auto SkyBoxObject::PrepareRender(RenderModule* pRenderModule) -> void 
+auto SkyBoxObject::PrepareRender(IRenderer* pRenderer) -> void
 {
-	pRenderModule->AddRenderEntity(RenderModule::Kind::ENVIRONMENT, m_entity);
+	pRenderer->AddEntity(RenderModule::Kind::ENVIRONMENT, m_entity);
 }
 
 auto SkyBoxObject::Clone() const -> RenderObject*
@@ -186,8 +187,11 @@ SkyBoxEntity::SkyBoxEntity(SkyBoxObject* skyBox):
 {
 }
 
-auto SkyBoxEntity::Render(RenderModule* pRenderModule) -> void 
+auto SkyBoxEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void 
 {
+	COMPtr<ID3DXEffect> pEffect{};
+	COMPtr<IDirect3DDevice9> pDevice;
+
 	auto pTexture{ m_pObject->m_pTexture };
 	auto pIndexBuffer{ m_pObject->m_pIndexBuffer };
 	auto pVertexBuffer{ m_pObject->m_pVertexBuffer };
@@ -197,24 +201,23 @@ auto SkyBoxEntity::Render(RenderModule* pRenderModule) -> void
 	{
 		return;
 	}
-	COMPtr<IDirect3DDevice9> pDevice;
 	pRenderModule->GetDevice(&pDevice);
-	D3DMATRIX viewMatrix;
-	D3DMATRIX projMatrix;
+	pRenderer->GetEffect(&pEffect);
+	XMFLOAT4X4 projMatrix{};
+	XMFLOAT4X4 viewMatrix{};
+
+	pRenderer->GetProjMatrix(&projMatrix);
+	pRenderer->GetViewMatrix(&viewMatrix);
+	XMMATRIX mProjInverse{ XMMatrixInverse(nullptr, XMLoadFloat4x4(&projMatrix)) };
+	XMMATRIX mCameraTransform{ XMMatrixInverse(nullptr, XMLoadFloat4x4(&viewMatrix)) };
+	XMVECTOR vFarSize{XMVector4Transform(XMVectorSet(1.f, 1.f, 1.f, 1.f), mProjInverse) };
+
 	D3DMATRIX worldTransfromMaxtrix;
 	XMFLOAT4X4& rWorldTransform{ reinterpret_cast<XMFLOAT4X4&>(worldTransfromMaxtrix) };
-	XMMATRIX mViewSpace{};
 	XMMATRIX mWorldTransfrom{ XMMatrixIdentity() };
-	XMMATRIX mProjSpace{};
 	XMVECTOR vFar{ XMVectorSet(0.f, 0.f, 1.f, 0.f) };
-	pDevice->GetTransform(D3DTS_VIEW, &viewMatrix);
-	pDevice->GetTransform(D3DTS_PROJECTION, &projMatrix);
 
-	mProjSpace = XMLoadFloat4x4(&reinterpret_cast<XMFLOAT4X4&>(projMatrix));
-	mViewSpace = XMLoadFloat4x4(&reinterpret_cast<XMFLOAT4X4&>(viewMatrix));
-	XMMATRIX mCameraTransform;
-	mCameraTransform = XMMatrixInverse(nullptr, mViewSpace);
-	vFar = XMVector3TransformCoord(vFar, XMMatrixInverse(nullptr, mProjSpace));
+	vFar = XMVector3TransformCoord(vFar, mProjInverse);
 	float scaleFactor = XMVectorGetZ(vFar * 0.5f);
 	mWorldTransfrom = XMMatrixScaling(scaleFactor, scaleFactor, scaleFactor);
 	mWorldTransfrom.r[3] = mCameraTransform.r[3];

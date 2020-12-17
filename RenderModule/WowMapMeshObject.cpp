@@ -10,6 +10,7 @@
 #include "Common.h"
 #include "intersact.h"
 #include <sstream>
+#include "Renderer.h"
 #undef max
 #undef min
 //_CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef float _ARGUMENT_TYPE_NAME;
@@ -114,6 +115,43 @@ WowMapMeshObject::WowMapMeshObject(RenderModule* pRenderModule, std::wstring con
     XMVECTOR vCenter{ (vMin + vMax) * 0.5f };
     XMStoreFloat(&m_radius, XMVector3Length(vCenter - vMin));
     XMStoreFloat3A(&m_center, vCenter);
+
+    COMPtr<IDirect3DDevice9> pDevice;
+    pRenderModule->GetDevice(&pDevice);
+    D3DVERTEXELEMENT9 elements[4]{
+        D3DDECL_END(),
+        D3DDECL_END(),
+        D3DDECL_END(),
+        D3DDECL_END()
+    };
+    //WORD    Stream;     // Stream index
+    //WORD    Offset;     // Offset in the stream in bytes
+    //BYTE    Type;       // Data type
+    //BYTE    Method;     // Processing method
+    //BYTE    Usage;      // Semantics
+    //BYTE    UsageIndex; // Semantic index
+    elements[0].Stream = 0;
+    elements[0].Offset = 0;
+    elements[0].Type = D3DDECLTYPE_FLOAT3;
+    elements[0].Method = D3DDECLMETHOD_DEFAULT;
+    elements[0].Usage = D3DDECLUSAGE_POSITION;
+    elements[0].UsageIndex = 0;
+
+    elements[1].Stream = 0;
+    elements[1].Offset = 12;
+    elements[1].Type = D3DDECLTYPE_FLOAT3;
+    elements[1].Method = D3DDECLMETHOD_DEFAULT;
+    elements[1].Usage = D3DDECLUSAGE_NORMAL;
+    elements[1].UsageIndex = 0;
+
+    elements[2].Stream = 0;
+    elements[2].Offset = 24;
+    elements[2].Type = D3DDECLTYPE_FLOAT2;
+    elements[2].Method = D3DDECLMETHOD_DEFAULT;
+    elements[2].Usage = D3DDECLUSAGE_TEXCOORD;
+    elements[2].UsageIndex = 0;
+    //elements[0].;
+    pDevice->CreateVertexDeclaration(elements, &m_pVertexDecl);
 }
 auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring const& path, std::wstring* pOutMeterialFilePath) -> void
 {
@@ -436,8 +474,8 @@ WowMapMeshObject::WowMapMeshObject(WowMapMeshObject const& rhs):
     m_vertexCount{rhs.m_vertexCount},
     m_pVertexPositions{ rhs.m_pVertexPositions },
     m_radius{ rhs.m_radius },
-    m_center{ rhs.m_center }
-
+    m_center{ rhs.m_center },
+    m_pVertexDecl{rhs.m_pVertexDecl}
 {
     for (auto& it : m_subsets)
     {
@@ -454,7 +492,8 @@ WowMapMeshObject::WowMapMeshObject(WowMapMeshObject&& rhs) noexcept :
     m_vertexCount{ rhs.m_vertexCount },
     m_pVertexPositions{ std::move(rhs.m_pVertexPositions)},
     m_radius{std::move(rhs.m_radius)},
-    m_center{std::move(rhs.m_center)}
+    m_center{std::move(rhs.m_center)},
+    m_pVertexDecl{ std::move(rhs.m_pVertexDecl)}
 {
     rhs.m_vertexCount = 0;
 }
@@ -475,13 +514,13 @@ auto WowMapMeshObject::Create(RenderModule* pRenderModule, std::wstring const& p
     return S_OK;
 }
 
-auto WowMapMeshObject::PrepareRender(RenderModule* pRenderModule) -> void
+auto WowMapMeshObject::PrepareRender(IRenderer* pRenderer) -> void
 {
-    auto& frustum{ pRenderModule->GetFrustum() };
+    Frustum frustum{};
+    pRenderer->GetFrustum(&frustum);
     XMMATRIX mWorldTransform{ XMLoadFloat4x4(&m_transform) };
     XMVECTOR t = XMVector3TransformCoord(XMLoadFloat3A(&m_center), mWorldTransform);
     XMVECTOR radius = XMVector3TransformNormal(XMVectorSet(m_radius, m_radius, m_radius, 0.f), mWorldTransform);
-    int s = 0;
     if (!frustum.Intersact(t, m_radius))
     {
         return;
@@ -492,15 +531,8 @@ auto WowMapMeshObject::PrepareRender(RenderModule* pRenderModule) -> void
         float radius{ it->GetSubset()->GetRadius() };
         if (frustum.Intersact(t, radius))
         {
-            ++s;
-            pRenderModule->AddRenderEntity(RenderModule::Kind::NONALPHA, it);
+            pRenderer->AddEntity(RenderModule::Kind::NONALPHA, it);
         }
-    }
-    if (s != 0)
-    {
-        std::stringstream ss;
-        ss << "culling state: " << s << '/' << m_entities.size() << '\n';
-        OutputDebugStringA(ss.str().c_str());
     }
 }
 
@@ -682,17 +714,19 @@ WowMapMeshEntity::WowMapMeshEntity(
 {
 }
 
-auto WowMapMeshEntity::Render(RenderModule* pRenderModule) -> void
+auto WowMapMeshEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
 {
     auto& subset{ m_obj->m_subsets[m_subsetName] };
     COMPtr<IDirect3DDevice9> pDevice{};
     COMPtr<IDirect3DVertexBuffer9> pVertexBuffer{ m_obj->m_pVertexBuffers };
     COMPtr<IDirect3DIndexBuffer9> pIndexBuffer{ subset->GetIndexBuffer() };
+    COMPtr<ID3DXEffect> pEffect;
     u32 triangleCount{ subset->GetTriangleCount() };
     pRenderModule->GetDevice(&pDevice);
-
-    pDevice->SetFVF(WowMapMeshObject::FVF);
-    pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_obj->m_transform));
+    pRenderer->GetEffect(&pEffect);
+    //pDevice->SetFVF(WowMapMeshObject::FVF);
+    pDevice->SetVertexDeclaration(m_obj->m_pVertexDecl.Get());
+    //pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_obj->m_transform));
     pDevice->SetStreamSource(0, pVertexBuffer.Get(), 0, WowMapMeshObject::VERTEX_SIZE);
     pDevice->SetIndices(pIndexBuffer.Get());
     const auto textureIt{ m_obj->m_textures.find(subset->GetMaterialName()) };
@@ -705,10 +739,16 @@ auto WowMapMeshEntity::Render(RenderModule* pRenderModule) -> void
     {
         pTexture = textureIt->second;
     }
+    XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_obj->m_transform) };
+    mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+    mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
+    pEffect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
+    pEffect->SetMatrix("g_mWorld", &reinterpret_cast<D3DXMATRIX&>(m_obj->m_transform));
+    pEffect->SetTexture("g_diffuseTexture", pTexture.Get());
+    pEffect->CommitChanges();
 
-    pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_obj->m_transform));
-    pDevice->SetTexture(0, pTexture.Get());
     pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_obj->GetVertexCount(), 0, triangleCount);
+    pDevice->SetVertexDeclaration(nullptr);
 }
 
 auto WowMapMeshEntity::GetSubset() -> std::shared_ptr<WowMapMeshSubset> const&

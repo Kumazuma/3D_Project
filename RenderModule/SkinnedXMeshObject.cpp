@@ -2,6 +2,7 @@
 #include "SkinnedXMeshObject.h"
 #include "RenderModule.h"
 #include <shlwapi.h>
+#include "Renderer.h"
 #pragma comment(lib, "shlwapi.lib")
 using namespace DirectX;
 inline auto __vectorcall ToFloat4x4(XMMATRIX mat)->XMFLOAT4X4
@@ -28,18 +29,24 @@ auto SkinnedXMeshObject::Create(RenderModule* pRenderModule, std::wstring const&
     return hr;
 }
 
-auto SkinnedXMeshObject::PrepareRender(RenderModule* pRenderModule) -> void
+auto SkinnedXMeshObject::PrepareRender(IRenderer* pRenderer) -> void
 {
-    pRenderModule->AddRenderEntity(RenderModule::Kind::NONALPHA, m_entity);
+    pRenderer->AddEntity(RenderModule::Kind::NONALPHA, m_entity);
 }
 
-auto SkinnedXMeshObject::Render(RenderModule* pRenderModule) -> void
+auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
 {
     COMPtr<IDirect3DDevice9> pDevice;
+    COMPtr<ID3DXEffect> effect;
     pRenderModule->GetDevice(&pDevice);
-    
-    pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_transform));
+    pRenderer->GetEffect(&effect);
 
+    XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_transform) };
+    mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+    mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
+    effect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
+    
+    effect->SetMatrix("g_mWorld", reinterpret_cast<D3DXMATRIX*>(&this->m_transform));
     for (auto& iter : m_meshContainters)
     {
         auto& rRenderingMatries{ m_renderedMatrices[iter] };
@@ -60,7 +67,8 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule) -> void
 
         for (u32 i = 0; i < iter->NumMaterials; ++i)
         {
-            pDevice->SetTexture(0, iter->textures[i].Get() );
+            effect->SetTexture("g_diffuseTexture", iter->textures[i].Get());
+            effect->CommitChanges();
             iter->MeshData.pMesh->DrawSubset(i);
         }
 
@@ -326,7 +334,7 @@ SkinnedMeshEntity::SkinnedMeshEntity(SkinnedXMeshObject* pObj) :
 {
 }
 
-auto SkinnedMeshEntity::Render(RenderModule* pRenderModule) -> void
+auto SkinnedMeshEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
 {
-    m_pObj->Render(pRenderModule);
+    m_pObj->Render(pRenderModule, pRenderer);
 }

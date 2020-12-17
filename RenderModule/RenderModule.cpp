@@ -242,53 +242,6 @@ auto RenderModule::GetDefaultTexture(IDirect3DTexture9** pTexture) -> HRESULT
 	return S_OK;
 }
 using namespace DirectX;
-auto RenderModule::SetCamera(DirectX::XMFLOAT3 const& cameraPosition, DirectX::XMFLOAT3 const& at, DirectX::XMFLOAT3 const& up)->void
-{
-	XMMATRIX mView{ XMMatrixLookAtLH(
-		XMLoadFloat3(&cameraPosition),
-		XMLoadFloat3(&at),
-		XMLoadFloat3(&up)
-	) };
-	m_pDevice->SetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&mView));
-}
-auto RenderModule::SetCamera(DirectX::XMFLOAT3 const* pCameraPos, DirectX::XMFLOAT3 const* pRotation) -> void
-{
-	XMVECTOR vPosition{ XMLoadFloat3(pCameraPos) };
-	XMVECTOR vForward{XMVectorSet(0.f, 0.f, 1.f, 0.f)};
-	XMVECTOR vUp{ XMVectorSet(0.f, 1.f, 0.f, 0.f) };
-	XMVECTOR vRotation{ XMLoadFloat3(pRotation) };
-	vRotation = vRotation * XM_2PI / 360;
-	XMMATRIX mWorld{ XMMatrixRotationRollPitchYawFromVector(vRotation) };
-	vForward = XMVector3TransformNormal(vForward, mWorld);
-	vUp = XMVector3TransformCoord(vUp, mWorld);
-
-	XMMATRIX mView{ XMMatrixLookAtLH(
-		vPosition,
-		vPosition + vForward,
-		vUp
-	) };
-	HRESULT hr{};
-	D3DMATRIX viewTransform{};
-	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&viewTransform), mView);
-	hr = m_pDevice->SetTransform(D3DTS_VIEW, &viewTransform);
-}
-auto RenderModule::SetProj(float angle, float aspect, float nearZ, float farZ)->void
-{
-	aspect =
-		static_cast<float>(GetWidth()) /
-		static_cast<float>(GetHeight());
-
-	XMMATRIX mProj{ XMMatrixPerspectiveFovLH(XMConvertToRadians(angle), aspect, nearZ, farZ) };
-	HRESULT hr{};
-
-	hr = m_pDevice->SetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&mProj));
-	assert(SUCCEEDED(hr));
-
-}
-auto RenderModule::SetViewProjMatrix(DirectX::XMFLOAT4X4 const& viewMatrix, DirectX::XMFLOAT4X4 const& projMatrix)->void
-{
-
-}
 
 auto RenderModule::CreateSimpleColorTexture(u32 width, u32 height, const DirectX::XMFLOAT4& color, IDirect3DTexture9** pOut) -> HRESULT
 {
@@ -364,95 +317,6 @@ auto RenderModule::GetSimpleColorTexture(DefaultColorTexture kind, IDirect3DText
 	return S_OK;
 }
 
-auto RenderModule::GetFrustum() const -> Frustum const&
-{
-	return m_frustum;
-}
-
-auto RenderModule::PrepareFrustum() -> void
-{
-	HRESULT hr{};
-	DirectX::XMMATRIX mView;
-	DirectX::XMMATRIX mProj;
-	hr = m_pDevice->GetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&mView));
-	assert(SUCCEEDED(hr));
-	hr = m_pDevice->GetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&mProj));
-	assert(SUCCEEDED(hr));
-
-	m_frustum.MakeFrustum(mView, mProj);
-}
-
-auto RenderModule::Render(float r, float g, float b, float a, HWND hWnd) -> void
-{
-	if (!Renderable())
-	{
-		ClearEntityTable();
-		return;
-	}
-	COMPtr<IDirect3DSurface9> backbuffer;
-	BeginRender(r, g, b, a);
-	for (auto& it : m_renderEntities[Kind::ENVIRONMENT])
-	{
-		it->Render(this);
-	}
-	for (auto& it : m_renderEntities[Kind::NONALPHA])
-	{
-		it->Render(this);
-	}
-	m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	for (auto& it : m_renderEntities[Kind::ALPHA])
-	{
-		it->Render(this);
-	}
-	for (auto& it : m_renderEntities[Kind::NAVIMASH])
-	{
-		it->Render(this);
-	}
-	for (auto& it : m_renderEntities[Kind::UI])
-	{
-		it->Render(this);
-	}
-	m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-
-	ClearEntityTable();
-	EndRender(hWnd);
-}
-
-auto RenderModule::AddRenderEntity(Kind kind, std::shared_ptr<RenderEntity> const& entity) -> void
-{
-	m_renderEntities[kind].push_back(entity);
-}
-
-auto RenderModule::ConvertProjToWorld(DirectX::XMFLOAT3 const& cameraPos, DirectX::XMFLOAT3 const& cameraRotation, float angle, float aspect, float nearZ, float farZ, DirectX::XMFLOAT3 const& pos) -> DirectX::XMFLOAT3
-{
-	XMVECTOR vPosition{ XMLoadFloat3(&cameraPos) };
-	XMVECTOR vForward{ XMVectorSet(0.f, 0.f, 1.f, 0.f) };
-	XMVECTOR vUp{ XMVectorSet(0.f, 1.f, 0.f, 0.f) };
-	XMMATRIX mWorld{ XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&cameraRotation)) };
-	vForward = XMVector3TransformNormal(vForward, mWorld);
-	vUp = XMVector3TransformCoord(vUp, mWorld);
-
-	XMMATRIX mView{ XMMatrixLookAtLH(
-		vPosition,
-		vPosition + vForward,
-		vUp
-	) };
-	aspect =
-		static_cast<float>(GetWidth()) /
-		static_cast<float>(GetHeight());
-	XMMATRIX mProj{ XMMatrixPerspectiveFovLH(XMConvertToRadians(angle), aspect, nearZ, farZ) };
-	XMMATRIX mProjInverse{ XMMatrixInverse(nullptr, mProj) };
-	XMMATRIX mViewInverse{ XMMatrixInverse(nullptr, mView) };
-
-	XMVECTOR vPos{ XMLoadFloat3(&pos) };
-	vPos = XMVector3TransformCoord(vPos, mProjInverse);
-	vPos = XMVector3TransformCoord(vPos, mViewInverse);
-	XMFLOAT3 res{};
-	XMStoreFloat3(&res, vPos);
-	return res;
-}
-
-
 auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 {
 	if (!Renderable())
@@ -473,6 +337,11 @@ auto RenderModule::EndRender(HWND hWnd) -> void
 	m_pDevice->Present(nullptr, nullptr, hWnd, nullptr);
 }
 
+auto RenderModule::ConvertProjToWorld(DirectX::XMFLOAT3 const& cameraPos, DirectX::XMFLOAT3 const& cameraRotation, float angle, float aspect, float nearZ, float farZ, DirectX::XMFLOAT3 const& pos) -> DirectX::XMFLOAT3
+{
+	return DirectX::XMFLOAT3{};
+}
+
 auto RenderModule::Renderable() -> bool
 {
 	HRESULT hr = m_pDevice->TestCooperativeLevel();
@@ -487,4 +356,50 @@ auto RenderModule::GetDefaultSwapChain(IDirect3DSwapChain9** ppSwapChain) -> voi
 	if (ppSwapChain==nullptr)return;
 	*ppSwapChain = m_defaultSwapChain.Get();
 	m_defaultSwapChain->AddRef();
+}
+
+auto RenderModule::GenerateViewMatrix(DirectX::XMFLOAT3 const& cameraPosition, DirectX::XMFLOAT3 const& at, DirectX::XMFLOAT3 const& up, DirectX::XMFLOAT4X4* const pOut) -> void
+{
+	if (pOut == nullptr)return;
+	XMMATRIX mView{ XMMatrixLookAtLH(
+		XMLoadFloat3(&cameraPosition),
+		XMLoadFloat3(&at),
+		XMLoadFloat3(&up)
+	) };
+	XMStoreFloat4x4(pOut, mView);
+}
+
+auto RenderModule::GenerateViewMatrix(DirectX::XMFLOAT3 const& cameraPosition, DirectX::XMFLOAT3 const& rotation, DirectX::XMFLOAT4X4* pOut) -> void
+{
+	if (pOut == nullptr)return;
+	XMVECTOR vPosition{ XMLoadFloat3(&cameraPosition) };
+	XMVECTOR vForward{ XMVectorSet(0.f, 0.f, 1.f, 0.f) };
+	XMVECTOR vUp{ XMVectorSet(0.f, 1.f, 0.f, 0.f) };
+	XMVECTOR vRotation{ XMLoadFloat3(&rotation) };
+	vRotation = vRotation * XM_2PI / 360;
+	XMMATRIX mWorld{ XMMatrixRotationRollPitchYawFromVector(vRotation) };
+	vForward = XMVector3TransformNormal(vForward, mWorld);
+	vUp = XMVector3TransformCoord(vUp, mWorld);
+
+	XMMATRIX mView{ XMMatrixLookAtLH(
+		vPosition,
+		vPosition + vForward,
+		vUp
+	) };
+	HRESULT hr{};
+	XMStoreFloat4x4(pOut, mView);
+}
+
+auto RenderModule::GenerateProjPerspective(f32 angle, f32 aspect, f32 nearZ, f32 farZ, DirectX::XMFLOAT4X4* const pOut) -> void
+{
+	if (pOut == nullptr)return;
+	XMMATRIX mProj{ XMMatrixPerspectiveFovLH(XMConvertToRadians(angle), aspect, nearZ, farZ) };
+	XMStoreFloat4x4(pOut, mProj);
+}
+
+auto RenderModule::GenerateProjOtho(f32 width, f32 height, f32 nearZ, f32 farZ, DirectX::XMFLOAT4X4* pOut) -> void
+{
+	if (pOut == nullptr)return;
+	XMMATRIX mProj{ XMMatrixOrthographicLH(width, height, nearZ, farZ) };
+	XMStoreFloat4x4(pOut, mProj);
 }

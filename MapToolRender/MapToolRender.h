@@ -5,6 +5,7 @@
 struct IDirect3D9Ex;
 struct IDirect3DDevice9Ex;
 struct RenderObject;
+struct IRenderer;
 class RenderModule;
 
 namespace MapToolRender {
@@ -52,6 +53,7 @@ namespace MapToolRender {
 		GraphicsDevice(Control^ renderView, unsigned width, unsigned height);
 	private:
 		RenderModule* m_pRenderModule;
+		IRenderer* m_pRenderer;
 	};
 	public ref class MapObject abstract : public INotifyPropertyChanged
 	{

@@ -87,9 +87,6 @@
     <ClInclude Include="SphareMeshObj.h">
       <Filter>CollderObject\ColliderSphareMeshObject</Filter>
     </ClInclude>
-    <ClInclude Include="Line3D.h">
-      <Filter>Line3D</Filter>
-    </ClInclude>
     <ClInclude Include="NaviMesh.h">
       <Filter>NaviMesh</Filter>
     </ClInclude>
@@ -151,9 +148,6 @@
     </ClCompile>
     <ClCompile Include="NaviMesh.cpp">
       <Filter>NaviMesh</Filter>
-    </ClCompile>
-    <ClCompile Include="Line3D.cpp">
-      <Filter>Line3D</Filter>
     </ClCompile>
     <ClCompile Include="ControlSwapChain.cpp">
       <Filter>소스 파일</Filter>

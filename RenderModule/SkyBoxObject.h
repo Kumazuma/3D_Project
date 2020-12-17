@@ -13,7 +13,7 @@ public:
 	using Entity = SkyBoxEntity;
 	static auto Create(RenderModule* pRenderModule, SkyBoxObject** pObj)->HRESULT;
 
-	auto PrepareRender(RenderModule* pRenderModule)->void override;
+	auto PrepareRender(IRenderer* pRenderer)->void override;
 	auto Clone()const->RenderObject*;
 	auto SetDiffuseTexture(IDirect3DCubeTexture9* pTexture)->void;
 protected:
@@ -40,7 +40,7 @@ class DLL_CLASS SkyBoxEntity : public RenderEntity
 {
 public:
 	SkyBoxEntity(SkyBoxObject* m_pTerrain);
-	auto Render(RenderModule* pRenderModule)->void override;
+	auto Render(RenderModule* pRenderModule, IRenderer* pRenderer)->void override;
 private:
 	SkyBoxObject* m_pObject;
 };

@@ -6,15 +6,14 @@ namespace DirectX
 }
 namespace MapToolRender
 {
-	ref class Line3D;
 	ref class GraphicsDevice;
 	public ref class Ray
 	{
 	public:
 		Ray(MapToolCore::Position rayStart, MapToolCore::Position rayAt);
 		Ray(DirectX::XMFLOAT3* rayStart, DirectX::XMFLOAT3* rayAt);
+		~Ray();
 		!Ray();
-		auto Create3DLine(GraphicsDevice^ graphicsDev, float length)->Line3D^;
 		auto GetPosition(float t)->MapToolCore::Position;
 	public:
 		property ::Ray* Handle {auto get()->::Ray* { return m_pNative; }}

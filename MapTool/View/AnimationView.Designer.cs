@@ -29,6 +29,7 @@ namespace MapTool.View
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnXFileOpen = new System.Windows.Forms.Button();
@@ -49,6 +50,8 @@ namespace MapTool.View
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnPlayAnim = new System.Windows.Forms.Button();
             this.btnStopAnim = new System.Windows.Forms.Button();
+            this.colliderListContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.DeleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -64,6 +67,7 @@ namespace MapTool.View
             this.splitContainer2.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
+            this.colliderListContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -94,7 +98,7 @@ namespace MapTool.View
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.84615F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.15385F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 76F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 77F));
             this.tableLayoutPanel1.Controls.Add(this.btnXFileOpen, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnJsonOpen, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnJSONSave, 2, 0);
@@ -121,7 +125,7 @@ namespace MapTool.View
             this.btnJsonOpen.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnJsonOpen.Location = new System.Drawing.Point(82, 3);
             this.btnJsonOpen.Name = "btnJsonOpen";
-            this.btnJsonOpen.Size = new System.Drawing.Size(96, 38);
+            this.btnJsonOpen.Size = new System.Drawing.Size(95, 38);
             this.btnJsonOpen.TabIndex = 3;
             this.btnJsonOpen.Text = "JSON파일 열기";
             this.btnJsonOpen.UseVisualStyleBackColor = true;
@@ -130,9 +134,9 @@ namespace MapTool.View
             // btnJSONSave
             // 
             this.btnJSONSave.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnJSONSave.Location = new System.Drawing.Point(184, 3);
+            this.btnJSONSave.Location = new System.Drawing.Point(183, 3);
             this.btnJSONSave.Name = "btnJSONSave";
-            this.btnJSONSave.Size = new System.Drawing.Size(71, 38);
+            this.btnJSONSave.Size = new System.Drawing.Size(72, 38);
             this.btnJSONSave.TabIndex = 5;
             this.btnJSONSave.Text = "JSON 저장";
             this.btnJSONSave.UseVisualStyleBackColor = true;
@@ -302,6 +306,20 @@ namespace MapTool.View
             this.btnStopAnim.UseVisualStyleBackColor = true;
             this.btnStopAnim.Click += new System.EventHandler(this.btnStopAnim_Click);
             // 
+            // colliderListContextMenu
+            // 
+            this.colliderListContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.DeleteToolStripMenuItem});
+            this.colliderListContextMenu.Name = "colliderListContextMenu";
+            this.colliderListContextMenu.Size = new System.Drawing.Size(181, 48);
+            // 
+            // DeleteToolStripMenuItem
+            // 
+            this.DeleteToolStripMenuItem.Name = "DeleteToolStripMenuItem";
+            this.DeleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.DeleteToolStripMenuItem.Text = "삭제";
+            this.DeleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
+            // 
             // AnimationView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -326,6 +344,7 @@ namespace MapTool.View
             this.splitContainer2.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
+            this.colliderListContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -352,5 +371,7 @@ namespace MapTool.View
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Button btnPlayAnim;
         private System.Windows.Forms.Button btnStopAnim;
+        private System.Windows.Forms.ContextMenuStrip colliderListContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem DeleteToolStripMenuItem;
     }
 }

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SimpleColliderBoxObject.h"
 #include "RenderModule.h"
+#include "Renderer.h"
 #include <DirectXMath.h>
 using namespace DirectX;
 auto SimpleBoxObject::Create(RenderModule* pRenderModule, f32 width, f32 height, f32 depth, SimpleBoxObject** pOut) -> HRESULT
@@ -39,9 +40,9 @@ auto SimpleBoxObject::Clone() const -> RenderObject*
     return new SimpleBoxObject(*this);
 }
 
-auto SimpleBoxObject::PrepareRender(RenderModule* pRenderModule) -> void
+auto SimpleBoxObject::PrepareRender(IRenderer* pRenderer) -> void
 {
-	pRenderModule->AddRenderEntity(RenderModule::Kind::ALPHA, m_entity);
+	pRenderer->AddEntity(RenderModule::Kind::ALPHA, m_entity);
 }
 
 auto SimpleBoxObject::GetWidth() const -> f32
@@ -114,7 +115,7 @@ SimpleBoxEntity::SimpleBoxEntity(SimpleBoxObject* pObj):
 {
 }
 
-auto SimpleBoxEntity::Render(RenderModule* pRenderModule) -> void
+auto SimpleBoxEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void 
 {
 	auto meterial{ m_obj->m_material };
 	auto size{ m_obj->m_size };
@@ -132,7 +133,8 @@ auto SimpleBoxEntity::Render(RenderModule* pRenderModule) -> void
 	pDevice->GetRenderState(D3DRS_CULLMODE, &cullMode);
 	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-
+	COMPtr<IDirect3DTexture9> pTexture;
+	//pDevice->CreateTexture(2048, 2048, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A32B32G32R32F, D3DPOOL_MANAGED, pTexture,);
 	pDevice->SetMaterial(&meterial);
 	pDevice->SetTexture(0, pRedTexture.Get());
 	XMMATRIX mSize{ XMMatrixScaling(size.x , size.y, size.z) };

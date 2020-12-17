@@ -177,10 +177,8 @@ auto App::Loop()->int
             pTimerMgr->Update();
             pInputMgr->Update();
             m_pNowScene->Update(delta);
-            m_renderModule->PrepareFrustum();
             //pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-            m_renderModule->Render(0.f, 0.f, 1.f, 1.f, m_mainWindow.GetHandle());
             runtime->GC();
             if (m_isRunning == false)
             {

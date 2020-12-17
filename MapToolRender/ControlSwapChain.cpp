@@ -34,6 +34,11 @@ MapToolRender::SwapChain::SwapChain(GraphicsDevice^ device, System::Windows::For
 
 MapToolRender::SwapChain::!SwapChain()
 {
+	this->~SwapChain();
+}
+
+MapToolRender::SwapChain::~SwapChain()
+{
 	if (m_pSwapChain != nullptr)
 	{
 		m_pSwapChain->Release();

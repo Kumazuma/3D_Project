@@ -182,7 +182,7 @@
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="hash_helper_for_f32x3.h" />
     <ClInclude Include="intersact.h" />
-    <ClInclude Include="Line3D.h" />
+    <ClInclude Include="MapToolRenderer.h" />
     <ClInclude Include="MeshObject.h" />
     <ClInclude Include="NavMesh.h" />
     <ClInclude Include="pch.h" />
@@ -190,6 +190,7 @@
     <ClInclude Include="QuedNode.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RenderEntity.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="SimpleColliderBoxObject.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="SkyBoxObject.h" />
     <ClInclude Include="StaticXMeshObject.h" />
     <ClInclude Include="TerrainObject.h" />
+    <ClInclude Include="TextureRenderTarget.h" />
     <ClInclude Include="WowMapMeshObject.h" />
     <ClInclude Include="XMeshAnimCtrler.h" />
     <ClInclude Include="XMeshContainer.h" />
@@ -207,7 +209,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="intersact.cpp" />
-    <ClCompile Include="Line3D.cpp" />
+    <ClCompile Include="MapToolRenderer.cpp" />
     <ClCompile Include="MeshObject.cpp" />
     <ClCompile Include="NavMesh.cpp" />
     <ClCompile Include="pch.cpp">
@@ -227,9 +229,38 @@
     <ClCompile Include="SkyBoxObject.cpp" />
     <ClCompile Include="StaticXMeshObject.cpp" />
     <ClCompile Include="TerrainObject.cpp" />
+    <ClCompile Include="TextureRenderTarget.cpp" />
     <ClCompile Include="WowMapMeshObject.cpp" />
     <ClCompile Include="XMeshAnimCtrler.cpp" />
     <ClCompile Include="XMeshHierarchyLoader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="maptool.fx">
+      <FileType>Document</FileType>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="maptool_lighting.fx">
+      <FileType>Document</FileType>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+    </Text>
+    <Text Include="maptool_combine.fx">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

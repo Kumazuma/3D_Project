@@ -154,7 +154,6 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollderRenderObject.h" />
     <ClInclude Include="ControlSwapChain.h" />
-    <ClInclude Include="Line3D.h" />
     <ClInclude Include="MapToolRender.h" />
     <ClInclude Include="NaviMesh.h" />
     <ClInclude Include="pch.h" />
@@ -175,7 +174,6 @@
     <ClCompile Include="BoxMeshObj.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ControlSwapChain.cpp" />
-    <ClCompile Include="Line3D.cpp" />
     <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="MapToolRender.cpp" />
     <ClCompile Include="NaviMesh.cpp" />

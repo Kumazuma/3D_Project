@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include "RenderModule.h"
 #include <array>
+#include "Renderer.h"
 using namespace DirectX;
 StaticXMeshObject::StaticXMeshObject()
 {
@@ -54,6 +55,7 @@ auto StaticXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring con
         m_pMesh = tmp;
     }
     meshFVF |= D3DFVF_NORMAL;
+    
     u8 * pVertices{};
     m_vertexCount = m_pMesh->GetNumVertices();
     m_pVertices.reset(new std::vector < XMFLOAT3A>{});
@@ -110,17 +112,17 @@ auto StaticXMeshObject::Create(RenderModule* pRenderModule, std::wstring const& 
     return hr;
 }
 
-auto StaticXMeshObject::PrepareRender(RenderModule* pRenderModule) -> void
+auto StaticXMeshObject::PrepareRender(IRenderer* pRenderer) -> void
 { 
     for (auto it : m_entities)
     {
         if (it->IsEnableAlpha())
         {
-            pRenderModule->AddRenderEntity(RenderModule::Kind::ALPHA, it);
+            pRenderer->AddEntity(RenderModule::Kind::ALPHA, it);
         }
         else
         {
-            pRenderModule->AddRenderEntity(RenderModule::Kind::NONALPHA, it);
+            pRenderer->AddEntity(RenderModule::Kind::NONALPHA, it);
         }
     }
 }
@@ -145,18 +147,34 @@ StaticXMeshObjectSubset::StaticXMeshObjectSubset(StaticXMeshObject* mesh, u32 id
     m_enableAlpha = false;
 }
 
-auto StaticXMeshObjectSubset::Render(RenderModule* pRenderModule) -> void 
+auto StaticXMeshObjectSubset::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
 {
     COMPtr<IDirect3DTexture9> pTexture;
     COMPtr<IDirect3DDevice9> pDevice;
+    COMPtr<ID3DXEffect> pEffect;
     pRenderModule->GetDevice(&pDevice);
+    pRenderer->GetEffect(&pEffect);
+    
     pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_pMeshObject->m_transform));
     pTexture = m_pMeshObject->m_textures[m_subsetIndex];
     if (pTexture == nullptr)
     {
         pRenderModule->GetDefaultTexture(&pTexture);
     }
-    pDevice->SetTexture(0, pTexture.Get());
+    auto specularColor{ m_pMeshObject->m_pMaterials[m_subsetIndex].MatD3D.Specular };
+    D3DXVECTOR4 specularVec{ specularColor.r,specularColor.g, specularColor.b, specularColor.a};
+
+    XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_pMeshObject->m_transform) };
+    mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+    mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
+    pEffect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
+
+    pEffect->SetVector("g_vSpecular", &specularVec);
+    pEffect->SetMatrix("g_mWorld", &reinterpret_cast<D3DXMATRIX&>(m_pMeshObject->m_transform));
+    pEffect->SetTexture("g_diffuseTexture", pTexture.Get());
+    
+    pEffect->CommitChanges();
+
     m_pMeshObject->m_pMesh->DrawSubset(m_subsetIndex);
 }
 

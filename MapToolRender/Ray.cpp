@@ -3,7 +3,6 @@
 #include "MapToolRender.h"
 #include "Transform.h"
 #include <RenderModule/Ray.h>
-#include "Line3D.h"
 MapToolRender::Ray::Ray(MapToolCore::Position rayStart, MapToolCore::Position rayAt)
 {
     m_pNative = new ::Ray(
@@ -16,23 +15,18 @@ MapToolRender::Ray::Ray(DirectX::XMFLOAT3* rayStart, DirectX::XMFLOAT3* rayAt)
     m_pNative = new ::Ray(*rayStart, *rayAt);
 }
 
-MapToolRender::Ray::!Ray()
+MapToolRender::Ray::~Ray()
 {
     if (m_pNative != nullptr)
     {
         delete m_pNative;
+        m_pNative = nullptr;
     }
 }
 
-auto MapToolRender::Ray::Create3DLine(GraphicsDevice^ graphicsDev, float length) -> Line3D^
+MapToolRender::Ray::!Ray()
 {
-    auto startPosition{ m_pNative->GetRayOrigin() };
-    auto dir{ m_pNative->GetRayDirection() };
-    auto endPosition{ startPosition };
-    endPosition.x += dir.x * length;
-    endPosition.y += dir.y * length;
-    endPosition.z += dir.z * length;
-    return gcnew Line3D(graphicsDev, &startPosition, &endPosition);
+    this->~Ray();
 }
 
 auto MapToolRender::Ray::GetPosition(float t) -> MapToolCore::Position

@@ -45,8 +45,6 @@ namespace MapTool.View
             lastTimeSpan = stopWatch.Elapsed;
             m_timer.Start();
             m_playing = true;
-            
-
         }
         private void LoadXMesh(string xMeshPath)
         {
@@ -127,8 +125,12 @@ namespace MapTool.View
                 //TODO: 파일 데이터를 읽어, X파일을 로딩한다.
                 if (newMetaFile.MeshFilePath == null || newMetaFile.MeshFilePath.Length == 0)
                     throw new Exception("Mesh File is empty");
+                objList.Clear();
+                collderNRenderObject.Clear();
+                listColliders.Items.Clear();
                 LoadXMesh(MapToolCore.Environment.Instance.ProjectDirectory + newMetaFile.MeshFilePath );
-                foreach(var item in newMetaFile.AnimationTable)
+                
+                foreach (var item in newMetaFile.AnimationTable)
                 {
                     dataGridView1.Rows.Add(item.Index.ToString(), item.ID);
                 }
@@ -173,7 +175,6 @@ namespace MapTool.View
                 MessageBox.Show($"파일을 열지 못했습니다.\n{ex.Message}");
                 Console.WriteLine(ex.StackTrace);
             }
-            
         }
 
         private void btnJSONSave_Click_1(object sender, EventArgs e)
@@ -338,6 +339,21 @@ namespace MapTool.View
         private void btnStopAnim_Click(object sender, EventArgs e)
         {
             animationState = AnimationPlayState.Stop;
+        }
+
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listColliders.SelectedItems.Count == 0) return;
+            var colliders = new MapToolCore.Collider[listColliders.SelectedItems.Count];
+            listColliders.SelectedItems.CopyTo(colliders, 0);
+            foreach(var collider in colliders)
+            {
+                listColliders.Items.Remove(collider);
+                if(!collderNRenderObject.ContainsKey(collider)) continue;
+                objList.Remove(collderNRenderObject[collider]);
+                collderNRenderObject.Remove(collider);
+            }
+            renderView.Render();
         }
     }
 }

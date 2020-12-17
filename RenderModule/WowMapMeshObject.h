@@ -32,7 +32,7 @@ protected:
 	WowMapMeshObject(WowMapMeshObject&&)noexcept;
 public:
 	static auto Create(RenderModule* pRenderModule, std::wstring const& path, WowMapMeshObject** pOut)->HRESULT;
-	auto PrepareRender(RenderModule* pDevice)->void;;
+	auto PrepareRender(IRenderer* pRenderer)->void;;
 	auto Clone()const->RenderObject*;
 	auto GetVertexCount()const->u32;
 	auto GetCenter()const->DirectX::XMFLOAT3A const&;
@@ -47,6 +47,7 @@ private:
 	f32 m_radius;
 	DirectX::XMFLOAT3A m_center;
 	COMPtr<IDirect3DVertexBuffer9> m_pVertexBuffers;
+	COMPtr<IDirect3DVertexDeclaration9> m_pVertexDecl;
 	std::unordered_map<std::wstring, std::shared_ptr<WowMapMeshSubset> > m_subsets;
 	std::unordered_map<std::wstring, COMPtr<IDirect3DTexture9> > m_textures;
 	std::shared_ptr < std::vector<DirectX::XMFLOAT3A> > m_pVertexPositions;
@@ -78,7 +79,7 @@ class WowMapMeshEntity : public RenderEntity
 {
 public:
 	WowMapMeshEntity(WowMapMeshObject* obj, std::wstring const& subsetName, std::shared_ptr<WowMapMeshSubset> const& subset);
-	auto Render(RenderModule* pRenderModule)->void override;
+	auto Render(RenderModule* pRenderModule, IRenderer* pRenderer)->void override;
 	auto GetSubset()->std::shared_ptr<WowMapMeshSubset> const&;
 private:
 	std::wstring m_subsetName;

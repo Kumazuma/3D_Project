@@ -15,14 +15,14 @@ class DLL_CLASS TerrainObject : public RenderObject
 	{
 	public:
 		Entity(TerrainObject* m_pTerrain);
-		auto Render(RenderModule* pRenderModule)->void override;
+		auto Render(RenderModule* pRenderModule, IRenderer* pRenderer)->void override;
 	private:
 		TerrainObject* m_pTerrain;
 	};
 public:
 	static auto Create(RenderModule* pRenderModule, u32 width, u32 height, f32 interval, f32 terrainMaxHeight, u8 const* pArray, TerrainObject** pObj)->HRESULT;
 	
-	auto PrepareRender(RenderModule* pRenderModule)->void override;
+	auto PrepareRender(IRenderer* pRenderer)->void override;
 	auto Clone()const->RenderObject*;
 	auto SetDiffuseTexture(IDirect3DTexture9* pTexture)->void;
 	auto SetInterval(f32 value)->void;

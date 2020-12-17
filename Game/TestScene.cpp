@@ -12,7 +12,8 @@
 #include"UnicodeHelper.h"
 #include"SkyBoxObject.h"
 #include <future>
-
+#include "Renderer.h"
+#include "MapToolRenderer.h"
 #include"constvar.hpp"
 using namespace Kumazuma::Client;
 using namespace DirectX;
@@ -28,6 +29,15 @@ Kumazuma::Client::TestScene::~TestScene()
 void TestScene::Loaded()
 {
 	auto renderObj{ App::Instance()->GetRenderModule() };
+	MapToolRenderer* pRenderer{};
+	MapToolRenderer::Create(renderObj.get(), renderObj->GetWidth(), renderObj->GetHeight(), &pRenderer);
+	if (pRenderer == nullptr)
+	{
+		App::Instance()->Exit();
+		return;
+	}
+	m_pRenderer.reset(pRenderer);
+
 	auto resourceMgr{ ResourceManager::Instance() };
 	auto base_dir{ Enviroment::GetValue<std::wstring>(Enviroment::BASE_DIR) };
 
@@ -80,17 +90,24 @@ auto TestScene::Update(f32 timeDelta) -> void
 {
 	Kumazuma::Game::Runtime::Instance()->Update(timeDelta);
 	auto renderModule{ App::Instance()->GetRenderModule() };
-	m_skybox->PrepareRender(renderModule.get());
+	m_skybox->PrepareRender(m_pRenderer.get());
 	for (auto& mapMash : m_staticMapMeshs)
 	{
-		mapMash->PrepareRender(renderModule.get());
+		mapMash->PrepareRender(m_pRenderer.get());
 	}
 	auto transformCompoentn{ m_pCameraObject->GetComponent(Game::TransformComponent::TAG) };
-	renderModule->SetCamera(
-		&transformCompoentn->GetPosition(),
-		&transformCompoentn->GetRotation());
-	renderModule->SetProj(45.f, WINDOW_HEIGHT/ static_cast<f32>(WINDOW_WIDTH) , 0.01f, 3000.f);
-
+	XMFLOAT3 rotation;
+	XMFLOAT4X4 viewMatrix;
+	XMFLOAT4X4 projMatrix;
+	XMStoreFloat3(&rotation, XMLoadFloat3(&transformCompoentn->GetRotation()) * (360.f / XM_2PI) );
+	renderModule->GenerateViewMatrix(transformCompoentn->GetPosition(), rotation, &viewMatrix);
+	renderModule->GenerateProjPerspective(45.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 3000.f, &projMatrix);
+	m_pRenderer->SetProjMatrix(projMatrix);
+	m_pRenderer->SetViewMatrix(viewMatrix);
+	m_pRenderer->Render(renderModule.get());
+	COMPtr<IDirect3DDevice9> pDevice;
+	renderModule->GetDevice(&pDevice);
+	pDevice->Present(nullptr, nullptr, nullptr, nullptr);
 }
 TestLoadingScene::~TestLoadingScene()
 {

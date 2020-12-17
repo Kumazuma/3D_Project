@@ -3,6 +3,7 @@
 #include<d3d9.h>
 #include<DirectXMath.h>
 class RenderModule;
+struct IRenderer;
 class Frustum;
 class Ray;
 struct DLL_CLASS RenderObject
@@ -11,7 +12,7 @@ protected:
 	RenderObject();
 public:
 	virtual ~RenderObject() = default;
-	virtual auto PrepareRender(RenderModule* pDevice)->void = 0;
+	virtual auto PrepareRender(IRenderer* pDevice)->void = 0;
 	virtual auto Clone()const->RenderObject* = 0;
 	virtual auto CanRayPicking()const->bool;
 	virtual auto RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLOAT3 const& rayDirection, f32* pOut)->bool;
@@ -30,7 +31,6 @@ public:
 	template<>
 	struct VERTEX<FVF_TEX>
 	{
-		VERTEX(VERTEX const&)noexcept = default;
 		DirectX::XMFLOAT3 vPosition;
 		DirectX::XMFLOAT3 vNormal;
 		DirectX::XMFLOAT2 vUV;

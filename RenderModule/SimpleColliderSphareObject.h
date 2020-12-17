@@ -17,7 +17,7 @@ public:
 	static auto Create(RenderModule* pRenderModule, SimpleSphareObject** pOut)->HRESULT;
 public:
 	auto Clone()const->RenderObject*;
-	auto PrepareRender(RenderModule* pRenderModule)->void override;
+	auto PrepareRender(IRenderer* pRenderModule)->void override;
 	auto SetRadius(f32 radius)->void;
 	auto SetOffset(f32 x, f32 y, f32 z)->void;
 
@@ -31,6 +31,6 @@ class SimpleSphareEntity : public RenderEntity
 {
 public:
 	SimpleSphareEntity(SimpleSphareObject* pObj);
-	auto Render(RenderModule* pRenderModule)->void override;
+	auto Render(RenderModule* pRenderModule, IRenderer* pRenderer)->void override;
 	SimpleSphareObject* m_obj;
 };

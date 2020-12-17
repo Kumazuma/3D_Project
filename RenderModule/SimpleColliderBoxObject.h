@@ -14,7 +14,7 @@ public:
 	auto SetColor(float r, float g, float b, float a)->void;
 	auto GetColor()const->DirectX::XMFLOAT4 const&;
 	auto Clone()const->RenderObject*;
-	auto PrepareRender(RenderModule* pRenderModule)->void override;
+	auto PrepareRender(IRenderer* pRenderer)->void override;
 	auto GetWidth()const->f32;
 	auto GetHeight()const->f32;
 	auto GetDepth()const->f32;
@@ -36,6 +36,6 @@ class SimpleBoxEntity : public RenderEntity
 {
 public:
 	SimpleBoxEntity(SimpleBoxObject* pObj);
-	auto Render(RenderModule* pRenderModule)->void override;
+	auto Render(RenderModule* pRenderModule, IRenderer* pRenderer)->void override;
 	SimpleBoxObject* m_obj;
 };

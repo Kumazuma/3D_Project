@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "NavMesh.h"
 #include "RenderModule.h"
+#include "Renderer.h"
 #include <array>
 #undef max
 #undef min
@@ -210,9 +211,9 @@ auto NavMeshRenderingObject::GetWeldDistance() const -> f32
 {
     return m_weldDistance;
 }
-auto NavMeshRenderingObject::PrepareRender(RenderModule* pRenderModule) -> void
+auto NavMeshRenderingObject::PrepareRender(IRenderer* pRenderer) -> void
 {
-    pRenderModule->AddRenderEntity(RenderModule::Kind::NAVIMASH, m_entity);
+    pRenderer->AddEntity(RenderModule::Kind::NAVIMASH, m_entity);
 }
 
 auto NavMeshRenderingObject::GetIndexCount() const -> u32
@@ -254,7 +255,7 @@ NavMeshEntity::NavMeshEntity(NavMeshRenderingObject* pObj):
 
 }
 DWORD FtoDW(float f) { return *((DWORD*)&f); }
-auto NavMeshEntity::Render(RenderModule* pRenderModule) -> void 
+auto NavMeshEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
 {
     COMPtr<IDirect3DDevice9> pDevice{};
     XMMATRIX mWorld{ XMMatrixIdentity() };

@@ -55,6 +55,18 @@
     <Filter Include="Matrix">
       <UniqueIdentifier>{aebe2664-1584-4544-a622-dec171e9cef6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TextureRenderTarget">
+      <UniqueIdentifier>{f051a898-93fa-4596-ac2a-be393661bebb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{16949d8f-43c5-4ae1-bc94-680233ff611a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\Common">
+      <UniqueIdentifier>{aeb52414-7a3f-496a-9a6d-ac4966fd2025}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fx">
+      <UniqueIdentifier>{9f25814f-1115-4d05-92c6-bdb46ad27c9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -135,9 +147,16 @@
     <ClInclude Include="Camera.h">
       <Filter>Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Line3D.h">
-      <Filter>3DLine</Filter>
+    <ClInclude Include="TextureRenderTarget.h">
+      <Filter>TextureRenderTarget</Filter>
     </ClInclude>
+    <ClInclude Include="MapToolRenderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Renderer\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="maptool.fx" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -197,11 +216,22 @@
     <ClCompile Include="Ray.cpp">
       <Filter>Ray</Filter>
     </ClCompile>
-    <ClCompile Include="Line3D.cpp">
-      <Filter>3DLine</Filter>
-    </ClCompile>
     <ClCompile Include="NavMesh.cpp">
       <Filter>NavMesh</Filter>
     </ClCompile>
+    <ClCompile Include="TextureRenderTarget.cpp">
+      <Filter>TextureRenderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="MapToolRenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="maptool_combine.fx">
+      <Filter>fx</Filter>
+    </Text>
+    <Text Include="maptool_lighting.fx">
+      <Filter>fx</Filter>
+    </Text>
   </ItemGroup>
 </Project>
