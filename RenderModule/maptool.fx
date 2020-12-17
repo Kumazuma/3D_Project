@@ -24,14 +24,14 @@ struct NOSPECULARMAP_VS_OUT
 {
 	float4 vPosition:POSITION;
 	float4 vNormal:NORMAL0;
-	float2 vUV:TEXCOORD0;
-	float4 vClipPosition:TEXCOORD1;
+	float2 vUV:TEXCOORD1;
+	float4 vClipPosition:TEXCOORD2;
 };
 struct NOSPECULARMAP_PS_IN
 {
 	float4 vNormal:NORMAL0;
-	float2 vUV:TEXCOORD0;
-	float4 vClipPosition:TEXCOORD1;
+	float2 vUV:TEXCOORD1;
+	float4 vClipPosition:TEXCOORD2;
 };
 struct NOSPECULARMAP_PS_OUT
 {
@@ -58,8 +58,7 @@ NOSPECULARMAP_PS_OUT PS_NOSCPECULARMAP(NOSPECULARMAP_PS_IN input)
 	NOSPECULARMAP_PS_OUT output;
 	output.diffuse = tex2D(DiffuseTextureSampler, input.vUV);
 	output.specular = g_vSpecular;
-	output.normal = input.vNormal * 0.5f + 0.5f;
-	output.normal.w = 1.f;
+	output.normal = input.vNormal;
 	output.depth = (float4)input.vClipPosition.z / input.vClipPosition.w;
 	return output;
 }

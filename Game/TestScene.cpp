@@ -108,6 +108,7 @@ auto TestScene::Update(f32 timeDelta) -> void
 	COMPtr<IDirect3DDevice9> pDevice;
 	renderModule->GetDevice(&pDevice);
 	pDevice->Present(nullptr, nullptr, nullptr, nullptr);
+
 }
 TestLoadingScene::~TestLoadingScene()
 {

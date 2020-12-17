@@ -174,7 +174,6 @@ auto StaticXMeshObjectSubset::Render(RenderModule* pRenderModule, IRenderer* pRe
     pEffect->SetTexture("g_diffuseTexture", pTexture.Get());
     
     pEffect->CommitChanges();
-
     m_pMeshObject->m_pMesh->DrawSubset(m_subsetIndex);
 }
 

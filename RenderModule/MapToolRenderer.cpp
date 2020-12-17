@@ -23,12 +23,11 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     TextureRenderTarget* pLightDiffuseMap{};
     TextureRenderTarget* pDepthMap{};
 
-
     //Diffuse
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A8R8G8B8, &pAlbedo);
     if (FAILED(hr))throw hr;
     m_albedoSurface.reset(pAlbedo);
-    //normal & depth
+    //normal
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A32B32G32R32F, &pNormalMap);
     if (FAILED(hr))throw hr;
     m_normalSurface.reset(pNormalMap);
@@ -208,12 +207,14 @@ auto MapToolRenderer::Render(RenderModule* const pRenderModule) -> void
     COMPtr<IDirect3DTexture9> pSpecularMapTexture;
     COMPtr<IDirect3DTexture9> pAlbedoMapTexture;
     COMPtr<IDirect3DTexture9> pShadeMapTexture;
+    COMPtr<IDirect3DTexture9> pDepthMapTexture;
     COMPtr<IDirect3DTexture9> pLightSpecularMapTexture;
     m_normalSurface->GetTexture(&pNormalMapTexture);
     m_materialSpecularSurface->GetTexture(&pSpecularMapTexture);
     m_albedoSurface->GetTexture(&pAlbedoMapTexture);
     m_lightDiffuseSurface->GetTexture(&pShadeMapTexture);
     m_lightSpecularSurface->GetTexture(&pLightSpecularMapTexture);
+    m_depthSurface->GetTexture(&pDepthMapTexture);
     D3DXMATRIX tmpMat;
     D3DXMATRIX tmpMat2;
     D3DXMatrixScaling(&tmpMat, .2f, .2f, .2f);
@@ -237,11 +238,10 @@ auto MapToolRenderer::Render(RenderModule* const pRenderModule) -> void
 
     tmpMat = tmpMat * tmpMat2;
     m_sprite->SetTransform(&tmpMat);
-    m_sprite->Draw(pLightSpecularMapTexture.Get(), nullptr, nullptr, nullptr, D3DCOLOR_COLORVALUE(1.f, 1.f, 1.f, 1.f));
+    m_sprite->Draw(pDepthMapTexture.Get(), nullptr, nullptr, nullptr, D3DCOLOR_COLORVALUE(1.f, 1.f, 1.f, 1.f));
 
     m_sprite->End();
     pDevice->EndScene();
-
 
     ClearEntityTable();
 }
@@ -319,9 +319,8 @@ auto MapToolRenderer::DefferedRender(RenderModule* pRenderModule) -> void
     pDevice->Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_COLORVALUE(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
     COMPtr<IDirect3DSurface9> backbuffer;
-    
     UINT passCount{};
-    D3DXVECTOR4 defaultSpecular{ .0f,.0f,.0f,1.f };
+    D3DXVECTOR4 defaultSpecular{ 1.0f,1.0f,1.0f,1.f };
     m_effect->SetMatrix("g_mView", reinterpret_cast<D3DXMATRIX*>(&m_viewMatrix));
     m_effect->SetMatrix("g_mViewProj", reinterpret_cast<D3DXMATRIX*>(&m_viewProjMatrix));
     m_effect->SetVector("g_vSpecular", &defaultSpecular);
@@ -351,13 +350,15 @@ auto MapToolRenderer::Lighting(RenderModule* pRenderModule) -> void
     COMPtr<IDirect3DSurface9> lightSpecularTarget;
     COMPtr<IDirect3DSurface9> depthTarget;
     COMPtr<IDirect3DTexture9> normalDepthMapTexture{};
+    COMPtr<IDirect3DTexture9> specularMapTexture{};
     m_lightDiffuseSurface->GetSurface(&lightDiffuseTarget);
     m_lightSpecularSurface->GetSurface(&lightSpecularTarget);
+    m_materialSpecularSurface->GetTexture(&specularMapTexture);
     m_normalSurface->GetTexture(&normalDepthMapTexture);
     pRenderModule->GetDevice(&pDevice);
 
     XMMATRIX mView{ XMLoadFloat4x4(&m_viewMatrix) };
-    XMVECTOR vCameraPsotion = XMMatrixInverse(nullptr, mView).r[3];
+    XMVECTOR vCameraPsotion = XMVectorSetW(XMMatrixInverse(nullptr, mView).r[3], 1.f);
     pDevice->SetRenderTarget(0, lightDiffuseTarget.Get());
     pDevice->SetRenderTarget(1, lightSpecularTarget.Get());
     pDevice->SetRenderTarget(2, nullptr);
@@ -370,6 +371,8 @@ auto MapToolRenderer::Lighting(RenderModule* pRenderModule) -> void
     XMMATRIX mInserseViewProj{ XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_viewProjMatrix)) };
     m_lightingEffect->SetMatrix("g_mInverseViewProj", reinterpret_cast<D3DXMATRIX const*>(&mInserseViewProj));
     m_lightingEffect->SetTexture("g_normalMap", normalDepthMapTexture.Get());
+    m_lightingEffect->SetTexture("g_specularMap", specularMapTexture.Get());
+    
     UINT passCount{};
     m_lightingEffect->Begin(&passCount, 0);
     
@@ -379,7 +382,7 @@ auto MapToolRenderer::Lighting(RenderModule* pRenderModule) -> void
     {
         std::clog << "asd\n";
     }
-    m_lightingEffect->SetFloat("g_fPower", 20.f);
+    m_lightingEffect->SetFloat("g_fPower", 90.f);
     for (auto& lightItem : m_lights)
     {
         auto light{ lightItem.second };
@@ -394,7 +397,7 @@ auto MapToolRenderer::Lighting(RenderModule* pRenderModule) -> void
                 m_lightingEffect->SetVector("g_vLightDirectionAndPower", reinterpret_cast<D3DXVECTOR4 const*>(&vLightDir));
                 m_lightingEffect->SetVector("g_vLightAmbient", reinterpret_cast<D3DXVECTOR4 const*>(&light.Ambient));
                 m_lightingEffect->SetVector("g_vLightDiffuse", reinterpret_cast<D3DXVECTOR4 const*>(&light.Diffuse));
-                m_lightingEffect->SetFloat("g_fPower", 20.f);
+                m_lightingEffect->SetFloat("g_fPower", 90.f);
             }
             break;
         }

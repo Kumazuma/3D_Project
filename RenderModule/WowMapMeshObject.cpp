@@ -713,7 +713,6 @@ WowMapMeshEntity::WowMapMeshEntity(
     m_subset{ subset }
 {
 }
-
 auto WowMapMeshEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
 {
     auto& subset{ m_obj->m_subsets[m_subsetName] };

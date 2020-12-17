@@ -33,7 +33,6 @@ auto SkinnedXMeshObject::PrepareRender(IRenderer* pRenderer) -> void
 {
     pRenderer->AddEntity(RenderModule::Kind::NONALPHA, m_entity);
 }
-
 auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
 {
     COMPtr<IDirect3DDevice9> pDevice;
@@ -71,7 +70,6 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRendere
             effect->CommitChanges();
             iter->MeshData.pMesh->DrawSubset(i);
         }
-
         iter->pOriginalMesh->UnlockVertexBuffer();
         iter->MeshData.pMesh->UnlockVertexBuffer();
     }
@@ -93,6 +91,7 @@ auto SkinnedXMeshObject::FindFrameTransfromByName(std::wstring const& frameName,
     {
         return E_FAIL;
     }
+
     *pOut = findResIt->second;
     return S_OK;
 }
