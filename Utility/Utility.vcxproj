@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="InitializeFailedException.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="StringLiteral.h" />
   </ItemGroup>

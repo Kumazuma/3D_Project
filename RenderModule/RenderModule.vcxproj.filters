@@ -226,13 +226,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="maptool.fx">
+    <FxCompile Include="..\Game\maptool_combine.fx">
       <Filter>fx</Filter>
-    </Media>
-    <Media Include="maptool_lighting.fx">
+    </FxCompile>
+    <FxCompile Include="..\Game\maptool_lighting.fx">
       <Filter>fx</Filter>
-    </Media>
-    <Media Include="maptool_combine.fx">
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\Game\maptool.fx">
       <Filter>fx</Filter>
     </Media>
   </ItemGroup>

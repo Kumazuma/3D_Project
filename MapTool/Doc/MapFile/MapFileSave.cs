@@ -91,7 +91,14 @@ namespace MapTool.Doc
             var tokenWriter = new JTokenWriter();
             var jObj = new JObject(new JProperty("skybox", Utility.FormatString(this.skyboxTexturePath)) );
             var jObjects = new JArray();
-            fileStream = File.Open(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            if (File.Exists(filePath))
+            {
+                fileStream = File.Open(filePath, FileMode.Truncate, FileAccess.ReadWrite);
+            }
+            else
+            {
+                fileStream = File.Open(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            }
             streamWriter = new StreamWriter(fileStream);
             foreach(var obj in this.mapObjects)
             {

@@ -100,6 +100,7 @@
     <Compile Include="Doc\AnimMeshMeta\AnimMeshMetaColliderSave.cs" />
     <Compile Include="Doc\AnimMeshMeta\ColliderList.cs" />
     <Compile Include="Doc\Document.cs" />
+    <Compile Include="Doc\MapFile\MapFileLoad.cs" />
     <Compile Include="Doc\MapFile\MapFile.cs" />
     <Compile Include="Doc\MapFile\MapFileSave.cs" />
     <Compile Include="Doc\MeshManager.cs" />
@@ -212,6 +213,16 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MapToolCore\MapToolCore.csproj">
+      <Project>{cc5ed826-3386-4240-8316-c09a6d07390b}</Project>
+      <Name>MapToolCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MapToolRender\MapToolRender.vcxproj">
+      <Project>{0a8ced75-4ed9-4b0e-beb6-38fd6c6649d3}</Project>
+      <Name>MapToolRender</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -211,6 +211,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MapToolCore\MapToolCore.csproj">
+      <Project>{cc5ed826-3386-4240-8316-c09a6d07390b}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\RenderModule\RenderModule.vcxproj">
       <Project>{8e09e8d9-324f-4dc7-be05-a0c9ed04d25e}</Project>
     </ProjectReference>

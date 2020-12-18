@@ -65,23 +65,21 @@ PS_OUT ps_directional_light(PS_IN input)
 	//if (vSpecular.w == 0.0f) return float4(0.f, 0.f, 0.f, 0.f);
 	float4 vNormalFactor = tex2D(NormalMapSampler, input.vUV);
 	float3 vNormal = normalize(vNormalFactor.xyz);
-	float depth = 1.f - vNormalFactor.w;
+	//float depth = 1.f - vNormalFactor.w;
 	vNormal = vNormal * 2.f - 1.f;
-	//float depth = tex2D(DepthMapSampler, input.vUV).r;
-	float4 vPosition = mul(float4(input.vClipPosition.xy, depth, 1.f), g_mInverseViewProj);
+	float depth = tex2D(DepthMapSampler, input.vUV).r;
+	float4 vPosition = mul(float4(input.vUV.xy * 2.f - 1.f, depth, 1.f), g_mInverseViewProj);
 	float4 vLightDir = normalize(float4(g_vLightDirectionAndPower.xyz, 0.f));
 	float intensity = saturate(dot(vLightDir * -1, vNormal));
 	float4 vDiffuse = intensity * g_vLightDiffuse + g_vLightAmbient;
 	vDiffuse.a = intensity;
-	if (intensity > 0.f)
-	{
-		float3 vReflect = reflect(vLightDir.xyz, vNormal.xyz).xyz;
-		float3 vLook = normalize(vPosition.xyz - g_vCameraPosition.xyz);
-		float power = pow(saturate(dot(vReflect, -vLook)), g_fPower);
-		output.vSpecular = (float4) power;
-		output.vSpecular = output.vSpecular * g_vLightDiffuse * vSpecular;
-		output.vSpecular.a = 1.f;
-	}
+	
+	float3 vReflect = reflect(vLightDir.xyz, vNormal.xyz).xyz;
+	float3 vLook = normalize(vPosition.xyz - g_vCameraPosition.xyz);
+	float power = pow(saturate(dot(vReflect, -vLook)), g_fPower);
+	output.vSpecular = (float4) power;
+	output.vSpecular = output.vSpecular * g_vLightDiffuse * vSpecular;
+	output.vSpecular.a = 1.f;
 	
 	output.vColor = vDiffuse;
 	return output;
@@ -91,7 +89,6 @@ technique Default_Device
 	pass directionalLight
 	{
 		ZEnable = false;
-		AlphaBlendEnable = true;
 		VertexShader = compile vs_3_0 vs_main();
 		PixelShader = compile ps_3_0 ps_directional_light();
 	}

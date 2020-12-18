@@ -66,7 +66,11 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRendere
 
         for (u32 i = 0; i < iter->NumMaterials; ++i)
         {
+            auto rMaterial{ iter->materials[i].MatD3D };
+            auto specularColor{ rMaterial.Specular };
+            D3DXVECTOR4 specularVec{ specularColor.r,specularColor.g, specularColor.b, rMaterial.Power };
             effect->SetTexture("g_diffuseTexture", iter->textures[i].Get());
+            effect->SetVector("g_vSpecular", &specularVec);
             effect->CommitChanges();
             iter->MeshData.pMesh->DrawSubset(i);
         }

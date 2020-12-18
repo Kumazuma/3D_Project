@@ -7,7 +7,11 @@ struct IDirect3DDevice9Ex;
 struct RenderObject;
 struct IRenderer;
 class RenderModule;
-
+namespace std
+{
+	class ofstream;
+	class streambuf;
+}
 namespace MapToolRender {
 	public enum class RenderGroup
 	{
@@ -52,6 +56,8 @@ namespace MapToolRender {
 		static GraphicsDevice^ s_instance;
 		GraphicsDevice(Control^ renderView, unsigned width, unsigned height);
 	private:
+		std::ofstream* m_logFileStreamPtr;
+		std::streambuf* m_streamBufPtr;
 		RenderModule* m_pRenderModule;
 		IRenderer* m_pRenderer;
 	};

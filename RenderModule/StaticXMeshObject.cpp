@@ -161,8 +161,9 @@ auto StaticXMeshObjectSubset::Render(RenderModule* pRenderModule, IRenderer* pRe
     {
         pRenderModule->GetDefaultTexture(&pTexture);
     }
-    auto specularColor{ m_pMeshObject->m_pMaterials[m_subsetIndex].MatD3D.Specular };
-    D3DXVECTOR4 specularVec{ specularColor.r,specularColor.g, specularColor.b, specularColor.a};
+    auto& rMaterial{ m_pMeshObject->m_pMaterials[m_subsetIndex].MatD3D };
+    auto specularColor{ rMaterial.Specular };
+    D3DXVECTOR4 specularVec{ specularColor.r,specularColor.g, specularColor.b, rMaterial.Power };
 
     XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_pMeshObject->m_transform) };
     mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);

@@ -20,6 +20,8 @@ using namespace msclr::interop;
 #include "XMeshObj.h"
 #include "Ray.h"
 #include <RenderModule/MapToolRenderer.h>
+#include <fstream>
+#include <iostream>
 using namespace DirectX;
 auto MapToolRender::GraphicsDevice::Initialize(System::Windows::Forms::Control^ renderView, unsigned width, unsigned height) -> void
 {
@@ -37,6 +39,18 @@ MapToolRender::GraphicsDevice::GraphicsDevice(Control^ renderView, unsigned widt
 	HRESULT hr = MapToolRenderer::Create(m_pRenderModule, width, height, &mapToolRenderer);
 	if (FAILED(hr)) throw gcnew System::Exception("can not create renderer!");
 	m_pRenderer = mapToolRenderer;
+	std::ofstream ofstream;
+	ofstream.open(L"./graphices_log.txt");
+	if (ofstream.is_open())
+	{
+		m_logFileStreamPtr = new std::ofstream{ std::move(ofstream) };
+		m_streamBufPtr = std::clog.rdbuf();
+		std::clog.rdbuf(m_logFileStreamPtr->rdbuf());
+	}
+	else
+	{
+		m_logFileStreamPtr = nullptr;
+	}
 }
 
 
@@ -169,6 +183,11 @@ MapToolRender::GraphicsDevice::!GraphicsDevice()
 	{
 		delete m_pRenderer;
 		m_pRenderer = nullptr;
+	}
+	if (m_logFileStreamPtr != nullptr)
+	{
+		std::clog.rdbuf(m_streamBufPtr);
+		delete m_logFileStreamPtr;
 	}
 }
 

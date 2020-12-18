@@ -7,6 +7,7 @@
 #include <game/scene.hpp>
 #include "common.hpp"
 #include <atomic>
+#include <fstream>
 class RenderModule;
 namespace Kumazuma
 {
@@ -51,6 +52,7 @@ namespace Kumazuma
 		fn_ _LoadScene(Scene* pScene)->bool;
 	private:
 		std::streambuf* m_orig;
+		std::ofstream m_logFileStream;
 		bool m_isRunning;
 
 		uint32_t m_clientWidth;
