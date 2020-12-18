@@ -156,7 +156,6 @@
     <ClInclude Include="Renderer.h">
       <Filter>Renderer\Common</Filter>
     </ClInclude>
-    <ClInclude Include="maptool.fx" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -227,11 +226,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="maptool_combine.fx">
+    <Media Include="maptool.fx">
       <Filter>fx</Filter>
-    </Text>
-    <Text Include="maptool_lighting.fx">
+    </Media>
+    <Media Include="maptool_lighting.fx">
       <Filter>fx</Filter>
-    </Text>
+    </Media>
+    <Media Include="maptool_combine.fx">
+      <Filter>fx</Filter>
+    </Media>
   </ItemGroup>
 </Project>

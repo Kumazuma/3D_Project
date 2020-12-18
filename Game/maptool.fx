@@ -55,12 +55,14 @@ NOSPECULARMAP_VS_OUT VS_NOSCPECULARMAP(NOSPECULARMAP_VS_IN input)
 }
 NOSPECULARMAP_PS_OUT PS_NOSCPECULARMAP(NOSPECULARMAP_PS_IN input)
 {
+	float depth = input.vClipPosition.z / input.vClipPosition.w;
 	NOSPECULARMAP_PS_OUT output;
 	output.diffuse = tex2D(DiffuseTextureSampler, input.vUV);
 	output.specular = g_vSpecular;
 	output.normal = input.vNormal * 0.5f + 0.5f;
-	output.normal.w = 1.f;
-	output.depth = (float4)input.vClipPosition.z / input.vClipPosition.w;
+	
+	output.normal.w = depth;
+	output.depth = (float4)depth;
 	return output;
 }
 
@@ -68,6 +70,9 @@ technique Default_Device
 {
 	pass NONALPHA_NO_SPECULARMAP
 	{
+		alphablendenable = true;
+		srcblend = one;
+		destblend = zero;
 		vertexshader = compile vs_3_0 VS_NOSCPECULARMAP();
 		pixelshader = compile ps_3_0 PS_NOSCPECULARMAP();
 	}

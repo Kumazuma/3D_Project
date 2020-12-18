@@ -218,7 +218,7 @@ auto SkyBoxEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> 
 	XMVECTOR vFar{ XMVectorSet(0.f, 0.f, 1.f, 0.f) };
 
 	vFar = XMVector3TransformCoord(vFar, mProjInverse);
-	float scaleFactor = XMVectorGetZ(vFar * 0.5f);
+	float scaleFactor = XMVectorGetZ(vFar * 0.25f);
 	mWorldTransfrom = XMMatrixScaling(scaleFactor, scaleFactor, scaleFactor);
 	mWorldTransfrom.r[3] = mCameraTransform.r[3];
 	XMStoreFloat4x4(&rWorldTransform, mWorldTransfrom);

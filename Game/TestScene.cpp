@@ -85,25 +85,28 @@ void TestScene::Loaded()
 		.Component<CameraComponent>()
 		.Component<Game::TransformComponent>();
 	m_pCameraObject = NewObject(objFac);
+	XMFLOAT4X4 projMatrix;
+	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 4000.f, &projMatrix);
+	m_pRenderer->SetProjMatrix(projMatrix);
+
 }
 auto TestScene::Update(f32 timeDelta) -> void
 {
 	Kumazuma::Game::Runtime::Instance()->Update(timeDelta);
 	auto renderModule{ App::Instance()->GetRenderModule() };
+	XMFLOAT3 rotation;
+	XMFLOAT4X4 viewMatrix;
+	auto transformCompoentn{ m_pCameraObject->GetComponent(Game::TransformComponent::TAG) };
+	XMStoreFloat3(&rotation, XMLoadFloat3(&transformCompoentn->GetRotation()) * (360.f / XM_2PI));
+	renderModule->GenerateViewMatrix(transformCompoentn->GetPosition(), rotation, &viewMatrix);
+	m_pRenderer->SetViewMatrix(viewMatrix);
+
 	m_skybox->PrepareRender(m_pRenderer.get());
 	for (auto& mapMash : m_staticMapMeshs)
 	{
 		mapMash->PrepareRender(m_pRenderer.get());
 	}
-	auto transformCompoentn{ m_pCameraObject->GetComponent(Game::TransformComponent::TAG) };
-	XMFLOAT3 rotation;
-	XMFLOAT4X4 viewMatrix;
-	XMFLOAT4X4 projMatrix;
-	XMStoreFloat3(&rotation, XMLoadFloat3(&transformCompoentn->GetRotation()) * (360.f / XM_2PI) );
-	renderModule->GenerateViewMatrix(transformCompoentn->GetPosition(), rotation, &viewMatrix);
-	renderModule->GenerateProjPerspective(45.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 3000.f, &projMatrix);
-	m_pRenderer->SetProjMatrix(projMatrix);
-	m_pRenderer->SetViewMatrix(viewMatrix);
+	
 	m_pRenderer->Render(renderModule.get());
 	COMPtr<IDirect3DDevice9> pDevice;
 	renderModule->GetDevice(&pDevice);
