@@ -15,6 +15,7 @@
 #include "Renderer.h"
 #include "MapToolRenderer.h"
 #include"constvar.hpp"
+#include "ThreadPoolManager.h"
 using namespace Kumazuma::Client;
 using namespace DirectX;
 Kumazuma::Client::TestScene::TestScene(nlohmann::json file)
@@ -150,7 +151,8 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 	std::shared_ptr<std::atomic<LOAD_STATE>> threadState, std::shared_ptr<std::wstring> msg, std::shared_ptr<bool> die) -> void
 {
 	*threadState = LOAD_STATE::PROGRESSING;
-	std::vector<std::future<void> > loaders;
+	std::vector<std::shared_ptr<Task> > loaders;
+	auto pThreadPoolMgr{ ThreadPoolManager::Instance() };
 	try
 	{
 		auto resourceMgr{ ResourceManager::Instance() };
@@ -168,12 +170,20 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 			if (it[u8"type"] == u8"OBJ_MESH")
 			{
 				std::wstring path{ ConvertUTF8ToWide(it[u8"path"]) };
-				auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
+				//auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
+
+				std::shared_ptr<Task> pWork = nullptr;
+				pWork = 
+				pThreadPoolMgr->QueueTask([base_dir, path](TaskContext& context) {
+					auto resourceMgr{ ResourceManager::Instance() };
+					auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
+					});
+				loaders.push_back(pWork);
 			}
 		}
 		for (auto& it : loaders)
 		{
-			it.wait();
+			it->Wait();
 		}
 		App::Instance()->LoadScene<TestScene>(file);
 		*threadState = LOAD_STATE::COMPLETE;

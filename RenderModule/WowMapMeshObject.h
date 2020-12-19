@@ -41,7 +41,6 @@ public:
 
 private:
 	auto ParseOBJFile(RenderModule* pRenderModule, std::wstring const& path, std::wstring* pOutMeterialFilePath)->void;
-	auto ParseMtlFile(RenderModule* pRenderModule, std::wstring const& path)->void;
 private:
 	u32 m_vertexCount;
 	f32 m_radius;

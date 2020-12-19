@@ -12,6 +12,7 @@ namespace Kumazuma
 {
 	namespace Client
 	{
+		
 		class ResourceManager
 		{
 			

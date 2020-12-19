@@ -226,16 +226,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Game\maptool_combine.fx">
-      <Filter>fx</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Game\maptool_lighting.fx">
-      <Filter>fx</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="..\Game\maptool.fx">
-      <Filter>fx</Filter>
-    </Media>
+    <CopyFileToFolders Include="..\Game\maptool.fx" />
+    <CopyFileToFolders Include="..\Game\maptool_combine.fx" />
+    <CopyFileToFolders Include="..\Game\maptool_lighting.fx" />
   </ItemGroup>
 </Project>

@@ -81,13 +81,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility</IncludePath>
-    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include</IncludePath>
+    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;$(LibraryPath)</LibraryPath>
     <ReferencePath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility</IncludePath>
-    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include</IncludePath>
+    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
@@ -184,6 +184,7 @@
     <ClInclude Include="ResourceManager.hpp" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestScene.hpp" />
+    <ClInclude Include="ThreadPoolManager.h" />
     <ClInclude Include="vector.hpp" />
     <ClInclude Include="typedef.hpp" />
   </ItemGroup>
@@ -196,6 +197,7 @@
     <ClCompile Include="ObjectTag.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="ThreadPoolManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

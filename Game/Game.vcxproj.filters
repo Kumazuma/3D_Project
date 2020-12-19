@@ -23,6 +23,9 @@
     <ClCompile Include="CameraComponent.cpp">
       <Filter>Component\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadPoolManager.cpp">
+      <Filter>ThreadPoolManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.hpp" />
@@ -77,6 +80,9 @@
     <ClInclude Include="CameraComponent.hpp">
       <Filter>Component\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadPoolManager.h">
+      <Filter>ThreadPoolManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Game.ico">
@@ -107,6 +113,9 @@
     </Filter>
     <Filter Include="Component\Camera">
       <UniqueIdentifier>{1600f547-1474-4c4a-b2e1-0451c3bc7185}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThreadPoolManager">
+      <UniqueIdentifier>{27926843-75d5-4d41-ae83-c78f2fbc3123}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
