@@ -15,9 +15,11 @@
 #include "Renderer.h"
 #include "MapToolRenderer.h"
 #include"constvar.hpp"
-#include "ThreadPoolManager.h"
+#include <game/ThreadPoolMgr.hpp>
 using namespace Kumazuma::Client;
 using namespace DirectX;
+using Task = Kumazuma::ThreadPool::Task;
+using TaskContext = Kumazuma::ThreadPool::TaskContext;
 Kumazuma::Client::TestScene::TestScene(nlohmann::json file)
 	
 {
@@ -89,7 +91,6 @@ void TestScene::Loaded()
 	XMFLOAT4X4 projMatrix;
 	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 4000.f, &projMatrix);
 	m_pRenderer->SetProjMatrix(projMatrix);
-
 }
 auto TestScene::Update(f32 timeDelta) -> void
 {
@@ -112,7 +113,6 @@ auto TestScene::Update(f32 timeDelta) -> void
 	COMPtr<IDirect3DDevice9> pDevice;
 	renderModule->GetDevice(&pDevice);
 	pDevice->Present(nullptr, nullptr, nullptr, nullptr);
-
 }
 TestLoadingScene::~TestLoadingScene()
 {
@@ -152,7 +152,7 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 {
 	*threadState = LOAD_STATE::PROGRESSING;
 	std::vector<std::shared_ptr<Task> > loaders;
-	auto pThreadPoolMgr{ ThreadPoolManager::Instance() };
+	auto pThreadPoolMgr{ Kumazuma::ThreadPool::Manager::Instance() };
 	try
 	{
 		auto resourceMgr{ ResourceManager::Instance() };
@@ -179,12 +179,18 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 					auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
 					});
 				loaders.push_back(pWork);
+				
 			}
 		}
 		for (auto& it : loaders)
 		{
 			it->Wait();
 		}
+		for (auto& it : loaders)
+		{
+			it->Wait();
+		}
+
 		App::Instance()->LoadScene<TestScene>(file);
 		*threadState = LOAD_STATE::COMPLETE;
 	}

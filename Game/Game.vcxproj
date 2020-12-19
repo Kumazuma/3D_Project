@@ -184,7 +184,6 @@
     <ClInclude Include="ResourceManager.hpp" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestScene.hpp" />
-    <ClInclude Include="ThreadPoolManager.h" />
     <ClInclude Include="vector.hpp" />
     <ClInclude Include="typedef.hpp" />
   </ItemGroup>
@@ -197,7 +196,6 @@
     <ClCompile Include="ObjectTag.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="TestScene.cpp" />
-    <ClCompile Include="ThreadPoolManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

@@ -19,6 +19,9 @@
     <Filter Include="component">
       <UniqueIdentifier>{0607f3e2-3d4b-4107-8d36-5ae4b4621c3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="threadpoolmanager">
+      <UniqueIdentifier>{ba125bd5-4024-416c-a61e-eb58c20e3cbb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -102,6 +105,12 @@
     <ClInclude Include="include\game\TimerManager.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="include\game\ThreadPoolMgr.hpp">
+      <Filter>threadpoolmanager</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPoolMgrImpl.hpp">
+      <Filter>threadpoolmanager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -136,6 +145,12 @@
     </ClCompile>
     <ClCompile Include="TimerManager.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPoolMgr.cpp">
+      <Filter>threadpoolmanager</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPoolMgrImpl.cpp">
+      <Filter>threadpoolmanager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

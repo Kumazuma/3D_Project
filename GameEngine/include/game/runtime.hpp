@@ -10,6 +10,8 @@
 #include "event.hpp"
 #include "list.hpp"
 #include <unordered_map>
+#include <shared_mutex>
+
 namespace Kumazuma
 {
 	namespace Game
@@ -65,6 +67,7 @@ namespace Kumazuma
 			Runtime(const Runtime&) = delete;
 			void DoBroadcast(const ComTagBase& comTag, Event* event, size_t objId = 0);
 		private:
+			//std::shared_mutex m_mutex;
 			std::vector<std::unique_ptr<Module> > m_modules;
 			std::unordered_map<size_t, Kumazuma::LinkedList<std::shared_ptr<Component> > > m_objectNComs;
 			std::unordered_map<const ComTagBase*, Kumazuma::LinkedList<std::weak_ptr<Component>, 64 > > m_tagNComs;

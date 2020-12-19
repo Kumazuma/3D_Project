@@ -3,6 +3,7 @@
 #include"include/game/comtag.hpp"
 #include"include/game/object.hpp"
 #include"include/game/objectfactory.hpp"
+#include"include/game/ThreadPoolMgr.hpp"
 #include<omp.h>
 namespace Kumazuma
 {
@@ -49,15 +50,26 @@ Kumazuma::Game::Runtime::~Runtime()
 void Runtime::Update(float delta)
 {
     //TODO:스레드로 병렬화 가능
+    using namespace Kumazuma::ThreadPool;
     UpdateEvent updateEvent{ delta };
-
+    auto threadPoolManger{ Manager::Instance() };
+    std::vector<std::shared_ptr<Task> > tasks;
     for (auto pair : m_objectNComs)
     {
         for (auto& com : pair.second)
         {
-            com->HandleEvent(&updateEvent);
+            auto task = threadPoolManger->QueueTask([com, delta](TaskContext& context) {
+                UpdateEvent updateEvent{ delta };
+                com->HandleEvent(&updateEvent);
+                });
+            tasks.emplace_back(std::move(task));
         }
     }
+    for (auto& task : tasks)
+    {
+        task->Wait();
+    }
+    tasks.clear();
     for (auto& mod: m_modules)
     {
         mod->PostUpdate(*this);
@@ -89,8 +101,8 @@ size_t Kumazuma::Game::Runtime::GetObjUid(const Object& obj)
 
 std::shared_ptr<Object> Runtime::CreateObject(const ObjectFactory& factory)
 {
+    //std::lock_guard<std::shared_mutex> guard{ m_mutex };
     m_objectPool.push_back(Object{ factory.m_tags.begin(), factory.m_tags.end() });
-    
     std::shared_ptr<Object> obj{ &*(--m_objectPool.end()) , &Runtime::DeleteObject};
     obj->m_runtime = Runtime::Instance();
     obj->m_id = ++m_lastGameObjectIndex;
@@ -120,6 +132,7 @@ void Runtime::DoBroadcast(const ComTagBase& comTag, Event* event, size_t objId /
     Kumazuma::LinkedList<std::weak_ptr<Component> > componentList;
     if (objId != 0)
     {
+        //std::shared_lock<std::shared_mutex> guard{ m_mutex };
         for (auto& com : m_objectNComs[objId])
         {
             if (com->IsHandled(event->GetTag()) && (comTag == COM_ANY || comTag == com->GetTag()) )
@@ -130,6 +143,7 @@ void Runtime::DoBroadcast(const ComTagBase& comTag, Event* event, size_t objId /
     }
     else 
     {
+        //std::shared_lock<std::shared_mutex> guard{ m_mutex };
         const auto res = m_tagNComs.find(&comTag);
         if (res != m_tagNComs.end())
         {
@@ -141,6 +155,7 @@ void Runtime::DoBroadcast(const ComTagBase& comTag, Event* event, size_t objId /
         delete event;
         return;
     }
+    //std::lock_guard<std::shared_mutex> guard{ m_mutex };
     m_queue.push_back(EventQueueItem{ event,std::move( componentList )});
 }
 void Runtime::DeleteObject(Object* ptr)
@@ -148,6 +163,8 @@ void Runtime::DeleteObject(Object* ptr)
     auto instance = Instance();
     if (instance != nullptr)
     {
+        
+        //std::lock_guard<std::shared_mutex> guard{ instance->m_mutex };
         instance->m_readyToDestoryObjectQueue.push_back(ptr->m_id);
         for (auto& com : instance->m_objectNComs[ptr->m_id])
         {
@@ -161,6 +178,7 @@ void Runtime::DeleteObject(Object* ptr)
 }
 void Kumazuma::Game::Runtime::GC()
 {
+    //std::lock_guard<std::shared_mutex> guard{ m_mutex };
     //죽을 준비가 된 오브젝트들을 정리한다.
     bool r = m_readyToDestoryObjectQueue.empty() == false;
     while (m_readyToDestoryObjectQueue.empty() == false)

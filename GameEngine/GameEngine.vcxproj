@@ -78,11 +78,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\KumaWin\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\KumaWin\include;..\tbb\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\tbb\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\KumaWin\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\KumaWin\include;..\tbb\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\tbb\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -178,6 +180,7 @@
     <ClInclude Include="include\game\runtime.hpp" />
     <ClInclude Include="include\game\scene.hpp" />
     <ClInclude Include="include\game\shared.hpp" />
+    <ClInclude Include="include\game\ThreadPoolMgr.hpp" />
     <ClInclude Include="include\game\TimerManager.hpp" />
     <ClInclude Include="include\game\transform.hpp" />
     <ClInclude Include=".\include\game\objectfactory.hpp" />
@@ -185,6 +188,7 @@
     <ClInclude Include="include\game\ui_render_component.hpp" />
     <ClInclude Include="include\game\ui_render_component_impl.hpp" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="ThreadPoolMgrImpl.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="collision.cpp" />
@@ -201,6 +205,8 @@
     </ClCompile>
     <ClCompile Include="runtime.cpp" />
     <ClCompile Include="scene.cpp" />
+    <ClCompile Include="ThreadPoolMgr.cpp" />
+    <ClCompile Include="ThreadPoolMgrImpl.cpp" />
     <ClCompile Include="TimerManager.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
   </ItemGroup>

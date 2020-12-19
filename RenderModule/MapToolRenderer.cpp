@@ -11,6 +11,9 @@ constexpr StringLiteral<char> ID_MatSpecularTarget{ "RT_MAT_SPECULAR" };
 constexpr StringLiteral<char> ID_LightSpecularMap{ "RT_RT_SPECULAR" };
 constexpr StringLiteral<char> ID_LightDiffuseMap{ "RT_RT_DIFFUSE" };
 constexpr StringLiteral<char> ID_DepthMap{ "RT_DEPTH" };
+constexpr StringLiteral<char> ID_CONST_INVSERSE_VIEW_PORJ_MATRIX{ "g_mInverseViewProj" };
+constexpr StringLiteral<char> ID_TEX_NORMAL_MAP{ "g_normalMap" };
+constexpr StringLiteral<char> ID_TEX_SPECULAR_MAP{ "g_specularMap" };
 
 MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 height):
     m_viewMatrix{  },
@@ -28,30 +31,27 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     TextureRenderTarget* pLightSpecularMap{};
     TextureRenderTarget* pLightDiffuseMap{};
     TextureRenderTarget* pDepthMap{};
+
     //Diffuse
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A8R8G8B8, &pAlbedo);
     if (FAILED(hr))throw hr;
-    //m_albedoSurface.reset(pAlbedo);
+
     //normal
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A32B32G32R32F, &pNormalMap);
     if (FAILED(hr))throw hr;
-    //m_normalSurface.reset(pNormalMap);
+
     //specular
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A16B16G16R16F, &pMaterialSpecularMap);
     if (FAILED(hr))throw hr;
-    //m_materialSpecularSurface.reset(pMaterialSpecularMap);
 
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A16B16G16R16F, &pLightDiffuseMap);
     if (FAILED(hr))throw hr;
-    //m_lightDiffuseSurface.reset(pLightDiffuseMap);
 
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_G32R32F, &pDepthMap);
     if (FAILED(hr))throw hr;
-    //m_depthSurface.reset(pDepthMap);
     
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A16B16G16R16F, &pLightSpecularMap);
     if (FAILED(hr))throw hr;
-    //m_lightSpecularSurface.reset(pLightSpecularMap);
 
     DWORD shaderFlag{ D3DXSHADER_OPTIMIZATION_LEVEL3 };
     m_renderTargets.emplace(ID_AlbedoRenderTarget, pAlbedo);
@@ -60,7 +60,7 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     m_renderTargets.emplace(ID_LightSpecularMap, pLightSpecularMap);
     m_renderTargets.emplace(ID_LightDiffuseMap, pLightDiffuseMap);
     m_renderTargets.emplace(ID_DepthMap, pDepthMap);
-    
+
     COMPtr<ID3DXBuffer> pBuffer;
     hr = D3DXCreateEffectFromFileW(pDevice.Get(), L"./maptool.fx", nullptr, nullptr, shaderFlag, nullptr, &m_effect, &pBuffer);
     if (pBuffer != nullptr)
@@ -100,7 +100,7 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     m_pVertexBuffer->Lock(0, 0, reinterpret_cast<void**>(&pVertices), 0);
     pVertices[0].uv = XMFLOAT2{ 0.f, 0.f };
     pVertices[0].xyz = XMFLOAT3{ -1.f, 1.f, 0.f };
-    
+
     pVertices[1].uv = XMFLOAT2{ 1.f, 0.f };
     pVertices[1].xyz = XMFLOAT3{ 1.f, 1.f, 0.f };
 
@@ -131,7 +131,7 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&light.Direction), XMVector3Normalize(XMVectorSet(-1.f, -2.f, -1.f, 0.f)));
     m_lights.emplace(L"global_light", light);
 }
-
+    
 MapToolRenderer::MapToolRenderer(MapToolRenderer&& rhs) noexcept:
     m_renderEntities{std::move(rhs.m_renderEntities)},
     m_viewMatrix{std::move(rhs.m_viewMatrix)},
@@ -148,9 +148,9 @@ MapToolRenderer::MapToolRenderer(MapToolRenderer&& rhs) noexcept:
 {
 
 }
-
+    
 auto MapToolRenderer::Create(RenderModule* pRenderModule, u32 width, u32 height, MapToolRenderer** pOut) -> HRESULT
-{
+{               
     try
     {
         if(pOut == nullptr)
@@ -160,13 +160,13 @@ auto MapToolRenderer::Create(RenderModule* pRenderModule, u32 width, u32 height,
         }
         MapToolRenderer obj{ pRenderModule, width, height };
         *pOut = new MapToolRenderer{ std::move(obj) };
-        return S_OK;
+        return S_OK;    
     }
-    catch (HRESULT hr)
+    catch (HRESULT hr)  
     {
         return hr;
     }
-    return E_NOTIMPL;
+    return E_NOTIMPL;   
 }
 
 auto MapToolRenderer::Render(RenderModule* const pRenderModule) -> void 
@@ -182,7 +182,7 @@ auto MapToolRenderer::Render(RenderModule* const pRenderModule) -> void
     pDevice->SetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&m_viewMatrix));
     pDevice->SetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&m_projMatrix));
     pDevice->Clear(0, nullptr, D3DCLEAR_STENCIL | D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_COLORVALUE(0.f, 0.f, 1.f, 0.f), 1.f, 0);
-    
+
     pDevice->BeginScene();
     for (auto& it : m_renderEntities[Kind::ENVIRONMENT])
     {
@@ -225,7 +225,6 @@ auto MapToolRenderer::Render(RenderModule* const pRenderModule) -> void
     D3DXMATRIX tmpMat2;
     D3DXMatrixScaling(&tmpMat, .2f, .2f, .2f);
     D3DXMatrixTranslation(&tmpMat2, pRenderModule->GetWidth() * 0.2f , 0 , 0 );
-
     m_sprite->SetTransform(&tmpMat);
     m_sprite->Draw(pNormalMapTexture.Get(), nullptr, nullptr, nullptr, D3DCOLOR_COLORVALUE(1.f, 1.f, 1.f, 1.f));
 
@@ -317,7 +316,7 @@ auto MapToolRenderer::DefferedRender(RenderModule* pRenderModule) -> void
     m_renderTargets[ID_DepthMap]->GetSurface(&depthTarget);
 
     pRenderModule->GetDevice(&pDevice);
-    
+
     pDevice->SetRenderTarget(0, albedoTarget.Get());
     pDevice->SetRenderTarget(1, normalTarget.Get());
     pDevice->SetRenderTarget(2, specularTarget.Get());
@@ -377,13 +376,12 @@ auto MapToolRenderer::Lighting(RenderModule* pRenderModule) -> void
     XMMATRIX mInserseViewProj{ XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_viewProjMatrix)) };
     D3DXMATRIX InverseViewProMatrix{};
     XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&InverseViewProMatrix), mInserseViewProj);
-    m_lightingEffect->SetMatrix("g_mInverseViewProj", &InverseViewProMatrix);
-    m_lightingEffect->SetTexture("g_normalMap", normalDepthMapTexture.Get());
-    m_lightingEffect->SetTexture("g_specularMap", specularMapTexture.Get());
-    
+    m_lightingEffect->SetMatrix(ID_CONST_INVSERSE_VIEW_PORJ_MATRIX, &InverseViewProMatrix);
+    m_lightingEffect->SetTexture(ID_TEX_NORMAL_MAP, normalDepthMapTexture.Get());
+    m_lightingEffect->SetTexture(ID_TEX_SPECULAR_MAP, specularMapTexture.Get());
+
     UINT passCount{};
     m_lightingEffect->Begin(&passCount, 0);
-    
 
     hr = m_lightingEffect->SetVector("g_vCameraPosition", reinterpret_cast<D3DXVECTOR4 const*>(&vCameraPsotion));
 
@@ -432,7 +430,7 @@ auto MapToolRenderer::Combine(RenderModule* pRenderModule) -> void
     pDevice->SetRenderTarget(2, nullptr);
     pDevice->SetRenderTarget(3, nullptr);
     UINT passCount{};
-    
+
     pDevice->SetFVF(FVF);
     pDevice->SetIndices(m_pIndexBuffer.Get());
     pDevice->SetStreamSource(0, m_pVertexBuffer.Get(), 0, sizeof(PPVertexFVF));
