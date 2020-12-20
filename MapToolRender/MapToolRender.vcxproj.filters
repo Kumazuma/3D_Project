@@ -46,6 +46,9 @@
     <Filter Include="CollderObject\common">
       <UniqueIdentifier>{d81b2ccc-6ba8-4772-ab09-2aeda33af163}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Target">
+      <UniqueIdentifier>{0e873dbe-02ce-4713-a3cc-08b8269fdba3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapToolRender.h">
@@ -101,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="CollderRenderObject.h">
       <Filter>CollderObject\common</Filter>
+    </ClInclude>
+    <ClInclude Include="TargetObject.h">
+      <Filter>Target</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TargetObject.cpp">
+      <Filter>Target</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -16,6 +16,7 @@ MapToolRender::WowMapMesh::WowMapMesh(GraphicsDevice^ device, System::String^ fi
     }
     m_pNativeObject = obj;
     m_filePath = filePath;
+    m_usage = MapToolRender::Usage::None;
 }
 
 auto MapToolRender::WowMapMesh::Clone() -> RenderObject^
@@ -25,7 +26,8 @@ auto MapToolRender::WowMapMesh::Clone() -> RenderObject^
 
 MapToolRender::WowMapMesh::WowMapMesh(WowMapMesh^ const& rhs):
     RenderObject{ rhs },
-    m_filePath{rhs->m_filePath}
+    m_filePath{rhs->m_filePath},
+    m_usage{rhs->m_usage}
 {
     
 }
@@ -38,4 +40,14 @@ auto MapToolRender::WowMapMesh::Center::get()->MapToolCore::Position
 {
     DirectX::XMFLOAT3 position = static_cast<WowMapMeshObject*>(m_pNativeObject)->GetCenter();
     return MapToolCore::Position(position.x, position.y, position.z);
+}
+
+auto MapToolRender::WowMapMesh::Usage::get()->MapToolRender::Usage
+{
+    return m_usage;
+}
+auto MapToolRender::WowMapMesh::Usage::set(MapToolRender::Usage value)->void
+{
+    m_usage = value;
+    MapObject::BroadcastPropertyChanged("Usage");
 }

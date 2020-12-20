@@ -32,7 +32,7 @@ namespace MapTool.View
 
         private void RenderView_MouseWheel(object sender, MouseEventArgs e)
         {
-            var wheelCount = e.Delta ;
+            var wheelCount = e.Delta /10f;
             camera.MoveForward(wheelCount);
             Render();
 

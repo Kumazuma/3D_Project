@@ -62,22 +62,57 @@ namespace MapTool.Doc
                 switch(type_)
                 {
                     case "OBJ_MESH":
-                        task = Task.Factory.StartNew(() =>
                         {
-                            path = projectDir + path;
-                            path = System.IO.Path.GetFullPath(path);
-                            var mesh = MeshManager.Instance.GetObjMesh(path).Result;
-                            if(mesh != null)
+                            Usage usage = Usage.None;
+                            if (meshObj.ContainsKey("usage"))
                             {
-                                lock(this)
+                                var usageToken = meshObj["usage"];
+                                if (usageToken.Type == JTokenType.String)
                                 {
-                                    mesh.Transform = transform;
-                                    mesh.Name = name;
-                                    mapObjects.Add(mesh);
+                                    switch (usageToken.Value<string>().ToUpper())
+                                    {
+                                        case "NONE":
+                                            usage = Usage.None;
+                                            break;
+                                        case "TERRAIN":
+                                            usage = Usage.Terrain;
+                                            break;
+                                        case "STRUCTURE":
+                                            usage = Usage.Structure;
+                                            break;
+                                        case "FOILAGE":
+                                            usage = Usage.Foliage;
+                                            break;
+                                    }
+
                                 }
                             }
-                        });
+                            task = Task.Factory.StartNew(() =>
+                            {
+                                path = projectDir + path;
+                                path = System.IO.Path.GetFullPath(path);
+                                var mesh = ResourceManager.Instance.GetObjMesh(path).Result;
+                                if (mesh != null)
+                                {
+                                    lock (this)
+                                    {
+                                        mesh.Transform = transform;
+                                        mesh.Name = name;
+                                        mesh.Usage = usage;
+                                        mapObjects.Add(mesh);
+                                    }
+                                }
+                            });
+                        }
                         taskList.Add(task);
+                        break;
+                    case "TARGET":
+                        {
+                            var target = ResourceManager.Instance.GetTargetObject();
+                            target.Transform = transform;
+                            target.Name = name;
+                            mapObjects.Add(target);
+                        }
                         break;
                 }
                 //var nameToken = 
@@ -95,7 +130,7 @@ namespace MapTool.Doc
                 var streamReader = new StreamReader(fileStream);
                 var tokenReader = new JsonTextReader(streamReader);
                 var root = JObject.Load(tokenReader);
-                return new MapFile(root);
+                return new MapFile(root) { filePath = filePath };
             }
         }
     }

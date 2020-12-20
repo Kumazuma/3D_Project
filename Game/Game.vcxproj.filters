@@ -23,6 +23,12 @@
     <ClCompile Include="CameraComponent.cpp">
       <Filter>Component\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="COMPlayerInput.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="COMRenderObjectContainer.cpp">
+      <Filter>Component\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.hpp" />
@@ -77,6 +83,12 @@
     <ClInclude Include="CameraComponent.hpp">
       <Filter>Component\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="COMPlayerInput.hpp">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="COMRenderObjectContainer.hpp">
+      <Filter>Component\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Game.ico">
@@ -99,14 +111,17 @@
     <Filter Include="Env">
       <UniqueIdentifier>{c1d40c3e-970c-4f26-a07c-91b0960bf304}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\NewFilter1">
-      <UniqueIdentifier>{64b95bbd-7449-498a-b700-ef8709d926d6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component">
       <UniqueIdentifier>{f5d1a8e0-e3b3-4427-8db6-2ae949959eb3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Component\Camera">
       <UniqueIdentifier>{1600f547-1474-4c4a-b2e1-0451c3bc7185}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Player">
+      <UniqueIdentifier>{e09636c8-9278-447b-89f9-03111892d309}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Render">
+      <UniqueIdentifier>{ced79485-8e05-4ab8-bf39-8cd5323f699b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

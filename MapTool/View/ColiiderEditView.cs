@@ -79,7 +79,7 @@ namespace MapTool.View
             }
             var path = fileDialog.FileName;
 
-            var xmesh = Doc.MeshManager.Instance.GetSkinnedMesh(path);
+            var xmesh = Doc.ResourceManager.Instance.GetSkinnedMesh(path);
             xmesh.Update(1);
             xmesh.Name = "XMesh";
             renderObject = xmesh;

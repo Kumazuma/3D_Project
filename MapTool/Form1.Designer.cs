@@ -44,6 +44,7 @@ namespace MapTool
             this.StaticXMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wowMapMashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.naviMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.targetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -120,7 +121,8 @@ namespace MapTool
             this.TerrainToolStripMenuItem,
             this.StaticXMeshToolStripMenuItem,
             this.wowMapMashToolStripMenuItem,
-            this.naviMeshToolStripMenuItem});
+            this.naviMeshToolStripMenuItem,
+            this.targetToolStripMenuItem});
             this.추가ToolStripMenuItem.Name = "추가ToolStripMenuItem";
             this.추가ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.추가ToolStripMenuItem.Text = "추가";
@@ -152,6 +154,13 @@ namespace MapTool
             this.naviMeshToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.naviMeshToolStripMenuItem.Text = "Navi 메시";
             this.naviMeshToolStripMenuItem.Click += new System.EventHandler(this.naviMeshToolStripMenuItem_Click);
+            // 
+            // targetToolStripMenuItem
+            // 
+            this.targetToolStripMenuItem.Name = "targetToolStripMenuItem";
+            this.targetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.targetToolStripMenuItem.Text = "Target";
+            this.targetToolStripMenuItem.Click += new System.EventHandler(this.targetToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -186,6 +195,7 @@ namespace MapTool
         private System.Windows.Forms.ToolStripMenuItem wowMapMashToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem naviMeshToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem projectDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem targetToolStripMenuItem;
     }
 }
 

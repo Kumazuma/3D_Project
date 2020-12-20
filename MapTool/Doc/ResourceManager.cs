@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using MapToolRender;
 namespace MapTool.Doc
 {
-    class MeshManager
+    class ResourceManager
     {
-        static MeshManager s_instance = new MeshManager();
+        static ResourceManager s_instance = new ResourceManager();
         Dictionary<string, StaticXMeshObj> m_staticMeshs = new Dictionary<string, StaticXMeshObj>();
         Dictionary<string, SkinnedXMeshObj> m_skinnedMeshs = new Dictionary<string, SkinnedXMeshObj>();
         Dictionary<string, WowMapMesh> m_objMeshs = new Dictionary<string, WowMapMesh>();
-
-        public static MeshManager Instance { get => s_instance; }
+        TargetObject targetObject;
+        public static ResourceManager Instance { get => s_instance; }
 
         public SkinnedXMeshObj GetSkinnedMesh(string path)
         {
@@ -44,6 +44,21 @@ namespace MapTool.Doc
             var newMesh = new StaticXMeshObj(GraphicsDevice.Instance, path);
             m_staticMeshs.Add(path, newMesh);
             return newMesh.Clone() as StaticXMeshObj;
+        }
+        public TargetObject GetTargetObject()
+        {
+            if (targetObject != null)
+            {
+                return targetObject.Clone() as TargetObject;
+            }
+            lock (this)
+            {
+                if (targetObject == null)
+                {
+                    targetObject = new TargetObject(GraphicsDevice.Instance);
+                }
+            }
+            return targetObject.Clone() as TargetObject;
         }
         public async Task<WowMapMesh> GetObjMesh(string path)
         {

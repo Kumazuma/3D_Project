@@ -50,6 +50,7 @@ void TestScene::Loaded()
 	renderObj->CreateCubeTexture((base_dir + ConvertUTF8ToWide(m_file[u8"skybox"])).c_str(), &pCubeTexture);
 	skyboxObj->SetDiffuseTexture(pCubeTexture.Get());
 	m_skybox.reset(skyboxObj);
+	std::unordered_map<std::wstring, XMFLOAT3> targets;
 	for (auto it : m_file[u8"objects"])
 	{
 
@@ -81,11 +82,22 @@ void TestScene::Loaded()
 			);
 			meshObj->SetTransform(transformMat);
 			m_staticMapMeshs.emplace_back(std::move(meshObj));
-		}	
+		}
+		else if (it[u8"type"] == u8"TARGET")
+		{
+			std::wstring path{ ConvertUTF8ToWide(it[u8"name"]) };
+			XMFLOAT3 pos{
+				it[u8"transform"][u8"position"][u8"x"],
+				it[u8"transform"][u8"position"][u8"y"],
+				it[u8"transform"][u8"position"][u8"z"]
+			};
+			targets.emplace(path, pos);
+		}
 	}
 	m_pCameraObject.reset(new Game::Object{});
-	m_pCameraObject->AddComponent< CameraComponent>();
+	m_pCameraObject->AddComponent<CameraComponent>();
 	m_pCameraObject->AddComponent<Game::TransformComponent>();
+	m_pCameraObject->GetComponent<Game::TransformComponent>()->SetPosition(targets[L"PLAYER_SPAWN_POSITION"]);
 	XMFLOAT4X4 projMatrix;
 	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 4000.f, &projMatrix);
 	m_pRenderer->SetProjMatrix(projMatrix);

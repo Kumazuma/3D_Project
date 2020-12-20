@@ -162,6 +162,7 @@
     <ClInclude Include="SkinnedXMeshObj.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SphareMeshObj.h" />
+    <ClInclude Include="TargetObject.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureCollection.h" />
     <ClInclude Include="TextureConverter.h" />
@@ -188,6 +189,7 @@
     <ClCompile Include="SkinnedXMeshObj.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SphareMeshObj.cpp" />
+    <ClCompile Include="TargetObject.cpp" />
     <ClCompile Include="TerrainObject.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureConverter.cpp" />

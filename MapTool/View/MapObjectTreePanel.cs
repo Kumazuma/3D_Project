@@ -13,11 +13,13 @@ namespace MapTool.View
 {
     public partial class MapObjectTreePanel : UserControl
     {
-        Dictionary<MapToolRender.MapObject, int> indexTable = new Dictionary<MapToolRender.MapObject, int>();
+        BindingList<MapObject> mapObjects = new BindingList<MapObject>();
         public MapObjectTreePanel()
         {
             InitializeComponent();
-            listBox1.Items.Add(Doc.Document.Instance.World);
+            listBox1.DisplayMember = nameof(MapObject.Name);
+            mapObjects.Add(Doc.Document.Instance.World);
+            listBox1.DataSource = mapObjects;
 
             Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;
         }
@@ -31,9 +33,9 @@ namespace MapTool.View
                     mapObj = sender as MapToolRender.MapObject;
                     if (Doc.Document.Instance.MapObjects.Contains(mapObj))
                     {
-                        idx = listBox1.Items.Add(mapObj);
-                        indexTable.Add(mapObj, idx);
+                        mapObjects.Add(mapObj);
                         mapObj.PropertyChanged += MapObj_PropertyChanged;
+                        mapObjects.ResetBindings();
                     }
                     break;
                 case "SelectedObject":
@@ -42,7 +44,7 @@ namespace MapTool.View
                     {
                         return;
                     }
-                    if (indexTable.ContainsKey(mapObj))
+                    if (mapObjects.Contains(mapObj))
                     {
                         listBox1.SelectedItem = mapObj;
                     }
@@ -53,7 +55,7 @@ namespace MapTool.View
 
         private void MapObj_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-
+            
         }
 
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -87,11 +89,10 @@ namespace MapTool.View
                 if (Doc.Document.Instance.MapObjects.Contains(item))
                 {
                     Doc.Document.Instance.RemoveObject(item);
-                    listBox1.Items.Remove(item);
-                    //TODO: 트리에서 삭제되었을 때 메인 프레임에서 삭제되었음을 알 수 있게 처리 해야함
-
+                    mapObjects.Remove(item);
                 }
             }
+            mapObjects.ResetBindings();
         }
 
         private void DuplicateToolStripMenuItem_Click(object sender, EventArgs e)

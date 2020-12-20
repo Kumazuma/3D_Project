@@ -215,7 +215,7 @@ namespace MapTool
             }
             var path = fileDialog.FileName;
 
-            var xmesh = Doc.MeshManager.Instance.GetStaticMesh(path);
+            var xmesh = Doc.ResourceManager.Instance.GetStaticMesh(path);
             renderObjects.Add(xmesh);
             xmesh.Name = "XMesh";
             xmesh.PropertyChanged += RenderObj_PropertyChanged;
@@ -243,7 +243,7 @@ namespace MapTool
             {
                 var task = System.Threading.Tasks.Task<WowMapMesh>.Factory.StartNew(() =>
                 {
-                    var mesh = Doc.MeshManager.Instance.GetObjMesh(path).Result;
+                    var mesh = Doc.ResourceManager.Instance.GetObjMesh(path).Result;
                     mesh.Name = System.IO.Path.GetFileNameWithoutExtension(path);
                     return mesh;
                 });
@@ -348,6 +348,16 @@ namespace MapTool
                 MessageBox.Show($"파일을 열지 못했습니다.\n{ex.Message}");
                 Console.WriteLine(ex.StackTrace);
             }
+        }
+
+        private void targetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var target = Doc.ResourceManager.Instance.GetTargetObject();
+            renderObjects.Add(target);
+            target.PropertyChanged += RenderObj_PropertyChanged;
+            Doc.Document.Instance.AddObject(target);
+            m_propertyView.Content.SelectedObject = target;
+            m_renderView.Content.Render();
         }
     }
 }

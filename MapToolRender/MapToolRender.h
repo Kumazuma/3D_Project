@@ -41,6 +41,7 @@ namespace MapToolRender {
 		}
 		auto Render(System::Windows::Forms::Control^, IEnumerable<RenderObject^>^ objs, Camera^ camera)->void;
 		auto CreateMouseRay(Control^ drawPanel, Camera^ camera, System::Drawing::Point^ mousePt)->Ray^;
+	internal:
 		property RenderModule* Handle
 		{
 			auto get()->RenderModule* { return m_pRenderModule; }
@@ -86,17 +87,19 @@ namespace MapToolRender {
 			auto get()->MapToolCore::Transform^;
 			auto set(MapToolCore::Transform^ value)->void;
 		}
-		[Browsable(false)]
-		property ::RenderObject* Handle
-		{
-			auto get()->::RenderObject*;
-		}
+		
 		property bool IsRayPick
 		{
 			auto get()->bool;
 		}
 		virtual auto Clone()->RenderObject^ = 0;
 		auto RayPick(Ray^ ray)->System::Nullable<float>;
+	internal:
+		[Browsable(false)]
+		property ::RenderObject* Handle
+		{
+			auto get()->::RenderObject*;
+		}
 	protected:
 		RenderObject();
 		RenderObject(RenderObject^  obj);
