@@ -16,10 +16,11 @@ namespace Kumazuma
 	namespace Game
 	{
 
-		class Component
+		class Component : public std::enable_shared_from_this<Component>
 		{
 			friend class Runtime;
 			friend class Module;
+			friend class Object;
 			using EventHandleMthod = void(Component::*)(const Event&);
 		public:
 			const ComTagBase& GetTag()const { return *m_pTag; }
@@ -27,6 +28,7 @@ namespace Kumazuma
 			virtual ~Component() = default;
 			virtual void OnLoaded() {}
 			std::weak_ptr<const Object> GetObj()const;
+			auto HandleEvent(Event& event)->void;
 		protected:
 			Component(const ComTagBase& tag);
 			std::weak_ptr<Object> GetObj();

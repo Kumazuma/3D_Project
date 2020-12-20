@@ -5,12 +5,9 @@ Kumazuma::Game::Scene::Scene(Scene&& other) noexcept:
 	m_objects{std::move(other.m_objects)}
 {
 }
-std::shared_ptr<Kumazuma::Game::Object> Kumazuma::Game::Scene::NewObject(const ObjectFactory& factory)
+void Kumazuma::Game::Scene::AddObject(std::shared_ptr<Object> ptr)
 {
-	//Runtime::Instance()
-	auto obj = factory.Create(*Runtime::Instance());
-	m_objects.push_back(obj);
-	return obj;
+	m_objects.push_back(ptr);
 }
 
 void Kumazuma::Game::Scene::RemoveObject(Object& obj)

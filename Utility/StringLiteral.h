@@ -16,6 +16,9 @@ public:
 public:
 	auto constexpr operator ==(StringLiteral const& rhs)const->bool;
 	auto constexpr operator ==(_chType const* const _literal)const->bool;
+	auto constexpr operator !=(StringLiteral const& rhs)const->bool;
+	auto constexpr operator !=(_chType const* const _literal)const->bool;
+
 	constexpr operator _chType const* ()const;
 	auto constexpr GetLiteral()const->_chType const*;
 	auto constexpr GetLength()const->size_t;
@@ -82,6 +85,20 @@ inline constexpr auto StringLiteral<_chType>::operator==(_chType const* const _l
 {
 	if (_literal == m_literal)return true;
 	return IsSame(_literal);
+}
+template<typename _chType>
+inline constexpr auto StringLiteral<_chType>::operator!=(StringLiteral const& rhs) const -> bool
+{
+	if (rhs.m_literal != m_literal)return true;
+
+	return !IsSame(rhs.m_literal, rhs.m_length);
+}
+
+template<typename _chType>
+inline constexpr auto StringLiteral<_chType>::operator!=(_chType const* const _literal) const -> bool
+{
+	if (_literal != m_literal)return true;
+	return !IsSame(_literal);
 }
 
 template<typename _chType>

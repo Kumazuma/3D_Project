@@ -17,7 +17,7 @@ namespace Kumazuma
 			virtual void Loaded() {}
 			virtual void Unloaded() {}
 			virtual void Update(float timeDelta) {}
-			std::shared_ptr<Object> NewObject(const ObjectFactory& factory);
+			void AddObject(std::shared_ptr<Object>);
 			void RemoveObject(Object& obj);
 		protected:
 			Scene() = default;

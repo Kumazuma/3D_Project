@@ -19,6 +19,15 @@
     <Filter Include="component">
       <UniqueIdentifier>{0607f3e2-3d4b-4107-8d36-5ae4b4621c3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="threadpoolmanager">
+      <UniqueIdentifier>{ba125bd5-4024-416c-a61e-eb58c20e3cbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object">
+      <UniqueIdentifier>{be6e28bd-44e1-4ff2-af93-acd797a1476f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="runtime">
+      <UniqueIdentifier>{54a08028-15a0-45cc-9d3e-121ed06c9431}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -30,16 +39,10 @@
     <ClInclude Include="include\game\transform.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="include\game\object.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="include\game\scene.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include=".\include\game\objectfactory.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="include\game\runtime.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="include\game\game.hpp">
@@ -102,6 +105,18 @@
     <ClInclude Include="include\game\TimerManager.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="include\game\ThreadPoolMgr.hpp">
+      <Filter>threadpoolmanager</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPoolMgrImpl.hpp">
+      <Filter>threadpoolmanager</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game\object.hpp">
+      <Filter>object</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game\runtime.hpp">
+      <Filter>runtime</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -110,16 +125,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="object.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="scene.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="objectfactory.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="runtime.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="module.cpp">
@@ -136,6 +145,18 @@
     </ClCompile>
     <ClCompile Include="TimerManager.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPoolMgr.cpp">
+      <Filter>threadpoolmanager</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPoolMgrImpl.cpp">
+      <Filter>threadpoolmanager</Filter>
+    </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>object</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.cpp">
+      <Filter>runtime</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

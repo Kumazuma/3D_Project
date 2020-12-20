@@ -82,12 +82,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)lib/$(PlatformTarget);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\tinyobjloader\include</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)lib/$(PlatformTarget);..\tinyobjloader\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)lib/$(PlatformTarget);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\tinyobjloader\include</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)lib/$(PlatformTarget);..\tinyobjloader\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

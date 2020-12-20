@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "./include/game/objectfactory.hpp"
 #include "./include/game/runtime.hpp"
+#include "./include/game/object.hpp"
 using namespace Kumazuma::Game;
 void ObjectFactory::AddComponent(IComponentFactory* com)
 {
@@ -22,10 +23,7 @@ ObjectFactory ObjectFactory::Tag(const ObjectTag& tag)&&
 	m_tags.insert(&tag);
 	return std::move(*this);
 }
-std::shared_ptr<Object> ObjectFactory::Create(Runtime& runtime) const
-{
-	return runtime.CreateObject(*this);
-}
+
 
 void ObjectFactory::Clear()
 {

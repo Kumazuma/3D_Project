@@ -16,6 +16,7 @@ namespace Kumazuma
 	protected:
 		ConstLinkedListIterator(node_type* pNode, const Container* const pContainer, size_t index = 0) :m_pNode{ pNode }, m_pContainer{ pContainer }, index{ index } {};
 	public:
+		ConstLinkedListIterator() {};
 		const value_type& operator*()const
 		{
 			return m_pNode->value;
@@ -71,8 +72,9 @@ namespace Kumazuma
 	public:
 		using value_type = typename ConstLinkedListIterator<Container>::value_type;
 	protected:
-		LinkedListIterator(node_type* pNode, const Container* const pContainer, size_t index = 0 ) :ConstLinkedListIterator<Container>{ pNode,pContainer,index} {};
+		LinkedListIterator(node_type* pNode, const Container* const pContainer, size_t index = 0) :ConstLinkedListIterator<Container>{ pNode,pContainer,index } {};
 	public:
+		LinkedListIterator() {};
 		void operator = (const LinkedListIterator& other)
 		{
 			my_base::m_pNode = other.m_pNode;

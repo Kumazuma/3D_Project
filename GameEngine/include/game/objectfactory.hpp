@@ -24,7 +24,6 @@ namespace Kumazuma
 			ObjectFactory Component(Args&&... args)&&;
 			template<typename _ComT>
 			ObjectFactory Component(ComponentFactory<_ComT>&& com)&&;
-			std::shared_ptr<Object> Create(Game::Runtime& runtime)const;
 			ObjectFactory(const ObjectFactory& other) = delete;
 			ObjectFactory(ObjectFactory&& other) noexcept;
 			ObjectFactory() {}

@@ -13,6 +13,8 @@
 #include "Renderer.h"
 #undef max
 #undef min
+#include <tiny_obj_loader.h>
+#pragma comment(lib, "tinyobjloader.lib")
 //_CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef float _ARGUMENT_TYPE_NAME;
 //_CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef size_t _RESULT_TYPE_NAME;
 //_NODISCARD size_t operator()(const float _Keyval) const noexcept {
@@ -110,7 +112,6 @@ WowMapMeshObject::WowMapMeshObject(RenderModule* pRenderModule, std::wstring con
     size_t slash1{ path.find_last_of(L'\\') };
     size_t slash2{ path.find_last_of(L'/') };
     size_t slash{ std::wstring::npos };
-
     if (slash1 != std::wstring::npos && slash2 == std::wstring::npos)
         slash = slash1;
     else if (slash1 == std::wstring::npos && slash2 != std::wstring::npos)
@@ -119,7 +120,6 @@ WowMapMeshObject::WowMapMeshObject(RenderModule* pRenderModule, std::wstring con
         slash = std::max(slash1, slash2);
     if(slash != std::wstring::npos)
         materialFileName = path.substr(0, slash + 1) + materialFileName;
-    ParseMtlFile(pRenderModule, materialFileName);
     for (auto& it : m_subsets)
     {
         m_entities.emplace_back(std::make_shared<WowMapMeshEntity>(this, it.first, it.second));
@@ -183,121 +183,65 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     std::vector<XMFLOAT3A> positions;
     std::vector<XMFLOAT2A> UVs;
     std::vector<XMFLOAT3A> normals;
-    std::unordered_map<std::wstring, std::vector<std::array<XMUINT3, 3 > > > groups;
-    std::unordered_map<std::wstring, std::wstring > materialNames;
+
     std::unordered_map<DirectX::XMUINT3, size_t> itemIndexTable;
-
-    std::equal_to<std::Vertex> asd;
-    std::equal_to<std::Vertex> asd2{ asd };
-    asd = asd2;
-
-    std::wstring currentGroup;
-    std::wstring currentMaterial;
-    std::wstring materialLibName;
-    std::ifstream fileStream;
-    std::stringstream stream;
-    
-    std::unordered_map<std::wstring, std::vector<std::array<XMUINT3, 3 > > >::iterator it{ groups.end() };
-    fileStream.open(path);
-    
-
-    if (!fileStream.is_open())
+    std::wstring baseDir{L"./"};
+    tinyobj::ObjReaderConfig readerConfig;
+    size_t slash1{ path.find_last_of(L'\\') };
+    size_t slash2{ path.find_last_of(L'/') };
+    size_t slash{ std::wstring::npos };
+    if (slash1 != std::wstring::npos && slash2 == std::wstring::npos)
+        slash = slash1;
+    else if (slash1 == std::wstring::npos && slash2 != std::wstring::npos)
+        slash = slash2;
+    else if (slash1 != std::wstring::npos && slash2 != std::wstring::npos)
+        slash = std::max(slash1, slash2);
+    if (slash != std::wstring::npos)
+        baseDir = path.substr(0, slash + 1);
+    readerConfig.mtl_search_path = ConvertWideToUTF8(baseDir);
+    tinyobj::ObjReader reader;
+    if (!reader.ParseFromFile(ConvertWideToUTF8(path), readerConfig))
     {
         throw E_FAIL;
     }
-
-    fileStream.sync_with_stdio(false);
-    fileStream.seekg(0, fileStream.end);
-    size_t const size = fileStream.tellg();
-    fileStream.seekg(0, fileStream.beg);
-    size_t readSize{ 0 };
-    std::vector<char> mem;
-    mem.assign(size, 0x00);
-    while (readSize != size)
+    auto& attrib = reader.GetAttrib();
+#pragma region push_attribute_in
+    positions.reserve(attrib.vertices.size() / 3);
+    for (auto i = 0; i < attrib.vertices.size() / 3; ++i)
     {
-        readSize = fileStream
-            .read(mem.data() + readSize, (size - readSize))
-            .tellg();
+        XMFLOAT3A pos{
+            attrib.vertices[3 * i + 0],
+            attrib.vertices[3 * i + 1],
+            attrib.vertices[3 * i + 2]
+        };
+        positions.emplace_back(pos);
     }
-    stream.str(mem.data());
-    stream.seekg(0, fileStream.beg);
 
-    mem.clear();
-    mem.shrink_to_fit();
-
-    std::string token;
-    token.reserve(1024);
-    while (!stream.eof())
+    UVs.reserve(attrib.texcoords.size() / 2);
+    for (auto i = 0; i < attrib.texcoords.size() / 2; ++i)
     {
-        token.clear();
-        stream >> token;
-        if (token.empty())
-        {
-            continue;
-        }
-        if (token == OBJ_TOKEN_VERTEX)
-        {
-            XMFLOAT3A pos;
-            stream >> pos.x >> pos.y >> pos.z;
-            positions.push_back(pos);
-        }
-        else if (token == OBJ_TOKEN_NORMAL)
-        {
-            XMFLOAT3A normal;
-            stream >> normal.x >> normal.y >> normal.z;
-            normals.push_back(normal);
-        }
-        else if (token == OBJ_TOKEN_UV)
-        {
-            XMFLOAT2A uv;
-            stream >> uv.x >> uv.y;
-            UVs.push_back(uv);
-        }
-        else if (token == OBJ_TOKEN_OBJ)
-        {
-            //처리 안 해도 될 듯
-            stream.ignore(1024, '\n');
-        }
-        else if (token == OBJ_TOKEN_GROUP)
-        {
-            //새 그룹이 생기면 인덱스 버퍼를 바꾼다.
-            std::string groupName;
-            stream >> groupName;
-            currentGroup = ConvertUTF8ToWide(groupName);
-            it = groups.emplace(currentGroup, std::vector<std::array<XMUINT3, 3> >{}).first;
-        }
-        else if (token == OBJ_TOKEN_FACE)
-        {
-            std::array<XMUINT3, 3> triangle{};
-            for (auto& v : triangle)
-            {
-                stream >> v.x;
-                stream.ignore(1);
-                stream >> v.y;
-                stream.ignore(1);
-                stream >> v.z;
-            }
-            it->second.emplace_back(triangle);
-        }
-        else if (token == OBJ_TOKEN_MATERIAL_NAME)
-        {
-            std::string matName;
-            stream >> matName;
-            materialNames[currentGroup] = ConvertUTF8ToWide(matName);
-        }
-        else if (token == OBJ_TOKEN_MATERIAL_LIB)
-        {
-            std::string libName;
-            stream >> libName;
-            materialLibName = ConvertUTF8ToWide(libName);
-        }
-        else
-        {
-            stream.ignore(1024, '\n');
-        }
+        XMFLOAT2A uv{
+            attrib.texcoords[2 * i + 0],
+            attrib.texcoords[2 * i + 1]
+        };
+        UVs.emplace_back(uv);
     }
+
+    normals.reserve(attrib.normals.size() / 3);
+    for (auto i = 0; i < attrib.normals.size() / 3; ++i)
+    {
+        XMFLOAT3A pos{
+            attrib.normals[3 * i + 0],
+            attrib.normals[3 * i + 1],
+            attrib.normals[3 * i + 2]
+        };
+        normals.emplace_back(pos);
+    }
+#pragma endregion
+#pragma region modify_position
+    
     //Z축을 뒤집는다.
-    __m256 _1{ -1.f ,-1.f , -1.f , -1.f , -1.f , -1.f, - 1.f ,-1.f };
+    __m256 _1{ -1.f ,-1.f , -1.f , -1.f , -1.f , -1.f, -1.f ,-1.f };
     __m256 Zs{};
     assert(positions.size() <= std::numeric_limits<u32>::max());
     size_t length = positions.size() / 8;
@@ -317,7 +261,8 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     {
         positions[i + length].z = Zs.m256_f32[i];
     }
-
+#pragma endregion
+#pragma region modify normal vector
     //normal의 Z값을 뒤집어 줘야 한다.
     length = normals.size() / 8;
     for (size_t i = 0; i < length; ++i)
@@ -336,7 +281,8 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     {
         normals[i + length].z = Zs.m256_f32[i];
     }
-
+#pragma endregion
+#pragma region modify uv
     //-1에서 1로 바꾸고
     //UV의 V를 뒤집어 줘야 한다.
     _1 = _mm256_mul_ps(_1, _1);
@@ -344,7 +290,7 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     for (size_t i = 0; i < length; ++i)
     {
         Zs = Load256<sizeof(DirectX::XMFLOAT2A), 8>(&UVs[i * 8].y);
-        Zs = _mm256_sub_ps(_1 , Zs);
+        Zs = _mm256_sub_ps(_1, Zs);
         Store256<sizeof(DirectX::XMFLOAT2A), 8>(Zs, &UVs[i * 8].y);
     }
     length *= 8;
@@ -357,28 +303,38 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     {
         UVs[i + length].y = Zs.m256_f32[i];
     }
+#pragma endregion
+    auto& shapes = reader.GetShapes();
+    auto& materials = reader.GetMaterials();
     //버텍스 버퍼를 구축하자.
     std::vector<VERTEX<FVF>> vertices;
     vertices.reserve(positions.size());
-    const u32 minCount{static_cast<u32>( std::min(UVs.size(), std::min(positions.size(), normals.size())) )};
+    const u32 minCount{ static_cast<u32>(std::min(UVs.size(), std::min(positions.size(), normals.size()))) };
     m_pVertexPositions = std::make_unique<std::vector<XMFLOAT3A> >();
 
-    for (auto& it : groups)
+    for (auto& shape: shapes)
     {
+        size_t indexOffset{};
         std::vector<Index<INDEX_TYPE> > indices;
-        indices.reserve(it.second.size());
-        for (auto& triangle : it.second)
+        indices.reserve(shape.mesh.num_face_vertices.size());
+        for (size_t faceIndex = 0; faceIndex < shape.mesh.num_face_vertices.size(); ++faceIndex)
         {
+            int fv = shape.mesh.num_face_vertices[faceIndex];
             Index<INDEX_TYPE> newIndex{};
-            for (u32 i = 0; i < 3; ++i)
+            for (size_t v = 0; v < fv; ++v)
             {
-                auto findIt = itemIndexTable.find(triangle[i]);
+                tinyobj::index_t idx = shape.mesh.indices[indexOffset + v];
+                XMUINT3 index;
+                index.x = static_cast<u32>(idx.vertex_index);
+                index.y = static_cast<u32>(idx.normal_index);
+                index.z = static_cast<u32>(idx.texcoord_index);
+                auto findIt = itemIndexTable.find(index);
                 if (findIt == itemIndexTable.end())
                 {
                     size_t newVertexIndex{ m_pVertexPositions->size() };
-                    auto& pos = positions[triangle[i].x - 1];
-                    auto& uv = UVs[triangle[i].y - 1];
-                    auto& normal = normals[triangle[i].z - 1];
+                    auto& pos = positions[index.x];
+                    auto& uv = UVs[index.y];
+                    auto& normal = normals[index.z];
                     VERTEX<FVF> newItem{};
                     newItem.vNormal = normal;
                     newItem.vUV = uv;
@@ -386,20 +342,24 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
 
                     vertices.emplace_back(newItem);
                     m_pVertexPositions->emplace_back(pos);
-                    findIt = itemIndexTable.emplace(triangle[i], newVertexIndex).first;
+                    findIt = itemIndexTable.emplace(index, newVertexIndex).first;
                 }
-                newIndex[i] = findIt->second;
+                newIndex[v] = findIt->second;
+
             }
+            indexOffset += fv;
             indices.emplace_back(newIndex);
+            
         }
-        for (auto& triangle: indices)
+        for (auto& triangle : indices)
         {
             std::swap(triangle[0], triangle[2]);
         }
-        WowMapMeshSubset subset{ pRenderModule, m_pVertexPositions, materialNames[it.first], std::move(indices) };
-        m_subsets.emplace(it.first, std::make_shared<WowMapMeshSubset>(std::move(subset)));
+        std::wstring name = ConvertUTF8ToWide(shape.name);
+        std::wstring materialName = ConvertUTF8ToWide(reader.GetMaterials()[shape.mesh.material_ids[0]].name);
+        WowMapMeshSubset subset{ pRenderModule, m_pVertexPositions, materialName, std::move(indices) };
+        m_subsets.emplace(name, std::make_shared<WowMapMeshSubset>(std::move(subset)));
     }
-    //
     vertices.shrink_to_fit();
     m_pVertexPositions->shrink_to_fit();
     COMPtr<IDirect3DDevice9> pDevice;
@@ -421,71 +381,26 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     memcpy_s(pVertices, vertices.size() * VERTEX_SIZE, vertices.data(), vertices.size() * VERTEX_SIZE);
     m_pVertexBuffers->Unlock();
     m_vertexCount = vertices.size();
-
-    *pOutMeterialFilePath = materialLibName;
-}
-
-auto WowMapMeshObject::ParseMtlFile(RenderModule* pRenderModule, std::wstring const& path) -> void
-{
-    size_t slash1{ path.find_last_of(L'\\') };
-    size_t slash2{ path.find_last_of(L'/') };
-    size_t slash{ std::wstring::npos };
-    std::wstring dir{};
-    if (slash1 != std::wstring::npos && slash2 == std::wstring::npos)
-        slash = slash1;
-    else if (slash1 == std::wstring::npos && slash2 != std::wstring::npos)
-        slash = slash2;
-    else if (slash1 != std::wstring::npos && slash2 != std::wstring::npos)
-        slash = std::max(slash1, slash2);
-    if (slash != std::wstring::npos)
-        dir = path.substr(0, slash + 1) ;
-
-    std::ifstream fileStream;
-    std::wstring materialName;
     std::unordered_map<std::wstring, COMPtr<IDirect3DTexture9> > textures;
 
-    fileStream.open(path);
-    if (!fileStream.is_open())
+    for (auto& rMat : reader.GetMaterials())
     {
-        throw E_FAIL;
-    }
-    std::string token;
-    while (!fileStream.eof())
-    {
-        token.clear();
-        fileStream >> token;
-        if (token == "newmtl")
+        auto textureName{ ConvertUTF8ToWide(rMat.diffuse_texname) };
+        auto materialName{ ConvertUTF8ToWide(rMat.name) };
+        auto it = textures.find(textureName);
+        if (it == textures.end())
         {
-            fileStream.ignore();
-            std::string name;
-            std::getline(fileStream, name);
-            materialName = ConvertUTF8ToWide(name);
-        }
-        else if (token == "map_Kd")
-        {
-            std::string t;
-            fileStream.ignore();
-            std::getline(fileStream, t);
-            std::wstring textureName = ConvertUTF8ToWide(t);
-            auto it = textures.find(textureName);
-            if (it == textures.end())
+            HRESULT hr{};
+            std::wstring texturePath{ baseDir + textureName };
+            COMPtr<IDirect3DTexture9> texture;
+            hr = pRenderModule->CreateTexture(texturePath.c_str(), &texture);
+            if (FAILED(hr))
             {
-                HRESULT hr{};
-                std::wstring texturePath{ dir + textureName };
-                COMPtr<IDirect3DTexture9> texture;
-                hr = pRenderModule->CreateTexture(texturePath.c_str(), &texture);
-                if (FAILED(hr))
-                {
-                    throw hr;
-                }
-                it = textures.emplace(textureName, std::move(texture)).first;
+                throw hr;
             }
-            m_textures.emplace(materialName, it->second);
+            it = textures.emplace(textureName, std::move(texture)).first;
         }
-        else
-        {
-            fileStream.ignore(1024, '\n');
-        }
+        m_textures.emplace(materialName, it->second);
     }
 }
 

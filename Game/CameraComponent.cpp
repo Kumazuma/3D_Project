@@ -20,7 +20,7 @@ auto Kumazuma::Client::CameraComponent::Clone() const -> Game::Component*
 auto Kumazuma::Client::CameraComponent::Update(Game::UpdateEvent const& event) -> void
 {
     auto obj{ GetObj().lock() };
-    auto transformComponent{ obj->GetComponent(Game::TransformComponent::TAG) };
+    auto transformComponent{ obj->GetComponent< Game::TransformComponent>() };
     XMFLOAT4X4 transformMatrix{};
     transformComponent->GenerateTransformMatrixWithoutScale(&transformMatrix);
     XMMATRIX mTransform{ XMLoadFloat4x4(&transformMatrix) };

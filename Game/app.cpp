@@ -9,6 +9,7 @@
 #include"ResourceManager.hpp"
 #include "Env.hpp"
 #include<d3d9.h>
+#include <game/ThreadPoolMgr.hpp>
 using namespace Kumazuma;
 std::shared_ptr<App> Kumazuma::App::s_instance = nullptr;
 #pragma comment(lib, "gameengine.lib")
@@ -142,7 +143,7 @@ auto App::Loop()->int
     material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);    // set diffuse color to white
     material.Ambient = D3DXCOLOR(0.1f, 0.1f, 0.1f, 0.1f);    // set ambient color to white
     pDevice->SetMaterial(&material);    // set the globably-used material to &material
-
+    auto threadPoolMgr{ Kumazuma::ThreadPool::Manager::Instance() };
     while (msg.message != WM_QUIT)
     {
 
@@ -157,7 +158,6 @@ auto App::Loop()->int
         {
             m_pNowScene->Unloaded();
             delete m_pNowScene;
-            runtime->GC();
             m_pNowScene = pNextScene;
             m_pNextScene.store(nullptr, std::memory_order_release);
             m_pNowScene->Loaded();
@@ -178,8 +178,7 @@ auto App::Loop()->int
             pInputMgr->Update();
             m_pNowScene->Update(delta);
             //pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-            runtime->GC();
+            threadPoolMgr->DispatchTask();
             if (m_isRunning == false)
             {
                 break;
@@ -210,7 +209,6 @@ auto App::Loop()->int
         delete m_pNowScene;
         m_pNowScene = nullptr;
     }
-    runtime->GC();
     m_mainWindow.Close();
     return (int)0;
 }

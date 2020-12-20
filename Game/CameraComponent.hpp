@@ -13,7 +13,6 @@ namespace Kumazuma
 		public:
 			auto Clone()const->Game::Component*;
 			auto Update(Game::UpdateEvent const& event)->void;
-		
 		};
 	}
 }

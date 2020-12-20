@@ -15,8 +15,11 @@
 #include "Renderer.h"
 #include "MapToolRenderer.h"
 #include"constvar.hpp"
+#include <game/ThreadPoolMgr.hpp>
 using namespace Kumazuma::Client;
 using namespace DirectX;
+using Task = Kumazuma::ThreadPool::Task;
+using TaskContext = Kumazuma::ThreadPool::TaskContext;
 Kumazuma::Client::TestScene::TestScene(nlohmann::json file)
 	
 {
@@ -80,15 +83,12 @@ void TestScene::Loaded()
 			m_staticMapMeshs.emplace_back(std::move(meshObj));
 		}	
 	}
-	Game::ObjectFactory objFac;
-	objFac
-		.Component<CameraComponent>()
-		.Component<Game::TransformComponent>();
-	m_pCameraObject = NewObject(objFac);
+	m_pCameraObject.reset(new Game::Object{});
+	m_pCameraObject->AddComponent< CameraComponent>();
+	m_pCameraObject->AddComponent<Game::TransformComponent>();
 	XMFLOAT4X4 projMatrix;
 	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 4000.f, &projMatrix);
 	m_pRenderer->SetProjMatrix(projMatrix);
-
 }
 auto TestScene::Update(f32 timeDelta) -> void
 {
@@ -96,7 +96,7 @@ auto TestScene::Update(f32 timeDelta) -> void
 	auto renderModule{ App::Instance()->GetRenderModule() };
 	XMFLOAT3 rotation;
 	XMFLOAT4X4 viewMatrix;
-	auto transformCompoentn{ m_pCameraObject->GetComponent(Game::TransformComponent::TAG) };
+	auto transformCompoentn{ m_pCameraObject->GetComponent< Game::TransformComponent>() };
 	XMStoreFloat3(&rotation, XMLoadFloat3(&transformCompoentn->GetRotation()) * (360.f / XM_2PI));
 	renderModule->GenerateViewMatrix(transformCompoentn->GetPosition(), rotation, &viewMatrix);
 	m_pRenderer->SetViewMatrix(viewMatrix);
@@ -111,7 +111,6 @@ auto TestScene::Update(f32 timeDelta) -> void
 	COMPtr<IDirect3DDevice9> pDevice;
 	renderModule->GetDevice(&pDevice);
 	pDevice->Present(nullptr, nullptr, nullptr, nullptr);
-
 }
 TestLoadingScene::~TestLoadingScene()
 {
@@ -150,7 +149,8 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 	std::shared_ptr<std::atomic<LOAD_STATE>> threadState, std::shared_ptr<std::wstring> msg, std::shared_ptr<bool> die) -> void
 {
 	*threadState = LOAD_STATE::PROGRESSING;
-	std::vector<std::future<void> > loaders;
+	std::vector<std::shared_ptr<Task> > loaders;
+	auto pThreadPoolMgr{ Kumazuma::ThreadPool::Manager::Instance() };
 	try
 	{
 		auto resourceMgr{ ResourceManager::Instance() };
@@ -168,13 +168,27 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 			if (it[u8"type"] == u8"OBJ_MESH")
 			{
 				std::wstring path{ ConvertUTF8ToWide(it[u8"path"]) };
-				auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
+				//auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
+
+				std::shared_ptr<Task> pWork = nullptr;
+				pWork = 
+				pThreadPoolMgr->QueueTask([base_dir, path](TaskContext& context) {
+					auto resourceMgr{ ResourceManager::Instance() };
+					auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
+					});
+				loaders.push_back(pWork);
+				
 			}
 		}
 		for (auto& it : loaders)
 		{
-			it.wait();
+			it->Wait();
 		}
+		for (auto& it : loaders)
+		{
+			it->Wait();
+		}
+
 		App::Instance()->LoadScene<TestScene>(file);
 		*threadState = LOAD_STATE::COMPLETE;
 	}
