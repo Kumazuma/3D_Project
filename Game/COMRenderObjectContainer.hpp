@@ -1,7 +1,8 @@
 #pragma once
 #include<game/component.hpp>
 #include<game/runtime.hpp>
-class RenderObject;
+#include<shared_mutex>
+struct RenderObject;
 namespace Kumazuma::Client
 {
 	class COMRenderObjectContainer: public Game::Component
