@@ -6,7 +6,6 @@
 #pragma comment(lib, "tbbbind.lib")
 #pragma comment(lib, "tbbmalloc.lib")
 #pragma comment(lib, "tbbmalloc_proxy.lib")
-#pragma comment(lib, "tbbproxy.lib")
 
 #else
 
@@ -14,7 +13,6 @@
 #pragma comment(lib, "tbbbind_debug.lib")
 #pragma comment(lib, "tbbmalloc_debug.lib")
 #pragma comment(lib, "tbbmalloc_proxy_debug.lib")
-#pragma comment(lib, "tbbproxy_debug.lib")
 
 #endif
 using namespace Kumazuma::ThreadPool;

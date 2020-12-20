@@ -11,6 +11,7 @@ namespace MapTool.Doc
         static MeshManager s_instance = new MeshManager();
         Dictionary<string, StaticXMeshObj> m_staticMeshs = new Dictionary<string, StaticXMeshObj>();
         Dictionary<string, SkinnedXMeshObj> m_skinnedMeshs = new Dictionary<string, SkinnedXMeshObj>();
+        Dictionary<string, WowMapMesh> m_objMeshs = new Dictionary<string, WowMapMesh>();
 
         public static MeshManager Instance { get => s_instance; }
 
@@ -23,7 +24,7 @@ namespace MapTool.Doc
             path = System.IO.Path.GetFullPath(path);
             if(m_skinnedMeshs.ContainsKey(path))
             {
-                return m_skinnedMeshs[path];
+                return m_skinnedMeshs[path] as SkinnedXMeshObj;
             }
             var newMesh = new SkinnedXMeshObj(GraphicsDevice.Instance, path);
             m_skinnedMeshs.Add(path, newMesh);
@@ -38,11 +39,26 @@ namespace MapTool.Doc
             path = System.IO.Path.GetFullPath(path);
             if (m_staticMeshs.ContainsKey(path))
             {
-                return m_staticMeshs[path];
+                return m_staticMeshs[path] as StaticXMeshObj;
             }
             var newMesh = new StaticXMeshObj(GraphicsDevice.Instance, path);
             m_staticMeshs.Add(path, newMesh);
             return newMesh.Clone() as StaticXMeshObj;
+        }
+        public WowMapMesh GetObjMesh(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException();
+            }
+            path = System.IO.Path.GetFullPath(path);
+            if (m_objMeshs.ContainsKey(path))
+            {
+                return m_objMeshs[path].Clone() as WowMapMesh;
+            }
+            var newMesh = new WowMapMesh(GraphicsDevice.Instance, path);
+            m_objMeshs.Add(path, newMesh);
+            return newMesh.Clone() as WowMapMesh;
         }
     }
 }

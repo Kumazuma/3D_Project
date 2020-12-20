@@ -66,7 +66,7 @@ void Runtime::Update(float delta)
     for (auto pair : m_tagComponentTable)
     {
         ComTagBase const* comtag{ pair.first };
-        auto& rMutex{ m_tableLock[comtag] };
+        auto& rMutex{ GetTableLockRef(comtag)};
         std::shared_lock<std::shared_mutex> guard{ rMutex };
         auto& rList{ pair.second };
         for (auto it: rList)
@@ -115,7 +115,7 @@ auto Kumazuma::Game::Runtime::OnDeleteComponent(Component* com) -> void
         return;
     }
     auto comTag{ &com->GetTag() };
-    auto& rLock = runtime->m_tableLock[comTag];
+    auto& rLock{ runtime->GetTableLockRef(comTag) };
     std::lock_guard<std::shared_mutex> guard{ rLock };
     runtime->m_tagComponentTable[comTag].erase(com);
     delete com;
@@ -140,7 +140,7 @@ void Runtime::DoBroadcast(const ComTagBase& comTag, Event* event, Object const* 
         {
             auto comtag{ row.first };
             auto& eventTag{ event->GetTag() };
-            auto& rTableLock{ m_tableLock[comtag] };
+            auto& rTableLock{ GetTableLockRef(comtag)  };
             std::shared_lock<std::shared_mutex> guard{ rTableLock };
             auto& rList{ row.second };
             for (auto* com : rList)
@@ -156,7 +156,7 @@ void Runtime::DoBroadcast(const ComTagBase& comTag, Event* event, Object const* 
     else
     {
         //std::shared_lock<std::shared_mutex> guard{ m_mutex };
-        auto& rTableLock{ m_tableLock[&comTag] };
+        auto& rTableLock{ GetTableLockRef(&comTag)  };
         std::shared_lock<std::shared_mutex> guard{ rTableLock };
         const auto res = m_tagComponentTable.find(&comTag);
         if (res == m_tagComponentTable.end())return;
@@ -172,10 +172,17 @@ void Runtime::DoBroadcast(const ComTagBase& comTag, Event* event, Object const* 
 auto Kumazuma::Game::Runtime::AddComponent(ComTagBase const* comtag, Component* ptr) -> std::shared_ptr<Component>
 {
     std::shared_ptr<Component> res{ ptr, &OnDeleteComponent };
-    auto& rTableLock{ m_tableLock[comtag] };
+    auto& rTableLock{ GetTableLockRef(comtag) };
     std::lock_guard<std::shared_mutex> guard{ rTableLock };
     m_tagComponentTable[comtag].emplace(ptr);
     return res;
+}
+
+auto Kumazuma::Game::Runtime::GetTableLockRef(ComTagBase const* tag) -> std::shared_mutex&
+{
+    // TODO: 여기에 return 문을 삽입합니다.
+    std::lock_guard<std::mutex> guard{ m_lock };
+    return m_tableLocks[tag];
 }
 
 auto Kumazuma::Game::Runtime::GC() -> void

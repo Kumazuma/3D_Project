@@ -57,10 +57,13 @@ namespace Kumazuma
 		private:
 			auto DoBroadcast(ComTagBase const& comTag, Event* event, Object const* const pObj = nullptr)->void;
 			auto AddComponent(ComTagBase const*, Component*)->std::shared_ptr<Component>;
+			auto GetTableLockRef(ComTagBase const* tag)->std::shared_mutex&;
 			auto GC()->void;
+
 		private:
 			std::vector<std::unique_ptr<Module> > m_modules;
-			std::unordered_map<ComTagBase const*, std::shared_mutex> m_tableLock;
+			std::mutex m_lock;
+			std::unordered_map<ComTagBase const*, std::shared_mutex> m_tableLocks;
 			std::unordered_map<ComTagBase const*, std::unordered_set<Component*> > m_tagComponentTable;
 			tbb::concurrent_queue<EventQueueItem> m_eventQueue;
 		private:

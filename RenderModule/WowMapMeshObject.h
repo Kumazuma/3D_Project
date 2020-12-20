@@ -15,14 +15,6 @@ class DLL_CLASS WowMapMeshObject: public RenderObject
 	static constexpr size_t VERTEX_SIZE = sizeof(VERTEX<FVF>);
 	static constexpr D3DFORMAT INDEX_TYPE = D3DFMT_INDEX32;
 	static constexpr size_t INDEX_SIZE = sizeof(Index<INDEX_TYPE>);
-	static constexpr char OBJ_TOKEN_OBJ[] = "o";
-	static constexpr char OBJ_TOKEN_GROUP[] = "g";
-	static constexpr char OBJ_TOKEN_VERTEX[] ="v";
-	static constexpr char OBJ_TOKEN_UV[] ="vt";
-	static constexpr char OBJ_TOKEN_NORMAL[] = "vn";
-	static constexpr char OBJ_TOKEN_FACE[] = "f";
-	static constexpr char OBJ_TOKEN_MATERIAL_LIB[] = "mtllib";
-	static constexpr char OBJ_TOKEN_MATERIAL_NAME[] = "usemtl";
 
 	friend class WowMapMeshSubset;
 	friend class WowMapMeshEntity;

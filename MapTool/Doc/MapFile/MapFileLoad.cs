@@ -27,6 +27,7 @@ namespace MapTool.Doc
             {
                 string name = null;
                 string type_ = null;
+                string path = null;
                 Transform transform;
                 
                 if(token.Type != JTokenType.Object) throw new Exception("token in objects array is not object");
@@ -47,8 +48,27 @@ namespace MapTool.Doc
                 var nameToken = meshObj["name"];
                 if (nameToken.Type != JTokenType.String) throw new Exception("has no objects attribute");
                 name = nameToken.Value<string>();
-
-
+                
+                if(meshObj.ContainsKey("path"))
+                {
+                    var pathToken = meshObj["path"];
+                    if(pathToken.Type != JTokenType.String) throw new Exception("has no objects attribute");
+                    path = pathToken.Value<string>();
+                }
+                RenderObject obj = null;
+                switch(type_)
+                {
+                    case "OBJ_MESH":
+                        obj = MeshManager.Instance.GetObjMesh(path);
+                        break;
+                }
+                if(obj != null)
+                {
+                    obj.Transform = transform;
+                    obj.Name = name;
+                    mapObjects.Add(obj);
+                }
+                
                 //var nameToken = 
             }
         }
