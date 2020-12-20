@@ -158,7 +158,6 @@ auto App::Loop()->int
         {
             m_pNowScene->Unloaded();
             delete m_pNowScene;
-            runtime->GC();
             m_pNowScene = pNextScene;
             m_pNextScene.store(nullptr, std::memory_order_release);
             m_pNowScene->Loaded();
@@ -180,7 +179,6 @@ auto App::Loop()->int
             m_pNowScene->Update(delta);
             //pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
             threadPoolMgr->DispatchTask();
-            runtime->GC();
             if (m_isRunning == false)
             {
                 break;
@@ -211,7 +209,6 @@ auto App::Loop()->int
         delete m_pNowScene;
         m_pNowScene = nullptr;
     }
-    runtime->GC();
     m_mainWindow.Close();
     return (int)0;
 }

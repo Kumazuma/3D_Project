@@ -17,6 +17,15 @@ std::weak_ptr<const Object> Component::GetObj() const
     return m_parent;
 }
 
+auto Kumazuma::Game::Component::HandleEvent(Event& event) -> void
+{
+    auto it = m_handlers.find(&event.GetTag());
+    if (it != m_handlers.end())
+    {
+        (this->*it->second)(event);
+    }
+}
+
 void Kumazuma::Game::Component::UnbindAll()
 {
     m_handledEvent.clear();

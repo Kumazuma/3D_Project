@@ -83,11 +83,9 @@ void TestScene::Loaded()
 			m_staticMapMeshs.emplace_back(std::move(meshObj));
 		}	
 	}
-	Game::ObjectFactory objFac;
-	objFac
-		.Component<CameraComponent>()
-		.Component<Game::TransformComponent>();
-	m_pCameraObject = NewObject(objFac);
+	m_pCameraObject.reset(new Game::Object{});
+	m_pCameraObject->AddComponent< CameraComponent>();
+	m_pCameraObject->AddComponent<Game::TransformComponent>();
 	XMFLOAT4X4 projMatrix;
 	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 4000.f, &projMatrix);
 	m_pRenderer->SetProjMatrix(projMatrix);
@@ -98,7 +96,7 @@ auto TestScene::Update(f32 timeDelta) -> void
 	auto renderModule{ App::Instance()->GetRenderModule() };
 	XMFLOAT3 rotation;
 	XMFLOAT4X4 viewMatrix;
-	auto transformCompoentn{ m_pCameraObject->GetComponent(Game::TransformComponent::TAG) };
+	auto transformCompoentn{ m_pCameraObject->GetComponent< Game::TransformComponent>() };
 	XMStoreFloat3(&rotation, XMLoadFloat3(&transformCompoentn->GetRotation()) * (360.f / XM_2PI));
 	renderModule->GenerateViewMatrix(transformCompoentn->GetPosition(), rotation, &viewMatrix);
 	m_pRenderer->SetViewMatrix(viewMatrix);

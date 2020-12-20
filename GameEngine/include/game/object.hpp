@@ -7,39 +7,45 @@
 #include"comtag.hpp"
 #include"runtime.hpp"
 #include<unordered_set>
+#include<unordered_map>
+#include<shared_mutex>
 namespace Kumazuma
 {
 	namespace Game
 	{
-		class Object
+		class Object final:public std::enable_shared_from_this<Object>
 		{
 			friend class Component;
 			friend class Runtime;
+			//cons & decons
 		public:
-			virtual ~Object() = default;
-			bool IsValid()const { return m_valid; }
-
-			size_t GetID() const { return m_id; }
-			bool HasTag(const ObjectTag& tag)const;
-			Object(const Object&) = delete;
-			Object(Object&& other) noexcept;
-			template<typename _ComT>
-			std::shared_ptr<_ComT> GetComponent(const ComponentTag<_ComT>& tag);
-			
-			template<typename _ComT>
-			std::shared_ptr<const _ComT> GetComponent(const ComponentTag<_ComT>& tag)const ;
-			template<typename _ComT>
-			const _ComT& GetComponentRef(const ComponentTag<_ComT>& tag)const;
-		protected:
-			Component* GetCom(const ComTagBase& tag) const;
-			Object();
 			template<typename _ObjTagTIt>
 			Object(_ObjTagTIt begin, _ObjTagTIt end);
+			Object() = default;
+			Object(const Object&) = delete;
+			Object(Object&& other) noexcept;
+			~Object() = default;
+		public:
+			template<typename _COM>
+			auto GetComponent()->std::shared_ptr<_COM>;
+			template<typename _COM>
+			auto GetComponent()const->std::shared_ptr<const _COM>;
+			template<typename _COM, typename ...Args>
+			auto AddComponent(Args&& ...args)->void;
+			template<typename _COM>
+			auto RemoveComponent()->void;
+		
+		public:
+			auto Tag(ObjectTag const& rTag)->void;
+			auto HasTag(ObjectTag const&)const->bool;
 		private:
-			bool m_valid;
-			std::shared_ptr<const Runtime> m_runtime;
-			std::unordered_set<const ObjectTag*> m_tags;
-			size_t m_id;
+			auto GetComponent(ComTagBase const* comtagPtr)const->std::shared_ptr<Component>;
+			auto AddComponent(ComTagBase const* comtag, Component* ptr)->void;
+			auto RemoveComponent(ComTagBase const* comtag)->void;
+		private:
+			std::unordered_map<ComTagBase const*, std::shared_ptr<Component> > m_components;
+			std::unordered_set<ObjectTag const*> m_tags;
+			mutable std::shared_mutex m_mutex;
 		};
 		template<typename _ObjTagTIt>
 		inline Object::Object(_ObjTagTIt begin, _ObjTagTIt end):
@@ -50,49 +56,29 @@ namespace Kumazuma
 				m_tags.insert(*begin);
 			}
 		}
-		template<typename _ComT>
-		inline std::shared_ptr<_ComT> Object::GetComponent(const ComponentTag<_ComT>& tag)
+		template<typename _COM>
+		inline auto Object::GetComponent()->std::shared_ptr<_COM>
 		{
-			auto coms = m_runtime->m_objectNComs.find(m_id);
-			if (coms == m_runtime->m_objectNComs.end())
-			{
-				return nullptr;
-			}
-			for (auto& com : coms->second)
-			{
-				if (com->GetTag() == tag)
-				{
-					return (std::shared_ptr< _ComT>&)com;
-				}
-			}
-			return nullptr;
+			auto ptr = GetComponent(&_COM::TAG);
+			if (ptr == nullptr) return nullptr;
+			return std::static_pointer_cast<_COM>(ptr);
 		}
-		template<typename _ComT>
-		inline std::shared_ptr<const _ComT> Object::GetComponent(const ComponentTag<_ComT>& tag) const
+		template<typename _COM>
+		inline auto Object::GetComponent() const->std::shared_ptr<const _COM>
 		{
-			auto coms = m_runtime->m_objectNComs.find(m_id);
-			if (coms == m_runtime->m_objectNComs.end())
-			{
-				return nullptr;
-			}
-			for (auto& com : coms->second)
-			{
-				if (com->GetTag() == tag)
-				{
-					return (std::shared_ptr<const _ComT>&)com;
-				}
-			}
-			return nullptr;
+			auto ptr = GetComponent(&_COM::TAG);
+			if (ptr == nullptr) return nullptr;
+			return std::static_pointer_cast<const _COM>(ptr);
 		}
-		template<typename _ComT>
-		inline const _ComT& Object::GetComponentRef(const ComponentTag<_ComT>& tag)const
+		template<typename _COM, typename ...Args>
+		inline auto Object::AddComponent(Args && ...args) -> void
 		{
-			auto com = GetCom(tag);
-			if (com != nullptr)
-			{
-				return (const _ComT&)*com;
-			}
-			return *(const _ComT*)nullptr;
+			AddComponent(&_COM::TAG, new _COM{ std::forward<Args>(args)... });
+		}
+		template<typename _COM>
+		inline auto Object::RemoveComponent() -> void
+		{
+			RemoveComponent(&_COM::TAG);
 		}
 		class ObjectTag
 		{
@@ -102,7 +88,6 @@ namespace Kumazuma
 			ObjectTag(ObjectTag&&) = delete;
 			bool operator == (const ObjectTag& other)const { return this == &other; }
 			bool operator != (const ObjectTag& other)const { return this != &other; }
-
 		private:
 			const char* const m_lpszTagStr;
 		};

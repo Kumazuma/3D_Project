@@ -17,6 +17,14 @@ namespace Kumazuma
         {
 
         }
+        class EventProcessor
+        {
+        public:
+            auto Process(Component* com, Event& event)->void
+            {
+                com->HandleEvent(event);
+            }
+        };
     }
 }
 using namespace Kumazuma::Game;
@@ -36,31 +44,37 @@ void Kumazuma::Game::Runtime::Release()
     {
         auto tmp = s_managerInner;
         s_managerInner = nullptr;
-        tmp->m_tagNComs.clear();
-        tmp->m_objectNComs.clear();
-        tmp->m_objectPool.clear();
     }
 }
 
+Kumazuma::Game::Runtime::Runtime()
+{
+}
 Kumazuma::Game::Runtime::~Runtime()
 {
-    m_tagNComs.clear();
-    m_objectNComs.clear();
 }
+
 void Runtime::Update(float delta)
 {
+
     //TODO:스레드로 병렬화 가능
     using namespace Kumazuma::ThreadPool;
     UpdateEvent updateEvent{ delta };
     auto threadPoolManger{ Manager::Instance() };
     std::vector<std::shared_ptr<Task> > tasks;
-    for (auto pair : m_objectNComs)
+    
+    for (auto pair : m_tagComponentTable)
     {
-        for (auto& com : pair.second)
+        ComTagBase const* comtag{ pair.first };
+        auto& rMutex{ m_tableLock[comtag] };
+        std::shared_lock<std::shared_mutex> guard{ rMutex };
+        auto& rList{ pair.second };
+        for (auto it: rList)
         {
-            auto task = threadPoolManger->QueueTask([com, delta](TaskContext& context) {
+            auto task = threadPoolManger->QueueTask([comtag, it, delta](TaskContext& context) {
+                EventProcessor process{};
                 UpdateEvent updateEvent{ delta };
-                com->HandleEvent(&updateEvent);
+                process.Process( it, updateEvent);
                 });
             tasks.emplace_back(std::move(task));
         }
@@ -70,148 +84,101 @@ void Runtime::Update(float delta)
         task->Wait();
     }
     tasks.clear();
-    for (auto& mod: m_modules)
-    {
-        mod->PostUpdate(*this);
-    }
-    //TODO:스레드로 병렬화 가능
-    decltype(m_queue) queue;
-    while (m_queue.empty() == false)
-    {
-        queue = std::move(m_queue);
-        while (queue.empty() == false)
-        {   
-            auto item = std::move(queue.front());
-            queue.erase(queue.begin());
-            for (const auto& weak_ref : item.handledCompnent)
-            {
-                auto ref = weak_ref.lock();
-                ref->HandleEvent(item.event);
-            }
-            delete item.event;
-        }
-    }
     GC();
-}
-
-size_t Kumazuma::Game::Runtime::GetObjUid(const Object& obj)
-{
-    return obj.m_id;
-}
-
-std::shared_ptr<Object> Runtime::CreateObject(const ObjectFactory& factory)
-{
-    //std::lock_guard<std::shared_mutex> guard{ m_mutex };
-    m_objectPool.push_back(Object{ factory.m_tags.begin(), factory.m_tags.end() });
-    std::shared_ptr<Object> obj{ &*(--m_objectPool.end()) , &Runtime::DeleteObject};
-    obj->m_runtime = Runtime::Instance();
-    obj->m_id = ++m_lastGameObjectIndex;
-    for (auto& com : factory.m_components)
+    //TODO:스레드로 병렬화 가능
+    while (m_eventQueue.empty() == false)
     {
-        Component* clonedCom = com.second->Create();
-        auto com = std::shared_ptr<Component>{ clonedCom };
-        m_tagNComs[&com->GetTag()].push_back(com);
-        m_objectNComs[obj->m_id].push_back(com);
-        com->SetObject(obj);
+        EventQueueItem item;
+        if (m_eventQueue.try_pop(item))
+        {
+            auto task = threadPoolManger->QueueTask([item](TaskContext& context) {
+                EventProcessor process{};
+                auto ref = item.ptr.lock();
+                if (ref == nullptr)return;
+                process.Process(ref.get(), *item.event);
+                });
+            tasks.emplace_back(std::move(task));
+        }
     }
-    return obj;
+    for (auto& task : tasks)
+    {
+        task->Wait();
+    }
 }
 
-Kumazuma::Game::Runtime::Runtime():
-    m_lastGameObjectIndex{ 0 }
+auto Kumazuma::Game::Runtime::OnDeleteComponent(Component* com) -> void
 {
+    auto runtime{ Runtime::Instance() };
+    if (runtime == nullptr)
+    {
+        delete com;
+        return;
+    }
+    auto comTag{ &com->GetTag() };
+    auto& rLock = runtime->m_tableLock[comTag];
+    std::lock_guard<std::shared_mutex> guard{ rLock };
+    runtime->m_tagComponentTable[comTag].erase(com);
+    delete com;
 }
 
-void Runtime::DoBroadcast(const ComTagBase& comTag, Event* event, size_t objId /*= 0*/)
+
+
+void Runtime::DoBroadcast(const ComTagBase& comTag, Event* event, Object const* const pObj)
 {
-    if (comTag == COM_ANY && objId == 0)
+    auto& rEventTag{ event->GetTag() };
+    if (comTag == COM_ANY && pObj == nullptr)
     {
         delete event;
         return;
     }
-    Kumazuma::LinkedList<std::weak_ptr<Component> > componentList;
-    if (objId != 0)
+    EventQueueItem item;
+    item.event = std::shared_ptr<Event>(event);
+    if (pObj != nullptr)
     {
         //std::shared_lock<std::shared_mutex> guard{ m_mutex };
-        for (auto& com : m_objectNComs[objId])
+        for (auto& row : m_tagComponentTable)
         {
-            if (com->IsHandled(event->GetTag()) && (comTag == COM_ANY || comTag == com->GetTag()) )
+            auto comtag{ row.first };
+            auto& eventTag{ event->GetTag() };
+            auto& rTableLock{ m_tableLock[comtag] };
+            std::shared_lock<std::shared_mutex> guard{ rTableLock };
+            auto& rList{ row.second };
+            for (auto* com : rList)
             {
-                componentList.push_back(com);
+                if (com->IsHandled(eventTag) && (comTag == COM_ANY || comTag == com->GetTag()))
+                {
+                    item.ptr = com->weak_from_this();
+                    m_eventQueue.emplace(item);
+                }
             }
-        }
-    }
-    else 
-    {
-        //std::shared_lock<std::shared_mutex> guard{ m_mutex };
-        const auto res = m_tagNComs.find(&comTag);
-        if (res != m_tagNComs.end())
-        {
-            componentList = res->second;
-        }
-    }
-    if (componentList.empty())
-    {
-        delete event;
-        return;
-    }
-    //std::lock_guard<std::shared_mutex> guard{ m_mutex };
-    m_queue.push_back(EventQueueItem{ event,std::move( componentList )});
-}
-void Runtime::DeleteObject(Object* ptr)
-{
-    auto instance = Instance();
-    if (instance != nullptr)
-    {
-        
-        //std::lock_guard<std::shared_mutex> guard{ instance->m_mutex };
-        instance->m_readyToDestoryObjectQueue.push_back(ptr->m_id);
-        for (auto& com : instance->m_objectNComs[ptr->m_id])
-        {
-            com->UnbindAll();
         }
     }
     else
     {
-        
+        //std::shared_lock<std::shared_mutex> guard{ m_mutex };
+        auto& rTableLock{ m_tableLock[&comTag] };
+        std::shared_lock<std::shared_mutex> guard{ rTableLock };
+        const auto res = m_tagComponentTable.find(&comTag);
+        if (res == m_tagComponentTable.end())return;
+        auto& rList{ res->second };
+        for (auto* com : rList)
+        {
+            item.ptr = com->weak_from_this();
+            m_eventQueue.emplace(item);
+        }
     }
 }
-void Kumazuma::Game::Runtime::GC()
+
+auto Kumazuma::Game::Runtime::AddComponent(ComTagBase const* comtag, Component* ptr) -> std::shared_ptr<Component>
 {
-    //std::lock_guard<std::shared_mutex> guard{ m_mutex };
-    //죽을 준비가 된 오브젝트들을 정리한다.
-    bool r = m_readyToDestoryObjectQueue.empty() == false;
-    while (m_readyToDestoryObjectQueue.empty() == false)
-    {
-        auto uid = *m_readyToDestoryObjectQueue.begin();
-        m_readyToDestoryObjectQueue.pop_front();
-        m_objectNComs.erase(uid);
-        auto end = m_objectPool.end();
-        for (auto it = m_objectPool.begin(); it != end; ++it)
-        {
-            if (it->m_id == uid)
-            {
-                m_objectPool.erase(it);
-                break;
-            }
-        }
-    }
-    if (r)
-    {
-        for (auto& it : m_tagNComs)
-        {
-            auto com = it.second.begin();
-            while (com != it.second.end())
-            {
-                if (com->expired())
-                {
-                    com = it.second.erase(com);
-                }
-                else
-                {
-                    ++com;
-                }
-            }
-        }
-    }
+    std::shared_ptr<Component> res{ ptr, &OnDeleteComponent };
+    auto& rTableLock{ m_tableLock[comtag] };
+    std::lock_guard<std::shared_mutex> guard{ rTableLock };
+    m_tagComponentTable[comtag].emplace(ptr);
+    return res;
+}
+
+auto Kumazuma::Game::Runtime::GC() -> void
+{
+
 }
