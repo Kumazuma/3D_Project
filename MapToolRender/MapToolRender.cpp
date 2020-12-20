@@ -21,6 +21,7 @@ using namespace msclr::interop;
 #include "Ray.h"
 #include <RenderModule/MapToolRenderer.h>
 #include <fstream>
+
 #include <iostream>
 using namespace DirectX;
 auto MapToolRender::GraphicsDevice::Initialize(System::Windows::Forms::Control^ renderView, unsigned width, unsigned height) -> void
@@ -43,9 +44,10 @@ MapToolRender::GraphicsDevice::GraphicsDevice(Control^ renderView, unsigned widt
 	ofstream.open(L"./graphices_log.txt");
 	if (ofstream.is_open())
 	{
-		m_logFileStreamPtr = new std::ofstream{ std::move(ofstream) };
+		auto r{ new std::ofstream{ std::move(ofstream) } };
+		m_logFileStreamPtr = r;
 		m_streamBufPtr = std::clog.rdbuf();
-		std::clog.rdbuf(m_logFileStreamPtr->rdbuf());
+		std::clog.rdbuf(r->rdbuf());
 	}
 	else
 	{
@@ -186,8 +188,10 @@ MapToolRender::GraphicsDevice::!GraphicsDevice()
 	}
 	if (m_logFileStreamPtr != nullptr)
 	{
-		std::clog.rdbuf(m_streamBufPtr);
-		delete m_logFileStreamPtr;
+		auto ptr = reinterpret_cast<std::ofstream*>(m_logFileStreamPtr);
+		std::clog.rdbuf((decltype(ptr->rdbuf()))m_streamBufPtr);
+		delete ptr;
+		m_logFileStreamPtr = nullptr;
 	}
 }
 

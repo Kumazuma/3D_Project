@@ -32,6 +32,7 @@ private:
 	size_t const m_length;
 	size_t const m_hash;
 };
+
 template<typename CH>
 struct StringHelper{};
 template<>

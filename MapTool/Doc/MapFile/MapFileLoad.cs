@@ -26,17 +26,27 @@ namespace MapTool.Doc
             foreach(JToken token in objects)
             {
                 string name = null;
+                string type_ = null;
                 Transform transform;
-                if(token.Type != JTokenType.Object) throw new Exception("has no objects attribute");
+                
+                if(token.Type != JTokenType.Object) throw new Exception("token in objects array is not object");
                 var meshObj = token as JObject;
-                if(!meshObj.ContainsKey("transform")) throw new Exception("has no objects attribute");
+                
+                if (!meshObj.ContainsKey("type")) throw new Exception("object has no 'type' attribute");
+                var typeToken = meshObj["type"];
+                if (typeToken.Type != JTokenType.String) throw new Exception("type attribute's type is not string");
+                type_ = typeToken.Value<string>();
+
+                if (!meshObj.ContainsKey("transform")) throw new Exception("has no objects attribute");
                 var transformToken = meshObj["transform"];
                 if(transformToken.Type !=  JTokenType.Object) throw new Exception("has no objects attribute");
                 var jTransform = transformToken as JObject;
                 transform = Transform.Parse(jTransform);
+                
                 if(!meshObj.ContainsKey("name")) throw new Exception("has no objects attribute");
                 var nameToken = meshObj["name"];
                 if (nameToken.Type != JTokenType.String) throw new Exception("has no objects attribute");
+                name = nameToken.Value<string>();
 
 
                 //var nameToken = 

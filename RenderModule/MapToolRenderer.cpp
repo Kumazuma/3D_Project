@@ -128,7 +128,7 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     light.Type = D3DLIGHT_DIRECTIONAL;
     light.Ambient = D3DCOLORVALUE{ 0.1f, 0.1f, 0.1f, 0.1f };
     light.Diffuse = D3DCOLORVALUE{ 1.0f, 1.0f, 1.0f, 1.0f };
-    XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&light.Direction), XMVector3Normalize(XMVectorSet(-1.f, -2.f, -1.f, 0.f)));
+    XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&light.Direction), XMVector3Normalize(XMVectorSet(1.f, -2.f, 0.f, 0.f)));
     m_lights.emplace(L"global_light", light);
 }
 
@@ -326,7 +326,7 @@ auto MapToolRenderer::DefferedRender(RenderModule* pRenderModule) -> void
 
     COMPtr<IDirect3DSurface9> backbuffer;
     UINT passCount{};
-    D3DXVECTOR4 defaultSpecular{ 1.0f,1.0f,1.0f,10.f };
+    D3DXVECTOR4 defaultSpecular{ 0.0f,0.0f,0.0f,0.f };
     m_effect->SetMatrix("g_mView", reinterpret_cast<D3DXMATRIX*>(&m_viewMatrix));
     m_effect->SetMatrix("g_mViewProj", reinterpret_cast<D3DXMATRIX*>(&m_viewProjMatrix));
     m_effect->SetVector("g_vSpecular", &defaultSpecular);
