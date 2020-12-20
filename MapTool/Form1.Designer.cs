@@ -35,7 +35,8 @@ namespace MapTool
             this.visualStudioToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.파일ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.열기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.OpenFIleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.projectDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.종료ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.추가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,7 +44,6 @@ namespace MapTool
             this.StaticXMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wowMapMashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.naviMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.projectDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,7 +79,7 @@ namespace MapTool
             // 파일ToolStripMenuItem
             // 
             this.파일ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.열기ToolStripMenuItem,
+            this.OpenFIleToolStripMenuItem,
             this.projectDirectoryToolStripMenuItem,
             this.SaveToolStripMenuItem,
             this.종료ToolStripMenuItem});
@@ -87,11 +87,19 @@ namespace MapTool
             this.파일ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.파일ToolStripMenuItem.Text = "파일";
             // 
-            // 열기ToolStripMenuItem
+            // OpenFIleToolStripMenuItem
             // 
-            this.열기ToolStripMenuItem.Name = "열기ToolStripMenuItem";
-            this.열기ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.열기ToolStripMenuItem.Text = "열기";
+            this.OpenFIleToolStripMenuItem.Name = "OpenFIleToolStripMenuItem";
+            this.OpenFIleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.OpenFIleToolStripMenuItem.Text = "열기";
+            this.OpenFIleToolStripMenuItem.Click += new System.EventHandler(this.OpenFIleToolStripMenuItem_Click);
+            // 
+            // projectDirectoryToolStripMenuItem
+            // 
+            this.projectDirectoryToolStripMenuItem.Name = "projectDirectoryToolStripMenuItem";
+            this.projectDirectoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.projectDirectoryToolStripMenuItem.Text = "기준 폴더";
+            this.projectDirectoryToolStripMenuItem.Click += new System.EventHandler(this.projectDirectoryToolStripMenuItem_Click);
             // 
             // SaveToolStripMenuItem
             // 
@@ -145,13 +153,6 @@ namespace MapTool
             this.naviMeshToolStripMenuItem.Text = "Navi 메시";
             this.naviMeshToolStripMenuItem.Click += new System.EventHandler(this.naviMeshToolStripMenuItem_Click);
             // 
-            // projectDirectoryToolStripMenuItem
-            // 
-            this.projectDirectoryToolStripMenuItem.Name = "projectDirectoryToolStripMenuItem";
-            this.projectDirectoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.projectDirectoryToolStripMenuItem.Text = "기준 폴더";
-            this.projectDirectoryToolStripMenuItem.Click += new System.EventHandler(this.projectDirectoryToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -176,7 +177,7 @@ namespace MapTool
         private WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme vS2015DarkTheme1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 파일ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 열기ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem OpenFIleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SaveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 종료ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 추가ToolStripMenuItem;

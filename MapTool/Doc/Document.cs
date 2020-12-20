@@ -48,8 +48,11 @@ namespace MapTool.Doc
 
         public void AddObject(MapToolRender.MapObject mapObj)
         {
-            m_mapObjects.Add(mapObj);
-            PropertyChanged?.Invoke(mapObj, new PropertyChangedEventArgs("MapObjects"));
+            lock(this)
+            {
+                m_mapObjects.Add(mapObj);
+                PropertyChanged?.Invoke(mapObj, new PropertyChangedEventArgs("MapObjects"));
+            }
         }
         public void RemoveObject(MapToolRender.MapObject mapObj)
         {

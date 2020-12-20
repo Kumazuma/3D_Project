@@ -45,20 +45,32 @@ namespace MapTool.Doc
             m_staticMeshs.Add(path, newMesh);
             return newMesh.Clone() as StaticXMeshObj;
         }
-        public WowMapMesh GetObjMesh(string path)
+        public async Task<WowMapMesh> GetObjMesh(string path)
         {
             if (path == null)
             {
                 throw new ArgumentNullException();
             }
+
             path = System.IO.Path.GetFullPath(path);
-            if (m_objMeshs.ContainsKey(path))
+            var task = System.Threading.Tasks.Task<WowMapMesh>.Factory.StartNew(() =>
             {
-                return m_objMeshs[path].Clone() as WowMapMesh;
-            }
-            var newMesh = new WowMapMesh(GraphicsDevice.Instance, path);
-            m_objMeshs.Add(path, newMesh);
-            return newMesh.Clone() as WowMapMesh;
+                lock(this)
+                {
+                    if (m_objMeshs.ContainsKey(path))
+                    {
+                        return m_objMeshs[path].Clone() as WowMapMesh;
+                    }
+                }
+                
+                var newMesh = new WowMapMesh(GraphicsDevice.Instance, path);
+                lock(this)
+                {
+                    m_objMeshs.Add(path, newMesh);
+                }
+                return newMesh.Clone() as WowMapMesh;
+            });
+            return await task;
         }
     }
 }

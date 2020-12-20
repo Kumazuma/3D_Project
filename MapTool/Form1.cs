@@ -30,8 +30,8 @@ namespace MapTool
         {
             InitializeComponent();
 
-            MapToolCore.Environment.Instance.ProjectDirectory =System.IO.Path.GetFullPath(".");
-
+            MapToolCore.Environment.Instance.ProjectDirectory =System.IO.Path.GetFullPath(Properties.Settings.Default.ProjectDir);
+            MapToolCore.Environment.Instance.PropertyChanged += Env_PropertyChanged;
             m_renderView = new DockView<View.RenderView>();
             GraphicsDevice.Initialize(m_renderView.Content, 800, 600);
             m_renderView.Content.Initialize(800, 600);
@@ -81,6 +81,11 @@ namespace MapTool
             m_renderView.Content.RenderObjects = renderObjects;
             m_renderView.Content.MouseClick += RederView_MouseClick;
 
+        }
+
+        private void Env_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Properties.Settings.Default.ProjectDir = MapToolCore.Environment.Instance.ProjectDirectory;
         }
 
         private void RederView_MouseClick(object sender, MouseEventArgs e)
@@ -233,25 +238,23 @@ namespace MapTool
                 return;
             }
             var paths = fileDialog.FileNames;
-            var watcherTask = new System.Threading.Tasks.Task<List<WowMapMesh> >(() =>
+            List<Task<WowMapMesh> > taskList = new List<Task<WowMapMesh>>();
+            foreach(var path in paths)
             {
-                //var taskFactory = ();
-                List<WowMapMesh> res = new List<WowMapMesh>(paths.Length);
-
-                var parallet = System.Threading.Tasks.Parallel.ForEach(paths, (string path) =>
+                var task = System.Threading.Tasks.Task<WowMapMesh>.Factory.StartNew(() =>
                 {
-                    var mesh = new WowMapMesh(GraphicsDevice.Instance, path) { Name = System.IO.Path.GetFileNameWithoutExtension(path) };
-                    lock (res) { res.Add(mesh); }
+                    var mesh = Doc.MeshManager.Instance.GetObjMesh(path).Result;
+                    mesh.Name = System.IO.Path.GetFileNameWithoutExtension(path);
+                    return mesh;
                 });
-                return res;
-            });
-            watcherTask.Start();
-            var meshes = await watcherTask;
-            foreach (var mapMesh in meshes)
+                taskList.Add(task);
+            }
+            foreach(var task in taskList)
             {
-                renderObjects.Add(mapMesh);
-                mapMesh.PropertyChanged += RenderObj_PropertyChanged;
-                Doc.Document.Instance.AddObject(mapMesh);
+                var mesh = await task;
+                renderObjects.Add(mesh);
+                mesh.PropertyChanged += RenderObj_PropertyChanged;
+                Doc.Document.Instance.AddObject(mesh);
             }
             m_renderView.Content.Render();
         }
@@ -304,6 +307,47 @@ namespace MapTool
                 file.Nodes.Add(item);
             }
             file.Save();
+        }
+
+        private void OpenFIleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Filter = "map file(*.json)|*.json;";
+            if (dialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            try
+            {
+                var projectDir = MapToolCore.Environment.Instance.ProjectDirectory;
+                var mapFile = Doc.MapFile.Load(dialog.FileName);
+                Doc.Document.Instance.SelectedObject = null;
+                {
+                    var t = new List<MapObject>();
+                    t.AddRange(Doc.Document.Instance.MapObjects);
+                    foreach(var obj in t)
+                    {
+                        Doc.Document.Instance.RemoveObject(obj);
+                    }
+                }
+                renderObjects.Clear();
+                renderObjects.Add(skyBox);
+                skyBox.SkyBoxTexture = new CubeTexture(MapToolRender.GraphicsDevice.Instance, projectDir + mapFile.SkyBoxTexturePath);
+                foreach(var obj in mapFile.Nodes)
+                {
+                    var renderObj = obj as RenderObject;
+                    if (renderObj == null) continue;
+                    renderObjects.Add(renderObj);
+                    Doc.Document.Instance.AddObject(renderObj);
+                }
+                file = mapFile;
+                m_renderView.Content.Render();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"파일을 열지 못했습니다.\n{ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+            }
         }
     }
 }

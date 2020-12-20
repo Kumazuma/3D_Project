@@ -14,6 +14,8 @@ namespace MapTool.Doc
     {
         private MapFile(JObject jObj)
         {
+            collection = new Collection(this);
+
             string projectDir = MapToolCore.Environment.Instance.ProjectDirectory;
             if (!jObj.ContainsKey("skybox")) throw new Exception("has no skybox attribute");
             var skyBox = jObj["skybox"];
@@ -23,6 +25,7 @@ namespace MapTool.Doc
             var objectsToken = jObj["objects"];
             if (objectsToken.Type != JTokenType.Array) throw new Exception("has no objects attribute");
             var objects = objectsToken as JArray;
+            var taskList = new List<Task >();
             foreach(JToken token in objects)
             {
                 string name = null;
@@ -55,21 +58,33 @@ namespace MapTool.Doc
                     if(pathToken.Type != JTokenType.String) throw new Exception("has no objects attribute");
                     path = pathToken.Value<string>();
                 }
-                RenderObject obj = null;
+                Task task = null;
                 switch(type_)
                 {
                     case "OBJ_MESH":
-                        obj = MeshManager.Instance.GetObjMesh(path);
+                        task = Task.Factory.StartNew(() =>
+                        {
+                            path = projectDir + path;
+                            path = System.IO.Path.GetFullPath(path);
+                            var mesh = MeshManager.Instance.GetObjMesh(path).Result;
+                            if(mesh != null)
+                            {
+                                lock(this)
+                                {
+                                    mesh.Transform = transform;
+                                    mesh.Name = name;
+                                    mapObjects.Add(mesh);
+                                }
+                            }
+                        });
+                        taskList.Add(task);
                         break;
                 }
-                if(obj != null)
-                {
-                    obj.Transform = transform;
-                    obj.Name = name;
-                    mapObjects.Add(obj);
-                }
-                
                 //var nameToken = 
+            }
+            foreach(var task in taskList)
+            {
+                task.Wait();
             }
         }
         public static MapFile Load(string filePath)

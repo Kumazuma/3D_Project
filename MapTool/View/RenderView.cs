@@ -27,6 +27,15 @@ namespace MapTool.View
             InitializeComponent();
             camera = new MapToolRender.Camera();
             this.Paint += RenderView_Paint;
+            this.MouseWheel += RenderView_MouseWheel;
+        }
+
+        private void RenderView_MouseWheel(object sender, MouseEventArgs e)
+        {
+            var wheelCount = e.Delta ;
+            camera.MoveForward(wheelCount);
+            Render();
+
         }
 
         private void RenderView_Paint(object sender, PaintEventArgs e)
@@ -60,17 +69,16 @@ namespace MapTool.View
         private void RenderView_MouseDown(object sender, MouseEventArgs e)
         {
             //Ctrl이 눌린 상태면 위아래 좌우로 이동하는 행동을 하면 된다.
-            if( (ModifierKeys & Keys.Control) != 0)
+            if (ModifierKeys != 0) return;
+            if (m_mouseOperation != MouseOperation.None) return;
+            switch (e.Button)
             {
-                m_mouseOperation = MouseOperation.MovingUpRight;
-            }
-            else if((ModifierKeys & Keys.Alt) != 0)
-            {
-                m_mouseOperation = MouseOperation.MovingForward;
-            }
-            else if ((ModifierKeys & Keys.Shift) != 0)
-            {
-                m_mouseOperation = MouseOperation.Rotating;
+                case MouseButtons.Left:
+                    m_mouseOperation = MouseOperation.Rotating;
+                    break;
+                case MouseButtons.Right:
+                    m_mouseOperation = MouseOperation.MovingUpRight;
+                    break;
             }
             m_prevMousePosition = e.Location;
         }
