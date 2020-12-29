@@ -12,6 +12,7 @@ namespace MapTool.Doc
         Dictionary<string, StaticXMeshObj> m_staticMeshs = new Dictionary<string, StaticXMeshObj>();
         Dictionary<string, SkinnedXMeshObj> m_skinnedMeshs = new Dictionary<string, SkinnedXMeshObj>();
         Dictionary<string, WowMapMesh> m_objMeshs = new Dictionary<string, WowMapMesh>();
+        Dictionary<string, Task<WowMapMesh> > m_loadingMeshsPath = new Dictionary<string, Task<WowMapMesh>>();
         TargetObject targetObject;
         public static ResourceManager Instance { get => s_instance; }
 
@@ -60,7 +61,7 @@ namespace MapTool.Doc
             }
             return targetObject.Clone() as TargetObject;
         }
-        public async Task<WowMapMesh> GetObjMesh(string path)
+        public Task<WowMapMesh> GetObjMesh(string path)
         {
             if (path == null)
             {
@@ -68,24 +69,34 @@ namespace MapTool.Doc
             }
 
             path = System.IO.Path.GetFullPath(path);
-            var task = System.Threading.Tasks.Task<WowMapMesh>.Factory.StartNew(() =>
+
+            lock(this)
             {
-                lock(this)
+                if(m_loadingMeshsPath.ContainsKey(path))
                 {
-                    if (m_objMeshs.ContainsKey(path))
+                    return Task<WowMapMesh>.Factory.StartNew(() => m_loadingMeshsPath[path].Result.Clone() as WowMapMesh);
+                }
+                var task = System.Threading.Tasks.Task<WowMapMesh>.Factory.StartNew(() =>
+                {
+                    lock(this)
                     {
-                        return m_objMeshs[path].Clone() as WowMapMesh;
+                        if (m_objMeshs.ContainsKey(path))
+                        {
+                            return m_objMeshs[path].Clone() as WowMapMesh;
+                        }
                     }
-                }
                 
-                var newMesh = new WowMapMesh(GraphicsDevice.Instance, path);
-                lock(this)
-                {
-                    m_objMeshs.Add(path, newMesh);
-                }
-                return newMesh.Clone() as WowMapMesh;
-            });
-            return await task;
+                    var newMesh = new WowMapMesh(GraphicsDevice.Instance, path);
+                    lock(this)
+                    {
+                        m_objMeshs.Add(path, newMesh);
+                     
+                    }
+                    return newMesh.Clone() as WowMapMesh;
+                });
+                m_loadingMeshsPath.Add(path, task);
+                return task;
+            }
         }
     }
 }

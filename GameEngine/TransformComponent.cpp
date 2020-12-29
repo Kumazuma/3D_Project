@@ -14,7 +14,7 @@ namespace Kumazuma
 		
 		TransformComponent::TransformComponent():
 			Component{ TAG },
-			m_scale{},
+			m_scale{1.f, 1.f, 1.f},
 			m_position{},
 			m_rotation{}
 		{

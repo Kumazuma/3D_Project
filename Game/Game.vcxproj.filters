@@ -29,6 +29,24 @@
     <ClCompile Include="COMRenderObjectContainer.cpp">
       <Filter>Component\Render</Filter>
     </ClCompile>
+    <ClCompile Include="BoxColliderAttribute.cpp">
+      <Filter>Data\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="SphareColliderAttribute.cpp">
+      <Filter>Data\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderAttribute.cpp">
+      <Filter>Data\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterMeta.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Collder.cpp">
+      <Filter>Data\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.hpp" />
@@ -89,6 +107,24 @@
     <ClInclude Include="COMRenderObjectContainer.hpp">
       <Filter>Component\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterMeta.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Collder.hpp">
+      <Filter>Data\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderAttribute.hpp">
+      <Filter>Data\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxColliderAttribute.hpp">
+      <Filter>Data\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="SphareColliderAttribute.hpp">
+      <Filter>Data\Collider</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Game.ico">
@@ -122,6 +158,15 @@
     </Filter>
     <Filter Include="Component\Render">
       <UniqueIdentifier>{ced79485-8e05-4ab8-bf39-8cd5323f699b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Anim">
+      <UniqueIdentifier>{9e794cf1-6315-4037-85b3-d52871e73143}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{56026248-1c14-42cd-bd05-3067924e2999}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Collider">
+      <UniqueIdentifier>{a14e176b-2a51-4930-811b-d07c8ddb9616}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

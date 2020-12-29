@@ -52,7 +52,21 @@ namespace MapTool.View
             }
 
         }
-
+        public void ReloadObjects()
+        {
+            listBox1.SuspendLayout();
+            mapObjects.Clear();
+            listBox1.DataSource = null;
+            mapObjects.Add(Doc.Document.Instance.World);
+            foreach (var obj in Doc.Document.Instance.MapObjects)
+            {
+                mapObjects.Add(obj);
+                obj.PropertyChanged += MapObj_PropertyChanged;
+            }
+            listBox1.DataSource = mapObjects;
+            //mapObjects.ResetBindings();
+            listBox1.ResumeLayout();
+        }
         private void MapObj_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             
@@ -113,7 +127,6 @@ namespace MapTool.View
                 if (newObj == null) continue;
                 Doc.Document.Instance.AddObject(newObj);
                 //TODO: 트리에서 복제되었을 때 메인 프레임에서 삭제되었음을 알 수 있게 처리 해야함
-
             }
         }
 
@@ -176,11 +189,11 @@ namespace MapTool.View
             private void DummyTransform_PropertyChanged(object sender, PropertyChangedEventArgs e)
             {
                 int objectCount = renderObjects.Length;
-                for (int i = 0; i < objectCount; ++i)
+                System.Threading.Tasks.Parallel.ForEach(renderObjects, (RenderObject renderObject, ParallelLoopState state, long index) =>
                 {
-                    MapToolCore.Position position = baseTransforms[i].Position;
-                    MapToolCore.Scale scale = baseTransforms[i].Scale;
-                    MapToolCore.Rotation rotation = baseTransforms[i].Rotation;
+                    MapToolCore.Position position = baseTransforms[index].Position;
+                    MapToolCore.Scale scale = baseTransforms[index].Scale;
+                    MapToolCore.Rotation rotation = baseTransforms[index].Rotation;
                     position.X += dummyTransform.Position.X;
                     position.Y += dummyTransform.Position.Y;
                     position.Z += dummyTransform.Position.Z;
@@ -193,10 +206,10 @@ namespace MapTool.View
                     rotation.Y += dummyTransform.Rotation.Y;
                     rotation.Z += dummyTransform.Rotation.Z;
 
-                    renderObjects[i].Transform.Position = position;
-                    renderObjects[i].Transform.Rotation = rotation;
-                    renderObjects[i].Transform.Scale = scale;
-                }
+                    renderObjects[index].Transform.Position = position;
+                    renderObjects[index].Transform.Rotation = rotation;
+                    renderObjects[index].Transform.Scale = scale;
+                });
             }
         }
     }

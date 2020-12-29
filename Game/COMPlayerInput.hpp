@@ -1,7 +1,7 @@
 #pragma once
 #include<game/component.hpp>
 #include<game/runtime.hpp>
-#include<RenderModule/SkinnedXMeshObject.h>
+#include"SkinnedXMeshObject.h"
 namespace Kumazuma::Client
 {
 	class COMPlayerInput : public Game::Component

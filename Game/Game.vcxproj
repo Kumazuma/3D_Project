@@ -140,6 +140,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableSpecificWarnings>4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,6 +161,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <DisableSpecificWarnings>4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,7 +173,11 @@
   <ItemGroup>
     <ClInclude Include="..\common\json.hpp" />
     <ClInclude Include="app.h" />
+    <ClInclude Include="BoxColliderAttribute.hpp" />
     <ClInclude Include="CameraComponent.hpp" />
+    <ClInclude Include="CharacterMeta.hpp" />
+    <ClInclude Include="Collder.hpp" />
+    <ClInclude Include="ColliderAttribute.hpp" />
     <ClInclude Include="COMPlayerInput.hpp" />
     <ClInclude Include="COMRenderObjectContainer.hpp" />
     <ClInclude Include="constvar.hpp" />
@@ -183,8 +189,10 @@
     <ClInclude Include="macro.hpp" />
     <ClInclude Include="ObjectTag.hpp" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.hpp" />
+    <ClInclude Include="SphareColliderAttribute.hpp" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestScene.hpp" />
     <ClInclude Include="vector.hpp" />
@@ -192,14 +200,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
+    <ClCompile Include="BoxColliderAttribute.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CharacterMeta.cpp" />
+    <ClCompile Include="Collder.cpp" />
+    <ClCompile Include="ColliderAttribute.cpp" />
     <ClCompile Include="COMPlayerInput.cpp" />
     <ClCompile Include="COMRenderObjectContainer.cpp" />
     <ClCompile Include="Env.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="kzEventTag.cpp" />
     <ClCompile Include="ObjectTag.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="SphareColliderAttribute.cpp" />
     <ClCompile Include="TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>

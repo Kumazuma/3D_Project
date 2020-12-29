@@ -12,7 +12,7 @@ inline void CreateWorldTransform(
 {
 	using namespace DirectX;
 	XMVECTOR vRotation{XMLoadFloat3(&rotation)};
-	vRotation = vRotation * 180.f /XM_PI;
+	vRotation = vRotation * (XM_2PI / 360.f);
 
 	XMMATRIX mScale{ XMMatrixScaling(scale.x, scale.y,scale.z) };
 	XMMATRIX mRotation{ XMMatrixRotationRollPitchYawFromVector(vRotation) };

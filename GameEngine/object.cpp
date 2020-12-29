@@ -10,6 +10,7 @@ Kumazuma::Game::Object::Object(Object&& other) noexcept:
 	m_mutex{},
 	m_tags{std::move(other.m_tags)}
 {
+
 }
 auto Kumazuma::Game::Object::Tag(ObjectTag const& rTag) -> void
 {

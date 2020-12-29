@@ -3,18 +3,18 @@
 class InitializeFailedException
 {
 public:
-	InitializeFailedException(wchar_t const* const fileName, int line, std::string const& what);
+	InitializeFailedException(wchar_t const* const fileName, int line, std::wstring const& what);
 	inline auto FileName()const->wchar_t const*;
 	inline auto Line()const->int;
-	inline auto What()const->std::string const&;
+	inline auto What()const->std::wstring const&;
 private:
 	wchar_t const* m_file;
 	int m_line;
-	std::string m_errorMsg;
+	std::wstring m_errorMsg;
 };
 inline InitializeFailedException::InitializeFailedException(
 	wchar_t const* const fileName,
-	int line, std::string const& what):
+	int line, std::wstring const& what):
 	m_file{fileName},
 	m_line{ line },
 	m_errorMsg{what}
@@ -32,7 +32,7 @@ inline auto InitializeFailedException::Line() const -> int
 	return m_line;
 }
 
-inline auto InitializeFailedException::What() const -> std::string const&
+inline auto InitializeFailedException::What() const -> std::wstring const&
 {
 	return m_errorMsg;
 }

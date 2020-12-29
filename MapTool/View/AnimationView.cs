@@ -45,11 +45,15 @@ namespace MapTool.View
             lastTimeSpan = stopWatch.Elapsed;
             m_timer.Start();
             m_playing = true;
+            var preTime = DateTime.Now;
+
         }
         private void LoadXMesh(string xMeshPath)
         {
+            var preTime = DateTime.Now;
+
             objList.Remove(animMeshObj);
-            animMeshObj = new MapToolRender.SkinnedXMeshObj(MapToolRender.GraphicsDevice.Instance, xMeshPath);
+            animMeshObj = Doc.ResourceManager.Instance.GetSkinnedMesh( xMeshPath);
             animMeshObj.PropertyChanged += AnimMeshObj_PropertyChanged;
             meta.MeshFilePath = xMeshPath;
             Doc.Document.Instance.SelectedObject = animMeshObj;
@@ -73,7 +77,10 @@ namespace MapTool.View
             var timeSpan = stopWatch.Elapsed;
             var delta = timeSpan - lastTimeSpan;
             lastTimeSpan = timeSpan;
-            
+            DateTime now = DateTime.Now;
+            DateTime pre = DateTime.Now;
+            TimeSpan s = now - pre;
+         
             if (animMeshObj != null && m_playing )
             {
                 if(animationState == AnimationPlayState.Play)

@@ -344,7 +344,7 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
                     m_pVertexPositions->emplace_back(pos);
                     findIt = itemIndexTable.emplace(index, newVertexIndex).first;
                 }
-                newIndex[v] = findIt->second;
+                newIndex[v] = static_cast<u32>(findIt->second);
 
             }
             indexOffset += fv;
@@ -365,7 +365,7 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     COMPtr<IDirect3DDevice9> pDevice;
     pRenderModule->GetDevice(&pDevice);
     hr = pDevice->CreateVertexBuffer(
-        vertices.size() * VERTEX_SIZE,
+        static_cast<UINT>(vertices.size() * VERTEX_SIZE),
         D3DUSAGE_WRITEONLY,
         FVF,
         D3DPOOL_MANAGED,
@@ -380,7 +380,7 @@ auto WowMapMeshObject::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
     m_pVertexBuffers->Lock(0, 0, reinterpret_cast<void**>(&pVertices), 0);
     memcpy_s(pVertices, vertices.size() * VERTEX_SIZE, vertices.data(), vertices.size() * VERTEX_SIZE);
     m_pVertexBuffers->Unlock();
-    m_vertexCount = vertices.size();
+    m_vertexCount = static_cast<u32>(vertices.size());
     std::unordered_map<std::wstring, COMPtr<IDirect3DTexture9> > textures;
 
     for (auto& rMat : reader.GetMaterials())
@@ -540,7 +540,7 @@ WowMapMeshSubset::WowMapMeshSubset(RenderModule* pRenderModule, std::shared_ptr<
     auto const& rVertexPositions{ *vertexPositions };
     HRESULT hr{};
     hr = pDevice->CreateIndexBuffer(
-        WowMapMeshObject::INDEX_SIZE * indices.size(),
+        static_cast<UINT>(WowMapMeshObject::INDEX_SIZE * indices.size()),
         D3DUSAGE_WRITEONLY,
         WowMapMeshObject::INDEX_TYPE,
         D3DPOOL_MANAGED,

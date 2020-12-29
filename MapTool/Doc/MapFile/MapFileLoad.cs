@@ -25,7 +25,7 @@ namespace MapTool.Doc
             var objectsToken = jObj["objects"];
             if (objectsToken.Type != JTokenType.Array) throw new Exception("has no objects attribute");
             var objects = objectsToken as JArray;
-            var taskList = new List<Task >();
+            var taskList = new List<Task<RenderObject> >();
             foreach(JToken token in objects)
             {
                 string name = null;
@@ -58,7 +58,7 @@ namespace MapTool.Doc
                     if(pathToken.Type != JTokenType.String) throw new Exception("has no objects attribute");
                     path = pathToken.Value<string>();
                 }
-                Task task = null;
+                Task<RenderObject> task = null;
                 switch(type_)
                 {
                     case "OBJ_MESH":
@@ -87,22 +87,21 @@ namespace MapTool.Doc
 
                                 }
                             }
-                            task = Task.Factory.StartNew(() =>
+                            var ss = Task<RenderObject>.Run(() =>
                             {
                                 path = projectDir + path;
                                 path = System.IO.Path.GetFullPath(path);
                                 var mesh = ResourceManager.Instance.GetObjMesh(path).Result;
                                 if (mesh != null)
                                 {
-                                    lock (this)
-                                    {
-                                        mesh.Transform = transform;
-                                        mesh.Name = name;
-                                        mesh.Usage = usage;
-                                        mapObjects.Add(mesh);
-                                    }
+                                    mesh.Transform = transform;
+                                    mesh.Name = name;
+                                    mesh.Usage = usage;
+                                    return mesh as RenderObject;
                                 }
+                                return null;
                             });
+                            task = ss;
                         }
                         taskList.Add(task);
                         break;
@@ -119,7 +118,7 @@ namespace MapTool.Doc
             }
             foreach(var task in taskList)
             {
-                task.Wait();
+                mapObjects.Add(task.Result);
             }
         }
         public static MapFile Load(string filePath)

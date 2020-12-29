@@ -14,6 +14,10 @@
 #include <tbb/concurrent_queue.h>
 namespace Kumazuma
 {
+	namespace ThreadPool
+	{
+		class Manager;
+	}
 	namespace Game
 	{
 		class ComTagBase;
@@ -62,12 +66,14 @@ namespace Kumazuma
 
 		private:
 			std::vector<std::unique_ptr<Module> > m_modules;
+			std::shared_ptr<ThreadPool::Manager> m_threadPoolMgr;
 			std::mutex m_lock;
 			std::unordered_map<ComTagBase const*, std::shared_mutex> m_tableLocks;
 			std::unordered_map<ComTagBase const*, std::unordered_set<Component*> > m_tagComponentTable;
 			tbb::concurrent_queue<EventQueueItem> m_eventQueue;
 		private:
 			static std::shared_ptr<Runtime> s_managerInner;
+
 		};
 		template<typename _ComT, typename _Evt>
 		inline void Runtime::Broadcast(const ComponentTag<_ComT>& tag, _Evt&& event)

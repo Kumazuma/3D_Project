@@ -19,19 +19,18 @@ namespace Kumazuma::Client
 	}
 	auto COMPlayerInput::Update(Game::UpdateEvent const& event) -> void
 	{
-		if (auto obj = GetObj().lock(); obj != nullptr)
+		if (auto obj{ GetObj().lock() }; obj != nullptr)
 		{
 			auto transform = obj->GetComponent<Game::TransformComponent>();
 			auto renderObjContainer{ obj->GetComponent<COMRenderObjectContainer>() };
 			auto renderObj{ renderObjContainer->Get(L"") };
-			if (renderObj)
-			{
-				auto skinnedMesh{ std::static_pointer_cast<SkinnedXMeshObject>(renderObj) };
-				XMFLOAT4X4 tranform;
-				transform->GenerateTransformMatrix(&tranform);
-				renderObj->SetTransform(tranform);
-				skinnedMesh->PlayAnimation(event.GetDelta());
-			}
+			if (!renderObj)return;
+			auto skinnedMesh{ std::static_pointer_cast<SkinnedXMeshObject>(renderObj) };
+			XMFLOAT4X4 tranform;
+			transform->GenerateTransformMatrix(&tranform);
+			renderObj->SetTransform(tranform);
+			skinnedMesh->PlayAnimation(event.GetDelta());
+			
 		}
 	}
 }

@@ -22,6 +22,7 @@ namespace MapTool.View
         IEnumerable<MapToolRender.RenderObject> mapObjects;
         MouseOperation m_mouseOperation = MouseOperation.None;
         Point? m_prevMousePosition = null;
+        Action renderAction = null;
         public RenderView()
         {
             InitializeComponent();
@@ -50,7 +51,17 @@ namespace MapTool.View
         public void Render()
         {
             if (mapObjects == null) return;
-            MapToolRender.GraphicsDevice.Instance.Render(this, mapObjects, camera);
+            if (!this.Created) return;
+            if (renderAction != null) return;
+            renderAction = new Action(() =>
+            {
+                if (renderAction == null) return;
+                MapToolRender.GraphicsDevice.Instance.Render(this, mapObjects, camera);
+                renderAction = null;
+            });
+            this.BeginInvoke(renderAction);
+
+
         }
         public MapToolRender.Camera CurrentCamera
         {

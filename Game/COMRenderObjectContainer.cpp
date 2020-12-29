@@ -1,5 +1,5 @@
 #include "COMRenderObjectContainer.hpp"
-#include <RenderModule/RenderObject.h>
+#include "RenderObject.h"
 namespace Kumazuma::Client
 {
     Game::ComponentTag<COMRenderObjectContainer> COMRenderObjectContainer::TAG{ "COMRenderObjectContainer" };
@@ -39,6 +39,16 @@ namespace Kumazuma::Client
     auto COMRenderObjectContainer::Clone() const -> Game::Component*
     {
         return new COMRenderObjectContainer{ *this };
+    }
+
+    auto COMRenderObjectContainer::begin() const -> Collection::const_iterator
+    {
+        return m_collection.begin();
+    }
+
+    auto COMRenderObjectContainer::end() const -> Collection::const_iterator
+    {
+        return m_collection.end();
     }
 
 }

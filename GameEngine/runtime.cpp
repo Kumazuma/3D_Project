@@ -4,6 +4,7 @@
 #include"include/game/object.hpp"
 #include"include/game/objectfactory.hpp"
 #include"include/game/ThreadPoolMgr.hpp"
+#include"ThreadPoolMgrImpl.hpp"
 #include<omp.h>
 namespace Kumazuma
 {
@@ -49,6 +50,7 @@ void Kumazuma::Game::Runtime::Release()
 
 Kumazuma::Game::Runtime::Runtime()
 {
+    m_threadPoolMgr= std::static_pointer_cast<ThreadPool::Manager>(ThreadPoolManagerImpl::Create());
 }
 Kumazuma::Game::Runtime::~Runtime()
 {
@@ -60,7 +62,6 @@ void Runtime::Update(float delta)
     //TODO:스레드로 병렬화 가능
     using namespace Kumazuma::ThreadPool;
     UpdateEvent updateEvent{ delta };
-    auto threadPoolManger{ Manager::Instance() };
     std::vector<std::shared_ptr<Task> > tasks;
     
     for (auto pair : m_tagComponentTable)
@@ -71,7 +72,7 @@ void Runtime::Update(float delta)
         auto& rList{ pair.second };
         for (auto it: rList)
         {
-            auto task = threadPoolManger->QueueTask([comtag, it, delta](TaskContext& context) {
+            auto task = m_threadPoolMgr->QueueTask([comtag, it, delta](TaskContext& context) {
                 EventProcessor process{};
                 UpdateEvent updateEvent{ delta };
                 process.Process( it, updateEvent);
@@ -84,6 +85,7 @@ void Runtime::Update(float delta)
         task->Wait();
     }
     tasks.clear();
+    m_threadPoolMgr->DispatchTask();
     GC();
     //TODO:스레드로 병렬화 가능
     while (m_eventQueue.empty() == false)
@@ -91,7 +93,7 @@ void Runtime::Update(float delta)
         EventQueueItem item;
         if (m_eventQueue.try_pop(item))
         {
-            auto task = threadPoolManger->QueueTask([item](TaskContext& context) {
+            auto task = m_threadPoolMgr->QueueTask([item](TaskContext& context) {
                 EventProcessor process{};
                 auto ref = item.ptr.lock();
                 if (ref == nullptr)return;
@@ -99,11 +101,13 @@ void Runtime::Update(float delta)
                 });
             tasks.emplace_back(std::move(task));
         }
+        m_threadPoolMgr->DispatchTask();
     }
     for (auto& task : tasks)
     {
         task->Wait();
     }
+    m_threadPoolMgr->DispatchTask();
 }
 
 auto Kumazuma::Game::Runtime::OnDeleteComponent(Component* com) -> void

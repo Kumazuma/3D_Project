@@ -16,6 +16,9 @@
 #include "MapToolRenderer.h"
 #include"constvar.hpp"
 #include <game/ThreadPoolMgr.hpp>
+#include "CharacterMeta.hpp"
+#include "COMRenderObjectContainer.hpp"
+#include "Player.h"
 using namespace Kumazuma::Client;
 using namespace DirectX;
 using Task = Kumazuma::ThreadPool::Task;
@@ -98,6 +101,10 @@ void TestScene::Loaded()
 	m_pCameraObject->AddComponent<CameraComponent>();
 	m_pCameraObject->AddComponent<Game::TransformComponent>();
 	m_pCameraObject->GetComponent<Game::TransformComponent>()->SetPosition(targets[L"PLAYER_SPAWN_POSITION"]);
+		
+	m_pPlayerObject = SpawnPlayer();
+	m_pPlayerObject->GetComponent<Game::TransformComponent>()->SetPosition(targets[L"PLAYER_SPAWN_POSITION"]);
+	m_objects.push_back(m_pPlayerObject);
 	XMFLOAT4X4 projMatrix;
 	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 4000.f, &projMatrix);
 	m_pRenderer->SetProjMatrix(projMatrix);
@@ -117,6 +124,14 @@ auto TestScene::Update(f32 timeDelta) -> void
 	for (auto& mapMash : m_staticMapMeshs)
 	{
 		mapMash->PrepareRender(m_pRenderer.get());
+	}
+	for (auto& obj : m_objects)
+	{
+		auto comRenderObjContainer{ obj->GetComponent<COMRenderObjectContainer>() };
+		for (auto mesh : *comRenderObjContainer)
+		{
+			mesh.second->PrepareRender(m_pRenderer.get());
+		}
 	}
 	
 	m_pRenderer->Render(renderModule.get());
@@ -150,6 +165,19 @@ auto TestLoadingScene::Update(f32 timeDelta) -> void
 	if (m_pMutex->try_lock())
 	{
 		m_msg = *m_threadMsg;
+		LOAD_STATE currentState{ *m_threadState };
+
+		switch (currentState)
+		{
+		case LOAD_STATE::COMPLETE:
+			App::Instance()->LoadScene<TestScene>(m_file);
+			break;
+		case LOAD_STATE::FAIL:
+			MessageBoxW(nullptr, m_msg.c_str(), nullptr, MB_ICONERROR);
+			App::Instance()->Exit();
+			break;
+		}
+
 		m_pMutex->unlock();
 	}
 	//TODO: display loading message
@@ -158,10 +186,11 @@ auto TestLoadingScene::Update(f32 timeDelta) -> void
 auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 	TestLoadingScene* testScene,
 	std::shared_ptr<std::mutex> mutex,
-	std::shared_ptr<std::atomic<LOAD_STATE>> threadState, std::shared_ptr<std::wstring> msg, std::shared_ptr<bool> die) -> void
+	std::shared_ptr<std::atomic<LOAD_STATE>> threadState,
+	std::shared_ptr<std::wstring> msg, std::shared_ptr<bool> die) -> void
 {
 	*threadState = LOAD_STATE::PROGRESSING;
-	std::vector<std::shared_ptr<Task> > loaders;
+	std::unordered_map<std::wstring, std::shared_ptr<Task> > loaders;
 	auto pThreadPoolMgr{ Kumazuma::ThreadPool::Manager::Instance() };
 	try
 	{
@@ -188,20 +217,50 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 					auto resourceMgr{ ResourceManager::Instance() };
 					auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
 					});
-				loaders.push_back(pWork);
-				
+				if (loaders.find(path) != loaders.end())
+				{
+					loaders.emplace(path, std::move(pWork));
+				}
 			}
 		}
+		//skinnedmesh폴더의 json파일들을 순회하면서 메시파일을 파싱합니다.
+		//HFILE 
+		WIN32_FIND_DATAW ffd{};
+		HANDLE hFind = INVALID_HANDLE_VALUE;
+		std::wstring animDir{ base_dir + L"/json/skinnedmesh/" };
+	
+		hFind = FindFirstFileW((animDir + L"*.json").c_str(), &ffd);
+		do
+		{
+			if ((ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+				continue;
+			std::wstring name{ ffd.cFileName };
+			if (auto index = name.find_last_of(L'.'); index != std::wstring::npos)
+			{
+				std::wstring nameWithoutExt{ name.substr(0, index) };
+				index += 1;
+				std::wstring_view view(name.c_str() + index, name.size() - index);
+				if (view != L"json")continue;
+				resourceMgr->LoadCharacterMetaData(nameWithoutExt, animDir + name);
+				auto meta{ resourceMgr->GetCharacterMeta(nameWithoutExt) };
+				auto meshPath{ base_dir + meta->GetMeshPathRef() };
+				std::shared_ptr<Task> pWork = nullptr;
+				pWork =
+					pThreadPoolMgr->QueueTask([nameWithoutExt,  meshPath](TaskContext& context) {
+					auto resourceMgr{ ResourceManager::Instance() };
+					auto meshObj = resourceMgr->LoadSkinnedMesh(nameWithoutExt, meshPath);
+						});
+				if (loaders.find(meshPath) != loaders.end())
+				{
+					loaders.emplace(meshPath, std::move(pWork));
+				}
+			}
+		} while (FindNextFileW(hFind, &ffd));
 		for (auto& it : loaders)
 		{
-			it->Wait();
+			it.second->Wait();
 		}
-		for (auto& it : loaders)
-		{
-			it->Wait();
-		}
-
-		App::Instance()->LoadScene<TestScene>(file);
+		testScene->m_file = file;
 		*threadState = LOAD_STATE::COMPLETE;
 	}
 	catch (std::wstring errMsg)

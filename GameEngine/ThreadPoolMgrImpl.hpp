@@ -11,6 +11,7 @@ class ThreadPoolManagerImpl : public Kumazuma::ThreadPool::Manager
 	~ThreadPoolManagerImpl();
 public:
 	static auto Instance()->std::shared_ptr<ThreadPoolManagerImpl>;
+	static auto Create()->std::shared_ptr<ThreadPoolManagerImpl>;
 public:
 	auto QueueTask(std::function<void(Kumazuma::ThreadPool::TaskContext&)> process)->std::shared_ptr<Kumazuma::ThreadPool::Task> override;
 	auto DispatchTask()->void override;

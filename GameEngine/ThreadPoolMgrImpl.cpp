@@ -27,9 +27,8 @@ ThreadPoolManagerImpl::ThreadPoolManagerImpl()
     GetSystemInfo(&sysInfo);
     SetThreadpoolCallbackPool(&m_callbackEnv, m_pThreadPool);
     SetThreadpoolThreadMaximum(m_pThreadPool, sysInfo.dwNumberOfProcessors);
-    SetThreadpoolThreadMinimum(m_pThreadPool, sysInfo.dwNumberOfProcessors);
+    SetThreadpoolThreadMinimum(m_pThreadPool, 1);
     SetThreadpoolCallbackCleanupGroup(&m_callbackEnv, m_pCleanupGroup, nullptr);
-
 }
 
 ThreadPoolManagerImpl::~ThreadPoolManagerImpl()
@@ -52,10 +51,16 @@ auto ThreadPoolManagerImpl::Instance() -> std::shared_ptr<ThreadPoolManagerImpl>
     return s_pInstance;
 }
 
+auto ThreadPoolManagerImpl::Create() -> std::shared_ptr<ThreadPoolManagerImpl>
+{
+    return std::shared_ptr<ThreadPoolManagerImpl>(new ThreadPoolManagerImpl(), OnDelete);
+}
+
 auto ThreadPoolManagerImpl::QueueTask(std::function<void(Kumazuma::ThreadPool::TaskContext&)> process) -> std::shared_ptr<Kumazuma::ThreadPool::Task> 
 {
     PTP_WORK pWork{ CreateThreadpoolWork(Worker, new TaskItem{process}, &m_callbackEnv) };
     SubmitThreadpoolWork(pWork);
+    
     TaskImpl* newTask{ new TaskImpl{} };
     std::shared_ptr<Task> task{ std::shared_ptr < Task>{newTask,& OnDeleteWork} };
     newTask->work = pWork;

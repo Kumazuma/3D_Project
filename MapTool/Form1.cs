@@ -153,6 +153,7 @@ namespace MapTool
 
         private void Document_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (m_propertyView == null) return;
             switch(e.PropertyName)
             {
                 case "SelectedObject":
@@ -338,9 +339,10 @@ namespace MapTool
                     var renderObj = obj as RenderObject;
                     if (renderObj == null) continue;
                     renderObjects.Add(renderObj);
-                    Doc.Document.Instance.AddObject(renderObj);
+                    Doc.Document.Instance.MapObjects.Add(renderObj);
                 }
                 file = mapFile;
+                m_mapObjTreePanel.Content.ReloadObjects();
                 m_renderView.Content.Render();
             }
             catch(Exception ex)

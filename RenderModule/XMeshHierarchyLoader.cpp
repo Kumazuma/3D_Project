@@ -77,7 +77,7 @@ auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateMeshContainer(
             MultiByteToWideChar(CP_ACP,
                 0,
                 material.pTextureFilename,
-                strlen(material.pTextureFilename),
+                static_cast<int>( strlen(material.pTextureFilename)),
                 szFileName,
                 256);
             lstrcpy(szFullPath, m_path.c_str());
@@ -95,8 +95,8 @@ auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateMeshContainer(
 
         }
     }
-    pNewMeshContainer->NumMaterials = pNewMeshContainer->materials.size();
-    pNewMeshContainer->pMaterials = pNewMeshContainer->materials.data();
+    pNewMeshContainer->NumMaterials = static_cast<DWORD>(pNewMeshContainer->materials.size());
+    pNewMeshContainer->pMaterials =  pNewMeshContainer->materials.data();
     pNewMeshContainer->pAdjacency = pNewMeshContainer->adjacency.data();
     if (pSkinInfo == nullptr)
     {

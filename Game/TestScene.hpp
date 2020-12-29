@@ -11,7 +11,7 @@
 #include<vector>
 #include"json.hpp"
 class WowMapMeshObject;
-class RenderObject;
+struct RenderObject;
 namespace Kumazuma
 {
 	namespace Client
@@ -40,6 +40,7 @@ namespace Kumazuma
 			std::shared_ptr<std::mutex> m_pMutex;
 			std::shared_ptr<std::atomic<LOAD_STATE> > m_threadState;
 			std::wstring m_msg;
+			nlohmann::json m_file;
 			std::shared_ptr<std::wstring> m_threadMsg;
 			std::thread m_loadingThread;
 		};
@@ -56,6 +57,7 @@ namespace Kumazuma
 			std::unique_ptr<RenderObject> m_skybox;
 			std::vector<std::unique_ptr<WowMapMeshObject> > m_staticMapMeshs;
 			std::shared_ptr<Game::Object> m_pCameraObject;
+			std::shared_ptr<Game::Object> m_pPlayerObject;
 		};
 	}
 }

@@ -325,7 +325,7 @@ auto MapToolRenderer::DefferedRender(RenderModule* pRenderModule) -> void
 
     COMPtr<IDirect3DSurface9> backbuffer;
     UINT passCount{};
-    D3DXVECTOR4 defaultSpecular{ 0.0f,0.0f,0.0f,1.f };
+    D3DXVECTOR4 defaultSpecular{ 1.0f,1.0f,1.0f,1.f };
     m_effect->SetMatrix("g_mView", reinterpret_cast<D3DXMATRIX*>(&m_viewMatrix));
     m_effect->SetMatrix("g_mViewProj", reinterpret_cast<D3DXMATRIX*>(&m_viewProjMatrix));
     m_effect->SetVector("g_vSpecular", &defaultSpecular);

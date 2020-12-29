@@ -76,6 +76,7 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRendere
         }
         iter->pOriginalMesh->UnlockVertexBuffer();
         iter->MeshData.pMesh->UnlockVertexBuffer();
+        
     }
 }
 
@@ -195,7 +196,6 @@ SkinnedXMeshObject::SkinnedXMeshObject(SkinnedXMeshObject const* rhs):
 
 auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring const& filePath) -> HRESULT
 {
-
     HRESULT hr{};
     COMPtr<IDirect3DDevice9> pDevice;
     HierarchyLoader* pHierarchyLoader{};

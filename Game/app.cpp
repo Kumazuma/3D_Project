@@ -283,7 +283,7 @@ auto App::Initialize(HINSTANCE hInstance)->bool
                 auto pApp{ new  App{hInstance} };
                 s_instance.reset(pApp);
             }
-            catch (HRESULT hr)
+            catch (HRESULT )
             {
                 return false;
             }
