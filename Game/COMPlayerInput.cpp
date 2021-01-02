@@ -3,6 +3,7 @@
 #include <Game/TransformComponent.hpp>
 #include "COMRenderObjectContainer.hpp"
 #include "COMHeightmap.hpp"
+#include "HeightMap.hpp"
 namespace Kumazuma::Client
 {
 	using namespace Game;
@@ -51,17 +52,29 @@ namespace Kumazuma::Client
 			{
 				vDelta += vRight;
 			}
+			skinnedMesh->PlayAnimation(event.GetDelta());
+
 			XMVECTOR vMovingDir{ XMVector3Normalize(vDelta) };
+			auto heightMapCom{ obj->GetComponent<COMHeightMap>() };
+			auto heightMap{ heightMapCom->GetHeightMap() };
 
 			vDelta = vMovingDir * (event.GetDelta() * 100.f);
-			
-			vPosition += vDelta;
-			XMFLOAT3 newPosition{};
-			XMStoreFloat3(&newPosition, vPosition);
-			transform->SetPosition(newPosition);
+			XMVECTOR vNowPosition{ vPosition + vDelta };
+			XMVECTOR vUP{ 0.f, 1.f, 0.f, 0.f };
+			//정확하게 삼각형 위에 있다면
+			//얌전히 그 위에 있는다.
+			if (heightMap->IsOnTriangles(vNowPosition, vUP))
+			{
+				XMFLOAT3 newPosition{};
+				XMStoreFloat3(&newPosition, vNowPosition);
+				transform->SetPosition(newPosition);
+			}
+			else//그렇지 않다면,
+			{
+
+			}
 			transform->GenerateTransformMatrix(&transformMatrix);
 			renderObj->SetTransform(transformMatrix);
-			skinnedMesh->PlayAnimation(event.GetDelta());
 			
 		}
 	}

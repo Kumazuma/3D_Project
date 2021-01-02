@@ -23,3 +23,4 @@ using f64 = double;
 #ifndef fn_
 #define fn_ auto
 #endif
+

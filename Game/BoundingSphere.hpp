@@ -5,6 +5,7 @@
 #include<DirectXMath.h>
 #include"typedef.hpp"
 #include<numeric>
+#include<optional>
 class BoundSphere
 {
 public:
@@ -19,6 +20,7 @@ public:
 	template<typename FLOAT3>
 	inline auto IsInSphere(FLOAT3 const& pos)const->bool;
 	auto __vectorcall IsVectorInSphere(DirectX::XMVECTOR pos)const->bool;
+	auto __vectorcall RayIntersact(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDir)->std::optional<f32>;
 private:
 	DirectX::XMFLOAT3 m_center;
 	f32 m_radius;

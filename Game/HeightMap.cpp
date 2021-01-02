@@ -41,12 +41,12 @@ auto __vectorcall Kumazuma::Client::HeightMapContainer::RayPicking(DirectX::XMVE
     return res;
 }
 
-auto __vectorcall Kumazuma::Client::HeightMapContainer::IsOnTriangles(DirectX::XMVECTOR position) const -> bool
+auto __vectorcall Kumazuma::Client::HeightMapContainer::IsOnTriangles(DirectX::XMVECTOR position, DirectX::XMVECTOR up) const -> bool
 {
     if (m_boundingSphere.IsVectorInSphere(position) == false) return false;
     for (auto& it : m_children)
     {
-        if (it->IsOnTriangles(position))
+        if (it->IsOnTriangles(position, up))
         {
             return true;
         }
@@ -130,7 +130,7 @@ auto __vectorcall Kumazuma::Client::HeightMapSubMesh::RayPicking(DirectX::XMVECT
     return res != std::numeric_limits<f32>::max() ? std::optional<f32>{res} : std::nullopt;
 }
 
-auto __vectorcall Kumazuma::Client::HeightMapSubMesh::IsOnTriangles(DirectX::XMVECTOR position) const -> bool
+auto __vectorcall Kumazuma::Client::HeightMapSubMesh::IsOnTriangles(DirectX::XMVECTOR position, DirectX::XMVECTOR up) const -> bool
 {
     auto triangleIt{ m_triangles.begin() };
     auto normalsIt{ m_normalVectors.begin() };
@@ -138,10 +138,18 @@ auto __vectorcall Kumazuma::Client::HeightMapSubMesh::IsOnTriangles(DirectX::XMV
     auto const normalsEndIt{ m_normalVectors.end() };
     for (; triangleIt != triangleEndIt; ++triangleIt, ++normalsIt)
     {
+        auto mNormals{ XMLoadFloat4x4(&*normalsIt) };
+        float t{};
+        XMStoreFloat(&t, XMVector3Dot(up, mNormals.r[3]));
+        if (t <= 0.f)//내적의 결과가 0보다 작거나 같으면 둔각이다.
+        {
+            continue;
+        }
         auto vA{ XMLoadFloat3A(&(*m_vertices)[triangleIt->x]) };
         auto vB{ XMLoadFloat3A(&(*m_vertices)[triangleIt->y]) };
         auto vC{ XMLoadFloat3A(&(*m_vertices)[triangleIt->z]) };
-        auto mNormals{ XMLoadFloat4x4(&*normalsIt) };
+        
+
         auto vAP{ position - vA };
         auto vBP{ position - vB };
         auto vCP{ position - vC };
@@ -153,8 +161,7 @@ auto __vectorcall Kumazuma::Client::HeightMapSubMesh::IsOnTriangles(DirectX::XMV
         };
         //행렬로 계산하면 4개의 벡터를 각각 내적 연산한 것을 한 번에 구할 수 있다.
         XMMATRIX mDot = mD * DirectX::XMMatrixTranspose(mNormals);
-        float t{};
-        XMStoreFloat(&t, XMVector4Dot(position, mNormals.r[3]));
+        XMStoreFloat(&t, XMVector4Dot(XMVectorSetW(position, 1.f), mNormals.r[3]));
         bool res{
             XMVector3GreaterOrEqual(mDot.r[0], XMVectorZero()) &&
             XMVector3GreaterOrEqual(mDot.r[1], XMVectorZero()) &&

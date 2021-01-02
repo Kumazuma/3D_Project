@@ -16,7 +16,7 @@ namespace Kumazuma::Client
 		virtual ~HeightMap() = default;
 		//auto __vectorcall RayPicking(DirectX::XMVECTOR rayAt, DirectX::XMVECTOR rayDirection, f32* pOut)->bool;
 		virtual auto __vectorcall RayPicking(DirectX::XMVECTOR rayAt, DirectX::XMVECTOR rayDir)const->std::optional<f32> = 0;
-		virtual auto __vectorcall IsOnTriangles(DirectX::XMVECTOR position)const->bool = 0;
+		virtual auto __vectorcall IsOnTriangles(DirectX::XMVECTOR position, DirectX::XMVECTOR up)const->bool = 0;
 		virtual auto GetBoundingSphere() const->BoundSphere = 0;
 		virtual auto __vectorcall IsInBoundSheres(DirectX::XMVECTOR position) const->bool = 0;
 	};
@@ -26,7 +26,7 @@ namespace Kumazuma::Client
 	public:
 		HeightMapContainer(std::vector<std::unique_ptr<HeightMap > >&& children)noexcept;
 		auto __vectorcall RayPicking(DirectX::XMVECTOR rayAt, DirectX::XMVECTOR rayDir)const->std::optional<f32> override;
-		auto __vectorcall IsOnTriangles(DirectX::XMVECTOR position)const->bool override;
+		auto __vectorcall IsOnTriangles(DirectX::XMVECTOR position, DirectX::XMVECTOR up)const->bool override;
 		auto GetBoundingSphere() const->BoundSphere override;
 		auto __vectorcall IsInBoundSheres(DirectX::XMVECTOR position) const->bool override;
 
@@ -41,7 +41,7 @@ namespace Kumazuma::Client
 		HeightMapSubMesh(HeightMapSubMesh&& rhs)noexcept;
 
 		virtual auto __vectorcall RayPicking(DirectX::XMVECTOR rayAt, DirectX::XMVECTOR rayDir)const->std::optional<f32> override;
-		virtual auto __vectorcall IsOnTriangles(DirectX::XMVECTOR position)const->bool override;
+		virtual auto __vectorcall IsOnTriangles(DirectX::XMVECTOR position, DirectX::XMVECTOR up)const->bool override;
 		virtual auto GetBoundingSphere() const->BoundSphere override;
 		virtual auto __vectorcall IsInBoundSheres(DirectX::XMVECTOR position) const->bool override;
 
