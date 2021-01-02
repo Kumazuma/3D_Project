@@ -173,17 +173,22 @@
   <ItemGroup>
     <ClInclude Include="..\common\json.hpp" />
     <ClInclude Include="app.h" />
+    <ClInclude Include="BoundingSphere.hpp" />
     <ClInclude Include="BoxColliderAttribute.hpp" />
     <ClInclude Include="CameraComponent.hpp" />
     <ClInclude Include="CharacterMeta.hpp" />
     <ClInclude Include="Collder.hpp" />
     <ClInclude Include="ColliderAttribute.hpp" />
+    <ClInclude Include="COMHeightmap.hpp" />
+    <ClInclude Include="COMMoveController.hpp" />
     <ClInclude Include="COMPlayerInput.hpp" />
     <ClInclude Include="COMRenderObjectContainer.hpp" />
     <ClInclude Include="constvar.hpp" />
     <ClInclude Include="Env.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="HeightMap.hpp" />
+    <ClInclude Include="HeightMapBuilder.hpp" />
     <ClInclude Include="kzEnum.hpp" />
     <ClInclude Include="kzEventTag.hpp" />
     <ClInclude Include="macro.hpp" />
@@ -200,15 +205,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
+    <ClCompile Include="BoundingSphere.cpp" />
     <ClCompile Include="BoxColliderAttribute.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CharacterMeta.cpp" />
     <ClCompile Include="Collder.cpp" />
     <ClCompile Include="ColliderAttribute.cpp" />
+    <ClCompile Include="COMHeightmap.cpp" />
     <ClCompile Include="COMPlayerInput.cpp" />
     <ClCompile Include="COMRenderObjectContainer.cpp" />
     <ClCompile Include="Env.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="HeightMap.cpp" />
+    <ClCompile Include="HeightMapBuilder.cpp" />
     <ClCompile Include="kzEventTag.cpp" />
     <ClCompile Include="ObjectTag.cpp" />
     <ClCompile Include="Player.cpp" />

@@ -4,5 +4,6 @@
 #include<game/object.hpp>
 namespace Kumazuma::Client
 {
-	auto SpawnPlayer()->std::shared_ptr<Game::Object>;
+	class HeightMap;
+	auto SpawnPlayer(std::shared_ptr<HeightMap> heightmap)->std::shared_ptr<Game::Object>;
 }

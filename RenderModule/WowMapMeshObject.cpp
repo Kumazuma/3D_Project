@@ -531,6 +531,16 @@ auto WowMapMeshObject::RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLO
     return false;
 }
 
+auto WowMapMeshObject::GetVertices() const -> std::shared_ptr<const std::vector<DirectX::XMFLOAT3A>>
+{
+    return std::static_pointer_cast<const std::vector<DirectX::XMFLOAT3A>>(m_pVertexPositions);
+}
+
+auto WowMapMeshObject::GetSubsets() const -> std::unordered_map<std::wstring, std::shared_ptr<WowMapMeshSubset>> const&
+{
+    return m_subsets;
+}
+
 WowMapMeshSubset::WowMapMeshSubset(RenderModule* pRenderModule, std::shared_ptr<std::vector<DirectX::XMFLOAT3A> > const & vertexPositions, std::wstring const& materialName, std::vector<Triangle>&& indices):
     m_materialName{materialName},
     m_pVertexPositions{vertexPositions}
@@ -641,6 +651,10 @@ auto __vectorcall WowMapMeshSubset::RayPicking(DirectX::XMVECTOR rayAt, DirectX:
         *pOut = t;
     }
     return res;
+}
+auto WowMapMeshSubset::GetTriangles() const -> std::vector<Triangle> const&
+{
+    return this->m_indices;
 }
 WowMapMeshEntity::WowMapMeshEntity(
     WowMapMeshObject* obj,

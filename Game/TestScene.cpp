@@ -19,6 +19,7 @@
 #include "CharacterMeta.hpp"
 #include "COMRenderObjectContainer.hpp"
 #include "Player.h"
+#include "HeightMapBuilder.hpp"
 using namespace Kumazuma::Client;
 using namespace DirectX;
 using Task = Kumazuma::ThreadPool::Task;
@@ -84,7 +85,15 @@ void TestScene::Loaded()
 				XMMatrixTranslation			(pos.x, pos.y, pos.z)
 			);
 			meshObj->SetTransform(transformMat);
-			m_staticMapMeshs.emplace_back(std::move(meshObj));
+			std::string usage{ it[u8"usage"] };
+			if (usage == u8"TERRAIN")
+			{
+				m_mapMeshs.emplace_back(std::move(meshObj));
+			}
+			else
+			{
+				m_staticMapMeshs.emplace_back(std::move(meshObj));
+			}
 		}
 		else if (it[u8"type"] == u8"TARGET")
 		{
@@ -97,12 +106,18 @@ void TestScene::Loaded()
 			targets.emplace(path, pos);
 		}
 	}
+	HeightMapBuilder builder;
+	for (auto const& meshs : m_mapMeshs)
+	{
+		builder << *meshs;
+	}
+	m_heightMap = builder.Build();
 	m_pCameraObject.reset(new Game::Object{});
 	m_pCameraObject->AddComponent<CameraComponent>();
 	m_pCameraObject->AddComponent<Game::TransformComponent>();
 	m_pCameraObject->GetComponent<Game::TransformComponent>()->SetPosition(targets[L"PLAYER_SPAWN_POSITION"]);
 		
-	m_pPlayerObject = SpawnPlayer();
+	m_pPlayerObject = SpawnPlayer(m_heightMap);
 	m_pPlayerObject->GetComponent<Game::TransformComponent>()->SetPosition(targets[L"PLAYER_SPAWN_POSITION"]);
 	m_objects.push_back(m_pPlayerObject);
 	XMFLOAT4X4 projMatrix;
@@ -121,9 +136,13 @@ auto TestScene::Update(f32 timeDelta) -> void
 	m_pRenderer->SetViewMatrix(viewMatrix);
 
 	m_skybox->PrepareRender(m_pRenderer.get());
-	for (auto& mapMash : m_staticMapMeshs)
+	for (auto& mapMash : m_mapMeshs)
 	{
 		mapMash->PrepareRender(m_pRenderer.get());
+	}
+	for (auto& staticMesh : m_staticMapMeshs)
+	{
+		staticMesh->PrepareRender(m_pRenderer.get());
 	}
 	for (auto& obj : m_objects)
 	{

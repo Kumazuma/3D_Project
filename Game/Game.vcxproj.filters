@@ -47,6 +47,18 @@
     <ClCompile Include="Player.cpp">
       <Filter>Component\Player</Filter>
     </ClCompile>
+    <ClCompile Include="BoundingSphere.cpp">
+      <Filter>Component\Character\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="COMHeightmap.cpp">
+      <Filter>Component\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="HeightMap.cpp">
+      <Filter>Component\Height Map</Filter>
+    </ClCompile>
+    <ClCompile Include="HeightMapBuilder.cpp">
+      <Filter>Component\Height Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.hpp" />
@@ -125,6 +137,21 @@
     <ClInclude Include="SphareColliderAttribute.hpp">
       <Filter>Data\Collider</Filter>
     </ClInclude>
+    <ClInclude Include="COMHeightmap.hpp">
+      <Filter>Component\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingSphere.hpp">
+      <Filter>Component\Character\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="HeightMap.hpp">
+      <Filter>Component\Height Map</Filter>
+    </ClInclude>
+    <ClInclude Include="HeightMapBuilder.hpp">
+      <Filter>Component\Height Map</Filter>
+    </ClInclude>
+    <ClInclude Include="COMMoveController.hpp">
+      <Filter>Component\Character</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Game.ico">
@@ -167,6 +194,15 @@
     </Filter>
     <Filter Include="Data\Collider">
       <UniqueIdentifier>{a14e176b-2a51-4930-811b-d07c8ddb9616}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Character">
+      <UniqueIdentifier>{4c21d0ce-c50a-4ee6-8534-0e345c0c2e59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Character\Collider">
+      <UniqueIdentifier>{7ec5cfaf-55b7-4648-b761-aacd69d6d049}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Height Map">
+      <UniqueIdentifier>{665f2f86-88cd-4c80-9735-31a91a09b3e7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

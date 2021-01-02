@@ -20,7 +20,7 @@ namespace Kumazuma::Client
 		auto SetScale(DirectX::XMFLOAT3 const& val)->void;
 		auto SetOffset(DirectX::XMFLOAT3 const& val)->void;
 		auto SetType(ColliderType newType)->void;
-
+		
 		auto GetPosition()const->DirectX::XMFLOAT3 const&;
 		auto GetRotation()const->DirectX::XMFLOAT3 const&;
 		auto GetScale()const->DirectX::XMFLOAT3 const&;

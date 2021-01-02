@@ -30,7 +30,8 @@ public:
 	auto GetCenter()const->DirectX::XMFLOAT3A const&;
 	auto CanRayPicking()const->bool override;
 	auto RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLOAT3 const& rayDirection, f32* pOut)->bool override;
-
+	auto GetVertices()const->std::shared_ptr<const std::vector<DirectX::XMFLOAT3A> >;
+	auto GetSubsets()const->std::unordered_map<std::wstring, std::shared_ptr<WowMapMeshSubset> > const&;
 private:
 	auto ParseOBJFile(RenderModule* pRenderModule, std::wstring const& path, std::wstring* pOutMeterialFilePath)->void;
 private:
@@ -44,7 +45,7 @@ private:
 	std::shared_ptr < std::vector<DirectX::XMFLOAT3A> > m_pVertexPositions;
 	std::vector< std::shared_ptr < WowMapMeshEntity> > m_entities;
 };
-class WowMapMeshSubset
+class DLL_CLASS WowMapMeshSubset
 {
 	using Triangle = WowMapMeshObject::Index<WowMapMeshObject::INDEX_TYPE>;
 public:
@@ -58,6 +59,7 @@ public:
 	auto GetCenter()const->DirectX::XMFLOAT3A const&;
 	//auto RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLOAT3 const& rayDirection, f32* pOut)->bool ;
 	auto __vectorcall RayPicking(DirectX::XMVECTOR rayAt, DirectX::XMVECTOR rayDirection, f32* pOut)->bool;
+	auto GetTriangles()const->std::vector<Triangle> const&;
 private:
 	DirectX::XMFLOAT3A m_center;
 	f32 m_radius;

@@ -49,11 +49,10 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRendere
     for (auto& iter : m_meshContainters)
     {                               
         auto& rRenderingMatries{ m_renderedMatrices[iter] };
-                                    
+
         void* pSrcVtx = nullptr;    
         void* pDestVtx = nullptr;   
-                                    
-                                    
+
         iter->pOriginalMesh->LockVertexBuffer(0, &pSrcVtx);
         iter->MeshData.pMesh->LockVertexBuffer(0, &pDestVtx);
 
@@ -76,7 +75,6 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRendere
         }
         iter->pOriginalMesh->UnlockVertexBuffer();
         iter->MeshData.pMesh->UnlockVertexBuffer();
-        
     }
 }
 
