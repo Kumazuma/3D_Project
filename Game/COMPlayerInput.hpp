@@ -2,6 +2,7 @@
 #include<game/component.hpp>
 #include<game/runtime.hpp>
 #include"SkinnedXMeshObject.h"
+#include"typedef.hpp"
 namespace Kumazuma::Client
 {
 	class COMPlayerInput : public Game::Component
@@ -13,5 +14,6 @@ namespace Kumazuma::Client
 		auto Clone()const->Game::Component*;
 		auto Update(Game::UpdateEvent const& event)->void;
 	private:
+		f32 m_gravity;
 	};
 }

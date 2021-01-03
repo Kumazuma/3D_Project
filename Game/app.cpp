@@ -174,6 +174,11 @@ auto App::Loop()->int
 
             //InputManager::Instance().Update();
             float delta = (now - m_preTick) / (float)frequency;
+            if (delta > 1.f)
+            {
+                m_preTick = now;
+                continue;
+            }
             pTimerMgr->Update();
             pInputMgr->Update();
             m_pNowScene->Update(delta);

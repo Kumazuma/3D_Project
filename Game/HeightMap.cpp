@@ -1,5 +1,6 @@
 #include "HeightMap.hpp"
 #include <DirectXCollision.h>
+#include <unordered_set>
 #undef max
 #undef min
 using namespace DirectX;
@@ -26,9 +27,11 @@ constexpr f32 f32_max{ std::numeric_limits<f32>::max() };
     m_boundingSphere = BoundSphere::Calculate(vMin, vMax);
 
 }
-auto __vectorcall Kumazuma::Client::HeightMapContainer::RayPicking(DirectX::XMVECTOR rayAt, DirectX::XMVECTOR rayDir) const -> std::optional<f32>
+auto Kumazuma::Client::HeightMapContainer::RayPicking(DirectX::XMVECTOR rayAt, DirectX::XMVECTOR rayDir) const -> std::optional<f32>
 {
     std::optional<f32> res;
+    if (m_boundingSphere.RayIntersact(rayAt, rayDir) == std::nullopt)return std::nullopt;
+
     for (auto& it : m_children)
     {
         auto t{ it->RayPicking(rayAt, rayDir) };
@@ -41,17 +44,18 @@ auto __vectorcall Kumazuma::Client::HeightMapContainer::RayPicking(DirectX::XMVE
     return res;
 }
 
-auto __vectorcall Kumazuma::Client::HeightMapContainer::IsOnTriangles(DirectX::XMVECTOR position, DirectX::XMVECTOR up) const -> bool
+auto Kumazuma::Client::HeightMapContainer::GetTriangle(DirectX::XMVECTOR position, DirectX::XMVECTOR up) const->std::optional<Triangle>
 {
-    if (m_boundingSphere.IsVectorInSphere(position) == false) return false;
+    if (m_boundingSphere.IsVectorInSphere(position) == false) return std::nullopt;
     for (auto& it : m_children)
     {
-        if (it->IsOnTriangles(position, up))
+        auto res{ it->GetTriangle(position, up) };
+        if (res != std::nullopt)
         {
-            return true;
+            return res;
         }
     }
-    return false;
+    return std::nullopt;
 }
 
 auto Kumazuma::Client::HeightMapContainer::GetBoundingSphere() const -> BoundSphere
@@ -59,7 +63,7 @@ auto Kumazuma::Client::HeightMapContainer::GetBoundingSphere() const -> BoundSph
     return m_boundingSphere;
 }
 
-auto __vectorcall Kumazuma::Client::HeightMapContainer::IsInBoundSheres(DirectX::XMVECTOR position) const -> bool
+auto Kumazuma::Client::HeightMapContainer::IsInBoundSheres(DirectX::XMVECTOR position) const -> bool
 {
     if (m_boundingSphere.IsVectorInSphere(position) == false) return false;
     for (auto& it : m_children)
@@ -72,13 +76,31 @@ auto __vectorcall Kumazuma::Client::HeightMapContainer::IsInBoundSheres(DirectX:
     return false;
 }
 
+auto Kumazuma::Client::HeightMapContainer::GetHeight(DirectX::XMVECTOR position) const -> std::optional<f32>
+{
+    if (m_boundingSphere.IsVectorInSphere(position) == false) return std::nullopt;
+    std::optional<f32> res;
+    for (auto& it : m_children)
+    {
+        auto t{ it->GetHeight(position) };
+        if (t != std::nullopt &&
+            t.value() < res.value_or(std::numeric_limits<f32>::max()))
+        {
+            res = t;
+        }
+    }
+    return res;
+}
+
 Kumazuma::Client::HeightMapSubMesh::HeightMapSubMesh(std::vector<DirectX::XMUINT3>&& triangles, std::shared_ptr< std::vector<DirectX::XMFLOAT3A> > vertices) noexcept :
     m_vertices{ std::move(vertices) },
     m_triangles{ std::move(triangles) }
 {
-    m_boundingSphere = BoundSphere::Calculate(m_vertices->begin(), m_vertices->end());
+    std::unordered_set<u32> indices;
     for (auto& triangle : m_triangles)
     {
+        indices.insert({ triangle.x,triangle.y, triangle.z });
+
         auto vA{ XMLoadFloat3A(&(*m_vertices)[triangle.x]) };
         auto vB{ XMLoadFloat3A(&(*m_vertices)[triangle.y]) };
         auto vC{ XMLoadFloat3A(&(*m_vertices)[triangle.z]) };
@@ -91,27 +113,39 @@ Kumazuma::Client::HeightMapSubMesh::HeightMapSubMesh(std::vector<DirectX::XMUINT
         auto vNormalSideBC = XMVector3Normalize(XMVector3Cross(vPlain, vSideBC));
         auto vNormalSideCA = XMVector3Normalize(XMVector3Cross(vPlain, vSideCA));
         XMMATRIX mMatrix{};
-        mMatrix.r[0] = vNormalSideAB;
-        mMatrix.r[1] = vNormalSideBC;
-        mMatrix.r[2] = vNormalSideCA;
-        mMatrix.r[3] = vPlain;
-        XMFLOAT4X4 normals{};
-        XMStoreFloat4x4(&normals, mMatrix);
-        m_normalVectors.emplace_back(normals);
+        std::array<DirectX::XMFLOAT3A, 3> sideNormals;
+        DirectX::XMFLOAT4 plain;
+        XMStoreFloat3A(sideNormals.data() + 0, vNormalSideAB);
+        XMStoreFloat3A(sideNormals.data() + 1, vNormalSideBC);
+        XMStoreFloat3A(sideNormals.data() + 2, vNormalSideCA);
+        XMStoreFloat4(&plain, vPlain);
+
+        m_plains.emplace_back(plain);
+        m_sideNormls.emplace_back(sideNormals);
     }
+    std::vector<DirectX::XMFLOAT3A> triangleVerices;
+    triangleVerices.reserve(indices.size());
+    for (auto index : indices)
+    {
+        triangleVerices.emplace_back(m_vertices->at(index));
+    }
+    m_boundingSphere = BoundSphere::Calculate(triangleVerices.begin(), triangleVerices.end());
+
 }
 
 Kumazuma::Client::HeightMapSubMesh::HeightMapSubMesh(HeightMapSubMesh&& rhs) noexcept :
     m_boundingSphere{ std::move(rhs.m_boundingSphere) },
     m_triangles{ std::move(rhs.m_triangles) },
     m_vertices{ std::move(rhs.m_vertices) },
-    m_normalVectors{ std::move(rhs.m_normalVectors) }
+    m_sideNormls{std::move(rhs.m_sideNormls)},
+    m_plains{ std::move(rhs.m_plains) }
 {
 
 }
 
-auto __vectorcall Kumazuma::Client::HeightMapSubMesh::RayPicking(DirectX::XMVECTOR rayAt, DirectX::XMVECTOR rayDir) const -> std::optional<f32>
+auto Kumazuma::Client::HeightMapSubMesh::RayPicking(DirectX::XMVECTOR rayAt, DirectX::XMVECTOR rayDir) const -> std::optional<f32>
 {
+    if (m_boundingSphere.RayIntersact(rayAt, rayDir) == std::nullopt)return std::nullopt;
     f32 res{ std::numeric_limits<f32>::max() };
     for (auto& triangle : m_triangles)
     {
@@ -130,50 +164,54 @@ auto __vectorcall Kumazuma::Client::HeightMapSubMesh::RayPicking(DirectX::XMVECT
     return res != std::numeric_limits<f32>::max() ? std::optional<f32>{res} : std::nullopt;
 }
 
-auto __vectorcall Kumazuma::Client::HeightMapSubMesh::IsOnTriangles(DirectX::XMVECTOR position, DirectX::XMVECTOR up) const -> bool
+auto Kumazuma::Client::HeightMapSubMesh::GetTriangle(DirectX::XMVECTOR position, DirectX::XMVECTOR up) const->std::optional<Triangle>
 {
-    auto triangleIt{ m_triangles.begin() };
-    auto normalsIt{ m_normalVectors.begin() };
-    auto const triangleEndIt{ m_triangles.end() };
-    auto const normalsEndIt{ m_normalVectors.end() };
-    for (; triangleIt != triangleEndIt; ++triangleIt, ++normalsIt)
+    if (m_boundingSphere.IsVectorInSphere(position) == false) return std::nullopt;
+
+    auto const& vertices{ *m_vertices };
+    for (size_t i = 0; i < m_triangles.size(); ++i)
     {
-        auto mNormals{ XMLoadFloat4x4(&*normalsIt) };
-        float t{};
-        XMStoreFloat(&t, XMVector3Dot(up, mNormals.r[3]));
-        if (t <= 0.f)//내적의 결과가 0보다 작거나 같으면 둔각이다.
+        auto const& triangle{ m_triangles[i] };
+        auto const& sideNormals{ m_sideNormls[i] };
+        auto const& plain{ m_plains[i] };
+        
+        std::array<DirectX::XMVECTOR, 3> positions{
+            XMLoadFloat3A(vertices.data() + triangle.x),
+            XMLoadFloat3A(vertices.data() + triangle.y),
+            XMLoadFloat3A(vertices.data() + triangle.z)
+        };
+        bool dotRes{ true };
+        for (size_t j = 0; j < positions.size(); ++j)
+        {
+            auto vDelta{ position - positions[j] };
+            auto vN{ XMLoadFloat3A(sideNormals.data() + j) };
+            f32 dotValue;
+            XMStoreFloat(&dotValue, XMVector3Dot(vN, vDelta));
+            if (dotValue < 0.f)
+            {
+                dotRes = false;
+            }
+        }
+        if (dotRes == false)
         {
             continue;
         }
-        auto vA{ XMLoadFloat3A(&(*m_vertices)[triangleIt->x]) };
-        auto vB{ XMLoadFloat3A(&(*m_vertices)[triangleIt->y]) };
-        auto vC{ XMLoadFloat3A(&(*m_vertices)[triangleIt->z]) };
-        
-
-        auto vAP{ position - vA };
-        auto vBP{ position - vB };
-        auto vCP{ position - vC };
-        XMMATRIX mD{
-            vAP,
-            vBP,
-            vCP,
-            {0.f, 0.f, 0.f, 1.f}
-        };
-        //행렬로 계산하면 4개의 벡터를 각각 내적 연산한 것을 한 번에 구할 수 있다.
-        XMMATRIX mDot = mD * DirectX::XMMatrixTranspose(mNormals);
-        XMStoreFloat(&t, XMVector4Dot(XMVectorSetW(position, 1.f), mNormals.r[3]));
-        bool res{
-            XMVector3GreaterOrEqual(mDot.r[0], XMVectorZero()) &&
-            XMVector3GreaterOrEqual(mDot.r[1], XMVectorZero()) &&
-            XMVector3GreaterOrEqual(mDot.r[2], XMVectorZero()) &&
-            abs(t) <= 0.00000000001f
-        };
-        if (res)
+        auto plainVertor{ XMLoadFloat4(&plain) };
+        f32 t{};
+        XMStoreFloat(&t, XMVector4Dot(plainVertor, position));
+        if (abs(t) > 0.1f)
         {
-            return true;
+            continue;
         }
+        Triangle res;
+        XMStoreFloat3A(res.vertices + 0, positions[0]);
+        XMStoreFloat3A(res.vertices + 1, positions[1]);
+        XMStoreFloat3A(res.vertices + 2, positions[2]);
+        res.normalVector = { plain.x,plain.y ,plain.z };
+
+        return res;
     }
-    return false;
+    return std::nullopt;
 }
 
 auto Kumazuma::Client::HeightMapSubMesh::GetBoundingSphere() const -> BoundSphere
@@ -181,7 +219,13 @@ auto Kumazuma::Client::HeightMapSubMesh::GetBoundingSphere() const -> BoundSpher
     return m_boundingSphere;
 }
 
-auto __vectorcall Kumazuma::Client::HeightMapSubMesh::IsInBoundSheres(DirectX::XMVECTOR position) const -> bool
+auto Kumazuma::Client::HeightMapSubMesh::GetHeight(DirectX::XMVECTOR position) const -> std::optional<f32>
+{
+    if (m_boundingSphere.IsVectorInSphere(position) == false) return std::nullopt;
+    //TODO:
+}
+
+auto Kumazuma::Client::HeightMapSubMesh::IsInBoundSheres(DirectX::XMVECTOR position) const -> bool
 {
     return m_boundingSphere.IsVectorInSphere(position);
 }

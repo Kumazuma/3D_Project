@@ -14,7 +14,6 @@ namespace Kumazuma::Client
 		
 		COMMoveController();
 
-		auto OnPostUpdate(Game::UpdateEvent const& evt)->void;
 	protected:
 
 	private:

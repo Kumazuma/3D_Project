@@ -42,7 +42,7 @@ BoundSphere::BoundSphere(DirectX::XMFLOAT3 const& center, f32 radius):
 }
 auto __vectorcall BoundSphere::Calculate(DirectX::XMVECTOR min, DirectX::XMVECTOR max) -> BoundSphere
 {
-    XMVECTOR vCenter = (min + max) / 0.5f;
+    XMVECTOR vCenter = (min + max) * 0.5f;
     XMFLOAT3 centerPosition{};
     f32 radius{};
     XMStoreFloat3(&centerPosition, vCenter);
@@ -68,7 +68,7 @@ auto __vectorcall BoundSphere::IsVectorInSphere(DirectX::XMVECTOR pos) const -> 
     return distance <= m_radius;
 }
 
-auto __vectorcall BoundSphere::RayIntersact(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDir) -> std::optional<f32>
+auto __vectorcall BoundSphere::RayIntersact(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDir) const-> std::optional<f32>
 {
     XMVECTOR vCenter{ XMLoadFloat3(&m_center) };
     XMVECTOR vDir{ rayOrigin - vCenter };
