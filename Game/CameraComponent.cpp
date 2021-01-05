@@ -2,14 +2,31 @@
 #include <Windows.h>
 #include <game/object.hpp>
 #include <game/TransformComponent.hpp>
+#include "LookForwardState.hpp"
+#include "FreeViewingState.hpp"
+#include "IdleViewingState.hpp"
+#include "framework.h"
 using namespace Kumazuma::Client;
 using namespace Kumazuma::Game;
 using namespace DirectX;
 const ComponentTag< CameraComponent> CameraComponent::TAG{"CameraComponent"};
-Kumazuma::Client::CameraComponent::CameraComponent():
-    Component{ TAG }
+constexpr StringLiteral<char> STATE_CHASING_PLAYER_LOOK{"STATE_CHASING_PLAYER_LOOK"};
+constexpr StringLiteral<char> STATE_FREE_VIEWING{ "STATE_FREE_VIEWING" };
+constexpr StringLiteral<char> STATE_IDLE{"STATE_IDLE"};
+
+Kumazuma::Client::CameraComponent::CameraComponent(std::shared_ptr<Game::Object const> player):
+    Component{ TAG },
+    distance_{ 40.f },
+    playerObj_{ player },
+    viewSpace_{}
 {
     Bind(EVT_UPDATE, &CameraComponent::Update);
+    //currentState_
+    //m_pCurrentState = std::shared_ptr<CameraViewingState>(new LookForwardState{});
+    viewingStates_.emplace(STATE_IDLE, new IdleViewingState{});
+    viewingStates_.emplace(STATE_FREE_VIEWING, new FreeViewingState{});
+    viewingStates_.emplace(STATE_CHASING_PLAYER_LOOK, new LookForwardState{});
+    currentState_ = viewingStates_[STATE_IDLE];
 }
 
 auto Kumazuma::Client::CameraComponent::Clone() const -> Game::Component*
@@ -20,51 +37,32 @@ auto Kumazuma::Client::CameraComponent::Clone() const -> Game::Component*
 auto Kumazuma::Client::CameraComponent::Update(Game::UpdateEvent const& event) -> void
 {
     auto obj{ GetObj().lock() };
-    auto transformComponent{ obj->GetComponent< Game::TransformComponent>() };
-    XMFLOAT4X4 transformMatrix{};
-    transformComponent->GenerateTransformMatrixWithoutScale(&transformMatrix);
-    XMMATRIX mTransform{ XMLoadFloat4x4(&transformMatrix) };
-    XMVECTOR vDelta{};
-    XMVECTOR vRotation{};
-    if (GetAsyncKeyState('W') & 0x8000)
+    auto state{ currentState_ };
+    state->Update(this, event.GetDelta());
+    auto ptr{ InputManager::Instance() };
+    auto const lButtonPressing{ ptr->IsPressing(PLAYER_INPUT::MOUSE_LBUTTON) };
+    auto const rButtonPressing{ ptr->IsPressing(PLAYER_INPUT::MOUSE_RBUTTON) };
+    if (lButtonPressing )
     {
-        vDelta += mTransform.r[2];
+        state = viewingStates_[STATE_FREE_VIEWING];
     }
-    if (GetAsyncKeyState('S') & 0x8000)
+    else if (rButtonPressing)
     {
-        vDelta -= mTransform.r[2];
+        state = viewingStates_[STATE_CHASING_PLAYER_LOOK];
     }
-    if (GetAsyncKeyState('A') & 0x8000)
+    else
     {
-        vDelta -= mTransform.r[0];
+        state = viewingStates_[STATE_IDLE];
     }
-    if (GetAsyncKeyState('D') & 0x8000)
+    
+    if (state != currentState_)
     {
-        vDelta += mTransform.r[0];
+        currentState_ = state;
+        currentState_->Reset(event.GetDelta());
     }
-    if (GetAsyncKeyState(VK_UP) & 0x8000)
-    {
-        vRotation -= XMVectorSet(1.f, 0.f, 0.f, 0.f);
-    }
-    if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-    {
-        vRotation += XMVectorSet(1.f, 0.f, 0.f, 0.f);
-    }
-    if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-    {
-        vRotation -= XMVectorSet(0.f, 1.f, 0.f, 0.f);
-    }
-    if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-    {
-        vRotation += XMVectorSet(0.f, 1.f, 0.f, 0.f);
-    }
-    vDelta = XMVector3Normalize(vDelta) * event.GetDelta() * 300;
-    vRotation = XMVector3Normalize(vRotation) * event.GetDelta();
+}
 
-    XMFLOAT3 newPosition{};
-    XMFLOAT3 newRotations{};
-    XMStoreFloat3(&newPosition, vDelta + mTransform.r[3]);
-    XMStoreFloat3(&newRotations, vRotation + XMLoadFloat3(&transformComponent->GetRotation()) );
-    transformComponent->SetPosition(newPosition);
-    transformComponent->SetRotation(newRotations);
+auto Kumazuma::Client::CameraComponent::GetViewMatrix() const -> f32x44 const&
+{
+    return viewSpace_;
 }

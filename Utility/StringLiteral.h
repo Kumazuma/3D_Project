@@ -62,6 +62,7 @@ inline constexpr StringLiteral<_chType>::StringLiteral(_chType const* const _lit
 	m_length{GetLength(_literal)},
 	m_hash{ Hash(_literal)}
 {
+	
 }
 
 template<typename _chType>
@@ -169,13 +170,13 @@ template<typename _chType>
 inline constexpr auto StringLiteral<_chType>::Hash(_chType const* const str) -> size_t
 {
 	constexpr size_t arraySize{ sizeof(size_t) / sizeof(_chType) };
-	size_t length{ GetLength(str) };
+	size_t const length{ GetLength(str) };
 	size_t hashRes{};
-
+	size_t repeatXor = (1 + length / arraySize) * arraySize;
 	_chType rHash[arraySize]{  };
-	for (size_t i = 0; i < length; ++i)
+	for (size_t i = 0; i < repeatXor; ++i)
 	{
-		rHash[i % arraySize] ^= str[i];
+		rHash[i % arraySize] ^= str[i % length];
 	}
 	for (size_t i = 0; i < arraySize; ++i)
 	{

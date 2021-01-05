@@ -56,6 +56,7 @@ namespace Kumazuma
 			template<typename _COM, typename ...Args>
 			auto CreateComponent(Args&& ...args)->std::shared_ptr<_COM>;
 			auto Update(float t)->void;
+			auto DispatchEvent()->void;
 		private:
 			static auto OnDeleteComponent(Component* com)->void;
 		private:

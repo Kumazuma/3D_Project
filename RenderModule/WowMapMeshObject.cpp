@@ -13,8 +13,9 @@
 #include "Renderer.h"
 #undef max
 #undef min
+#define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
-#pragma comment(lib, "tinyobjloader.lib")
+//#pragma comment(lib, "tinyobjloader.lib")
 //_CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef float _ARGUMENT_TYPE_NAME;
 //_CXX17_DEPRECATE_ADAPTOR_TYPEDEFS typedef size_t _RESULT_TYPE_NAME;
 //_NODISCARD size_t operator()(const float _Keyval) const noexcept {

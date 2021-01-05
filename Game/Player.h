@@ -2,8 +2,8 @@
 #include<game/component.hpp>
 #include<game/runtime.hpp>
 #include<game/object.hpp>
+#include<DirectXMath.h>
 namespace Kumazuma::Client
 {
-	class HeightMap;
-	auto SpawnPlayer(std::shared_ptr<HeightMap> heightmap)->std::shared_ptr<Game::Object>;
+	auto SpawnPlayer(DirectX::XMFLOAT3 const& initPosition)->std::shared_ptr<Game::Object>;
 }

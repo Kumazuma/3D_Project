@@ -141,6 +141,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -154,6 +155,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="InitializeFailedException.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SpinLock.hpp" />
     <ClInclude Include="StringLiteral.h" />
   </ItemGroup>
   <ItemGroup>

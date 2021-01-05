@@ -14,6 +14,7 @@ namespace Kumazuma::Client
 		auto Clone()const->Game::Component*;
 		auto Update(Game::UpdateEvent const& event)->void;
 	private:
+		f32x2 prevMousePosition_;
 		f32 m_gravity;
 	};
 }

@@ -10,6 +10,8 @@
 #include "Env.hpp"
 #include<d3d9.h>
 #include <game/ThreadPoolMgr.hpp>
+#include "PhysicsManager.hpp"
+#include <chrono>
 using namespace Kumazuma;
 std::shared_ptr<App> Kumazuma::App::s_instance = nullptr;
 #pragma comment(lib, "gameengine.lib")
@@ -71,19 +73,22 @@ App::App(HINSTANCE hInstance)
     Kumazuma::Game::TimerManager::Initialize();
     auto pInputManager = InputManager::Instance();
     pInputManager->Bind(PLAYER_INPUT::FIRE, 'Z');
-    pInputManager->Bind(PLAYER_INPUT::MOVE_BACKWARD, VK_DOWN);
-    pInputManager->Bind(PLAYER_INPUT::MOVE_FORWARD, VK_UP);
-    pInputManager->Bind(PLAYER_INPUT::MOVE_LEFT, VK_LEFT);
-    pInputManager->Bind(PLAYER_INPUT::MOVE_RIGHT, VK_RIGHT);
+    pInputManager->Bind(PLAYER_INPUT::MOVE_BACKWARD, 'S');
+    pInputManager->Bind(PLAYER_INPUT::MOVE_FORWARD, 'W');
+    pInputManager->Bind(PLAYER_INPUT::MOVE_LEFT, 'A');
+    pInputManager->Bind(PLAYER_INPUT::MOVE_RIGHT, 'D');
     pInputManager->Bind(PLAYER_INPUT::PASS_SCENE, VK_RETURN);
-    
+    pInputManager->Bind(PLAYER_INPUT::MOUSE_LBUTTON, VK_LBUTTON);
+    pInputManager->Bind(PLAYER_INPUT::MOUSE_RBUTTON, VK_RBUTTON);
+
+    Client::PhysicsManager::Initialize();
 }   
     
 App::~App()
 {
     m_mainWindow.Disconnect();
     m_mainWindow.Close();
-  
+    
     //SoundManager::Release();
 }
 #include<time.h>
@@ -92,7 +97,7 @@ auto App::Loop()->int
     srand((unsigned)time(nullptr));
 
     MSG msg{};
-    int64_t now;
+
     int64_t frequency = 0;
     m_preTick = GetTickCount64();
     frequency = 1000;
@@ -144,6 +149,7 @@ auto App::Loop()->int
     material.Ambient = D3DXCOLOR(0.1f, 0.1f, 0.1f, 0.1f);    // set ambient color to white
     pDevice->SetMaterial(&material);    // set the globably-used material to &material
     auto threadPoolMgr{ Kumazuma::ThreadPool::Manager::Instance() };
+    std::chrono::system_clock::time_point  pretick{ std::chrono::system_clock::now() };
     while (msg.message != WM_QUIT)
     {
 
@@ -152,7 +158,7 @@ auto App::Loop()->int
             break;
         }
         //QueryPerformanceCounter(&(LARGE_INTEGER&)now);
-        now = GetTickCount64();
+        std::chrono::system_clock::time_point now{ std::chrono::system_clock::now() };
         auto pNextScene = m_pNextScene.load(std::memory_order_acquire);
         if (pNextScene != nullptr)
         {
@@ -161,11 +167,12 @@ auto App::Loop()->int
             m_pNowScene = pNextScene;
             m_pNextScene.store(nullptr, std::memory_order_release);
             m_pNowScene->Loaded();
-            m_preTick = now;
+            //m_preTick = now;
+            pretick = now;
             continue;
         }
         
-        if (now != m_preTick)
+        if (now != pretick)
         {
             auto rc{ m_mainWindow.GetRect() };
             
@@ -173,10 +180,12 @@ auto App::Loop()->int
             m_clientHeight = rc.bottom - rc.top;
 
             //InputManager::Instance().Update();
-            float delta = (now - m_preTick) / (float)frequency;
+            std::chrono::nanoseconds  duration{ now - pretick };
+            using second = std::chrono::duration<float, std::ratio<1, 1>>;
+            float delta = std::chrono::duration_cast<second>(duration).count();
             if (delta > 1.f)
             {
-                m_preTick = now;
+                pretick = now;
                 continue;
             }
             pTimerMgr->Update();
@@ -188,7 +197,7 @@ auto App::Loop()->int
             {
                 break;
             }
-            m_preTick = now;
+            pretick = now;
         }
 
         if (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -303,5 +312,6 @@ fn_ App::Release()->void
     Kumazuma::Game::TimerManager::Release();
     Client::ResourceManager::Release();
     Client::Enviroment::Release();
+    Client::PhysicsManager::Release();
     s_instance = nullptr;
 }

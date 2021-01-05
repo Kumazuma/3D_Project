@@ -188,11 +188,13 @@ auto MapToolRenderer::Render(RenderModule* const pRenderModule) -> void
     {
         it->Render(pRenderModule, this);
     }
+    XMVECTOR vZ{ XMMatrixTranspose(XMLoadFloat4x4(&m_viewMatrix)).r[2] };
 
     DefferedRender(pRenderModule);
     Lighting(pRenderModule);
     Combine(pRenderModule);
     pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+
     for (auto& it : m_renderEntities[Kind::ALPHA])
     {
         it->Render(pRenderModule, this);

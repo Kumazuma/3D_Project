@@ -18,6 +18,8 @@ class DLL_CLASS WowMapMeshObject: public RenderObject
 
 	friend class WowMapMeshSubset;
 	friend class WowMapMeshEntity;
+public:
+	using Triangle = WowMapMeshObject::Index<WowMapMeshObject::INDEX_TYPE>;
 protected:
 	WowMapMeshObject(RenderModule* pRenderModule, std::wstring const& path);
 	WowMapMeshObject(WowMapMeshObject const&);
@@ -47,8 +49,8 @@ private:
 };
 class DLL_CLASS WowMapMeshSubset
 {
-	using Triangle = WowMapMeshObject::Index<WowMapMeshObject::INDEX_TYPE>;
 public:
+	using Triangle = WowMapMeshObject::Index<WowMapMeshObject::INDEX_TYPE>;
 	WowMapMeshSubset(RenderModule* renderModule, std::shared_ptr<std::vector<DirectX::XMFLOAT3A> > const & vertexPositions, std::wstring const& materialName, std::vector<Triangle>&& indices);
 	WowMapMeshSubset(WowMapMeshSubset&& rhs)noexcept;
 	auto GetIndicesRef()const->std::vector<Triangle> const&;

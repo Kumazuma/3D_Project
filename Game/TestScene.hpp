@@ -56,7 +56,7 @@ namespace Kumazuma
 			nlohmann::json m_file;
 			std::unique_ptr<IRenderer> m_pRenderer;
 			std::unique_ptr<RenderObject> m_skybox;
-			std::vector<std::unique_ptr< WowMapMeshObject > > m_mapMeshs;
+			std::vector<std::unique_ptr<WowMapMeshObject > > m_mapMeshs;
 			std::vector<std::unique_ptr<WowMapMeshObject> > m_staticMapMeshs;
 
 			std::shared_ptr<Game::Object> m_pCameraObject;

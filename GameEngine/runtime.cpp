@@ -87,7 +87,13 @@ void Runtime::Update(float delta)
     tasks.clear();
     m_threadPoolMgr->DispatchTask();
     GC();
+    
+}
+auto Runtime::DispatchEvent() -> void
+{
+    using namespace Kumazuma::ThreadPool;
     //TODO:스레드로 병렬화 가능
+    std::vector<std::shared_ptr<Task> > tasks;
     while (m_eventQueue.empty() == false)
     {
         EventQueueItem item;
@@ -108,8 +114,8 @@ void Runtime::Update(float delta)
         task->Wait();
     }
     m_threadPoolMgr->DispatchTask();
+    GC();
 }
-
 auto Kumazuma::Game::Runtime::OnDeleteComponent(Component* com) -> void
 {
     auto runtime{ Runtime::Instance() };

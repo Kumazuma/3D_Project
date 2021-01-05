@@ -20,6 +20,7 @@
 #include "COMRenderObjectContainer.hpp"
 #include "Player.h"
 #include "HeightMapBuilder.hpp"
+#include "PhysicsManager.hpp"
 using namespace Kumazuma::Client;
 using namespace DirectX;
 using Task = Kumazuma::ThreadPool::Task;
@@ -44,7 +45,7 @@ void TestScene::Loaded()
 		return;
 	}
 	m_pRenderer.reset(pRenderer);
-
+	
 	auto resourceMgr{ ResourceManager::Instance() };
 	auto base_dir{ Enviroment::GetValue<std::wstring>(Enviroment::BASE_DIR) };
 
@@ -106,34 +107,38 @@ void TestScene::Loaded()
 			targets.emplace(path, pos);
 		}
 	}
-	HeightMapBuilder builder;
-	for (auto const& meshs : m_mapMeshs)
-	{
-		builder << *meshs;
-	}
-	m_heightMap = builder.Build();
-	m_pCameraObject.reset(new Game::Object{});
-	m_pCameraObject->AddComponent<CameraComponent>();
-	m_pCameraObject->AddComponent<Game::TransformComponent>();
-	m_pCameraObject->GetComponent<Game::TransformComponent>()->SetPosition(targets[L"PLAYER_SPAWN_POSITION"]);
-		
-	m_pPlayerObject = SpawnPlayer(m_heightMap);
-	m_pPlayerObject->GetComponent<Game::TransformComponent>()->SetPosition(targets[L"PLAYER_SPAWN_POSITION"]);
+	auto physicsManager{ Client::PhysicsManager::Instance() };
+	physicsManager->SetMap(m_mapMeshs);
+	physicsManager->SetCharacterColliderCapsule(L"PLAYER_CAPSULE", 0.2f, 8.f);
+
+	auto position{ targets[L"PLAYER_SPAWN_POSITION"] };
+
+	m_pPlayerObject = SpawnPlayer(position);
+	m_pPlayerObject->GetComponent<Game::TransformComponent>()->SetPosition(position);
+	m_pPlayerObject->GetComponent<Game::TransformComponent>()->SetScale(XMFLOAT3{ 0.1f, 0.1f,0.1f });
 	m_objects.push_back(m_pPlayerObject);
+
+	m_pCameraObject.reset(new Game::Object{});
+	m_pCameraObject->AddComponent<CameraComponent>(m_pPlayerObject);
+	m_pCameraObject->AddComponent<Game::TransformComponent>();
+	m_pCameraObject->GetComponent<Game::TransformComponent>()->SetPosition(position);
+
 	XMFLOAT4X4 projMatrix;
-	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 4000.f, &projMatrix);
+	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 2000.f, &projMatrix);
 	m_pRenderer->SetProjMatrix(projMatrix);
 }
 auto TestScene::Update(f32 timeDelta) -> void
 {
-	Kumazuma::Game::Runtime::Instance()->Update(timeDelta);
+	auto runtime{ Kumazuma::Game::Runtime::Instance() };
+	auto physicsManager{ PhysicsManager::Instance() };
+	runtime->Update(timeDelta);
+	physicsManager->Update(timeDelta);
+	runtime->DispatchEvent();
 	auto renderModule{ App::Instance()->GetRenderModule() };
 	XMFLOAT3 rotation;
 	XMFLOAT4X4 viewMatrix;
-	auto transformCompoentn{ m_pCameraObject->GetComponent< Game::TransformComponent>() };
-	XMStoreFloat3(&rotation, XMLoadFloat3(&transformCompoentn->GetRotation()) * (360.f / XM_2PI));
-	renderModule->GenerateViewMatrix(transformCompoentn->GetPosition(), rotation, &viewMatrix);
-	m_pRenderer->SetViewMatrix(viewMatrix);
+	
+	m_pRenderer->SetViewMatrix(m_pCameraObject->GetComponent<CameraComponent>()->GetViewMatrix());
 
 	m_skybox->PrepareRender(m_pRenderer.get());
 	for (auto& mapMash : m_mapMeshs)

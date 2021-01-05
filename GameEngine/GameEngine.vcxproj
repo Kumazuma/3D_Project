@@ -130,6 +130,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -150,6 +151,7 @@
       <OpenMPSupport>true</OpenMPSupport>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -187,6 +189,7 @@
     <ClInclude Include="include\game\TransformComponent.hpp" />
     <ClInclude Include="include\game\ui_render_component.hpp" />
     <ClInclude Include="include\game\ui_render_component_impl.hpp" />
+    <ClInclude Include="include\game\XInputManager.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ThreadPoolMgrImpl.hpp" />
   </ItemGroup>

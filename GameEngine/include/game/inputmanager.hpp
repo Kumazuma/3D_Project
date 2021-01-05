@@ -23,6 +23,10 @@ namespace Kumazuma
 			std::unordered_set<unsigned> m_down;
 			std::unordered_set<unsigned> m_up;
 			std::unordered_map<EnumT, unsigned> m_mappedKeyData;
+			POINT m_cursorPosition = { 0,0 };
+			POINT m_prevPosition = { 0,0 };
+			HWND m_hwnd = NULL;
+			bool m_locked = false;
 		public:
 			static std::shared_ptr<InputManager> Instance() {
 				if (s_instance == nullptr)
@@ -31,6 +35,12 @@ namespace Kumazuma
 				}
 				return s_instance;
 			}
+			std::unordered_map<EnumT, unsigned> GetKeyMapping()const
+			{
+				return m_mappedKeyData;
+			}
+			
+
 			bool IsPressing(EnumT id)
 			{
 				auto res = m_mappedKeyData.find(id);
@@ -88,9 +98,26 @@ namespace Kumazuma
 				m_up.insert(key);
 				return true;
 			}
+
 			void Update()
 			{
 				m_press.clear();
+				m_prevPosition = m_cursorPosition;
+				GetCursorPos(&m_cursorPosition);
+				if (m_locked && m_hwnd != NULL)
+				{
+					if (GetActiveWindow() != NULL)
+					{
+						RECT rc{};
+						GetClientRect(m_hwnd, &rc);
+						POINT pt{
+							(rc.right - rc.left) / 2,
+							(rc.bottom - rc.top) / 2
+						};
+						ClientToScreen(m_hwnd, &pt);
+						SetCursorPos(pt.x, pt.y);
+					}
+				}
 				for (auto& it : m_mappedKeyData)
 				{
 					if (GetAsyncKeyState(it.second) & 0x8000)
@@ -108,7 +135,47 @@ namespace Kumazuma
 			{
 				m_mappedKeyData[id] = key;
 			}
+			POINT GetMousePos()const
+			{
+				return m_cursorPosition;
+			}
+			POINT GetPrevPos()const
+			{
+				return m_prevPosition;
+			}
+			bool IsLock()
+			{
+				return m_locked;
+			}
+			void LockCursor(HWND hWnd)
+			{
+				m_locked = true;
+				m_hwnd = hWnd;
+				ShowCursor(false);
+				if (m_locked && m_hwnd != NULL)
+				{
+					if (GetActiveWindow() != NULL)
+					{
+						RECT rc{};
+						GetClientRect(m_hwnd, &rc);
+						POINT pt{
+							(rc.right - rc.left) / 2,
+							(rc.bottom - rc.top) / 2
+						};
+						ClientToScreen(m_hwnd, &pt);
+						SetCursorPos(pt.x, pt.y);
+						m_cursorPosition = pt;
+					}
+				}
+				//GetCursorPos(&m_cursorPosition);
 
+			}
+			void UnlockCursor()
+			{
+				m_locked = false;
+				ShowCursor(true);
+				m_hwnd = NULL;
+			}
 		};
 		template<typename EnumT>
 		std::shared_ptr<InputManager<EnumT>> InputManager<EnumT>::s_instance = nullptr;

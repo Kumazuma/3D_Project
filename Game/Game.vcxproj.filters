@@ -59,6 +59,27 @@
     <ClCompile Include="HeightMapBuilder.cpp">
       <Filter>Component\Height Map</Filter>
     </ClCompile>
+    <ClCompile Include="COMMoveController.cpp">
+      <Filter>Component\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsManager.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraViewingState.cpp">
+      <Filter>Component\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="LookForwardState.cpp">
+      <Filter>Component\Camera\LookForwardState</Filter>
+    </ClCompile>
+    <ClCompile Include="FreeViewingState.cpp">
+      <Filter>Component\Camera\FreeViewingState</Filter>
+    </ClCompile>
+    <ClCompile Include="IdleViewingState.cpp">
+      <Filter>Component\Camera\IdleViewingState</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.hpp" />
@@ -152,6 +173,24 @@
     <ClInclude Include="COMMoveController.hpp">
       <Filter>Component\Character</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsManager.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterController.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraViewingState.hpp">
+      <Filter>Component\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="LookForwardState.hpp">
+      <Filter>Component\Camera\LookForwardState</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeViewingState.hpp">
+      <Filter>Component\Camera\FreeViewingState</Filter>
+    </ClInclude>
+    <ClInclude Include="IdleViewingState.hpp">
+      <Filter>Component\Camera\IdleViewingState</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Game.ico">
@@ -203,6 +242,18 @@
     </Filter>
     <Filter Include="Component\Height Map">
       <UniqueIdentifier>{665f2f86-88cd-4c80-9735-31a91a09b3e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physics">
+      <UniqueIdentifier>{c7bc39d3-c86e-46a0-8922-d19203a9e8c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Camera\LookForwardState">
+      <UniqueIdentifier>{e205383e-1cf9-4878-a01b-dc6ba4be1cea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Camera\FreeViewingState">
+      <UniqueIdentifier>{3cce1876-1132-4e06-b102-81c8b8b8a81c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Camera\IdleViewingState">
+      <UniqueIdentifier>{60795152-405a-4edc-941f-816a4cd3e5b1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

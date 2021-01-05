@@ -81,13 +81,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include</IncludePath>
-    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\bullet\inc</IncludePath>
+    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\bullet\lib\x64;$(LibraryPath)</LibraryPath>
     <ReferencePath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include</IncludePath>
-    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\bullet\inc</IncludePath>
+    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\bullet\lib\x64;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
@@ -141,10 +141,12 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>BulletDynamics_Debug.lib;BulletCollision_Debug.lib;LinearMath_Debug.lib;Bullet3Common_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,12 +164,14 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <AdditionalDependencies>BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;Bullet3Common.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -176,6 +180,8 @@
     <ClInclude Include="BoundingSphere.hpp" />
     <ClInclude Include="BoxColliderAttribute.hpp" />
     <ClInclude Include="CameraComponent.hpp" />
+    <ClInclude Include="CameraViewingState.hpp" />
+    <ClInclude Include="CharacterController.hpp" />
     <ClInclude Include="CharacterMeta.hpp" />
     <ClInclude Include="Collder.hpp" />
     <ClInclude Include="ColliderAttribute.hpp" />
@@ -186,14 +192,18 @@
     <ClInclude Include="constvar.hpp" />
     <ClInclude Include="Env.hpp" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="FreeViewingState.hpp" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="HeightMap.hpp" />
     <ClInclude Include="HeightMapBuilder.hpp" />
+    <ClInclude Include="IdleViewingState.hpp" />
     <ClInclude Include="kzEnum.hpp" />
     <ClInclude Include="kzEventTag.hpp" />
+    <ClInclude Include="LookForwardState.hpp" />
     <ClInclude Include="macro.hpp" />
     <ClInclude Include="ObjectTag.hpp" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PhysicsManager.hpp" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.hpp" />
@@ -208,18 +218,25 @@
     <ClCompile Include="BoundingSphere.cpp" />
     <ClCompile Include="BoxColliderAttribute.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CameraViewingState.cpp" />
+    <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="CharacterMeta.cpp" />
     <ClCompile Include="Collder.cpp" />
     <ClCompile Include="ColliderAttribute.cpp" />
     <ClCompile Include="COMHeightmap.cpp" />
+    <ClCompile Include="COMMoveController.cpp" />
     <ClCompile Include="COMPlayerInput.cpp" />
     <ClCompile Include="COMRenderObjectContainer.cpp" />
     <ClCompile Include="Env.cpp" />
+    <ClCompile Include="FreeViewingState.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="HeightMapBuilder.cpp" />
+    <ClCompile Include="IdleViewingState.cpp" />
     <ClCompile Include="kzEventTag.cpp" />
+    <ClCompile Include="LookForwardState.cpp" />
     <ClCompile Include="ObjectTag.cpp" />
+    <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SphareColliderAttribute.cpp" />
