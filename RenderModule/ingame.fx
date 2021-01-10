@@ -53,7 +53,7 @@ NOSPECULARMAP_VS_OUT VS_NOSCPECULARMAP(NOSPECULARMAP_VS_IN input)
 	output.vUV = input.vUV;
 	return output;
 }
-matrix g_frameMatrices[255];
+
 struct NOSPECULARMAP_SKINNED_VS_IN
 {
 	float4 vPosition:POSITION;
@@ -67,18 +67,6 @@ NOSPECULARMAP_VS_OUT VS_NoSpecularMap_Skinned(NOSPECULARMAP_SKINNED_VS_IN input)
 	NOSPECULARMAP_VS_OUT output;
 	float4 vPosition = float4(input.vPosition.xyz, 1.f);
 	float4 vNormal = float4(input.vNormal.xyz, 0.f);
-	//int4 IndexVector = D3DCOLORtoUBYTE4(input.boneIds);
-	//float BlendWeightsArray[4] = (float[4])input.weights;
-	//int   IndexArray[4] = (int[4])IndexVector;
-	
-	//float4 vLocalSpacePosition = vPosition;
-	//float4 vLocalSpaceNormal = vNormal;
-	//for (int iBone = 0; iBone < 4; iBone++)
-	//{
-
-	//	vPosition += mul(vLocalSpacePosition, g_frameMatrices[IndexArray[iBone]]) * BlendWeightsArray[iBone];
-	//	vNormal   += mul(vLocalSpaceNormal, g_frameMatrices[IndexArray[iBone]]) * BlendWeightsArray[iBone];
-	//}
 
 	vPosition = mul(vPosition, g_mWorld);
 	vPosition = mul(vPosition, g_mViewProj);
@@ -98,7 +86,7 @@ NOSPECULARMAP_PS_OUT PS_NOSCPECULARMAP(NOSPECULARMAP_PS_IN input)
 	output.diffuse.a = 1.f;
 	output.specular = g_vSpecular;
 	float3 vN = input.vNormal;
-	
+
 	//float p = sqrt(vN.z * 8 + 8);
 	//output.normal.rg = vN.xy / p + 0.5f;
 	//output.normal.b = depth;

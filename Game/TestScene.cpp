@@ -13,7 +13,7 @@
 #include"SkyBoxObject.h"
 #include <future>
 #include "Renderer.h"
-#include "MapToolRenderer.h"
+#include "InGameRenderer.hpp"
 #include"constvar.hpp"
 #include <game/ThreadPoolMgr.hpp>
 #include "CharacterMeta.hpp"
@@ -21,10 +21,13 @@
 #include "Player.h"
 #include "HeightMapBuilder.hpp"
 #include "PhysicsManager.hpp"
+#include "COMRagnarosAI.hpp"
 using namespace Kumazuma::Client;
 using namespace DirectX;
 using Task = Kumazuma::ThreadPool::Task;
 using TaskContext = Kumazuma::ThreadPool::TaskContext;
+constexpr StringLiteral<wchar_t> CHARACTER_MESH{ L"CHARACTER" };
+
 Kumazuma::Client::TestScene::TestScene(nlohmann::json file)
 	
 {
@@ -37,8 +40,8 @@ Kumazuma::Client::TestScene::~TestScene()
 void TestScene::Loaded()
 {
 	auto renderObj{ App::Instance()->GetRenderModule() };
-	MapToolRenderer* pRenderer{};
-	MapToolRenderer::Create(renderObj.get(), renderObj->GetWidth(), renderObj->GetHeight(), &pRenderer);
+	InGameRenderer* pRenderer{};
+	InGameRenderer::Create(renderObj.get(), renderObj->GetWidth(), renderObj->GetHeight(), &pRenderer);
 	if (pRenderer == nullptr)
 	{
 		App::Instance()->Exit();
@@ -58,7 +61,6 @@ void TestScene::Loaded()
 	std::unordered_map<std::wstring, XMFLOAT3> targets;
 	for (auto it : m_file[u8"objects"])
 	{
-
 		if (it[u8"type"] == u8"OBJ_MESH")
 		{
 			std::wstring path{ ConvertUTF8ToWide(it[u8"path"]) };
@@ -124,8 +126,31 @@ void TestScene::Loaded()
 	m_pCameraObject->GetComponent<Game::TransformComponent>()->SetPosition(position);
 
 	XMFLOAT4X4 projMatrix;
-	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.01f, 2000.f, &projMatrix);
+	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.1f, 1000.f, &projMatrix);
 	m_pRenderer->SetProjMatrix(projMatrix);
+	m_pRenderer->SetNearFar(0.f, 500.f);
+
+	{
+		auto resourceMgr{ ResourceManager::Instance() };
+
+		for (auto i = 0; i < 13; ++i)
+		{
+			auto ragnarosPosition{ position };
+			ragnarosPosition.x -= 120.f * i;
+			ragnarosPosition.y += 10.f;
+			std::shared_ptr<Game::Object> ragnaros{ new Game::Object{} };
+			ragnaros->AddComponent<Game::TransformComponent>();
+			ragnaros->AddComponent<COMRenderObjectContainer>();
+			ragnaros->AddComponent<COMRagnarosAI>();
+			ragnaros->GetComponent<Game::TransformComponent>()->SetPosition(ragnarosPosition);
+			ragnaros->GetComponent<Game::TransformComponent>()->SetScale(XMFLOAT3{ 0.01f, 0.01f,0.01f });
+			//pPlayerObj->AddComponent<COMHeightMap>(std::move(heightmap));
+			auto renderObj{ resourceMgr->GetSkinnedMesh(L"ragnaros") };
+			renderObj->SetAnimationSet(i);
+			ragnaros->GetComponent<COMRenderObjectContainer>()->Insert(CHARACTER_MESH, std::move(renderObj));
+			m_objects.push_back(ragnaros);
+		}
+	}
 }
 auto TestScene::Update(f32 timeDelta) -> void
 {
@@ -137,7 +162,14 @@ auto TestScene::Update(f32 timeDelta) -> void
 	auto renderModule{ App::Instance()->GetRenderModule() };
 	XMFLOAT3 rotation;
 	XMFLOAT4X4 viewMatrix;
-	
+
+	D3DLIGHT9 light{};
+	light.Type = D3DLIGHT_DIRECTIONAL;
+	light.Ambient = D3DCOLORVALUE{ 0.1f, 0.1f, 0.1f, 0.1f };
+	light.Diffuse = D3DCOLORVALUE{ 1.0f, 1.0f, 1.0f, 1.0f };
+	XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&light.Direction), XMVector3Normalize(XMVectorSet(1.f, -2.f, 0.f, 0.f)));
+	m_pRenderer->AddLight(L"global_light", light);
+
 	m_pRenderer->SetViewMatrix(m_pCameraObject->GetComponent<CameraComponent>()->GetViewMatrix());
 
 	m_skybox->PrepareRender(m_pRenderer.get());

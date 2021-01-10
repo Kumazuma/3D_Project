@@ -242,12 +242,15 @@ auto SkyBoxEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> 
 	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &zWriteEnable);
 
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, vertexCount, 0, triangleCount);
 
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, zWriteEnable);
+	pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 	pDevice->SetRenderState(D3DRS_LIGHTING, lighting);
 	pDevice->Clear(0, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0, 1.f, 0);

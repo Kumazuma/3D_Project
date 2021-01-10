@@ -49,7 +49,7 @@ auto Kumazuma::Client::ResourceManager::Release() -> void
     s_instance = nullptr;
 }
 
-auto Kumazuma::Client::ResourceManager::LoadOBJMesh(std::wstring const& path) -> std::unique_ptr<WowMapMeshObject>
+auto Kumazuma::Client::ResourceManager::LoadOBJMesh(std::wstring const& path) -> std::unique_ptr<WavefrontOBJMesh>
 {
     m_mutex.lock_shared();
     auto it = m_objMeshs.find(path);
@@ -58,8 +58,8 @@ auto Kumazuma::Client::ResourceManager::LoadOBJMesh(std::wstring const& path) ->
 
     if (isExist == false)
     {
-        WowMapMeshObject* pNewmesh{};
-        WowMapMeshObject::Create(m_pRenderModule.get(), path, &pNewmesh);
+        WavefrontOBJMesh* pNewmesh{};
+        WavefrontOBJMesh::Create(m_pRenderModule.get(), path, &pNewmesh);
         if (pNewmesh == nullptr)
         {
             return nullptr;
@@ -67,11 +67,11 @@ auto Kumazuma::Client::ResourceManager::LoadOBJMesh(std::wstring const& path) ->
         m_mutex.lock();
         it = m_objMeshs.emplace(
             path,
-            std::unique_ptr<WowMapMeshObject>{pNewmesh}
+            std::unique_ptr<WavefrontOBJMesh>{pNewmesh}
         ).first;
         m_mutex.unlock();
     }
-    std::unique_ptr<WowMapMeshObject> res{ static_cast<WowMapMeshObject*>(it->second->Clone()) };
+    std::unique_ptr<WavefrontOBJMesh> res{ static_cast<WavefrontOBJMesh*>(it->second->Clone()) };
     return res;
 }
 

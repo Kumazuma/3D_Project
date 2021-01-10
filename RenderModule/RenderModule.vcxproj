@@ -182,6 +182,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="hash_helper_for_f32x3.h" />
+    <ClInclude Include="InGameRenderer.hpp" />
     <ClInclude Include="intersact.h" />
     <ClInclude Include="MapToolRenderer.h" />
     <ClInclude Include="MeshObject.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderObject.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SimpleColliderBoxObject.h" />
     <ClInclude Include="SimpleColliderSphareObject.h" />
     <ClInclude Include="SkinnedXMeshObject.h" />
@@ -201,7 +203,7 @@
     <ClInclude Include="StaticXMeshObject.h" />
     <ClInclude Include="TerrainObject.h" />
     <ClInclude Include="TextureRenderTarget.h" />
-    <ClInclude Include="WowMapMeshObject.h" />
+    <ClInclude Include="WavefrontOBJMesh.h" />
     <ClInclude Include="XMeshAnimCtrler.h" />
     <ClInclude Include="XMeshContainer.h" />
     <ClInclude Include="XMeshHierarchyLoader.h" />
@@ -209,6 +211,7 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Frustum.cpp" />
+    <ClCompile Include="InGameRenderer.cpp" />
     <ClCompile Include="intersact.cpp" />
     <ClCompile Include="MapToolRenderer.cpp" />
     <ClCompile Include="MeshObject.cpp" />
@@ -231,7 +234,7 @@
     <ClCompile Include="StaticXMeshObject.cpp" />
     <ClCompile Include="TerrainObject.cpp" />
     <ClCompile Include="TextureRenderTarget.cpp" />
-    <ClCompile Include="WowMapMeshObject.cpp" />
+    <ClCompile Include="WavefrontOBJMesh.cpp" />
     <ClCompile Include="XMeshAnimCtrler.cpp" />
     <ClCompile Include="XMeshHierarchyLoader.cpp" />
   </ItemGroup>
@@ -257,6 +260,28 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ingame.fx">
+      <FileType>Document</FileType>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ingame_lighting.fx">
+      <FileType>Document</FileType>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ingame_combine.fx">
+      <FileType>Document</FileType>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fx1.bin" />
+    <None Include="fx_shade.bin" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

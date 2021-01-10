@@ -3,6 +3,9 @@
 #include "RenderModule.h"
 #include <shlwapi.h>
 #include "Renderer.h"
+#include <mutex>
+#include <map>
+#include <array>
 #pragma comment(lib, "shlwapi.lib")
 using namespace DirectX;
 inline auto __vectorcall ToFloat4x4(XMMATRIX mat)->XMFLOAT4X4
@@ -11,6 +14,12 @@ inline auto __vectorcall ToFloat4x4(XMMATRIX mat)->XMFLOAT4X4
     XMStoreFloat4x4(&tmp, mat);
     return tmp;
 }
+struct BoneInfo
+{
+    
+    u8  boneIdxs[4];
+    XMFLOAT4 weights;
+};
 auto SkinnedXMeshObject::Create(RenderModule* pRenderModule, std::wstring const& filePath, SkinnedXMeshObject** pOut) -> HRESULT
 {
     if (pOut == nullptr)
@@ -31,7 +40,7 @@ auto SkinnedXMeshObject::Create(RenderModule* pRenderModule, std::wstring const&
 
 auto SkinnedXMeshObject::PrepareRender(IRenderer* pRenderer) -> void
 {
-    pRenderer->AddEntity(RenderModule::Kind::NONALPHA, m_entity);
+    pRenderer->AddEntity(RenderModule::Kind::SKINNED, m_entity);
 }
 auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
 {                                   
@@ -46,10 +55,10 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRendere
     effect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
                                     
     effect->SetMatrix("g_mWorld", reinterpret_cast<D3DXMATRIX*>(&this->m_transform));
+    
     for (auto& iter : m_meshContainters)
     {                               
         auto& rRenderingMatries{ m_renderedMatrices[iter] };
-
         void* pSrcVtx = nullptr;    
         void* pDestVtx = nullptr;   
 
@@ -62,19 +71,40 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRendere
             nullptr,						// 원래 상태로 되돌리기 위한 상태 행렬(원래는 위 행렬의 역행렬을 구해서 넣어줘야 하지만 안넣어줘도 상관 없음)
             pSrcVtx,						// 변하지 않는 원본 메쉬의 정점 정보
             pDestVtx);						// 변환된 정보를 담기 위한 메쉬의 정점 정보
+        iter->pOriginalMesh->UnlockVertexBuffer();
+        iter->MeshData.pMesh->UnlockVertexBuffer();
+        COMPtr<IDirect3DVertexBuffer9> vertexBuffer{};
+        COMPtr<IDirect3DIndexBuffer9> indexBuffer{};
+        
+        iter->MeshData.pMesh->GetVertexBuffer(&vertexBuffer);
+        iter->MeshData.pMesh->GetIndexBuffer(&indexBuffer);
+        //pDevice->SetVertexDeclaration(m_vertexDecls[iter].Get());
+        pDevice->SetFVF(iter->fvf);
+        pDevice->SetStreamSource(0, vertexBuffer.Get(), 0, iter->vertexSize);
+        //pDevice->SetStreamSource(1, m_boneInfoBuffers[iter].Get(), 0, sizeof(BoneInfo));
+        pDevice->SetStreamSourceFreq(0, D3DSTREAMSOURCE_INDEXEDDATA | 1u);
+        //pDevice->SetStreamSourceFreq(1, D3DSTREAMSOURCE_INDEXEDDATA | 1u);
 
+        pDevice->SetIndices(indexBuffer.Get());
+        //effect->SetMatrixArray("g_frameMatrices", reinterpret_cast<D3DXMATRIX const*>(renderingMatrix.data()), 255);
         for (u32 i = 0; i < iter->NumMaterials; ++i)
         {
+            auto const& info{ iter->subsetTriangleInfo[i] };
             auto rMaterial{ iter->materials[i].MatD3D };
             auto specularColor{ rMaterial.Specular };
             D3DXVECTOR4 specularVec{ specularColor.r,specularColor.g, specularColor.b, rMaterial.Power };
             effect->SetTexture("g_diffuseTexture", iter->textures[i].Get());
             effect->SetVector("g_vSpecular", &specularVec);
             effect->CommitChanges();
-            iter->MeshData.pMesh->DrawSubset(i);
+            pDevice->DrawIndexedPrimitive(
+                D3DPT_TRIANGLELIST,
+                0,
+                0,
+                iter->vertexCount,
+                static_cast<UINT>(std::get<0>(info)),
+                static_cast<UINT>(std::get<1>(info))
+            );
         }
-        iter->pOriginalMesh->UnlockVertexBuffer();
-        iter->MeshData.pMesh->UnlockVertexBuffer();
     }
 }
 
@@ -139,6 +169,7 @@ auto SkinnedXMeshObject::SetAnimationSet(u32 idx) -> void
 
 auto SkinnedXMeshObject::PlayAnimation(f32 timeDelta) -> void
 {
+    std::lock_guard<SpinLock> guard{ *m_spinLock };
     m_pAnimCtrler->AdvanceTime(timeDelta);
     m_pAnimCtrler->AdjustAnimationToFrame();
     UpdateFrameMatrices(
@@ -185,9 +216,12 @@ SkinnedXMeshObject::SkinnedXMeshObject(SkinnedXMeshObject const* rhs):
     m_meshContainters{rhs->m_meshContainters},
     m_pRootFrame{rhs->m_pRootFrame},
     m_entity{new SkinnedMeshEntity{this}},
+    m_spinLock{rhs->m_spinLock},
     m_combinedOffsetMatrices{rhs->m_combinedOffsetMatrices},
     m_renderedMatrices{rhs->m_renderedMatrices},
     m_pFrameNames{rhs->m_pFrameNames}
+    //m_boneInfoBuffers{rhs->m_boneInfoBuffers},
+    //m_vertexDecls{ rhs->m_vertexDecls }
 {
     //TODO: 깊은 복사를 해야한다. HOWTO?
 }
@@ -266,6 +300,7 @@ auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring co
     identity(0, 0) = identity(1, 1)= identity(2, 2)= identity(3, 3)= 1.f;
     for (auto& iter : m_meshContainters)
     {
+        m_renderedMatrices[iter].reserve(256);
         m_renderedMatrices[iter].assign(iter->boneCount, XMFLOAT4X4{});
     }
     UpdateFrameMatrices(
@@ -285,7 +320,135 @@ auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring co
             mRenderingMatrix = mFrameOffset * mFrameCombinedMatrix;
             XMStoreFloat4x4(&rRenderingMatries[i], mRenderingMatrix);
         }
+        //auto skinInfo{ iter->pSkinInfo };
+        //u32 const boneCount{ static_cast<u32>(iter->pSkinInfo->GetNumBones()) };
+        //std::unordered_map<DWORD, std::unordered_map<DWORD,f32> > vertexBoneWeightTable;
+        //for (u32 i = 0; i < boneCount; ++i)
+        //{
+        //    u32 const vertexCount{ static_cast<u32>(skinInfo->GetNumBoneInfluences(static_cast<DWORD>(i))) };
+        //    std::vector<DWORD> vertices;
+        //    std::vector<f32> weights;
+        //    vertices.assign(vertexCount, 0);
+        //    weights.assign(vertexCount, 0.f);
+        //    
+        //    skinInfo->GetBoneInfluence(static_cast<DWORD>(i), vertices.data(), weights.data());
+        //    for (u32 j = 0; j < vertexCount; ++j)
+        //    {
+        //        DWORD const vertexID{ vertices[j] };
+        //        f32 const weight{ weights[j] };
+        //        vertexBoneWeightTable[vertexID][i] = weight;
+        //    }
+        //}
+        //for (auto& it : vertexBoneWeightTable)
+        //{
+        //    auto& table{ it.second };
+        //    //영향을 받는 뼈의 갯수가 4개 이하면 상관없다.
+        //    if (table.size() <= 4)
+        //    {
+        //        continue;
+        //    }
+        //    char s[100];
+        //    _itoa_s(table.size(), s, 10);
+        //    OutputDebugStringA(s);
+        //    std::map<f32, DWORD, std::greater<f32> > weights;
+        //    for (auto const& it : table) weights.emplace(it.second, it.first);
+        //    f32 sum{};
+        //    auto it2{ weights.begin() };
+        //    //상위 4개만 한다.
+        //    table.clear();
+
+        //    for (u32 i = 0; i < 4; ++i)
+        //    {
+        //        table.emplace(it2->second, it2->first);
+        //        sum += it2->first;
+        //        ++it2;
+        //    }
+        //    for (auto& it : table)
+        //    {
+        //        it.second = it.second / sum;
+        //    }
+        //}
+        //u32 const vertexCount{ iter->MeshData.pMesh->GetNumVertices() };
+        //std::vector<BoneInfo> boneInfos;
+        //boneInfos.assign(vertexCount, {});
+        //for (auto& it : vertexBoneWeightTable)
+        //{
+        //    BoneInfo boneInfo{};
+        //    std::array<f32, 4>& weights{
+        //        reinterpret_cast<std::array<f32, 4>&>(boneInfo.weights) };
+        //    std::array<u8, 4>& boneIdxs{
+        //        reinterpret_cast<std::array<u8, 4>&>(boneInfo.boneIdxs) };
+        //    auto const& table{ it.second };
+        //    auto tableIt{ table.begin() };
+        //    auto weightIt{ weights.begin() };
+        //    auto boneIdxsIt{ boneIdxs.begin() };
+        //    for (; tableIt != table.end(); ++tableIt)
+        //    {
+        //        *weightIt = tableIt->second;
+        //        *boneIdxsIt = static_cast<u8>(tableIt->first);
+        //        ++boneIdxsIt;
+        //        ++weightIt;
+        //    }
+        //    boneInfos[it.first] = boneInfo;
+        //}
+        //D3DVERTEXELEMENT9 xMeshDecl[65];
+        ////iter->pSkinInfo->ConvertToBlendedMesh()
+        //iter->MeshData.pMesh->GetDeclaration(xMeshDecl);
+        //D3DVERTEXELEMENT9 decls[65]{};
+        //u32 slot2StartIdx{ };
+        //for (auto const& decl : xMeshDecl)
+        //{
+        //    if (decl.Stream == 0xFF)
+        //    {
+        //        break;
+        //    }
+        //    decls[slot2StartIdx] = decl;
+        //    ++slot2StartIdx;
+        //}
+        //decls[slot2StartIdx + 0].Stream = 1;
+        //decls[slot2StartIdx + 0].Offset = 0;
+        //decls[slot2StartIdx + 0].Type = D3DDECLTYPE_UBYTE4;
+        //decls[slot2StartIdx + 0].Method = D3DDECLMETHOD_DEFAULT;
+        //decls[slot2StartIdx + 0].Usage = D3DDECLUSAGE_BLENDINDICES;
+        //decls[slot2StartIdx + 0].UsageIndex = 0;
+        //
+        //decls[slot2StartIdx + 1].Stream = 1;
+        //decls[slot2StartIdx + 1].Offset = sizeof(BoneInfo::boneIdxs);
+        //decls[slot2StartIdx + 1].Type = D3DDECLTYPE_FLOAT4;
+        //decls[slot2StartIdx + 1].Method = D3DDECLMETHOD_DEFAULT;
+        //decls[slot2StartIdx + 1].Usage = D3DDECLUSAGE_BLENDWEIGHT;
+        //decls[slot2StartIdx + 1].UsageIndex = 0;
+
+        //decls[slot2StartIdx + 2] = D3DDECL_END();
+        //COMPtr<IDirect3DVertexDeclaration9> vertexDecls;
+        //COMPtr<IDirect3DVertexBuffer9> boneInfoBuffer;
+        //
+        //hr = pDevice->CreateVertexBuffer(
+        //    boneInfos.size() * sizeof(BoneInfo),
+        //    0,
+        //    0,
+        //    D3DPOOL_MANAGED,
+        //    &boneInfoBuffer,
+        //    nullptr
+        //);
+        //if (FAILED(hr))
+        //{
+        //    return E_FAIL;
+        //}
+        //hr = pDevice->CreateVertexDeclaration(decls, &vertexDecls);
+        //if (FAILED(hr))
+        //{
+        //    return E_FAIL;
+        //}
+        //BoneInfo* boneInfoBufferPtr{};
+        //boneInfoBuffer->Lock(0, 0, reinterpret_cast<void**>(&boneInfoBufferPtr), 0);
+        //memcpy(boneInfoBufferPtr, boneInfos.data(), sizeof(BoneInfo)* boneInfos.size());
+        //boneInfoBuffer->Unlock();
+        //m_vertexDecls.emplace(iter, vertexDecls);
+        //m_boneInfoBuffers.emplace(iter, boneInfoBuffer);
     }
+
+    m_spinLock = std::shared_ptr<SpinLock>(new SpinLock{});
     return S_OK;
 }
 

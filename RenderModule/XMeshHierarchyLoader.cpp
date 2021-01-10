@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "XMeshHierarchyLoader.h"
 #include"UnicodeHelper.h"
+#include<sstream>
 using namespace DirectX;
 auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateFrame(LPCSTR szName, D3DXFRAME** ppNewFrame) -> HRESULT 
 {
@@ -95,6 +96,8 @@ auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateMeshContainer(
 
         }
     }
+
+    pNewMeshContainer->subsetTriangleInfo.reserve(pNewMeshContainer->materials.size());
     pNewMeshContainer->NumMaterials = static_cast<DWORD>(pNewMeshContainer->materials.size());
     pNewMeshContainer->pMaterials =  pNewMeshContainer->materials.data();
     pNewMeshContainer->pAdjacency = pNewMeshContainer->adjacency.data();
@@ -110,6 +113,29 @@ auto __stdcall SkinnedXMeshObject::HierarchyLoader::CreateMeshContainer(
     pNewMeshContainer->frameCombinedMatries.assign(pNewMeshContainer->boneCount, nullptr);
     pNewMeshContainer->frameOffsetMatries.assign(pNewMeshContainer->boneCount, defaultMatrix);
     
+    DWORD prevID{};
+    
+    DWORD* attributeBuffer{};
+    pMesh->LockAttributeBuffer(0, &attributeBuffer);
+    u32 triangleCount{};
+    pNewMeshContainer->subsetTriangleInfo.emplace_back(std::tuple<u32, u32>{});
+    auto it{ pNewMeshContainer->subsetTriangleInfo.begin() };
+    for (u32 i = 0; i < faceCount; ++i)
+    {
+        DWORD const attID{ attributeBuffer[i] };
+        if (prevID != attID)
+        {
+            prevID = attID;
+            std::tuple<u32, u32> newT{ i * 3, 0 };
+            pNewMeshContainer->subsetTriangleInfo.emplace_back(newT);
+            it = --pNewMeshContainer->subsetTriangleInfo.end();
+        }
+        ++std::get<1>(*it);
+    }
+    pMesh->UnlockAttributeBuffer();
+    pNewMeshContainer->vertexSize = D3DXGetFVFVertexSize(pMesh->GetFVF());
+    pNewMeshContainer->vertexCount = pMesh->GetNumVertices();
+    pNewMeshContainer->fvf = pMesh->GetFVF();
     for (u32 i = 0; i < pNewMeshContainer->boneCount; ++i)
     {
         pNewMeshContainer->frameOffsetMatries[i] = 

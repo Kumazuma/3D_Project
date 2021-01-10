@@ -1,5 +1,5 @@
 ///*
-//Bullet Continuous Collision Detection and Physics Library
+//PhysX Continuous Collision Detection and Physics Library
 //Copyright (c) 2003-2008 Erwin Coumans  http://bulletphysics.com
 //
 //This software is provided 'as-is', without any express or implied warranty.

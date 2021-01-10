@@ -25,7 +25,7 @@ using f64 = double;
 #define fn_ auto
 #endif
 
-inline auto __vectorcall StoreF32X3(DirectX::XMVECTOR va)->f32x3
+inline auto __vectorcall StoreF32x3(DirectX::XMVECTOR va)->f32x3
 {
 	f32x3 v;
 	XMStoreFloat3(&v, va);

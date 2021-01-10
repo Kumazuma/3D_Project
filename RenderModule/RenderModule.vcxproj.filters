@@ -25,9 +25,6 @@
     <Filter Include="StaticXMesh">
       <UniqueIdentifier>{9f77d1f1-13fe-4187-ae4b-768018fb16f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="WowMapMesh">
-      <UniqueIdentifier>{96f05a3e-7036-44f4-bd82-5d2f18f29976}</UniqueIdentifier>
-    </Filter>
     <Filter Include="SimpleMesh">
       <UniqueIdentifier>{47c9368a-1e28-4322-a547-460248fe59f0}</UniqueIdentifier>
     </Filter>
@@ -67,15 +64,18 @@
     <Filter Include="fx">
       <UniqueIdentifier>{9f25814f-1115-4d05-92c6-bdb46ad27c9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WavefonrtOBJMesh">
+      <UniqueIdentifier>{96f05a3e-7036-44f4-bd82-5d2f18f29976}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderObject">
+      <UniqueIdentifier>{ea1057a0-82df-450b-826e-3032b46b0eb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderObject.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Common.h">
@@ -117,9 +117,6 @@
     <ClInclude Include="QuadTreeLeafNode.h">
       <Filter>Terrain</Filter>
     </ClInclude>
-    <ClInclude Include="WowMapMeshObject.h">
-      <Filter>WowMapMesh</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\UnicodeHelper.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -156,15 +153,24 @@
     <ClInclude Include="Renderer.h">
       <Filter>Renderer\Common</Filter>
     </ClInclude>
+    <ClInclude Include="WavefrontOBJMesh.h">
+      <Filter>WavefonrtOBJMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderObject.h">
+      <Filter>RenderObject</Filter>
+    </ClInclude>
+    <ClInclude Include="InGameRenderer.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderObject.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="RenderModule.cpp">
@@ -200,9 +206,6 @@
     <ClCompile Include="QuadTreeLeafNode.cpp">
       <Filter>StaticXMesh</Filter>
     </ClCompile>
-    <ClCompile Include="WowMapMeshObject.cpp">
-      <Filter>WowMapMesh</Filter>
-    </ClCompile>
     <ClCompile Include="SimpleColliderBoxObject.cpp">
       <Filter>SimpleMesh\Box</Filter>
     </ClCompile>
@@ -224,10 +227,37 @@
     <ClCompile Include="MapToolRenderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="WavefrontOBJMesh.cpp">
+      <Filter>WavefonrtOBJMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderObject.cpp">
+      <Filter>RenderObject</Filter>
+    </ClCompile>
+    <ClCompile Include="InGameRenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\Game\maptool.fx" />
     <CopyFileToFolders Include="..\Game\maptool_combine.fx" />
     <CopyFileToFolders Include="..\Game\maptool_lighting.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="ingame.fx" />
+    <FxCompile Include="ingame_lighting.fx" />
+    <FxCompile Include="ingame_combine.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fx1.bin">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="fx_shade.bin">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>

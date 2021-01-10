@@ -9,11 +9,11 @@ namespace Kumazuma::Client
 		HeightMapBuilder() = default;
 		HeightMapBuilder(HeightMapBuilder&& rhs)noexcept;
 		
-		auto operator << (WowMapMeshObject const& rhs)&&->HeightMapBuilder;
-		auto operator << (WowMapMeshObject const& rhs)& ->HeightMapBuilder&;
+		auto operator << (WavefrontOBJMesh const& rhs)&&->HeightMapBuilder;
+		auto operator << (WavefrontOBJMesh const& rhs)& ->HeightMapBuilder&;
 
 		auto Build()const->std::unique_ptr<HeightMap>;
 	private:
-		std::vector<std::unique_ptr<WowMapMeshObject> > m_meshs;
+		std::vector<std::unique_ptr<WavefrontOBJMesh> > m_meshs;
 	};
 }

@@ -25,14 +25,16 @@ SkinnedXMeshObject::AnimationController::AnimationController(AnimationController
 {
     ID3DXAnimationSet* animSet{};
     m_pAnimCtrl->GetAnimationSetByName("", &animSet);
- 
+    COMPtr<ID3DXAnimationController> pAnimCtrler;
     m_pAnimCtrl->CloneAnimationController(
         m_pAnimCtrl->GetMaxNumAnimationOutputs(),
         m_pAnimCtrl->GetMaxNumAnimationSets(),
         m_pAnimCtrl->GetMaxNumTracks(),
         m_pAnimCtrl->GetMaxNumEvents(),
-        &m_pAnimCtrl
+        &pAnimCtrler
     );
+    
+    m_pAnimCtrl = std::move(pAnimCtrler);
 }
 
 auto SkinnedXMeshObject::AnimationController::Create(ID3DXAnimationController* pAnimCtrl, AnimationController** pOut) -> HRESULT

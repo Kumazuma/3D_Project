@@ -16,7 +16,7 @@ constexpr StringLiteral<char> STATE_IDLE{"STATE_IDLE"};
 
 Kumazuma::Client::CameraComponent::CameraComponent(std::shared_ptr<Game::Object const> player):
     Component{ TAG },
-    distance_{ 40.f },
+    distance_{ 100.f },
     playerObj_{ player },
     viewSpace_{}
 {

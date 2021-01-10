@@ -72,22 +72,24 @@ void Runtime::Update(float delta)
         auto& rList{ pair.second };
         for (auto it: rList)
         {
-            auto task = m_threadPoolMgr->QueueTask([comtag, it, delta](TaskContext& context) {
-                EventProcessor process{};
-                UpdateEvent updateEvent{ delta };
-                process.Process( it, updateEvent);
-                });
-            tasks.emplace_back(std::move(task));
+            if (it->IsHandled(EVT_UPDATE))
+            {
+                auto task = m_threadPoolMgr->QueueTask([comtag, it, delta](TaskContext& context) {
+                    EventProcessor process{};
+                    UpdateEvent updateEvent{ delta };
+                    process.Process(it, updateEvent);
+                    });
+                tasks.emplace_back(std::move(task));
+            }
+
         }
     }
     for (auto& task : tasks)
     {
         task->Wait();
     }
-    tasks.clear();
-    m_threadPoolMgr->DispatchTask();
+    //m_threadPoolMgr->DispatchTask();
     GC();
-    
 }
 auto Runtime::DispatchEvent() -> void
 {

@@ -5,7 +5,7 @@
 #include<vector>
 #include<optional>
 #include<array>
-#include"WowMapMeshObject.h"
+#include"WavefrontOBJMesh.h"
 namespace Kumazuma::Client
 {
 	class HeightMapBuilder;

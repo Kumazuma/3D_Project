@@ -4,9 +4,9 @@
 #include<unordered_map>
 #include<mutex>
 #include<shared_mutex>
-#include "WowMapMeshObject.h"
+#include "WavefrontOBJMesh.h"
 #include "SkinnedXMeshObject.h"
-class WowMapMeshObject;
+class WavefrontOBJMesh;
 class RenderModule;
 namespace Kumazuma
 {
@@ -26,7 +26,7 @@ namespace Kumazuma
 			static auto Instance()->std::shared_ptr<ResourceManager>;
 			static auto Release()->void;
 		public:
-			auto LoadOBJMesh(std::wstring const& path)->std::unique_ptr<WowMapMeshObject>;
+			auto LoadOBJMesh(std::wstring const& path)->std::unique_ptr<WavefrontOBJMesh>;
 			auto LoadSkinnedMesh(std::wstring const& id, std::wstring const& path)->std::unique_ptr<SkinnedXMeshObject>;
 			auto LoadCharacterMetaData(std::wstring const& id, std::wstring const& path)->void;
 			auto GetCharacterMeta(std::wstring const& id)const->std::shared_ptr<CharacterMeta const>;
@@ -34,7 +34,7 @@ namespace Kumazuma
 			auto Clear()->void;
 		private:
 			std::shared_ptr<RenderModule> m_pRenderModule;
-			std::unordered_map < std::wstring, std::unique_ptr<WowMapMeshObject> >m_objMeshs;
+			std::unordered_map < std::wstring, std::unique_ptr<WavefrontOBJMesh> >m_objMeshs;
 			std::unordered_map < std::wstring, std::unique_ptr<SkinnedXMeshObject> > m_skinnedMeshs;
 			std::unordered_map < std::wstring, std::shared_ptr<CharacterMeta> > m_characterMetas;
 			std::unordered_map < std::wstring, std::wstring > m_idMeshPathTable;

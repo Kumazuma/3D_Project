@@ -3,14 +3,16 @@
 #include <Game/TransformComponent.hpp>
 #include "COMRenderObjectContainer.hpp"
 #include "COMHeightmap.hpp"
-#include "COMMoveController.hpp"
 #include "HeightMap.hpp"
 #include "framework.h"
 #include "app.h"
+#include "PhysicsCharacterController.hpp"
+constexpr StringLiteral<wchar_t> CHARACTER_MESH{ L"CHARACTER" };
 namespace Kumazuma::Client
 {
 	using namespace DirectX;
-	const Game::ComponentTag<COMPlayerInput> COMPlayerInput::TAG{"COM_PLAYER_INPUT"};
+	Game::ComponentTag<COMPlayerInput> const COMPlayerInput::TAG{"COM_PLAYER_INPUT"};
+	f32 constexpr PLAYER_SPEED{ 40.f };
 	COMPlayerInput::COMPlayerInput():
 		Component{ TAG },
 		m_gravity{}
@@ -47,7 +49,7 @@ namespace Kumazuma::Client
 		{
 			auto transform = obj->GetComponent<Game::TransformComponent>();
 			auto renderObjContainer{ obj->GetComponent<COMRenderObjectContainer>() };
-			auto renderObj{ renderObjContainer->Get(L"") };
+			auto renderObj{ renderObjContainer->Get(CHARACTER_MESH) };
 			if (!renderObj)return;
 			auto skinnedMesh{ std::static_pointer_cast<SkinnedXMeshObject>(renderObj) };
 			XMFLOAT4X4 transformMatrix;
@@ -63,7 +65,8 @@ namespace Kumazuma::Client
 
 			if ((GetAsyncKeyState(VK_SPACE) & 0x8000) != 0)
 			{
-				obj->GetComponent<COMMoveController>()->Jump(event.GetDelta());
+				//TODO:
+				//obj->GetComponent<COMMoveController>()->Jump(event.GetDelta());
 
 			}
 			if (inputMgr->IsPressing(PLAYER_INPUT::MOVE_FORWARD))
@@ -96,16 +99,16 @@ namespace Kumazuma::Client
 				vCurosrPos = vAxis * (vCurosrPos * 2.f) / vScreenSize;
 				vCurosrPos -= vAxis;
 				XMVECTOR vPrevCursor{ 0,0,0,0 };
-				XMVECTOR vDelta{ (vCurosrPos - vPrevCursor) * (XM_2PI / 4.f) };
+				XMVECTOR vCursorDelta{ (vCurosrPos - vPrevCursor) * (XM_2PI / 4.f) };
 				f32 length{};
-				XMStoreFloat(&length, XMVector2Length(vDelta));
+				XMStoreFloat(&length, XMVector2Length(vCursorDelta));
 				if (length > 0.f)
 				{
 					XMStoreFloat2(&prevMousePosition_, vCurosrPos);
 					XMVECTOR vRot{ XMLoadFloat3(&transform->GetRotation()) };
-					vDelta = XMVECTOR{ 0, vDelta.m128_f32[0], 0.f, 0.f };
-					vRot = XMVectorAddAngles(vRot, vDelta);
-					rotation = StoreF32X3(vRot);
+					vCursorDelta = XMVECTOR{ 0, vCursorDelta.m128_f32[0], 0.f, 0.f };
+					vRot = XMVectorAddAngles(vRot, vCursorDelta);
+					rotation = StoreF32x3(vRot);
 					transform->SetRotation(rotation);
 					transform->GenerateTransformMatrixWithoutScale(&transformMatrix);
 					mTransform = XMLoadFloat4x4(&transformMatrix);
@@ -136,12 +139,12 @@ namespace Kumazuma::Client
 			XMStoreFloat(&len, XMVector3Length(vDelta));
 			if (len > 0.f)
 			{
-				obj->GetComponent<COMMoveController>()->Move(event.GetDelta(), vMovingDir);
+				obj->GetComponent<PhysicsCharacterController>()->Move(vMovingDir * PLAYER_SPEED);
 				skinnedMesh->SetAnimationSet(0);
 			}
 			else
 			{
-				obj->GetComponent<COMMoveController>()->Move(0.f, vDelta);
+				obj->GetComponent<PhysicsCharacterController>()->Stop();
 				skinnedMesh->SetAnimationSet(1);
 			}
 			transform->SetRotation(rotation);

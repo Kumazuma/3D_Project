@@ -10,8 +10,9 @@
 #include<atomic>
 #include<vector>
 #include"json.hpp"
-class WowMapMeshObject;
+class WavefrontOBJMesh;
 struct RenderObject;
+class InGameRenderer;
 namespace Kumazuma
 {
 	namespace Client
@@ -54,10 +55,10 @@ namespace Kumazuma
 			auto Update(f32 timeDelta)->void;
 		private:
 			nlohmann::json m_file;
-			std::unique_ptr<IRenderer> m_pRenderer;
+			std::unique_ptr<InGameRenderer> m_pRenderer;
 			std::unique_ptr<RenderObject> m_skybox;
-			std::vector<std::unique_ptr<WowMapMeshObject > > m_mapMeshs;
-			std::vector<std::unique_ptr<WowMapMeshObject> > m_staticMapMeshs;
+			std::vector<std::unique_ptr<WavefrontOBJMesh > > m_mapMeshs;
+			std::vector<std::unique_ptr<WavefrontOBJMesh> > m_staticMapMeshs;
 
 			std::shared_ptr<Game::Object> m_pCameraObject;
 			std::shared_ptr<Game::Object> m_pPlayerObject;

@@ -102,34 +102,38 @@ namespace Kumazuma
 			void Update()
 			{
 				m_press.clear();
-				m_prevPosition = m_cursorPosition;
-				GetCursorPos(&m_cursorPosition);
-				if (m_locked && m_hwnd != NULL)
+				if (GetActiveWindow() != NULL)
 				{
-					if (GetActiveWindow() != NULL)
+					m_prevPosition = m_cursorPosition;
+					GetCursorPos(&m_cursorPosition);
+					if (m_locked && m_hwnd != NULL)
 					{
-						RECT rc{};
-						GetClientRect(m_hwnd, &rc);
-						POINT pt{
-							(rc.right - rc.left) / 2,
-							(rc.bottom - rc.top) / 2
-						};
-						ClientToScreen(m_hwnd, &pt);
-						SetCursorPos(pt.x, pt.y);
+						if (GetActiveWindow() != NULL)
+						{
+							RECT rc{};
+							GetClientRect(m_hwnd, &rc);
+							POINT pt{
+								(rc.right - rc.left) / 2,
+								(rc.bottom - rc.top) / 2
+							};
+							ClientToScreen(m_hwnd, &pt);
+							SetCursorPos(pt.x, pt.y);
+						}
+					}
+					for (auto& it : m_mappedKeyData)
+					{
+						if (GetAsyncKeyState(it.second) & 0x8000)
+						{
+							m_press.insert(it.second);
+							m_up.erase(it.second);
+						}
+						else
+						{
+							m_down.erase(it.second);
+						}
 					}
 				}
-				for (auto& it : m_mappedKeyData)
-				{
-					if (GetAsyncKeyState(it.second) & 0x8000)
-					{
-						m_press.insert(it.second);
-						m_up.erase(it.second);
-					}
-					else
-					{
-						m_down.erase(it.second);
-					}
-				}
+				
 			}
 			void Bind(EnumT id, unsigned key)
 			{

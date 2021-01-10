@@ -81,13 +81,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\bullet\inc</IncludePath>
-    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\bullet\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\physx\include</IncludePath>
+    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\physx\win.x86_64.vc142.md\checked;$(LibraryPath)</LibraryPath>
     <ReferencePath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\bullet\inc</IncludePath>
-    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\bullet\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\physx\include</IncludePath>
+    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\bullet\lib\x64;G:\projects\3D_Project\physx\win.x86_64.vc142.md\checked;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
@@ -154,9 +154,8 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>..\common;%(AdditionalIncludeDirectories);..\RenderModule</AdditionalIncludeDirectories>
@@ -165,6 +164,7 @@
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -186,10 +186,10 @@
     <ClInclude Include="Collder.hpp" />
     <ClInclude Include="ColliderAttribute.hpp" />
     <ClInclude Include="COMHeightmap.hpp" />
-    <ClInclude Include="COMMoveController.hpp" />
     <ClInclude Include="COMPlayerInput.hpp" />
     <ClInclude Include="COMRenderObjectContainer.hpp" />
     <ClInclude Include="constvar.hpp" />
+    <ClInclude Include="DCC.hpp" />
     <ClInclude Include="Env.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="FreeViewingState.hpp" />
@@ -203,8 +203,13 @@
     <ClInclude Include="macro.hpp" />
     <ClInclude Include="ObjectTag.hpp" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PhysicsCharacterController.hpp" />
+    <ClInclude Include="pxJump.hpp" />
+    <ClInclude Include="pxPhysicsCharacterControllerInner.hpp" />
     <ClInclude Include="PhysicsManager.hpp" />
+    <ClInclude Include="PhysXPhysicsManager.hpp" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="COMRagnarosAI.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.hpp" />
     <ClInclude Include="SphareColliderAttribute.hpp" />
@@ -224,9 +229,10 @@
     <ClCompile Include="Collder.cpp" />
     <ClCompile Include="ColliderAttribute.cpp" />
     <ClCompile Include="COMHeightmap.cpp" />
-    <ClCompile Include="COMMoveController.cpp" />
     <ClCompile Include="COMPlayerInput.cpp" />
+    <ClCompile Include="COMRagnarosAI.cpp" />
     <ClCompile Include="COMRenderObjectContainer.cpp" />
+    <ClCompile Include="DCC.cpp" />
     <ClCompile Include="Env.cpp" />
     <ClCompile Include="FreeViewingState.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -236,6 +242,10 @@
     <ClCompile Include="kzEventTag.cpp" />
     <ClCompile Include="LookForwardState.cpp" />
     <ClCompile Include="ObjectTag.cpp" />
+    <ClCompile Include="PhysicsCharacterController.cpp" />
+    <ClCompile Include="PhysXPhysicsManager.cpp" />
+    <ClCompile Include="pxJump.cpp" />
+    <ClCompile Include="pxPhysicsCharacterControllerInner.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ResourceManager.cpp" />

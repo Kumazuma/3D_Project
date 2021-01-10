@@ -4,9 +4,9 @@ Kumazuma::Client::HeightMapBuilder::HeightMapBuilder(HeightMapBuilder&& rhs) noe
 	m_meshs{std::move(rhs.m_meshs)}
 {
 }
-auto Kumazuma::Client::HeightMapBuilder::operator<<(WowMapMeshObject const& rhs) & -> HeightMapBuilder&
+auto Kumazuma::Client::HeightMapBuilder::operator<<(WavefrontOBJMesh const& rhs) & -> HeightMapBuilder&
 {
-	m_meshs.emplace_back(static_cast<WowMapMeshObject*>(rhs.Clone()));
+	m_meshs.emplace_back(static_cast<WavefrontOBJMesh*>(rhs.Clone()));
 	return *this;
 }
 
@@ -45,7 +45,7 @@ auto Kumazuma::Client::HeightMapBuilder::Build() const -> std::unique_ptr<Height
 	return std::unique_ptr<HeightMap>{new HeightMapContainer{ std::move(maps) }};
 }
 
-auto Kumazuma::Client::HeightMapBuilder::operator<<(WowMapMeshObject const& rhs) && -> HeightMapBuilder
+auto Kumazuma::Client::HeightMapBuilder::operator<<(WavefrontOBJMesh const& rhs) && -> HeightMapBuilder
 {
 	*this << rhs;
 	return std::move(*this);

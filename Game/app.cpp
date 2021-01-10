@@ -251,7 +251,7 @@ auto App::OnSized(Kumazuma::WindowSystem::WinSizeEvent& event)->void
 {
     if (event.IsMaximized() || event.IsRestored())
     {
-        //m_renderer.NotifyedResizeClientRect(*Runtime::Instance(), event.GetWidth(), event.GetHeight());
+        //m_renderer.NotifyedResizeClientRect(*Runtime::Instance(), event.GetWidth(), event.GetAccel());
     }
 }
 

@@ -38,7 +38,7 @@ auto Kumazuma::Client::FreeViewingState::OnUpdate(f32 timeDelta) -> void
 		XMVECTOR vRot{ XMLoadFloat3(&transformComponent->GetRotation()) };
 		vDelta = XMVECTOR{ vDelta.m128_f32[1], vDelta.m128_f32[0], 0.f, 0.f };
 		vRot = XMVectorAddAngles(vRot, vDelta);
-		f32x3 rotation{ StoreF32X3(vRot) };
+		f32x3 rotation{ StoreF32x3(vRot) };
 		transformComponent->SetRotation(rotation);
 	}
 	
@@ -49,9 +49,9 @@ auto Kumazuma::Client::FreeViewingState::OnUpdate(f32 timeDelta) -> void
 	XMVECTOR vCameraUp{ mTransfrom.r[1] };
 	XMMATRIX mPlayerTransform{ LoadF32X44(this->GetPlayerTransform()) };
 	XMVECTOR vPlayerPosition{ mPlayerTransform .r[3]};
-	XMVECTOR vFocusAt{ vPlayerPosition + mPlayerTransform.r[1] * 8.5f };
+	XMVECTOR vFocusAt{ vPlayerPosition + mPlayerTransform.r[1] * 4.5f };
 	XMVECTOR vCameraNewPosition{ vFocusAt - vCameraForward * GetDistance() };
-	transformComponent->SetPosition(StoreF32X3(vCameraNewPosition));
+	transformComponent->SetPosition(StoreF32x3(vCameraNewPosition));
 	XMMATRIX mViewSpace{ XMMatrixLookAtLH(vCameraNewPosition, vFocusAt, vCameraUp) };
 	this->SetViewSpace(StoreF32X44(mViewSpace));
 }

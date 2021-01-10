@@ -6,6 +6,28 @@ class RenderModule;
 struct IRenderer;
 class Frustum;
 class Ray;
+namespace Kumazuma
+{
+	namespace Graphics
+	{
+
+		enum class RenderObjectKind {
+			None,
+			Mesh,
+			MeshEffect,
+			Particle,
+			Sprite,
+		};
+		class DLL_CLASS RenderObjectV2
+		{
+		public:
+			virtual ~RenderObjectV2() = default;
+			virtual auto Clone(RenderObjectV2** pout)const->void = 0;
+			virtual auto GetKind()const->RenderObjectKind = 0;
+		};
+	}
+}
+
 struct DLL_CLASS RenderObject
 {
 protected:

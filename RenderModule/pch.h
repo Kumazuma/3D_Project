@@ -10,4 +10,5 @@
 // 여기에 미리 컴파일하려는 헤더 추가
 #include "framework.h"
 constexpr wchar_t DIRECTORY_SEPARATOR = L'\\';
+extern HMODULE g_hDLLModule;
 #endif //PCH_H

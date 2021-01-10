@@ -1,7 +1,9 @@
 #include "pch.h"
-#include "MapToolRenderer.h"
+#include "InGameRenderer.hpp"
+#include "pch.h"
 #include "TextureRenderTarget.h"
 #include"RenderEntity.h"
+#include "resource.h"
 #include <iostream>
 using namespace DirectX;
 struct PPVertexFVF { XMFLOAT3 xyz; XMFLOAT2 uv; };
@@ -15,14 +17,14 @@ constexpr StringLiteral<char> ID_CONST_INVSERSE_VIEW_PORJ_MATRIX{ "g_mInverseVie
 constexpr StringLiteral<char> ID_TEX_NORMAL_MAP{ "g_normalMap" };
 constexpr StringLiteral<char> ID_TEX_SPECULAR_MAP{ "g_specularMap" };
 
-MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 height):
+InGameRenderer::InGameRenderer(RenderModule* pRenderModule, u32 width, u32 height) :
     m_viewMatrix{  },
     m_projMatrix{  },
     m_frustum{}
 {
     COMPtr<IDirect3DDevice9> pDevice{};
     pRenderModule->GetDevice(&pDevice);
-    m_viewMatrix(0, 0) = m_viewMatrix(1, 1) = m_viewMatrix(2, 2) = m_viewMatrix(3, 3)  = 1.f;
+    m_viewMatrix(0, 0) = m_viewMatrix(1, 1) = m_viewMatrix(2, 2) = m_viewMatrix(3, 3) = 1.f;
     m_projMatrix = m_viewMatrix;
     HRESULT hr;
     TextureRenderTarget* pAlbedo{};
@@ -49,7 +51,7 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
 
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_G32R32F, &pDepthMap);
     if (FAILED(hr))throw hr;
-    
+
     hr = TextureRenderTarget::Create(pRenderModule, width, height, D3DFMT_A16B16G16R16F, &pLightSpecularMap);
     if (FAILED(hr))throw hr;
 
@@ -60,9 +62,24 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     m_renderTargets.emplace(ID_LightSpecularMap, pLightSpecularMap);
     m_renderTargets.emplace(ID_LightDiffuseMap, pLightDiffuseMap);
     m_renderTargets.emplace(ID_DepthMap, pDepthMap);
-
+    HRSRC hResMeta = NULL;
+    HGLOBAL hResource = NULL;
+    void* resourceDataPtr{};
+    size_t resourceDataSize{};
+    hResMeta = FindResourceW(g_hDLLModule, MAKEINTRESOURCE(IDR_FX_INGAME), L"FX");
+    if (hResMeta == NULL)
+    {
+        throw E_FAIL;
+    }
+    hResource = LoadResource(g_hDLLModule, hResMeta);
+    if (hResource == NULL)
+    {
+        throw E_FAIL;
+    }
+    resourceDataPtr = LockResource(hResource);
+    resourceDataSize = SizeofResource(g_hDLLModule, hResMeta);
     COMPtr<ID3DXBuffer> pBuffer;
-    hr = D3DXCreateEffectFromFileW(pDevice.Get(), L"./maptool.fx", nullptr, nullptr, shaderFlag, nullptr, &m_effect, &pBuffer);
+    hr = D3DXCreateEffect(pDevice.Get(), reinterpret_cast<char*>(resourceDataPtr), resourceDataSize, nullptr, nullptr, shaderFlag, nullptr, &m_effect, &pBuffer);
     if (pBuffer != nullptr)
     {
         char* volatile msg{ reinterpret_cast<char*>(pBuffer->GetBufferPointer()) };
@@ -73,18 +90,23 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     {
         throw hr;
     }
-    hr = D3DXCreateEffectFromFileW(pDevice.Get(), L"./maptool_lighting.fx", nullptr, nullptr, shaderFlag, nullptr, &m_lightingEffect, &pBuffer);
-    if (pBuffer != nullptr)
-    {
-        char* msg{ reinterpret_cast<char*>(pBuffer->GetBufferPointer()) };
-        std::clog << __FILE__ << ":" << __LINE__ << " shader error!\n" << pBuffer->GetBufferPointer() << '\n';
-    }
-    if (FAILED(hr))
-    {
-        throw hr;
-    }
 
-    hr = D3DXCreateEffectFromFileW(pDevice.Get(), L"./maptool_combine.fx", nullptr, nullptr, shaderFlag, nullptr, &m_combineEffect, &pBuffer);
+    UnlockResource(hResource);
+    FreeResource(hResource);
+    hResMeta = FindResourceW(g_hDLLModule, MAKEINTRESOURCE(IDR_FX_LIGHTING), L"FX");
+    if (hResMeta == NULL)
+    {
+        throw E_FAIL;
+    }
+    hResource = LoadResource(g_hDLLModule, hResMeta);
+    if (hResource == NULL)
+    {
+        throw E_FAIL;
+    }
+    resourceDataPtr = LockResource(hResource);
+    resourceDataSize = SizeofResource(g_hDLLModule, hResMeta);
+    hr = D3DXCreateEffect(pDevice.Get(), reinterpret_cast<char*>(resourceDataPtr), resourceDataSize, nullptr, nullptr, shaderFlag, nullptr, &m_lightingEffect, &pBuffer);
+
     if (pBuffer != nullptr)
     {
         char* msg{ reinterpret_cast<char*>(pBuffer->GetBufferPointer()) };
@@ -94,6 +116,35 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     {
         throw hr;
     }
+    UnlockResource(hResource);
+    FreeResource(hResource);
+
+    hResMeta = FindResourceW(g_hDLLModule, MAKEINTRESOURCE(IDR_FX_COMBINE), L"FX");
+    if (hResMeta == NULL)
+    {
+        throw E_FAIL;
+    }
+    hResource = LoadResource(g_hDLLModule, hResMeta);
+    if (hResource == NULL)
+    {
+        throw E_FAIL;
+    }
+    resourceDataPtr = LockResource(hResource);
+    resourceDataSize = SizeofResource(g_hDLLModule, hResMeta);
+    hr = D3DXCreateEffect(pDevice.Get(), reinterpret_cast<char*>(resourceDataPtr), resourceDataSize, nullptr, nullptr, shaderFlag, nullptr, &m_combineEffect, &pBuffer);
+
+    if (pBuffer != nullptr)
+    {
+        char* msg{ reinterpret_cast<char*>(pBuffer->GetBufferPointer()) };
+        std::clog << __FILE__ << ":" << __LINE__ << " shader error!\n" << pBuffer->GetBufferPointer() << '\n';
+    }
+    if (FAILED(hr))
+    {
+        throw hr;
+    }
+    UnlockResource(hResource);
+    FreeResource(hResource);
+
     pDevice->CreateVertexBuffer(sizeof(PPVertexFVF) * 4, 0, FVF, D3DPOOL_MANAGED, &m_pVertexBuffer, nullptr);
     pDevice->CreateIndexBuffer(sizeof(int) * 6, 0, D3DFMT_INDEX32, D3DPOOL_MANAGED, &m_pIndexBuffer, nullptr);
     PPVertexFVF* pVertices;
@@ -114,7 +165,7 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     m_pIndexBuffer->Lock(0, 0, reinterpret_cast<void**>(&pIndices), 0);
 
     pIndices[0] = 0;
-    pIndices[1] = 1; 
+    pIndices[1] = 1;
     pIndices[2] = 3;
 
     pIndices[3] = 1;
@@ -124,52 +175,47 @@ MapToolRenderer::MapToolRenderer(RenderModule* pRenderModule, u32 width, u32 hei
     m_pIndexBuffer->Unlock();
 
     D3DXCreateSprite(pDevice.Get(), &m_sprite);
-    D3DLIGHT9 light{};
-    light.Type = D3DLIGHT_DIRECTIONAL;
-    light.Ambient = D3DCOLORVALUE{ 0.1f, 0.1f, 0.1f, 0.1f };
-    light.Diffuse = D3DCOLORVALUE{ 1.0f, 1.0f, 1.0f, 1.0f };
-    XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&light.Direction), XMVector3Normalize(XMVectorSet(1.f, -2.f, 0.f, 0.f)));
-    m_lights.emplace(L"global_light", light);
+
 }
-    
-MapToolRenderer::MapToolRenderer(MapToolRenderer&& rhs) noexcept:
-    m_renderEntities{std::move(rhs.m_renderEntities)},
-    m_viewMatrix{std::move(rhs.m_viewMatrix)},
+
+InGameRenderer::InGameRenderer(InGameRenderer&& rhs) noexcept :
+    m_renderEntities{ std::move(rhs.m_renderEntities) },
+    m_viewMatrix{ std::move(rhs.m_viewMatrix) },
     m_projMatrix{ std::move(rhs.m_projMatrix) },
-    m_frustum{std::move(rhs.m_frustum)},
-    m_effect{std::move(rhs.m_effect)},
-    m_lightingEffect{std::move(rhs.m_lightingEffect)},
-    m_combineEffect{std::move(rhs.m_combineEffect)},
-    m_sprite{std::move(rhs.m_sprite)},
-    m_pVertexBuffer{std::move(rhs.m_pVertexBuffer)},
-    m_pIndexBuffer{std::move(rhs.m_pIndexBuffer)},
-    m_renderTargets{std::move(rhs.m_renderTargets)},
-    m_lights{std::move(rhs.m_lights)}
+    m_frustum{ std::move(rhs.m_frustum) },
+    m_effect{ std::move(rhs.m_effect) },
+    m_lightingEffect{ std::move(rhs.m_lightingEffect) },
+    m_combineEffect{ std::move(rhs.m_combineEffect) },
+    m_sprite{ std::move(rhs.m_sprite) },
+    m_pVertexBuffer{ std::move(rhs.m_pVertexBuffer) },
+    m_pIndexBuffer{ std::move(rhs.m_pIndexBuffer) },
+    m_renderTargets{ std::move(rhs.m_renderTargets) },
+    m_lights{ std::move(rhs.m_lights) }
 {
 
 }
-    
-auto MapToolRenderer::Create(RenderModule* pRenderModule, u32 width, u32 height, MapToolRenderer** pOut) -> HRESULT
-{               
+
+auto InGameRenderer::Create(RenderModule* pRenderModule, u32 width, u32 height, InGameRenderer** pOut) -> HRESULT
+{
     try
     {
-        if(pOut == nullptr)
+        if (pOut == nullptr)
         {
             std::clog << __FILE__ << ":" << __LINE__ << " pOut is null!\n";
             throw E_POINTER;
         }
-        MapToolRenderer obj{ pRenderModule, width, height };
-        *pOut = new MapToolRenderer{ std::move(obj) };
-        return S_OK;    
+        InGameRenderer obj{ pRenderModule, width, height };
+        *pOut = new InGameRenderer{ std::move(obj) };
+        return S_OK;
     }
-    catch (HRESULT hr)  
+    catch (HRESULT hr)
     {
         return hr;
     }
-    return E_NOTIMPL;   
+    return E_NOTIMPL;
 }
 
-auto MapToolRenderer::Render(RenderModule* const pRenderModule) -> void 
+auto InGameRenderer::Render(RenderModule* const pRenderModule) -> void
 {
     COMPtr<IDirect3DDevice9> pDevice;
     XMStoreFloat4x4(&m_viewProjMatrix, XMLoadFloat4x4(&m_viewMatrix) * XMLoadFloat4x4(&m_projMatrix));
@@ -209,26 +255,27 @@ auto MapToolRenderer::Render(RenderModule* const pRenderModule) -> void
     }
 
     pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-    //m_sprite->Begin(D3DXSPRITE_ALPHABLEND);
+    m_lights.clear();
+    m_sprite->Begin(D3DXSPRITE_ALPHABLEND);
     //RECT rc{};
     //COMPtr<IDirect3DTexture9> pNormalMapTexture;
     //COMPtr<IDirect3DTexture9> pSpecularMapTexture;
     //COMPtr<IDirect3DTexture9> pAlbedoMapTexture;
     //COMPtr<IDirect3DTexture9> pShadeMapTexture;
-    //COMPtr<IDirect3DTexture9> pDepthMapTexture;
+    COMPtr<IDirect3DTexture9> pDepthMapTexture;
     //COMPtr<IDirect3DTexture9> pLightSpecularMapTexture;
     //m_renderTargets[ID_NormapTarget]->GetTexture(&pNormalMapTexture);
     //m_renderTargets[ID_MatSpecularTarget]->GetTexture(&pSpecularMapTexture);
     //m_renderTargets[ID_AlbedoRenderTarget]->GetTexture(&pAlbedoMapTexture);
     //m_renderTargets[ID_LightDiffuseMap]->GetTexture(&pShadeMapTexture);
     //m_renderTargets[ID_LightSpecularMap]->GetTexture(&pLightSpecularMapTexture);
-    //m_renderTargets[ID_DepthMap]->GetTexture(&pDepthMapTexture);
-    //D3DXMATRIX tmpMat;
-    //D3DXMATRIX tmpMat2;
-    //D3DXMatrixScaling(&tmpMat, .2f, .2f, .2f);
-    //D3DXMatrixTranslation(&tmpMat2, pRenderModule->GetWidth() * 0.2f , 0 , 0 );
-    //m_sprite->SetTransform(&tmpMat);
-    //m_sprite->Draw(pNormalMapTexture.Get(), nullptr, nullptr, nullptr, D3DCOLOR_COLORVALUE(1.f, 1.f, 1.f, 1.f));
+    m_renderTargets[ID_DepthMap]->GetTexture(&pDepthMapTexture);
+    D3DXMATRIX tmpMat;
+    D3DXMATRIX tmpMat2;
+    D3DXMatrixScaling(&tmpMat, .2f, .2f, .2f);
+    D3DXMatrixTranslation(&tmpMat2, pRenderModule->GetWidth() * 0.2f , 0 , 0 );
+    m_sprite->SetTransform(&tmpMat);
+    m_sprite->Draw(pDepthMapTexture.Get(), nullptr, nullptr, nullptr, D3DCOLOR_COLORVALUE(1.f, 1.f, 1.f, 1.f));
 
     //tmpMat = tmpMat * tmpMat2;
 
@@ -247,30 +294,36 @@ auto MapToolRenderer::Render(RenderModule* const pRenderModule) -> void
     //m_sprite->SetTransform(&tmpMat);
     //m_sprite->Draw(pLightSpecularMapTexture.Get(), nullptr, nullptr, nullptr, D3DCOLOR_COLORVALUE(1.f, 1.f, 1.f, 1.f));
 
-    //m_sprite->End();
+    m_sprite->End();
     pDevice->EndScene();
 
     ClearEntityTable();
 }
 
-auto MapToolRenderer::AddEntity(RenderModule::Kind kind, std::shared_ptr<RenderEntity> const& entity) -> void 
+auto InGameRenderer::AddEntity(RenderModule::Kind kind, std::shared_ptr<RenderEntity> const& entity) -> void
 {
     m_renderEntities[kind].push_back(entity);
 }
 
-auto MapToolRenderer::SetProjMatrix(DirectX::XMFLOAT4X4 const& mat) -> void 
+auto InGameRenderer::SetProjMatrix(DirectX::XMFLOAT4X4 const& mat) -> void
 {
     m_projMatrix = mat;
     m_frustum.MakeFrustum(XMLoadFloat4x4(&m_viewMatrix), XMLoadFloat4x4(&m_projMatrix));
 }
 
-auto MapToolRenderer::SetViewMatrix(DirectX::XMFLOAT4X4 const& mat) -> void 
+auto InGameRenderer::SetNearFar(f32 nearZ, f32 farZ) -> void 
+{
+    m_nearZ = nearZ;
+    m_farZ = farZ;
+}
+
+auto InGameRenderer::SetViewMatrix(DirectX::XMFLOAT4X4 const& mat) -> void
 {
     m_viewMatrix = mat;
     m_frustum.MakeFrustum(XMLoadFloat4x4(&m_viewMatrix), XMLoadFloat4x4(&m_projMatrix));
 }
 
-auto MapToolRenderer::GetEffect(ID3DXEffect** const pOut) -> HRESULT
+auto InGameRenderer::GetEffect(ID3DXEffect** const pOut) -> HRESULT
 {
     if (pOut == nullptr)return E_POINTER;
     *pOut = this->m_effect.Get();
@@ -278,33 +331,38 @@ auto MapToolRenderer::GetEffect(ID3DXEffect** const pOut) -> HRESULT
     return S_OK;
 }
 
-auto MapToolRenderer::GetProjMatrix(DirectX::XMFLOAT4X4* const pOut) -> HRESULT
+auto InGameRenderer::GetProjMatrix(DirectX::XMFLOAT4X4* const pOut) -> HRESULT
 {
     if (pOut == nullptr) return E_POINTER;
     *pOut = m_projMatrix;
     return S_OK;
 }
 
-auto MapToolRenderer::GetViewMatrix(DirectX::XMFLOAT4X4* const pOut) -> HRESULT 
+auto InGameRenderer::GetViewMatrix(DirectX::XMFLOAT4X4* const pOut) -> HRESULT
 {
     if (pOut == nullptr) return E_POINTER;
     *pOut = m_viewMatrix;
     return S_OK;
 }
 
-auto MapToolRenderer::GetFrustum(Frustum* const pOutFrustum) -> HRESULT 
+auto InGameRenderer::GetFrustum(Frustum* const pOutFrustum) -> HRESULT
 {
     if (pOutFrustum == nullptr) return E_POINTER;
     *pOutFrustum = m_frustum;
     return S_OK;
 }
 
-auto MapToolRenderer::Delete() -> void 
+auto InGameRenderer::Delete() -> void
 {
     delete this;
 }
 
-auto MapToolRenderer::DefferedRender(RenderModule* pRenderModule) -> void
+auto InGameRenderer::AddLight(std::wstring const& name, D3DLIGHT9 const& light) -> void
+{
+    m_lights.emplace(name, light);
+}
+
+auto InGameRenderer::DefferedRender(RenderModule* pRenderModule) -> void
 {
     COMPtr<IDirect3DDevice9> pDevice;
     COMPtr<IDirect3DSurface9> albedoTarget;
@@ -356,7 +414,7 @@ auto MapToolRenderer::DefferedRender(RenderModule* pRenderModule) -> void
     pDevice->SetPixelShader(nullptr);
 }
 
-auto MapToolRenderer::Lighting(RenderModule* pRenderModule) -> void
+auto InGameRenderer::Lighting(RenderModule* pRenderModule) -> void
 {
     HRESULT hr{};
     COMPtr<IDirect3DDevice9> pDevice;
@@ -397,7 +455,7 @@ auto MapToolRenderer::Lighting(RenderModule* pRenderModule) -> void
     for (auto& lightItem : m_lights)
     {
         auto light{ lightItem.second };
-        int passNum{-1};
+        int passNum{ -1 };
         switch (light.Type)
         {
         case D3DLIGHT_DIRECTIONAL:
@@ -419,7 +477,7 @@ auto MapToolRenderer::Lighting(RenderModule* pRenderModule) -> void
     m_lightingEffect->End();
 }
 
-auto MapToolRenderer::Combine(RenderModule* pRenderModule) -> void
+auto InGameRenderer::Combine(RenderModule* pRenderModule) -> void
 {
     COMPtr<IDirect3DSwapChain9> pSwapChain{};
     COMPtr<IDirect3DSurface9> pBackbuffer{};
@@ -427,13 +485,14 @@ auto MapToolRenderer::Combine(RenderModule* pRenderModule) -> void
     COMPtr<IDirect3DTexture9> pLightSpecularMapTexture;
     COMPtr<IDirect3DTexture9> pLightDiffuseMapTexture;
     COMPtr<IDirect3DTexture9> pAlbedoMapTexture;
+    COMPtr<IDirect3DTexture9> pDepthMapTexture;
     pRenderModule->GetDefaultSwapChain(&pSwapChain);
     pRenderModule->GetDevice(&pDevice);
     pSwapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &pBackbuffer);
     m_renderTargets[ID_AlbedoRenderTarget]->GetTexture(&pAlbedoMapTexture);
     m_renderTargets[ID_LightSpecularMap]->GetTexture(&pLightSpecularMapTexture);
     m_renderTargets[ID_LightDiffuseMap]->GetTexture(&pLightDiffuseMapTexture);
-
+    m_renderTargets[ID_DepthMap]->GetTexture(&pDepthMapTexture);
     pDevice->SetRenderTarget(0, pBackbuffer.Get());
     pDevice->SetRenderTarget(1, nullptr);
     pDevice->SetRenderTarget(2, nullptr);
@@ -443,18 +502,20 @@ auto MapToolRenderer::Combine(RenderModule* pRenderModule) -> void
     pDevice->SetFVF(FVF);
     pDevice->SetIndices(m_pIndexBuffer.Get());
     pDevice->SetStreamSource(0, m_pVertexBuffer.Get(), 0, sizeof(PPVertexFVF));
-
+    
     m_combineEffect->Begin(&passCount, 0);
+    m_combineEffect->SetFloat("g_farZ", m_farZ - m_nearZ);
     m_combineEffect->SetTexture("g_shadeMap", pLightDiffuseMapTexture.Get());
     m_combineEffect->SetTexture("g_specularMap", pLightSpecularMapTexture.Get());
     m_combineEffect->SetTexture("g_albedoMap", pAlbedoMapTexture.Get());
+    m_combineEffect->SetTexture("g_depthMap", pDepthMapTexture.Get());
     m_combineEffect->BeginPass(0);
     pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 4, 0, 2);
     m_combineEffect->EndPass();
     m_combineEffect->End();
 }
 
-auto MapToolRenderer::ClearEntityTable() -> void
+auto InGameRenderer::ClearEntityTable() -> void
 {
     m_renderEntities.clear();
 }

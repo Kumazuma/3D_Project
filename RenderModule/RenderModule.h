@@ -20,7 +20,7 @@ struct RenderEntity;
 class DLL_CLASS RenderModule
 {
 public:
-	enum class Kind{ENVIRONMENT, TERRAIN, NONALPHA,  ALPHA, NAVIMASH, UI};
+	enum class Kind{ENVIRONMENT, TERRAIN, NONALPHA, SKINNED,  ALPHA, NAVIMASH, UI};
 	static auto Create(HWND hWindow, u32 width, u32 height, RenderModule** pOut)->HRESULT;
 public:
 	

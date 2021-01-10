@@ -12,9 +12,9 @@ auto Kumazuma::Client::IdleViewingState::OnUpdate(f32 timeDelta) -> void
 	XMVECTOR vCameraUp{ mTransfrom.r[1] };
 	XMMATRIX mPlayerTransform{ LoadF32X44(this->GetPlayerTransform()) };
 	XMVECTOR vPlayerPosition{ mPlayerTransform.r[3] };
-	XMVECTOR vFocusAt{ vPlayerPosition + mPlayerTransform.r[1] * 8.5f };
+	XMVECTOR vFocusAt{ vPlayerPosition + mPlayerTransform.r[1] * 4.5f };
 	XMVECTOR vCameraNewPosition{ vFocusAt - vCameraForward * GetDistance() };
-	transformComponent->SetPosition(StoreF32X3(vCameraNewPosition));
+	transformComponent->SetPosition(StoreF32x3(vCameraNewPosition));
 	XMMATRIX mViewSpace{ XMMatrixLookAtLH(vCameraNewPosition, vFocusAt, vCameraUp) };
 	this->SetViewSpace(StoreF32X44(mViewSpace));
 }

@@ -89,7 +89,7 @@ auto Kumazuma::Client::LookForwardState::OnUpdate(f32 timeDelta) -> void
 		XMVECTOR vRot{ XMLoadFloat3(&transformComponent->GetRotation()) };
 		vDelta = XMVECTOR{ vDelta.m128_f32[1], 0.f, 0.f, 0.f };
 		vRot = XMVectorAddAngles(vRot, vDelta);
-		f32x3 rotation{ StoreF32X3(vRot) };
+		f32x3 rotation{ StoreF32x3(vRot) };
 		transformComponent->SetRotation(rotation);
 	}
 
@@ -97,7 +97,7 @@ auto Kumazuma::Client::LookForwardState::OnUpdate(f32 timeDelta) -> void
 	transformComponent->GenerateTransformMatrixWithoutScale(&cameraTransform);
 	mCameraTranform = XMLoadFloat4x4(&cameraTransform);
 	vCameraForward = mCameraTranform.r[2];
-	XMVECTOR vAt{ mPlayerTransform.r[3] + mPlayerTransform.r[1] * 8.5f };
+	XMVECTOR vAt{ mPlayerTransform.r[3] + mPlayerTransform.r[1] * 4.5f };
 	XMVECTOR vCameraNewPosition{ vAt - vCameraForward * GetDistance()};
 	XMFLOAT3 cameraNewPosition{};
 	XMStoreFloat3(&cameraNewPosition, vCameraNewPosition);

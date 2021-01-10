@@ -59,9 +59,6 @@
     <ClCompile Include="HeightMapBuilder.cpp">
       <Filter>Component\Height Map</Filter>
     </ClCompile>
-    <ClCompile Include="COMMoveController.cpp">
-      <Filter>Component\Character</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsManager.cpp">
       <Filter>physics</Filter>
     </ClCompile>
@@ -79,6 +76,24 @@
     </ClCompile>
     <ClCompile Include="IdleViewingState.cpp">
       <Filter>Component\Camera\IdleViewingState</Filter>
+    </ClCompile>
+    <ClCompile Include="DCC.cpp">
+      <Filter>physics\DynamicCC</Filter>
+    </ClCompile>
+    <ClCompile Include="COMRagnarosAI.cpp">
+      <Filter>Component\Ragnaros</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCharacterController.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="pxPhysicsCharacterControllerInner.cpp">
+      <Filter>physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXPhysicsManager.cpp">
+      <Filter>physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="pxJump.cpp">
+      <Filter>physics\PhysX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,9 +185,6 @@
     <ClInclude Include="HeightMapBuilder.hpp">
       <Filter>Component\Height Map</Filter>
     </ClInclude>
-    <ClInclude Include="COMMoveController.hpp">
-      <Filter>Component\Character</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicsManager.hpp">
       <Filter>physics</Filter>
     </ClInclude>
@@ -190,6 +202,24 @@
     </ClInclude>
     <ClInclude Include="IdleViewingState.hpp">
       <Filter>Component\Camera\IdleViewingState</Filter>
+    </ClInclude>
+    <ClInclude Include="DCC.hpp">
+      <Filter>physics\DynamicCC</Filter>
+    </ClInclude>
+    <ClInclude Include="COMRagnarosAI.hpp">
+      <Filter>Component\Ragnaros</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCharacterController.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXPhysicsManager.hpp">
+      <Filter>physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="pxPhysicsCharacterControllerInner.hpp">
+      <Filter>physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="pxJump.hpp">
+      <Filter>physics\PhysX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -254,6 +284,18 @@
     </Filter>
     <Filter Include="Component\Camera\IdleViewingState">
       <UniqueIdentifier>{60795152-405a-4edc-941f-816a4cd3e5b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physics\DynamicCC">
+      <UniqueIdentifier>{9726c1b9-4372-4807-8b82-6959fc841bd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Ragnaros">
+      <UniqueIdentifier>{2b9822b0-681e-45c7-9089-d2d1dd0dc1af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physics\PhysX">
+      <UniqueIdentifier>{ad72ea94-2919-4533-ac1b-4fd169916e93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physics\common">
+      <UniqueIdentifier>{dcef1b51-6b79-4ebc-b5b4-c2ac2b27faa7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
