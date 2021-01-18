@@ -10,8 +10,8 @@ namespace Kumazuma
 {
 	namespace Game
 	{
-		const ComponentTag<TransformComponent> TransformComponent::TAG{ "TransformComponent" };
-		
+		IMPLEMENT_COMPONENT_CLASS(Kumazuma::Game::TransformComponent)
+
 		TransformComponent::TransformComponent():
 			Component{ TAG },
 			m_scale{1.f, 1.f, 1.f},

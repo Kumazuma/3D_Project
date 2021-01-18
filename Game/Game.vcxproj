@@ -82,7 +82,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\physx\include</IncludePath>
-    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\physx\win.x86_64.vc142.md\checked;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\physx\win.x86_64.vc142.md\debug;..\bullet\lib\x64;$(LibraryPath)</LibraryPath>
     <ReferencePath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -185,33 +185,55 @@
     <ClInclude Include="CharacterMeta.hpp" />
     <ClInclude Include="Collder.hpp" />
     <ClInclude Include="ColliderAttribute.hpp" />
+    <ClInclude Include="ColliderManager.hpp" />
+    <ClInclude Include="COMCharacterStateInfo.hpp" />
+    <ClInclude Include="COMCollider.hpp" />
     <ClInclude Include="COMHeightmap.hpp" />
     <ClInclude Include="COMPlayerInput.hpp" />
     <ClInclude Include="COMRenderObjectContainer.hpp" />
     <ClInclude Include="constvar.hpp" />
+    <ClInclude Include="Damage.hpp" />
+    <ClInclude Include="DamageEvent.hpp" />
     <ClInclude Include="DCC.hpp" />
     <ClInclude Include="Env.hpp" />
+    <ClInclude Include="EventTag.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="FreeViewingState.hpp" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="HeightMap.hpp" />
     <ClInclude Include="HeightMapBuilder.hpp" />
+    <ClInclude Include="HitPoints.hpp" />
     <ClInclude Include="IdleViewingState.hpp" />
     <ClInclude Include="kzEnum.hpp" />
     <ClInclude Include="kzEventTag.hpp" />
+    <ClInclude Include="LayerTags.hpp" />
     <ClInclude Include="LookForwardState.hpp" />
     <ClInclude Include="macro.hpp" />
+    <ClInclude Include="ManaPoints.hpp" />
+    <ClInclude Include="Objects.hpp" />
     <ClInclude Include="ObjectTag.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsCharacterController.hpp" />
+    <ClInclude Include="PlayerBehavior.hpp" />
+    <ClInclude Include="PlayerJumpBehavior.hpp" />
+    <ClInclude Include="PlayerNormalBehavior.hpp" />
+    <ClInclude Include="Preferences.hpp" />
     <ClInclude Include="pxJump.hpp" />
     <ClInclude Include="pxPhysicsCharacterControllerInner.hpp" />
     <ClInclude Include="PhysicsManager.hpp" />
     <ClInclude Include="PhysXPhysicsManager.hpp" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="COMRagnarosAI.hpp" />
+    <ClInclude Include="Ragnaros.hpp" />
+    <ClInclude Include="RagnarosAIState.hpp" />
+    <ClInclude Include="RagnarosBirthState.hpp" />
+    <ClInclude Include="RagnarosPhase1AttackState.hpp" />
+    <ClInclude Include="RagnarosPhase1ChasingState.hpp" />
+    <ClInclude Include="RagnarosPhase1Stance.hpp" />
+    <ClInclude Include="RagnarosWaitPlayerState.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.hpp" />
+    <ClInclude Include="SimpleTransform.hpp" />
     <ClInclude Include="SphareColliderAttribute.hpp" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestScene.hpp" />
@@ -228,26 +250,46 @@
     <ClCompile Include="CharacterMeta.cpp" />
     <ClCompile Include="Collder.cpp" />
     <ClCompile Include="ColliderAttribute.cpp" />
+    <ClCompile Include="ColliderManager.cpp" />
+    <ClCompile Include="COMCharacterStateInfo.cpp" />
+    <ClCompile Include="COMCollider.cpp" />
     <ClCompile Include="COMHeightmap.cpp" />
     <ClCompile Include="COMPlayerInput.cpp" />
     <ClCompile Include="COMRagnarosAI.cpp" />
     <ClCompile Include="COMRenderObjectContainer.cpp" />
+    <ClCompile Include="Damage.cpp" />
+    <ClCompile Include="DamageEvent.cpp" />
     <ClCompile Include="DCC.cpp" />
     <ClCompile Include="Env.cpp" />
+    <ClCompile Include="EventTag.cpp" />
     <ClCompile Include="FreeViewingState.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="HeightMapBuilder.cpp" />
+    <ClCompile Include="HitPoints.cpp" />
     <ClCompile Include="IdleViewingState.cpp" />
     <ClCompile Include="kzEventTag.cpp" />
+    <ClCompile Include="LayerTags.cpp" />
     <ClCompile Include="LookForwardState.cpp" />
+    <ClCompile Include="ManaPoints.cpp" />
     <ClCompile Include="ObjectTag.cpp" />
     <ClCompile Include="PhysicsCharacterController.cpp" />
     <ClCompile Include="PhysXPhysicsManager.cpp" />
+    <ClCompile Include="PlayerBehavior.cpp" />
+    <ClCompile Include="PlayerJumpBehavior.cpp" />
+    <ClCompile Include="PlayerNormalBehavior.cpp" />
+    <ClCompile Include="Preferences.cpp" />
     <ClCompile Include="pxJump.cpp" />
     <ClCompile Include="pxPhysicsCharacterControllerInner.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Ragnaros.cpp" />
+    <ClCompile Include="RagnarosAIState.cpp" />
+    <ClCompile Include="RagnarosBirthState.cpp" />
+    <ClCompile Include="RagnarosPhase1AttackState.cpp" />
+    <ClCompile Include="RagnarosPhase1ChasingState.cpp" />
+    <ClCompile Include="RagnarosPhase1Stance.cpp" />
+    <ClCompile Include="RagnarosWaitPlayerState.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SphareColliderAttribute.cpp" />
     <ClCompile Include="TestScene.cpp" />

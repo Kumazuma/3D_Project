@@ -8,7 +8,6 @@ namespace Kumazuma
 		class TransformComponent : public Component
 		{
 		public:
-			static const ComponentTag<TransformComponent> TAG;
 			TransformComponent();
 			Component* Clone()const override;
 			//Setter
@@ -28,6 +27,7 @@ namespace Kumazuma
 			DirectX::XMFLOAT3 m_scale;
 			DirectX::XMFLOAT3 m_position;
 			DirectX::XMFLOAT3 m_rotation;
+			DECLARE_COMPONENT_CLASS(Kumazuma::Game::TransformComponent)
 		};
 	}
 }

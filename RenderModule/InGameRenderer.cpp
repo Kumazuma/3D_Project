@@ -256,26 +256,26 @@ auto InGameRenderer::Render(RenderModule* const pRenderModule) -> void
 
     pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     m_lights.clear();
-    m_sprite->Begin(D3DXSPRITE_ALPHABLEND);
+    //m_sprite->Begin(D3DXSPRITE_ALPHABLEND);
     //RECT rc{};
     //COMPtr<IDirect3DTexture9> pNormalMapTexture;
     //COMPtr<IDirect3DTexture9> pSpecularMapTexture;
     //COMPtr<IDirect3DTexture9> pAlbedoMapTexture;
     //COMPtr<IDirect3DTexture9> pShadeMapTexture;
-    COMPtr<IDirect3DTexture9> pDepthMapTexture;
+    //COMPtr<IDirect3DTexture9> pDepthMapTexture;
     //COMPtr<IDirect3DTexture9> pLightSpecularMapTexture;
     //m_renderTargets[ID_NormapTarget]->GetTexture(&pNormalMapTexture);
     //m_renderTargets[ID_MatSpecularTarget]->GetTexture(&pSpecularMapTexture);
     //m_renderTargets[ID_AlbedoRenderTarget]->GetTexture(&pAlbedoMapTexture);
     //m_renderTargets[ID_LightDiffuseMap]->GetTexture(&pShadeMapTexture);
     //m_renderTargets[ID_LightSpecularMap]->GetTexture(&pLightSpecularMapTexture);
-    m_renderTargets[ID_DepthMap]->GetTexture(&pDepthMapTexture);
+    //m_renderTargets[ID_DepthMap]->GetTexture(&pDepthMapTexture);
     D3DXMATRIX tmpMat;
     D3DXMATRIX tmpMat2;
     D3DXMatrixScaling(&tmpMat, .2f, .2f, .2f);
     D3DXMatrixTranslation(&tmpMat2, pRenderModule->GetWidth() * 0.2f , 0 , 0 );
-    m_sprite->SetTransform(&tmpMat);
-    m_sprite->Draw(pDepthMapTexture.Get(), nullptr, nullptr, nullptr, D3DCOLOR_COLORVALUE(1.f, 1.f, 1.f, 1.f));
+    //m_sprite->SetTransform(&tmpMat);
+    //m_sprite->Draw(pDepthMapTexture.Get(), nullptr, nullptr, nullptr, D3DCOLOR_COLORVALUE(1.f, 1.f, 1.f, 1.f));
 
     //tmpMat = tmpMat * tmpMat2;
 
@@ -294,7 +294,7 @@ auto InGameRenderer::Render(RenderModule* const pRenderModule) -> void
     //m_sprite->SetTransform(&tmpMat);
     //m_sprite->Draw(pLightSpecularMapTexture.Get(), nullptr, nullptr, nullptr, D3DCOLOR_COLORVALUE(1.f, 1.f, 1.f, 1.f));
 
-    m_sprite->End();
+    //m_sprite->End();
     pDevice->EndScene();
 
     ClearEntityTable();

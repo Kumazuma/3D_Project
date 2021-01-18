@@ -80,6 +80,7 @@ App::App(HINSTANCE hInstance)
     pInputManager->Bind(PLAYER_INPUT::PASS_SCENE, VK_RETURN);
     pInputManager->Bind(PLAYER_INPUT::MOUSE_LBUTTON, VK_LBUTTON);
     pInputManager->Bind(PLAYER_INPUT::MOUSE_RBUTTON, VK_RBUTTON);
+    pInputManager->Bind(PLAYER_INPUT::TOGLE_COLLIDER_BOX, VK_F2);
 
     Client::PhysicsManager::Initialize();
 }   
@@ -183,11 +184,7 @@ auto App::Loop()->int
             std::chrono::nanoseconds  duration{ now - pretick };
             using second = std::chrono::duration<float, std::ratio<1, 1>>;
             float delta = std::chrono::duration_cast<second>(duration).count();
-            if (delta > 1.f)
-            {
-                pretick = now;
-                continue;
-            }
+
             pTimerMgr->Update();
             pInputMgr->Update();
             m_pNowScene->Update(delta);

@@ -11,7 +11,7 @@
 #include<vector>
 #include"json.hpp"
 class WavefrontOBJMesh;
-struct RenderObject;
+class RenderObject;
 class InGameRenderer;
 namespace Kumazuma
 {

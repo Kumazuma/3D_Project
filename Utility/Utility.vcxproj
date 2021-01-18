@@ -157,6 +157,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="SpinLock.hpp" />
     <ClInclude Include="StringLiteral.h" />
+    <ClInclude Include="Transform.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

@@ -95,6 +95,64 @@
     <ClCompile Include="pxJump.cpp">
       <Filter>physics\PhysX</Filter>
     </ClCompile>
+    <ClCompile Include="RagnarosBirthState.cpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClCompile>
+    <ClCompile Include="RagnarosAIState.cpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClCompile>
+    <ClCompile Include="RagnarosPhase1ChasingState.cpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClCompile>
+    <ClCompile Include="LayerTags.cpp">
+      <Filter>App\LayerTags</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderManager.cpp">
+      <Filter>ColliderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="COMCollider.cpp">
+      <Filter>ColliderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="RagnarosPhase1AttackState.cpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClCompile>
+    <ClCompile Include="Ragnaros.cpp">
+      <Filter>Component\Ragnaros</Filter>
+    </ClCompile>
+    <ClCompile Include="RagnarosWaitPlayerState.cpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClCompile>
+    <ClCompile Include="RagnarosPhase1Stance.cpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClCompile>
+    <ClCompile Include="Preferences.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="DamageEvent.cpp">
+      <Filter>Event</Filter>
+    </ClCompile>
+    <ClCompile Include="Damage.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="EventTag.cpp">
+      <Filter>Event</Filter>
+    </ClCompile>
+    <ClCompile Include="HitPoints.cpp">
+      <Filter>Component\Character\HitPoints</Filter>
+    </ClCompile>
+    <ClCompile Include="ManaPoints.cpp">
+      <Filter>Component\Character\ManaPoints</Filter>
+    </ClCompile>
+    <ClCompile Include="COMCharacterStateInfo.cpp" />
+    <ClCompile Include="PlayerBehavior.cpp">
+      <Filter>Component\Player\state</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerNormalBehavior.cpp">
+      <Filter>Component\Player\state\NormalBehavior</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerJumpBehavior.cpp">
+      <Filter>Component\Player\state\JumpBehavior</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.hpp" />
@@ -154,9 +212,6 @@
     </ClInclude>
     <ClInclude Include="COMRenderObjectContainer.hpp">
       <Filter>Component\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Component\Player</Filter>
     </ClInclude>
     <ClInclude Include="CharacterMeta.hpp">
       <Filter>Data</Filter>
@@ -220,6 +275,75 @@
     </ClInclude>
     <ClInclude Include="pxJump.hpp">
       <Filter>physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="RagnarosAIState.hpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects.hpp">
+      <Filter>Scene\common</Filter>
+    </ClInclude>
+    <ClInclude Include="RagnarosBirthState.hpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClInclude>
+    <ClInclude Include="RagnarosPhase1ChasingState.hpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerTags.hpp">
+      <Filter>App\LayerTags</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleTransform.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderManager.hpp">
+      <Filter>ColliderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="COMCollider.hpp">
+      <Filter>ColliderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="RagnarosPhase1AttackState.hpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Ragnaros.hpp">
+      <Filter>Component\Ragnaros</Filter>
+    </ClInclude>
+    <ClInclude Include="RagnarosWaitPlayerState.hpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClInclude>
+    <ClInclude Include="RagnarosPhase1Stance.hpp">
+      <Filter>Component\Ragnaros\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Damage.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Preferences.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageEvent.hpp">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="EventTag.hpp">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="COMCharacterStateInfo.hpp">
+      <Filter>Component\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="HitPoints.hpp">
+      <Filter>Component\Character\HitPoints</Filter>
+    </ClInclude>
+    <ClInclude Include="ManaPoints.hpp">
+      <Filter>Component\Character\ManaPoints</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBehavior.hpp">
+      <Filter>Component\Player\state</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerNormalBehavior.hpp">
+      <Filter>Component\Player\state\NormalBehavior</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerJumpBehavior.hpp">
+      <Filter>Component\Player\state\JumpBehavior</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -296,6 +420,36 @@
     </Filter>
     <Filter Include="physics\common">
       <UniqueIdentifier>{dcef1b51-6b79-4ebc-b5b4-c2ac2b27faa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Ragnaros\States">
+      <UniqueIdentifier>{9bee8c35-b6e1-4aff-b3bd-5b924c89e5a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\common">
+      <UniqueIdentifier>{f93759ff-28e6-45a4-97a3-ef2624b9d2f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\LayerTags">
+      <UniqueIdentifier>{6ff33e92-af5a-43d4-81a1-aed09abbe474}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ColliderManager">
+      <UniqueIdentifier>{1b34028d-6983-4935-b753-246916e212bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Event">
+      <UniqueIdentifier>{0d01f6fe-570f-4404-8c27-a410e47204f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Character\HitPoints">
+      <UniqueIdentifier>{8b5508f6-3817-4d65-beb6-f395b1a711c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Character\ManaPoints">
+      <UniqueIdentifier>{5edf2096-df4f-452e-bafb-e46163841298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Player\state">
+      <UniqueIdentifier>{2f384512-896e-48cc-9b2f-f313acd24ea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Player\state\NormalBehavior">
+      <UniqueIdentifier>{36855c56-a125-4f1e-9b21-32ee1be52d7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Player\state\JumpBehavior">
+      <UniqueIdentifier>{344c7832-5d61-47aa-8c1b-b5ba574e322b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

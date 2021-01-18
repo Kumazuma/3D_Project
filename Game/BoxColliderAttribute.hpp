@@ -9,6 +9,9 @@ namespace Kumazuma::Client
 		auto GetType()const->ColliderType override;
 		auto Clone()const->ColliderAttribute* override;
 		auto DoLoadFromJson(nlohmann::json const& data)->void override;
+		auto GetOBBRadius(DirectX::XMVECTOR axis, f32x44 const& transform)const->f32 override;
+		auto GetOBBMaximumRadius(f32x44 const& transform)const->f32 override;
+
 	public:
 		auto SetWidth(f32 width)->void;
 		auto SetHeight(f32 height)->void;
@@ -17,8 +20,8 @@ namespace Kumazuma::Client
 		auto GetHeight()const->f32 const&;
 		auto GetDepth()const->f32 const&;
 	private:
-		f32 m_width;
-		f32 m_height;
-		f32 m_depth;
+		auto UpdatePositions()->void;
+	private:
+		f32x3 m_size;
 	};
 }

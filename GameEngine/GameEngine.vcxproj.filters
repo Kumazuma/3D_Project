@@ -28,6 +28,9 @@
     <Filter Include="runtime">
       <UniqueIdentifier>{54a08028-15a0-45cc-9d3e-121ed06c9431}</UniqueIdentifier>
     </Filter>
+    <Filter Include="layer">
+      <UniqueIdentifier>{a908401f-05dc-4c27-aee1-09b5e5c6609c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">

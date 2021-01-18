@@ -27,10 +27,12 @@ public:
 	auto FindFrameTransfromByName(std::wstring const& frameName)->DirectX::XMFLOAT4X4 const*;
 
 	auto IsAnimationSetEnd()->bool;
-	auto SetAnimationSet(u32 idx)->void;
+	auto SetAnimationSet(u32 idx, bool repeat = true)->void;
 	auto PlayAnimation(f32 timeDelta)->void;
 	auto GetAnimationCount()const->u32;
 	auto GetFrameNamesRef()const->std::set<std::wstring> const&;
+	auto GetCurrentAnimSetLength()const->f32;
+	auto GetCurrentSeek()const->f32;
 protected:
 	SkinnedXMeshObject();
 	SkinnedXMeshObject(SkinnedXMeshObject const* rhs);
@@ -39,7 +41,7 @@ protected:
 	auto UpdateFrameMatrices(Frame* pFrame, DirectX::XMFLOAT4X4 const& mat)->void;
 private:
 	D3DXFRAME* m_pRootFrame;
-	
+	bool m_repeat;
 
 	//std::unordered_map < CustomMeshContainer*, COMPtr<IDirect3DVertexDeclaration9> > m_vertexDecls;
 	//std::unordered_map<CustomMeshContainer*, COMPtr<IDirect3DVertexBuffer9> > m_boneInfoBuffers;

@@ -42,6 +42,7 @@ auto SimpleBoxObject::Clone() const -> RenderObject*
 
 auto SimpleBoxObject::PrepareRender(IRenderer* pRenderer) -> void
 {
+	if (IsVisible() == false)return;
 	pRenderer->AddEntity(RenderModule::Kind::ALPHA, m_entity);
 }
 

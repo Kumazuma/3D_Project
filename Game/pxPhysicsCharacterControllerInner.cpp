@@ -3,7 +3,7 @@
 #include"typedef.hpp"
 const char* gDynamic = "Dynamic";
 using namespace DirectX;
-f32 constexpr GRAVITY = -10.f;
+f32 constexpr GRAVITY = -50.f;
 namespace Kumazuma::Client
 {
 	using namespace physx;
@@ -74,6 +74,17 @@ namespace Kumazuma::Client
 		XMVECTOR vDelta{ LoadF32x3(this->moveDelta_) };
 		vDelta += moveDelta;
 		this->moveDelta_ = StoreF32x3(vDelta);
+	}
+	auto pxPhysicsCharacterControllerInner::Jump(f32 speed) -> void
+	{
+		if (!this->jump_.jump_)
+		{
+			this->jump_.StartJump(speed);
+		}
+	}
+	auto pxPhysicsCharacterControllerInner::IsJumping() const -> bool 
+	{
+		return jump_.jump_;
 	}
 	auto pxPhysicsCharacterControllerInner::preFilter(const physx::PxFilterData& filterData, const physx::PxShape* shape, const physx::PxRigidActor* actor, physx::PxHitFlags& queryFlags) -> physx::PxQueryHitType::Enum
 	{

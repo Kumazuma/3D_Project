@@ -1,6 +1,7 @@
 #pragma once
 #include<DirectXMath.h>
 #include<memory>
+#include<string>
 #include"json.hpp"
 namespace Kumazuma::Client
 {
@@ -20,7 +21,9 @@ namespace Kumazuma::Client
 		auto SetScale(DirectX::XMFLOAT3 const& val)->void;
 		auto SetOffset(DirectX::XMFLOAT3 const& val)->void;
 		auto SetType(ColliderType newType)->void;
-		
+		auto SetFrameName(std::wstring const& id)->void;
+
+		auto GetFrameName()const->std::wstring const&;
 		auto GetPosition()const->DirectX::XMFLOAT3 const&;
 		auto GetRotation()const->DirectX::XMFLOAT3 const&;
 		auto GetScale()const->DirectX::XMFLOAT3 const&;
@@ -29,6 +32,10 @@ namespace Kumazuma::Client
 		auto GetAttributeRef()const->ColliderAttribute const&;
 		auto GetAttributeRef()->ColliderAttribute&;
 		auto GenerateColliderMatrix(DirectX::XMFLOAT4X4* pOut)->void;
+		auto CheckCollision(DirectX::XMFLOAT4X4 const& lhsTransform, Collider const& rhs, DirectX::XMFLOAT4X4 const& rhsTransform) ->bool;
+	private:
+		auto CheckSphere(DirectX::XMFLOAT4X4 const& lhsTransform, Collider const& rhs, DirectX::XMFLOAT4X4 const& rhsTransform)->bool;
+		auto CheckOBB(DirectX::XMFLOAT4X4 const& lhsTransform, Collider const& rhs, DirectX::XMFLOAT4X4 const& rhsTransform)->bool;
 	private:
 		//common property
 		std::wstring m_frameName;
@@ -41,3 +48,4 @@ namespace Kumazuma::Client
 	};
 	
 }
+#include "ColliderAttribute.hpp"

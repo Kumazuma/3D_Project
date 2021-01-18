@@ -1,6 +1,7 @@
 #pragma once
 #include "MapToolRender.h"
 #include "TextureCollection.h"
+
 namespace MapToolRender
 {
 	[TypeConverter(EnumConverter::typeid)]

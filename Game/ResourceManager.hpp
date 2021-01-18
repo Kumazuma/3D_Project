@@ -6,6 +6,7 @@
 #include<shared_mutex>
 #include "WavefrontOBJMesh.h"
 #include "SkinnedXMeshObject.h"
+#include<optional>
 class WavefrontOBJMesh;
 class RenderModule;
 namespace Kumazuma
@@ -26,7 +27,9 @@ namespace Kumazuma
 			static auto Instance()->std::shared_ptr<ResourceManager>;
 			static auto Release()->void;
 		public:
-			auto LoadOBJMesh(std::wstring const& path)->std::unique_ptr<WavefrontOBJMesh>;
+			auto LoadOBJMesh(std::wstring const& path, std::optional<std::wstring> const& id = std::nullopt)->void;
+			auto GetOBJMesh(std::wstring const& id)->std::unique_ptr<WavefrontOBJMesh>;
+
 			auto LoadSkinnedMesh(std::wstring const& id, std::wstring const& path)->std::unique_ptr<SkinnedXMeshObject>;
 			auto LoadCharacterMetaData(std::wstring const& id, std::wstring const& path)->void;
 			auto GetCharacterMeta(std::wstring const& id)const->std::shared_ptr<CharacterMeta const>;

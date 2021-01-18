@@ -15,7 +15,8 @@ public:
 	//실제로 뼈대 행렬을 변경시키는 멤버함수.
 	auto AdjustAnimationToFrame()->void;
 	auto GetAnimCount()const->u32;
-
+	auto GetAnimationSetLength()const->f32;
+	auto GetSeek()const->f32;
 private:
 	COMPtr<ID3DXAnimationController> m_pAnimCtrl;
 	i32 m_currentTrackIdx;
@@ -23,4 +24,5 @@ private:
 	f32 m_accTime;
 	f32 m_period;
 	f32 m_lastTimeDelta;
+	
 };

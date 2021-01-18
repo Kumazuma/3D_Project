@@ -81,9 +81,6 @@
     <ClInclude Include="SkinnedXMeshObj.h">
       <Filter>skinnedxmesh</Filter>
     </ClInclude>
-    <ClInclude Include="WowMapMesh.h">
-      <Filter>WowMapMesh</Filter>
-    </ClInclude>
     <ClInclude Include="BoxMeshObj.h">
       <Filter>CollderObject\ColliderBoxMeshObject</Filter>
     </ClInclude>
@@ -107,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="TargetObject.h">
       <Filter>Target</Filter>
+    </ClInclude>
+    <ClInclude Include="WowMapMeshObject.h">
+      <Filter>WowMapMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -146,9 +146,6 @@
     <ClCompile Include="SkinnedXMeshObj.cpp">
       <Filter>skinnedxmesh</Filter>
     </ClCompile>
-    <ClCompile Include="WowMapMesh.cpp">
-      <Filter>WowMapMesh</Filter>
-    </ClCompile>
     <ClCompile Include="BoxMeshObj.cpp">
       <Filter>CollderObject\ColliderBoxMeshObject</Filter>
     </ClCompile>
@@ -169,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="TargetObject.cpp">
       <Filter>Target</Filter>
+    </ClCompile>
+    <ClCompile Include="WowMapMeshObject.cpp">
+      <Filter>WowMapMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
 #include "RenderObject.h"
 namespace Kumazuma::Client
 {
-    Game::ComponentTag<COMRenderObjectContainer> COMRenderObjectContainer::TAG{ "COMRenderObjectContainer" };
+    IMPLEMENT_COMPONENT_CLASS(Kumazuma::Client::COMRenderObjectContainer)
     COMRenderObjectContainer::COMRenderObjectContainer() :
         Component(TAG)
     {
@@ -19,21 +19,21 @@ namespace Kumazuma::Client
         }
     }
 
-    auto COMRenderObjectContainer::Remove(StringLiteral<wchar_t> const& key) -> void
+    auto COMRenderObjectContainer::Remove(std::wstring const& key) -> void
     {
         std::lock_guard<SpinLock> guard(m_mutex);
 
         m_collection.erase(key);
     }
 
-    auto COMRenderObjectContainer::Insert(StringLiteral<wchar_t> const& key, std::shared_ptr<RenderObject> obj) -> void
+    auto COMRenderObjectContainer::Insert(std::wstring const& key, std::shared_ptr<RenderObject> obj) -> void
     {
         std::lock_guard<SpinLock> guard(m_mutex);
 
         m_collection[key] = std::move(obj);
     }
 
-    auto COMRenderObjectContainer::Get(StringLiteral<wchar_t> const& key) -> std::shared_ptr<RenderObject>
+    auto COMRenderObjectContainer::Get(std::wstring const& key) -> std::shared_ptr<RenderObject>
     {
         std::lock_guard<SpinLock> guard(m_mutex);
 

@@ -7,16 +7,16 @@ auto Kumazuma::Client::IdleViewingState::OnUpdate(f32 timeDelta) -> void
 	auto transformComponent{ GetTransformComponent() };
 	f32x44 transform{};
 	transformComponent->GenerateTransformMatrixWithoutScale(&transform);
-	XMMATRIX mTransfrom{ LoadF32X44(transform) };
+	XMMATRIX mTransfrom{ LoadF32x44(transform) };
 	XMVECTOR vCameraForward{ mTransfrom.r[2] };
 	XMVECTOR vCameraUp{ mTransfrom.r[1] };
-	XMMATRIX mPlayerTransform{ LoadF32X44(this->GetPlayerTransform()) };
+	XMMATRIX mPlayerTransform{ LoadF32x44(this->GetPlayerTransform()) };
 	XMVECTOR vPlayerPosition{ mPlayerTransform.r[3] };
 	XMVECTOR vFocusAt{ vPlayerPosition + mPlayerTransform.r[1] * 4.5f };
 	XMVECTOR vCameraNewPosition{ vFocusAt - vCameraForward * GetDistance() };
 	transformComponent->SetPosition(StoreF32x3(vCameraNewPosition));
 	XMMATRIX mViewSpace{ XMMatrixLookAtLH(vCameraNewPosition, vFocusAt, vCameraUp) };
-	this->SetViewSpace(StoreF32X44(mViewSpace));
+	this->SetViewSpace(StoreF32x44(mViewSpace));
 }
 
 auto Kumazuma::Client::IdleViewingState::Reset(f32 timeDelta) -> void

@@ -21,25 +21,40 @@ using u8 = unsigned char;
 
 using f32 = float;
 using f64 = double;
+
+
+
+#ifndef _BEGIN_NS
+#define _BEGIN_NS(ns) namespace ns {
+#endif
+#ifndef _END_NS
+#define _END_NS }
+#endif
+
 #ifndef fn_
 #define fn_ auto
 #endif
-
+inline auto __vectorcall StoreF32(DirectX::XMVECTOR va)->f32
+{
+	f32 v;
+	DirectX::XMStoreFloat(&v, va);
+	return v;
+}
 inline auto __vectorcall StoreF32x3(DirectX::XMVECTOR va)->f32x3
 {
 	f32x3 v;
-	XMStoreFloat3(&v, va);
+	DirectX::XMStoreFloat3(&v, va);
 	return v;
 }
-inline auto __vectorcall StoreF32X44(DirectX::XMMATRIX va)->f32x44
+inline auto __vectorcall StoreF32x44(DirectX::XMMATRIX va)->f32x44
 {
 	f32x44 v;
-	XMStoreFloat4x4(&v, va);
+	DirectX::XMStoreFloat4x4(&v, va);
 	return v;
 }
-inline auto LoadF32X44(f32x44 const& va)->DirectX::XMMATRIX
+inline auto LoadF32x44(f32x44 const& va)->DirectX::XMMATRIX
 {
-	return XMLoadFloat4x4(&va);
+	return DirectX::XMLoadFloat4x4(&va);
 }
 template<typename T>
 inline auto LoadF32x3(T&& val)->DirectX::XMVECTOR

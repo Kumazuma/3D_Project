@@ -70,6 +70,12 @@
     <Filter Include="RenderObject">
       <UniqueIdentifier>{ea1057a0-82df-450b-826e-3032b46b0eb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NG">
+      <UniqueIdentifier>{57cb6680-42fc-440d-b66a-8d6226b21eae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NG\resource">
+      <UniqueIdentifier>{7d904ac8-cd64-44cf-be03-42d52e1bab8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -165,6 +171,15 @@
     <ClInclude Include="resource.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="ingame.fx" />
+    <ClInclude Include="ingame_lighting.fx" />
+    <ClInclude Include="ingame_combine.fx" />
+    <ClInclude Include="Resource.hpp">
+      <Filter>NG\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsObject.hpp">
+      <Filter>NG</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -246,11 +261,6 @@
     <ResourceCompile Include="Resource.rc">
       <Filter>리소스 파일</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="ingame.fx" />
-    <FxCompile Include="ingame_lighting.fx" />
-    <FxCompile Include="ingame_combine.fx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fx1.bin">

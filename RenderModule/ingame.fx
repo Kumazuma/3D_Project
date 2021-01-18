@@ -100,7 +100,32 @@ NOSPECULARMAP_PS_OUT PS_NOSCPECULARMAP(NOSPECULARMAP_PS_IN input)
 	output.depth.g = input.vClipPosition.w;
 	return output;
 }
+float g_alphaThreshold;
+NOSPECULARMAP_PS_OUT PS_NOSCPECULARMAP_ALPHATEST(NOSPECULARMAP_PS_IN input)
+{
+	float4 diffuse = tex2D(DiffuseTextureSampler, input.vUV);
+	if (diffuse.a >= g_alphaThreshold)
+	{
+		discard;
+	}
+	NOSPECULARMAP_PS_OUT output;
+	output.diffuse = diffuse;
+	output.diffuse.a = 1.f;
 
+	float depth = input.vClipPosition.z / input.vClipPosition.w;
+	
+	
+	output.specular = g_vSpecular;
+	float3 vN = input.vNormal;
+
+	output.normal.xyz = vN * 0.5f + 0.5f;
+	output.normal.w = 1.f;
+
+	output.depth.rgba = 0.f;
+	output.depth.r = depth;
+	output.depth.g = input.vClipPosition.w;
+	return output;
+}
 technique Default_Device
 {
 	pass NONALPHA_NO_SPECULARMAP
@@ -126,5 +151,14 @@ technique Default_Device
 		destblend = zero;
 		vertexshader = compile vs_3_0 VS_NoSpecularMap_Skinned();
 		pixelshader = compile ps_3_0 PS_NOSCPECULARMAP();
+	}
+
+	pass NONALPHA_NO_SPECULARMAP_ALPHATEST
+	{
+		alphablendenable = true;
+		srcblend = one;
+		destblend = zero;
+		vertexshader = compile vs_3_0 VS_NOSCPECULARMAP();
+		pixelshader = compile ps_3_0 PS_NOSCPECULARMAP_ALPHATEST();
 	}
 };

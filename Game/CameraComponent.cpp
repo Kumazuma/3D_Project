@@ -9,14 +9,14 @@
 using namespace Kumazuma::Client;
 using namespace Kumazuma::Game;
 using namespace DirectX;
-const ComponentTag< CameraComponent> CameraComponent::TAG{"CameraComponent"};
+IMPLEMENT_COMPONENT_CLASS(Kumazuma::Client::CameraComponent)
 constexpr StringLiteral<char> STATE_CHASING_PLAYER_LOOK{"STATE_CHASING_PLAYER_LOOK"};
 constexpr StringLiteral<char> STATE_FREE_VIEWING{ "STATE_FREE_VIEWING" };
 constexpr StringLiteral<char> STATE_IDLE{"STATE_IDLE"};
 
 Kumazuma::Client::CameraComponent::CameraComponent(std::shared_ptr<Game::Object const> player):
     Component{ TAG },
-    distance_{ 100.f },
+    distance_{ 50.f },
     playerObj_{ player },
     viewSpace_{}
 {

@@ -121,13 +121,11 @@ namespace Kumazuma::Client
 		shapes.emplace(colliderKey, capsuleObj);
 	}
 
-	auto PhysXPhysicsManager::SetMap(std::vector<std::unique_ptr<WavefrontOBJMesh>> const& meshs) -> void
+	auto PhysXPhysicsManager::SetMap(std::vector<std::unique_ptr<WavefrontOBJMesh>> const& meshs, std::vector< SimpleTransform> const& transforms) -> void
 	{
 		std::lock_guard<SpinLock> guard{ spinLocker_ };
-		auto defaultCookingParam{ cooking->getParams() };
-		auto mapCookingParam{ defaultCookingParam };
-		
-		using namespace physx;
+		PxSceneWriteLock scopedLock(*this->scene);
+
 		for (auto* it : mapTriangleMeshs)
 		{
 			it->release();
@@ -166,7 +164,8 @@ namespace Kumazuma::Client
 				vertices->size(),
 				mWorldTransform);
 
-			PxTriangleMeshDesc meshDesc;
+			PxTriangleMeshDesc meshDesc{};
+			
 			meshDesc.points.count = newVertices.size();
 			meshDesc.points.data = newVertices.data();
 			meshDesc.points.stride = sizeof(XMFLOAT3A);
@@ -177,7 +176,7 @@ namespace Kumazuma::Client
 			PxTriangleMeshCookingResult::Enum result{};
 			if (!cooking->validateTriangleMesh(meshDesc))
 			{
-				__debugbreak();
+				//__debugbreak();
 			}
 			if (!cooking->cookTriangleMesh(meshDesc, writeBuffer, &result))
 			{
@@ -207,7 +206,9 @@ namespace Kumazuma::Client
 			triGeom.meshFlags = PxMeshGeometryFlags{ PxMeshGeometryFlag::eDOUBLE_SIDED};
 			//PxMaterial material;
 			auto material = materials[L"default"];
-			
+			//PxShape* shape(...) = PxGetPhysics().createShape(...);	// reference count is 1
+			//actor->attachShape(shape);								// increments reference count
+			//shape->release();										// releases user reference, leaving reference count at 1
 			PxShape* mashShape = PxRigidActorExt::createExclusiveShape(*staticRigidyBody, triGeom, *material);
 			if (mashShape == nullptr)
 			{
@@ -220,12 +221,18 @@ namespace Kumazuma::Client
 
 	auto PhysXPhysicsManager::Update(f32 timeDelta) -> void
 	{
-		for (auto* it : this->charContollers_)
 		{
-			it->PreUpdate(timeDelta);
+			std::lock_guard<SpinLock> guard{ spinLocker_ };
+			for (auto* it : this->charContollers_)
+			{
+				it->PreUpdate(timeDelta);
+			}
+		
+			
+			this->scene->simulate(timeDelta);
+			this->scene->fetchResults(true);
 		}
-		this->scene->simulate(timeDelta);
-		this->scene->fetchResults();
+		
 		for (auto* it : this->charContollers_)
 		{
 			it->PostUpdate();
@@ -236,6 +243,8 @@ namespace Kumazuma::Client
 	{
 		assert(false);
 		std::lock_guard<SpinLock> guard{ spinLocker_ };
+		PxSceneWriteLock scopedLock(*this->scene);
+
 		auto const& collisionShapes{ shapes };
 		if (auto it = collisionShapes.find(colliderKey); it != collisionShapes.end())
 		{
@@ -250,6 +259,8 @@ namespace Kumazuma::Client
 
 	auto PhysXPhysicsManager::CreateCharacterController(f32 radius, f32 height, DirectX::XMFLOAT3 const& initialPosition, DirectX::XMFLOAT3 const& offset) -> std::optional<PhysicsCharacterController>
 	{
+		std::lock_guard<SpinLock> guard{ spinLocker_ };
+		PxSceneWriteLock scopedLock(*this->scene);
 
 		using namespace physx;
 		ControlledActorDesc desc;
@@ -291,7 +302,7 @@ namespace Kumazuma::Client
 		//ctrl->getActor()->setMinCCDAdvanceCoefficient(0.015f);
 		ctrl->setContactOffset(-0.5f);
 		ctrlInner->SetCharacterController(ctrl);
-		PhysicsCharacterController controller{ ctrlInner, offset };
+		PhysicsCharacterController controller{ ctrlInner, offset, radius, height };
 		return std::optional<PhysicsCharacterController>(std::move(controller));
 	}
 

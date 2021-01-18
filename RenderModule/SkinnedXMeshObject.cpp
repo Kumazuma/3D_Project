@@ -43,7 +43,8 @@ auto SkinnedXMeshObject::PrepareRender(IRenderer* pRenderer) -> void
     pRenderer->AddEntity(RenderModule::Kind::SKINNED, m_entity);
 }
 auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
-{                                   
+{
+    if (IsVisible() == false) return;
     COMPtr<IDirect3DDevice9> pDevice;
     COMPtr<ID3DXEffect> effect;     
     pRenderModule->GetDevice(&pDevice);
@@ -53,7 +54,6 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRendere
     mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
     mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
     effect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
-                                    
     effect->SetMatrix("g_mWorld", reinterpret_cast<D3DXMATRIX*>(&this->m_transform));
     
     for (auto& iter : m_meshContainters)
@@ -144,8 +144,9 @@ auto SkinnedXMeshObject::IsAnimationSetEnd() -> bool
     return m_pAnimCtrler->IsAnimationSetEnd();
 }
 
-auto SkinnedXMeshObject::SetAnimationSet(u32 idx) -> void
+auto SkinnedXMeshObject::SetAnimationSet(u32 idx, bool repeat) -> void
 {
+    m_repeat = repeat;
     m_pAnimCtrler->PlayAnimationSet(idx);
     UpdateFrameMatrices(
         static_cast<Frame*>(m_pRootFrame),
@@ -170,6 +171,12 @@ auto SkinnedXMeshObject::SetAnimationSet(u32 idx) -> void
 auto SkinnedXMeshObject::PlayAnimation(f32 timeDelta) -> void
 {
     std::lock_guard<SpinLock> guard{ *m_spinLock };
+    f32 const length{ m_pAnimCtrler->GetAnimationSetLength() };
+    f32 const seek{ m_pAnimCtrler->GetSeek() };
+    if (seek + timeDelta >=  length && m_repeat == false)
+    {
+        timeDelta = length - seek;
+    }
     m_pAnimCtrler->AdvanceTime(timeDelta);
     m_pAnimCtrler->AdjustAnimationToFrame();
     UpdateFrameMatrices(
@@ -191,7 +198,16 @@ auto SkinnedXMeshObject::PlayAnimation(f32 timeDelta) -> void
         }
     }
 }
+auto SkinnedXMeshObject::GetCurrentAnimSetLength()const->f32
+{
+    return this->m_pAnimCtrler->GetAnimationSetLength();
 
+}
+auto SkinnedXMeshObject::GetCurrentSeek()const->f32
+{
+    return this->m_pAnimCtrler->GetSeek();
+
+}
 auto SkinnedXMeshObject::GetAnimationCount()const -> u32
 {
     return m_pAnimCtrler->GetAnimCount();
@@ -454,6 +470,10 @@ auto SkinnedXMeshObject::Initialize(RenderModule* pRenderModule, std::wstring co
 
 auto SkinnedXMeshObject::InitializeFrameMatrix(Frame* pFrame)->void
 {
+    if (!pFrame->name.empty())
+    {
+        m_pFrameNames->emplace(pFrame->name);
+    }
     if(pFrame->pMeshContainer != nullptr)
     {
         CustomMeshContainer* pMeshContainer = static_cast<CustomMeshContainer*>(pFrame->pMeshContainer);
@@ -461,7 +481,6 @@ auto SkinnedXMeshObject::InitializeFrameMatrix(Frame* pFrame)->void
         {
             char const* pBoneName{ pMeshContainer->pSkinInfo->GetBoneName(i) };
             Frame* pBone{ static_cast<Frame*>(D3DXFrameFind(m_pRootFrame, pBoneName)) };
-            m_pFrameNames->emplace(pBone->name);
             pMeshContainer->frameCombinedMatries[i] = pBone->combinedTransformationMatrix;
         }
         m_meshContainters.push_back(pMeshContainer);

@@ -57,5 +57,15 @@ namespace Kumazuma
 			_Bind(&handleEventTag, (EventHandleMthod)method);
 		}
 		extern const ComponentTag<Component> COM_ANY;
+
 	}
 }
+#define DECLARE_COMPONENT_CLASS(ComClass) \
+public:\
+static Kumazuma::Game::ComponentTag<ComClass> const TAG;\
+static Kumazuma::Game::ComponentTag<ComClass> const& GetComponentTag();\
+private:
+
+#define IMPLEMENT_COMPONENT_CLASS(ComClass) \
+Kumazuma::Game::ComponentTag<ComClass> const ComClass::TAG{ #ComClass };\
+Kumazuma::Game::ComponentTag<ComClass> const& ComClass##::GetComponentTag(){return TAG;}

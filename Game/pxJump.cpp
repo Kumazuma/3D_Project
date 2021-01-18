@@ -27,6 +27,6 @@ auto Kumazuma::Client::Jump::GetAccel(f32 gravity, f32 elapsedTime) -> f32
     jumpTime_ += elapsedTime;
     //f(h) = G * t ^ 2 + v0 * t ;
     //d/dt f(h) = 2 G t + v0
-    f32 const h = gravity * jumpTime_ * jumpTime_ + v0_ * jumpTime_;
+    f32 const h = gravity * jumpTime_ * jumpTime_ + v0_;
     return h;
 }

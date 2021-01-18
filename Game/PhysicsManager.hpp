@@ -11,6 +11,7 @@
 #include<DirectXMath.h>
 #include <Game/event.hpp>
 #include "PhysicsCharacterController.hpp"
+#include "SimpleTransform.hpp"
 class WavefrontOBJMesh;
 namespace Kumazuma::Game
 {
@@ -36,11 +37,10 @@ namespace Kumazuma::Client
 		virtual auto SetCharacterColliderSphere(StringLiteral<wchar_t> const& colliderKey, f32 radius)->void = 0;
 		virtual auto SetCharacterColliderCylinder(StringLiteral<wchar_t> const& colliderKey, f32 width, f32 height, f32 depth)->void = 0;
 		virtual auto SetCharacterColliderCapsule(StringLiteral<wchar_t> const& colliderKey, f32 radius, f32 height)->void = 0;
-		virtual auto SetMap(std::vector<std::unique_ptr< WavefrontOBJMesh> >const& meshs)->void = 0;
+		virtual auto SetMap(std::vector<std::unique_ptr< WavefrontOBJMesh> >const& meshs, std::vector< SimpleTransform> const& )->void = 0;
 		virtual auto Update(float timeDelta)->void = 0;
 		virtual auto CreatePhysicsComponent(StringLiteral<wchar_t> colliderKey, f32 mass, DirectX::XMFLOAT3 const& initialPosition, DirectX::XMFLOAT3 const& offset) ->std::optional<PhysicsComponent> = 0;
 		virtual auto CreateCharacterController(f32 radius, f32 height, DirectX::XMFLOAT3 const& initialPosition, DirectX::XMFLOAT3 const& offset)->std::optional<PhysicsCharacterController> = 0;
-
 	private:
 		//auto RemovePhysicsComponent(btKinematicCharacterController*)->void;
 		SpinLock spinLocker_;

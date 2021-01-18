@@ -2,7 +2,8 @@
 #include "RenderObject.h"
 #include "Ray.h"
 RenderObject::RenderObject():
-    m_transform{}
+    m_transform{},
+    m_visible{ true }
 {
     for (size_t i = 0; i < 4; ++i)
     {
@@ -33,4 +34,14 @@ auto RenderObject::SetTransform(DirectX::XMFLOAT4X4 const& transform) -> void
 auto RenderObject::GetTransform() const -> DirectX::XMFLOAT4X4 const&
 {
     return m_transform;
+}
+
+auto RenderObject::SetVisible(bool visible) -> void
+{
+    m_visible = visible;
+}
+
+auto RenderObject::IsVisible() const -> bool
+{
+    return m_visible;
 }

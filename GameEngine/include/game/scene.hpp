@@ -5,6 +5,9 @@
 #include"object.hpp"
 #include"objectfactory.hpp"
 #include"list.hpp"
+#include<unordered_map>
+#include "LayerTag.hpp"
+#include<shared_mutex>
 namespace Kumazuma
 {
 	namespace Game
@@ -12,16 +15,22 @@ namespace Kumazuma
 		class Scene
 		{
 		public:
+			using ObjList = LinkedList < std::shared_ptr<Object> >;
 			Scene(Scene&& other) noexcept;
 			virtual ~Scene() = default;
 			virtual void Loaded() {}
 			virtual void Unloaded() {}
 			virtual void Update(float timeDelta) {}
-			void AddObject(std::shared_ptr<Object>);
+			void AddObject(LayerTag const& tag, std::shared_ptr<Object>);
+			void RemoveObject(LayerTag const& tag);
+			void RemoveObject(LayerTag const& tag, Object& obj);
 			void RemoveObject(Object& obj);
+			ObjList const& GetListRef(LayerTag const& tag);
+
 		protected:
 			Scene() = default;
-			LinkedList<std::shared_ptr<Object>> m_objects;
+			std::unordered_map <LayerTag const*, ObjList > m_objects;
+			std::shared_mutex m_mutex;
 
 		private:
 		};

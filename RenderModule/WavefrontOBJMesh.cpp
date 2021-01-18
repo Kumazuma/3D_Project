@@ -416,8 +416,10 @@ WavefrontOBJMesh::WavefrontOBJMesh(WavefrontOBJMesh const& rhs):
     m_center{ rhs.m_center },
     m_pVertexDecl{rhs.m_pVertexDecl}
 {
+    
     for (auto& it : m_subsets)
     {
+
         m_entities.emplace_back(std::make_shared<WavefrontOBJMeshEntity>(this, it.first, it.second));
     }
 }
@@ -455,6 +457,7 @@ auto WavefrontOBJMesh::Create(RenderModule* pRenderModule, std::wstring const& p
 
 auto WavefrontOBJMesh::PrepareRender(IRenderer* pRenderer) -> void
 {
+    if (IsVisible() == false) return;
     Frustum frustum{};
     pRenderer->GetFrustum(&frustum);
     XMMATRIX mWorldTransform{ XMLoadFloat4x4(&m_transform) };
@@ -470,7 +473,7 @@ auto WavefrontOBJMesh::PrepareRender(IRenderer* pRenderer) -> void
         float radius{ it->GetSubset()->GetRadius() };
         if (frustum.Intersact(t, radius))
         {
-            pRenderer->AddEntity(RenderModule::Kind::NONALPHA, it);
+            pRenderer->AddEntity(it->GetRenderKind(), it);
         }
     }
 }
@@ -660,10 +663,12 @@ auto WavefrontOBJSubMesh::GetTriangles() const -> std::vector<Triangle> const&
 WavefrontOBJMeshEntity::WavefrontOBJMeshEntity(
     WavefrontOBJMesh* obj,
     std::wstring const& subsetName,
-    std::shared_ptr<WavefrontOBJSubMesh> const& subset):
+    std::shared_ptr<WavefrontOBJSubMesh> const& subset,
+    RenderModule::Kind kind):
     m_subsetName{ subsetName },
     m_obj{ obj },
-    m_subset{ subset }
+    m_subset{ subset },
+    m_renderKind{ kind }
 {
 }
 auto WavefrontOBJMeshEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
@@ -706,4 +711,14 @@ auto WavefrontOBJMeshEntity::Render(RenderModule* pRenderModule, IRenderer* pRen
 auto WavefrontOBJMeshEntity::GetSubset() -> std::shared_ptr<WavefrontOBJSubMesh> const&
 {
     return m_subset;
+}
+
+auto WavefrontOBJMeshEntity::GetRenderKind() const -> RenderModule::Kind
+{
+    return m_renderKind;
+}
+
+auto WavefrontOBJMeshEntity::SetRenderKind(RenderModule::Kind kind) -> void
+{
+    m_renderKind = kind;
 }

@@ -103,7 +103,7 @@ namespace Kumazuma
 		template<typename _COM, typename ...Args>
 		inline auto Runtime::CreateComponent(Args && ...args) -> std::shared_ptr<_COM>
 		{
-			return std::static_pointer_cast<_COM>(AddComponent(_COM::TAG, new _COM{ std::forward<Args>(args)... }));
+			return std::static_pointer_cast<_COM>(AddComponent(_COM::GetComponentTag(), new _COM{ std::forward<Args>(args)... }));
 		}
 		class UpdateEvent : public Event
 		{

@@ -28,7 +28,7 @@ namespace Kumazuma
 	}
 }
 
-struct DLL_CLASS RenderObject
+class DLL_CLASS RenderObject
 {
 protected:
 	RenderObject();
@@ -41,8 +41,10 @@ public:
 	auto RayPicking(Ray* pRay, f32* pOut)->bool;
 	auto SetTransform(DirectX::XMFLOAT4X4 const& transform)->void;
 	auto GetTransform()const->DirectX::XMFLOAT4X4 const&;
-
+	auto SetVisible(bool visible)->void;
+	auto IsVisible()const->bool;
 protected:
+	bool m_visible;
 	DirectX::XMFLOAT4X4 m_transform;
 public:
 	static constexpr unsigned long FVF_TEX = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;

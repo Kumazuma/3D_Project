@@ -68,6 +68,7 @@ auto SimpleSphareObject::Clone() const -> RenderObject*
 
 auto SimpleSphareObject::PrepareRender(IRenderer* pRenderer) -> void
 {
+    if (IsVisible() == false)return;
     pRenderer->AddEntity(RenderModule::Kind::ALPHA, m_entity);
 }
 

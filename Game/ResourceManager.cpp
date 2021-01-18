@@ -49,30 +49,53 @@ auto Kumazuma::Client::ResourceManager::Release() -> void
     s_instance = nullptr;
 }
 
-auto Kumazuma::Client::ResourceManager::LoadOBJMesh(std::wstring const& path) -> std::unique_ptr<WavefrontOBJMesh>
+auto Kumazuma::Client::ResourceManager::LoadOBJMesh(std::wstring const& path, std::optional<std::wstring> const& id) -> void
 {
-    m_mutex.lock_shared();
-    auto it = m_objMeshs.find(path);
-    auto const isExist{ it != m_objMeshs.end() };
-    m_mutex.unlock_shared();
-
-    if (isExist == false)
+    std::wstring const* objID{ nullptr };
+    if (id.has_value())
+    {
+        objID = &id.value();
+    }
+    else
+    {
+        objID = &path;
+    }
+    decltype(m_objMeshs)::iterator it;
+    bool isExist{ false };
+    {
+        std::shared_lock<decltype(m_mutex)> guard{ m_mutex };
+        it = m_objMeshs.find(*objID);
+        isExist = it != m_objMeshs.end();
+    }
+    if (!isExist)
     {
         WavefrontOBJMesh* pNewmesh{};
         WavefrontOBJMesh::Create(m_pRenderModule.get(), path, &pNewmesh);
-        if (pNewmesh == nullptr)
+        std::lock_guard<decltype(m_mutex)> guard{ m_mutex };
+        it = m_objMeshs.find(*objID);
+        if (it != m_objMeshs.end())
         {
-            return nullptr;
+            delete pNewmesh;
         }
-        m_mutex.lock();
-        it = m_objMeshs.emplace(
-            path,
-            std::unique_ptr<WavefrontOBJMesh>{pNewmesh}
-        ).first;
-        m_mutex.unlock();
+        else
+        {
+            m_objMeshs.emplace(
+                *objID,
+                std::unique_ptr<WavefrontOBJMesh>{pNewmesh}
+            );
+        }
     }
-    std::unique_ptr<WavefrontOBJMesh> res{ static_cast<WavefrontOBJMesh*>(it->second->Clone()) };
-    return res;
+}
+
+auto Kumazuma::Client::ResourceManager::GetOBJMesh(std::wstring const& id) -> std::unique_ptr<WavefrontOBJMesh>
+{
+    std::shared_lock<decltype(m_mutex)> guard{ m_mutex };
+    if (auto it{ m_objMeshs.find(id) }; it != m_objMeshs.end())
+    {
+        std::unique_ptr<WavefrontOBJMesh> res{ static_cast<WavefrontOBJMesh*>(it->second->Clone()) };
+        return res;
+    }
+    return nullptr;
 }
 
 auto Kumazuma::Client::ResourceManager::LoadSkinnedMesh(std::wstring const& id, std::wstring const& path) -> std::unique_ptr<SkinnedXMeshObject>

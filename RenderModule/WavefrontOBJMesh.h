@@ -9,6 +9,9 @@
 #include"COMPtr.hpp"
 class WavefrontOBJSubMesh;
 class WavefrontOBJMeshEntity;
+
+
+
 class DLL_CLASS WavefrontOBJMesh: public RenderObject
 {
 	static constexpr DWORD FVF = FVF_TEX;
@@ -73,10 +76,13 @@ private:
 class WavefrontOBJMeshEntity : public RenderEntity
 {
 public:
-	WavefrontOBJMeshEntity(WavefrontOBJMesh* obj, std::wstring const& subsetName, std::shared_ptr<WavefrontOBJSubMesh> const& subset);
+	WavefrontOBJMeshEntity(WavefrontOBJMesh* obj, std::wstring const& subsetName, std::shared_ptr<WavefrontOBJSubMesh> const& subset, RenderModule::Kind kind = RenderModule::Kind::NONALPHA);
 	auto Render(RenderModule* pRenderModule, IRenderer* pRenderer)->void override;
 	auto GetSubset()->std::shared_ptr<WavefrontOBJSubMesh> const&;
+	auto GetRenderKind()const->RenderModule::Kind override;
+	auto SetRenderKind(RenderModule::Kind kind)->void override;
 private:
+	RenderModule::Kind m_renderKind;
 	std::wstring m_subsetName;
 	WavefrontOBJMesh* m_obj;
 	std::shared_ptr<WavefrontOBJSubMesh> m_subset;

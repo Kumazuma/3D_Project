@@ -55,7 +55,7 @@ namespace MapTool.View
             objList.Remove(animMeshObj);
             animMeshObj = Doc.ResourceManager.Instance.GetSkinnedMesh( xMeshPath);
             animMeshObj.PropertyChanged += AnimMeshObj_PropertyChanged;
-            meta.MeshFilePath = xMeshPath;
+            meta.MeshFilePath = MapToolCore.Utility.FormatString(xMeshPath);
             Doc.Document.Instance.SelectedObject = animMeshObj;
             objList.Add(animMeshObj);
             var animCount = animMeshObj.AnimationCount;

@@ -20,6 +20,8 @@ namespace Kumazuma::Client
 	public:
 		auto GetPosition()->DirectX::XMFLOAT3 override;
 		auto Move(DirectX::XMVECTOR moveDelta)->void override;
+		auto Jump(f32 speed)->void override;
+		auto IsJumping()const->bool override;
 	private:
 		auto preFilter(
 			physx::PxFilterData const& filterData,
@@ -47,7 +49,7 @@ namespace Kumazuma::Client
 		std::weak_ptr<PhysXPhysicsManager> manager_;
 		f32x3 moveDelta_;
 		f32 gravityAccel_;
-		Jump jump_;
+		Kumazuma::Client::Jump jump_;
 		physx::PxController* controller_;
 	};
 }

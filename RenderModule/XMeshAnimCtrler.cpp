@@ -61,8 +61,8 @@ auto SkinnedXMeshObject::AnimationController::PlayAnimationSet(u32 _idx) -> void
     {
         return;
     }
-    if (m_oldAnimIdx == idx)
-        return;
+    //if (m_oldAnimIdx == idx)
+    //    return;
     u32 newTrackIdx = m_currentTrackIdx != 0 ? 0 : 1;
     u32 currentIdx = m_currentTrackIdx == 0? 0 : 1;
     COMPtr<ID3DXAnimationSet> pAnimSet{};
@@ -116,4 +116,14 @@ auto SkinnedXMeshObject::AnimationController::AdjustAnimationToFrame() -> void
 auto SkinnedXMeshObject::AnimationController::GetAnimCount() const -> u32
 {
     return m_pAnimCtrl->GetNumAnimationSets();
+}
+
+auto SkinnedXMeshObject::AnimationController::GetAnimationSetLength() const -> f32
+{
+    return m_period;
+}
+
+auto SkinnedXMeshObject::AnimationController::GetSeek() const -> f32
+{
+    return m_accTime;
 }

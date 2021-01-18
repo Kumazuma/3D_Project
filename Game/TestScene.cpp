@@ -22,11 +22,14 @@
 #include "HeightMapBuilder.hpp"
 #include "PhysicsManager.hpp"
 #include "COMRagnarosAI.hpp"
+#include "LayerTags.hpp"
+#include "SimpleTransform.hpp"
+#include "COMCollider.hpp"
 using namespace Kumazuma::Client;
 using namespace DirectX;
 using Task = Kumazuma::ThreadPool::Task;
 using TaskContext = Kumazuma::ThreadPool::TaskContext;
-constexpr StringLiteral<wchar_t> CHARACTER_MESH{ L"CHARACTER" };
+constexpr wchar_t CHARACTER_MESH[]{ L"CHARACTER" };
 
 Kumazuma::Client::TestScene::TestScene(nlohmann::json file)
 	
@@ -59,12 +62,13 @@ void TestScene::Loaded()
 	skyboxObj->SetDiffuseTexture(pCubeTexture.Get());
 	m_skybox.reset(skyboxObj);
 	std::unordered_map<std::wstring, XMFLOAT3> targets;
+	std::vector<SimpleTransform> transforms;
 	for (auto it : m_file[u8"objects"])
 	{
 		if (it[u8"type"] == u8"OBJ_MESH")
 		{
 			std::wstring path{ ConvertUTF8ToWide(it[u8"path"]) };
-			auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
+			auto meshObj = resourceMgr->GetOBJMesh(base_dir + path);
 			XMFLOAT3 pos{
 				it[u8"transform"][u8"position"][u8"x"],
 				it[u8"transform"][u8"position"][u8"y"],
@@ -87,10 +91,16 @@ void TestScene::Loaded()
 				XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *
 				XMMatrixTranslation			(pos.x, pos.y, pos.z)
 			);
+
 			meshObj->SetTransform(transformMat);
 			std::string usage{ it[u8"usage"] };
 			if (usage == u8"TERRAIN")
 			{
+				SimpleTransform st{};
+				st.scale = scale;
+				st.rotation = rotation;
+				st.position = pos;
+				transforms.emplace_back(st);
 				m_mapMeshs.emplace_back(std::move(meshObj));
 			}
 			else
@@ -110,7 +120,7 @@ void TestScene::Loaded()
 		}
 	}
 	auto physicsManager{ Client::PhysicsManager::Instance() };
-	physicsManager->SetMap(m_mapMeshs);
+	physicsManager->SetMap(m_mapMeshs, transforms);
 	physicsManager->SetCharacterColliderCapsule(L"PLAYER_CAPSULE", 0.2f, 8.f);
 
 	auto position{ targets[L"PLAYER_SPAWN_POSITION"] };
@@ -118,7 +128,7 @@ void TestScene::Loaded()
 	m_pPlayerObject = SpawnPlayer(position);
 	m_pPlayerObject->GetComponent<Game::TransformComponent>()->SetPosition(position);
 	m_pPlayerObject->GetComponent<Game::TransformComponent>()->SetScale(XMFLOAT3{ 0.1f, 0.1f,0.1f });
-	m_objects.push_back(m_pPlayerObject);
+	m_objects[&LAYER_PLAYER].push_back(m_pPlayerObject);
 
 	m_pCameraObject.reset(new Game::Object{});
 	m_pCameraObject->AddComponent<CameraComponent>(m_pPlayerObject);
@@ -133,22 +143,25 @@ void TestScene::Loaded()
 	{
 		auto resourceMgr{ ResourceManager::Instance() };
 
-		for (auto i = 0; i < 13; ++i)
+		for (auto i = 0; i < 1; ++i)
 		{
-			auto ragnarosPosition{ position };
-			ragnarosPosition.x -= 120.f * i;
-			ragnarosPosition.y += 10.f;
+			f32x3 ragnarosPosition{ -1187.73f,  15.1408f, 575.176f };
 			std::shared_ptr<Game::Object> ragnaros{ new Game::Object{} };
 			ragnaros->AddComponent<Game::TransformComponent>();
 			ragnaros->AddComponent<COMRenderObjectContainer>();
 			ragnaros->AddComponent<COMRagnarosAI>();
+			ragnaros->AddComponent<COMCollider>();
 			ragnaros->GetComponent<Game::TransformComponent>()->SetPosition(ragnarosPosition);
 			ragnaros->GetComponent<Game::TransformComponent>()->SetScale(XMFLOAT3{ 0.01f, 0.01f,0.01f });
+			
 			//pPlayerObj->AddComponent<COMHeightMap>(std::move(heightmap));
 			auto renderObj{ resourceMgr->GetSkinnedMesh(L"ragnaros") };
+			auto hammer{ resourceMgr->GetOBJMesh(L"sulfuras") };
 			renderObj->SetAnimationSet(i);
 			ragnaros->GetComponent<COMRenderObjectContainer>()->Insert(CHARACTER_MESH, std::move(renderObj));
-			m_objects.push_back(ragnaros);
+			ragnaros->GetComponent<COMRenderObjectContainer>()->Insert(L"ARM", std::move(hammer));
+
+			m_objects[&LAYER_MONSTER].push_back(ragnaros);
 		}
 	}
 }
@@ -181,12 +194,16 @@ auto TestScene::Update(f32 timeDelta) -> void
 	{
 		staticMesh->PrepareRender(m_pRenderer.get());
 	}
-	for (auto& obj : m_objects)
+	for (auto& pair : m_objects)
 	{
-		auto comRenderObjContainer{ obj->GetComponent<COMRenderObjectContainer>() };
-		for (auto mesh : *comRenderObjContainer)
+		auto const& list{ pair.second };
+		for (auto const& obj : list)
 		{
-			mesh.second->PrepareRender(m_pRenderer.get());
+			auto comRenderObjContainer{ obj->GetComponent<COMRenderObjectContainer>() };
+			for (auto mesh : *comRenderObjContainer)
+			{
+				mesh.second->PrepareRender(m_pRenderer.get());
+			}
 		}
 	}
 	
@@ -271,9 +288,9 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 				pWork = 
 				pThreadPoolMgr->QueueTask([base_dir, path](TaskContext& context) {
 					auto resourceMgr{ ResourceManager::Instance() };
-					auto meshObj = resourceMgr->LoadOBJMesh(base_dir + path);
+					resourceMgr->LoadOBJMesh(base_dir + path);
 					});
-				if (loaders.find(path) != loaders.end())
+				if (loaders.find(path) == loaders.end())
 				{
 					loaders.emplace(path, std::move(pWork));
 				}
@@ -306,12 +323,31 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 					auto resourceMgr{ ResourceManager::Instance() };
 					auto meshObj = resourceMgr->LoadSkinnedMesh(nameWithoutExt, meshPath);
 						});
-				if (loaders.find(meshPath) != loaders.end())
+				if (loaders.find(meshPath) == loaders.end())
 				{
 					loaders.emplace(meshPath, std::move(pWork));
 				}
 			}
 		} while (FindNextFileW(hFind, &ffd));
+		//CloseHandle(hFind);
+		std::ifstream itemMeshMetaFileIStream;
+		itemMeshMetaFileIStream.open(base_dir + L"/json/item_mesh.json");
+		nlohmann::json itemMeshMeta{ nlohmann::json::parse( itemMeshMetaFileIStream) };
+		for (auto const& it : itemMeshMeta.items())
+		{
+			std::wstring key{ ConvertUTF8ToWide(it.key()) };
+			std::wstring path{ ConvertUTF8ToWide(it.value()) };
+			std::shared_ptr<Task> pWork = nullptr;
+			pWork =
+				pThreadPoolMgr->QueueTask([base_dir, key, path](TaskContext& context) {
+				auto resourceMgr{ ResourceManager::Instance() };
+				resourceMgr->LoadOBJMesh(base_dir + path, key);
+					});
+			if (loaders.find(path) == loaders.end())
+			{
+				loaders.emplace(path, std::move(pWork));
+			}
+		}
 		for (auto& it : loaders)
 		{
 			it.second->Wait();

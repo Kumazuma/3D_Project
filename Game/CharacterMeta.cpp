@@ -75,3 +75,17 @@ auto Kumazuma::Client::CharacterMeta::GetMeshPathRef() const -> std::wstring con
 {
     return m_meshPath;
 }
+
+auto Kumazuma::Client::CharacterMeta::GetAnimIndex(std::wstring const& id)const -> std::optional<i32>
+{
+    if (auto it{ this->m_animIdTable.find(id) }; it != this->m_animIdTable.end())
+    {
+        return it->second;
+    }
+    return std::nullopt;
+}
+
+auto Kumazuma::Client::CharacterMeta::GetCollidersRef() const -> std::vector<Collider> const&
+{
+    return m_colliders;
+}

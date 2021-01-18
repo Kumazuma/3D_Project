@@ -59,26 +59,26 @@ namespace Kumazuma
 		template<typename _COM>
 		inline auto Object::GetComponent()->std::shared_ptr<_COM>
 		{
-			auto ptr = GetComponent(&_COM::TAG);
+			auto ptr = GetComponent(&_COM::GetComponentTag());
 			if (ptr == nullptr) return nullptr;
 			return std::static_pointer_cast<_COM>(ptr);
 		}
 		template<typename _COM>
 		inline auto Object::GetComponent() const->std::shared_ptr<const _COM>
 		{
-			auto ptr = GetComponent(&_COM::TAG);
+			auto ptr = GetComponent(&_COM::GetComponentTag());
 			if (ptr == nullptr) return nullptr;
 			return std::static_pointer_cast<const _COM>(ptr);
 		}
 		template<typename _COM, typename ...Args>
 		inline auto Object::AddComponent(Args && ...args) -> void
 		{
-			AddComponent(&_COM::TAG, new _COM{ std::forward<Args>(args)... });
+			AddComponent(&_COM::GetComponentTag(), new _COM{ std::forward<Args>(args)... });
 		}
 		template<typename _COM>
 		inline auto Object::RemoveComponent() -> void
 		{
-			RemoveComponent(&_COM::TAG);
+			RemoveComponent(&_COM::GetComponentTag());
 		}
 		class ObjectTag
 		{

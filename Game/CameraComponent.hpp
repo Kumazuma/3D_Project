@@ -12,7 +12,6 @@ namespace Kumazuma
 		{
 			friend struct CameraViewingState;
 		public:
-			static const Game::ComponentTag<CameraComponent> TAG;
 			CameraComponent(std::shared_ptr<Game::Object const> player);
 		public:
 			auto Clone()const->Game::Component*;
@@ -24,6 +23,8 @@ namespace Kumazuma
 			std::weak_ptr<Game::Object const> playerObj_;
 			std::shared_ptr<CameraViewingState> currentState_;
 			std::unordered_map<StringLiteral<char>, std::shared_ptr<CameraViewingState> > viewingStates_;
+
+			DECLARE_COMPONENT_CLASS(Kumazuma::Client::CameraComponent)
 		};
 	}
 }

@@ -181,6 +181,7 @@
     <ClInclude Include="Common.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Frustum.h" />
+    <ClInclude Include="GraphicsObject.hpp" />
     <ClInclude Include="hash_helper_for_f32x3.h" />
     <ClInclude Include="InGameRenderer.hpp" />
     <ClInclude Include="intersact.h" />
@@ -196,6 +197,7 @@
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Resource.hpp" />
     <ClInclude Include="SimpleColliderBoxObject.h" />
     <ClInclude Include="SimpleColliderSphareObject.h" />
     <ClInclude Include="SkinnedXMeshObject.h" />
