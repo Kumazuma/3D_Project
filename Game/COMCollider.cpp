@@ -45,6 +45,15 @@ auto COMCollider::Get(std::wstring const& name) -> std::optional<Collider>
     }
     return std::optional<Collider>();
 }
+auto COMCollider::GetRef(std::wstring const& name) -> Collider&
+{
+    std::shared_lock<decltype(lock_)> guard{ lock_ };
+    if (auto it = colliders_.find(name); it != colliders_.end())
+    {
+        return it->second;
+    }
+    return *static_cast<Collider*>(nullptr);
+}
 auto Kumazuma::Client::COMCollider::GetColliderTableRef() const -> std::unordered_map<std::wstring, Collider> const&
 {
     return this->colliders_;

@@ -52,9 +52,6 @@
     <Filter Include="Matrix">
       <UniqueIdentifier>{aebe2664-1584-4544-a622-dec171e9cef6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TextureRenderTarget">
-      <UniqueIdentifier>{f051a898-93fa-4596-ac2a-be393661bebb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Renderer">
       <UniqueIdentifier>{16949d8f-43c5-4ae1-bc94-680233ff611a}</UniqueIdentifier>
     </Filter>
@@ -76,6 +73,18 @@
     <Filter Include="NG\resource">
       <UniqueIdentifier>{7d904ac8-cd64-44cf-be03-42d52e1bab8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RenderTarget">
+      <UniqueIdentifier>{980b4363-1623-41c4-a66a-f1ba0935ea31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderTarget\TextureRenderTarget">
+      <UniqueIdentifier>{f051a898-93fa-4596-ac2a-be393661bebb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderTarget\DefaultRenderTarget">
+      <UniqueIdentifier>{275d61ff-192b-4912-a92b-a7ee2edc6da5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderModule">
+      <UniqueIdentifier>{ece45ef7-b231-460e-b7e5-d2d3dbd6215e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -85,9 +94,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Common.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderModule.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="MeshObject.h">
@@ -151,7 +157,7 @@
       <Filter>Camera</Filter>
     </ClInclude>
     <ClInclude Include="TextureRenderTarget.h">
-      <Filter>TextureRenderTarget</Filter>
+      <Filter>RenderTarget\TextureRenderTarget</Filter>
     </ClInclude>
     <ClInclude Include="MapToolRenderer.h">
       <Filter>Renderer</Filter>
@@ -180,15 +186,21 @@
     <ClInclude Include="GraphicsObject.hpp">
       <Filter>NG</Filter>
     </ClInclude>
+    <ClInclude Include="RenderTarget.hpp">
+      <Filter>RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultRenderTarget.hpp">
+      <Filter>RenderTarget\DefaultRenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderModule.h">
+      <Filter>RenderModule</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderModule.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MeshObject.cpp">
@@ -237,7 +249,7 @@
       <Filter>NavMesh</Filter>
     </ClCompile>
     <ClCompile Include="TextureRenderTarget.cpp">
-      <Filter>TextureRenderTarget</Filter>
+      <Filter>RenderTarget\TextureRenderTarget</Filter>
     </ClCompile>
     <ClCompile Include="MapToolRenderer.cpp">
       <Filter>Renderer</Filter>
@@ -250,6 +262,15 @@
     </ClCompile>
     <ClCompile Include="InGameRenderer.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultRenderTarget.cpp">
+      <Filter>RenderTarget\DefaultRenderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderModule.cpp">
+      <Filter>RenderModule</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

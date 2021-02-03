@@ -1,10 +1,11 @@
 #pragma once
 #include"game.hpp"
+#include "common.hpp"
 namespace Kumazuma
 {
 	namespace Game
 	{
-		class EventTagBase
+		class DLL_CLASS EventTagBase
 		{
 		public:
 			virtual ~EventTagBase() = default;

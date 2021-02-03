@@ -7,43 +7,20 @@
 #include "LayerTags.hpp"
 #include "COMCollider.hpp"
 #include <game/TransformComponent.hpp>
+#include "COMPlayerRender.hpp"
 using namespace DirectX;
 constexpr wchar_t CHARACTER_MESH[]{ L"CHARACTER" };
 
 auto Kumazuma::Client::RagnarosPhase1StanceState::Update(f32 timeDelta) -> void 
 {
 	auto& object{ GetObjectRef() };
-	auto container{ object.GetComponent<COMRenderObjectContainer>() };
+	auto renderCOM{ object.GetComponent<COMSkinnedMeshRender>() };
 	auto colliderContainer{ object.GetComponent<COMCollider>() };
+	auto weapon{ object.GetChild(L"WEAPON") };
 
-
-	auto characterMesh{ std::static_pointer_cast<SkinnedXMeshObject>(container->Get(CHARACTER_MESH)) };
+	auto characterMesh{ renderCOM->GetMesh() };
 	characterMesh->PlayAnimation(timeDelta);
-	auto armMesh{ container->Get(L"ARM") };
-	auto collider{ colliderContainer->Get(L"ARM") };
-	auto framePtr{ characterMesh->FindFrameTransfromByName(collider->GetFrameName()) };
 	auto transform{ GetObjectRef().GetComponent<Game::TransformComponent>() };
-
-	if (framePtr != nullptr)
-	{
-		f32x44 transformMatrix{ };
-		f32x44 frameRenderMatrix{};
-		transform->GenerateTransformMatrix(&transformMatrix);
-		XMMATRIX mWeaponTransform{};
-		XMMATRIX mCharacterTransfrom{};
-		XMMATRIX mArmFrame{};
-		XMMATRIX mFrameRenderTransform{};
-		mArmFrame = XMLoadFloat4x4(framePtr);
-		mCharacterTransfrom = XMLoadFloat4x4(&transformMatrix);
-		mFrameRenderTransform = mArmFrame * mCharacterTransfrom;
-		XMStoreFloat4x4(&transformMatrix, mFrameRenderTransform);
-		SetARMColliderTransform(transformMatrix);
-		auto mScale{ XMMatrixScaling(2000.f, 2000.f, 2000.f) };
-		auto mRotation{ XMMatrixRotationRollPitchYaw(XM_PI,0.f, XM_PI * 0.5f) };
-		auto mOffset{ XMMatrixTranslation(290.f, -200.f, 1000.f) };
-		auto renderTransform{ StoreF32x44(mScale * mRotation * mOffset * mFrameRenderTransform) };
-		armMesh->SetTransform(renderTransform);
-	}
 
 	auto const& r{ App::Instance()->GetScene().GetListRef(LAYER_PLAYER) };
 	auto player{ *r.begin() };
@@ -71,16 +48,14 @@ auto Kumazuma::Client::RagnarosPhase1StanceState::Update(f32 timeDelta) -> void
 			SetState(RagnarosAIState::STATE_PHASE1_CHASING);
 		}
 	}
-
-	
 }
 
 auto Kumazuma::Client::RagnarosPhase1StanceState::Reset() -> void 
 {
 	auto& meta{ GetComponentRef().GetCharacterMetaRef() };
 	auto renderModule{ App::Instance()->GetRenderModule() };
-	auto container{ GetObjectRef().GetComponent<COMRenderObjectContainer>() };
-	auto characterMesh{ std::static_pointer_cast<SkinnedXMeshObject>(container->Get(CHARACTER_MESH)) };
+	auto renderComponent{ GetObjectRef().GetComponent<COMSkinnedMeshRender>() };
+	auto characterMesh{ renderComponent->GetMesh() };
 	auto animIndex{ meta.GetAnimIndex(L"STANCE") };
 	if (animIndex.has_value())
 	{

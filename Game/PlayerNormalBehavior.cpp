@@ -4,21 +4,27 @@
 #include "COMRenderObjectContainer.hpp"
 #include "SkinnedXMeshObject.h"
 #include "PhysicsCharacterController.hpp"
-
+#include "COMPlayerRender.hpp"
 #include "app.h"
 #include <sstream>
 constexpr wchar_t CHARACTER_MESH[]{ L"CHARACTER" };
 using namespace DirectX;
 _BEGIN_NS(Kumazuma::Client)
+enum class PlayerNormalState {
+	None,
+	Stance,
+	Walk,
+	Run
+};
 auto PlayerNormalBehavior::Update(f32 timedelta) -> void
 {
 	auto& object{ GetObjectRef() };
 	auto& component{ GetComponentRef() };
 	auto transform = object.GetComponent<Game::TransformComponent>();
-	auto renderObjContainer{ object.GetComponent<COMRenderObjectContainer>() };
-	auto skinnedMesh{ std::static_pointer_cast<SkinnedXMeshObject>(renderObjContainer->Get(CHARACTER_MESH) )};
+	auto renderObjContainer{ object.GetComponent<COMSkinnedMeshRender>() };
+	auto skinnedMesh{ renderObjContainer ->GetMesh()};
 	auto inputMgr{ InputManager::Instance() };
-
+	PlayerNormalState nowState{ PlayerNormalState::Stance };
 	XMFLOAT4X4 transformMatrix;
 	transform->GenerateTransformMatrixWithoutScale(&transformMatrix);
 
@@ -29,6 +35,31 @@ auto PlayerNormalBehavior::Update(f32 timedelta) -> void
 	XMVECTOR vPosition{ mTransform.r[3] };
 	auto rotation{ transform->GetRotation() };
 	auto characterContoller{ object.GetComponent<PhysicsCharacterController>() };
+
+	if (inputMgr->IsPressing(PLAYER_INPUT::SKILL_01))
+	{
+		SetState(PlayerBehaviorID::Attack);
+		return;
+	}
+	else if (inputMgr->IsPressing(PLAYER_INPUT::SKILL_02))
+	{
+		SetState(PlayerBehaviorID::Skill1);
+		return;
+	}
+	else if (inputMgr->IsPressing(PLAYER_INPUT::SKILL_03))
+	{
+		SetState(PlayerBehaviorID::Skill2);
+		return;
+	}
+	else if (inputMgr->IsPressing(PLAYER_INPUT::SKILL_04))
+	{
+		return;
+	}
+	else
+	{
+
+	}
+
 	if ((GetAsyncKeyState(VK_SPACE) & 0x8000) != 0)
 	{
 		SetState(PlayerBehaviorID::Jump);
@@ -104,14 +135,39 @@ auto PlayerNormalBehavior::Update(f32 timedelta) -> void
 	XMStoreFloat(&len, XMVector3Length(vDelta));
 	if (len > 0.f)
 	{
-		characterContoller->Move(vMovingDir * COMPlayerInput::PLAYER_WALK_SPEED);
-		skinnedMesh->SetAnimationSet(*characterMeta->GetAnimIndex(L"WALK"));
+		f32 ratio{ 1.f };
+		if (inputMgr->IsPressing(PLAYER_INPUT::RUN))
+		{
+			nowState = PlayerNormalState::Run;
+			ratio *= 2.f;
+		}
+		else
+		{
+			nowState = PlayerNormalState::Walk;
+		}
+		characterContoller->Move(vMovingDir * COMPlayerInput::PLAYER_WALK_SPEED * ratio);
 	}
 	else
 	{
 		characterContoller->Stop();
-		skinnedMesh->SetAnimationSet(*characterMeta->GetAnimIndex(L"STANCE"));
+		
 	}
+	if (nowState != state_)
+	{
+		switch (nowState)
+		{
+		case PlayerNormalState::Run:
+			skinnedMesh->SetAnimationSet(*characterMeta->GetAnimIndex(L"RUN"));
+			break;
+		case PlayerNormalState::Walk:
+			skinnedMesh->SetAnimationSet(*characterMeta->GetAnimIndex(L"WALK"));
+			break;
+		case PlayerNormalState::Stance:
+			skinnedMesh->SetAnimationSet(*characterMeta->GetAnimIndex(L"STANCE"));
+			break;
+		}
+	}
+	state_ = nowState;
 	transform->SetRotation(rotation);
 	transform->SetPosition(characterContoller->GetPosition());
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
@@ -121,13 +177,12 @@ auto PlayerNormalBehavior::Update(f32 timedelta) -> void
 		sistream << "X: " << pos.x << ", Y: " << pos.y << ", Z: " << pos.z << "\n";
 		OutputDebugStringA(sistream.str().c_str());
 	}
-	transform->GenerateTransformMatrix(&transformMatrix);
-	skinnedMesh->SetTransform(transformMatrix);
+
 	skinnedMesh->PlayAnimation(timedelta);
 }
 
 auto PlayerNormalBehavior::Reset(f32 timedelta) -> void
 {
-
+	state_ = PlayerNormalState::None;
 }
 _END_NS 

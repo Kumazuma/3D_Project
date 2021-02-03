@@ -3,12 +3,13 @@
 #include<memory>
 #include<unordered_map>
 #include "typedef.hpp"
+#include "common.hpp"
 namespace Kumazuma
 {
 	namespace Game
 	{
 		class Timer;
-		class TimerManager
+		class DLL_CLASS TimerManager
 		{
 		private:
 			static std::shared_ptr<TimerManager> s_pInstance;

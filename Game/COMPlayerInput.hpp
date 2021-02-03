@@ -42,6 +42,9 @@ namespace Kumazuma::Client
 	{
 		Normal,
 		Jump,
+		Attack,
+		Skill1,
+		Skill2,
 		Spell,
 		Stun
 	};

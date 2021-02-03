@@ -35,7 +35,7 @@ namespace Kumazuma::Client
 		auto GetComponentRef()->COMRagnarosAI&;
 		auto CalculateDistanceToTarget(DirectX::XMFLOAT3 const& position, DirectX::XMFLOAT3 const& target)->f32;
 		auto CalculateXYAngleToTarget(DirectX::XMFLOAT3 const& position, DirectX::XMFLOAT3 const& target, DirectX::XMFLOAT2* out)->void;
-		auto SetARMColliderTransform(DirectX::XMFLOAT4X4 const& transform)->void;
+		//auto SetARMColliderTransform(DirectX::XMFLOAT4X4 const& transform)->void;
 	protected:
 		virtual auto Update(f32 timeDelta)->void = 0;
 		virtual auto Reset()->void = 0;

@@ -19,7 +19,8 @@ protected:
 	auto Initialize(RenderModule* pRenderModule, std::wstring const& filePath)->HRESULT;
 public:
 	static auto Create(RenderModule* pRenderModule, std::wstring const& filePath, StaticXMeshObject** pOut)->HRESULT;
-	auto PrepareRender(IRenderer* pRenderer)->void override;
+	//auto PrepareRender(IRenderer* pRenderer)->void override;
+	auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void;
 	auto GetMaterialCount()const->u32;
 	auto Clone()const->RenderObject*;
 	//특정 서브셋의 알파값을 정의한다.

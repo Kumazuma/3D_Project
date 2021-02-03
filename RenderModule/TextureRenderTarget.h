@@ -1,8 +1,11 @@
+#pragma once
 #include<d3d9.h>
 #include"COMPtr.hpp"
 #include"typedef.hpp"
+#include"Common.h"
+#include"RenderTarget.hpp"
 class RenderModule;
-class TextureRenderTarget
+class DLL_CLASS TextureRenderTarget : public IRenderTarget
 {
 public:
 	TextureRenderTarget(RenderModule* pRenderModule, u32 width, u32 height, D3DFORMAT textureFormat);
@@ -15,6 +18,8 @@ public:
 	auto GetWidth() const->u32;
 	auto GetHeight()const->u32;
 	auto GetFormat()const->D3DFORMAT;
+	auto ReleaseForReset()->void;
+	auto Restore(RenderModule* pRenderModule)->void;
 private:
 	COMPtr<IDirect3DTexture9> m_pTexture;
 	COMPtr<IDirect3DSurface9> m_pSurface;

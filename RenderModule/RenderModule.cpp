@@ -4,15 +4,18 @@
 #include "RenderModule.h"
 #include <vector>
 #include "TerrainObject.h"
+#include "TextureRenderTarget.h"
+#include "DefaultRenderTarget.hpp"
+#include "RenderTarget.hpp"
 #include <d3dx9.h>
 #include <DxErr.h>
 #pragma comment(lib, "windowscodecs.lib")
 #pragma comment(lib, "d3dx9.lib")
 #pragma comment(lib, "DxErr.lib")
-auto RenderModule::Create(HWND hWindow, u32 width, u32 height, RenderModule** pOut) -> HRESULT
+auto RenderModule::Create(HWND hWindow, u32 width, u32 height,bool fullScreen, RenderModule** pOut) -> HRESULT
 {
 	RenderModule* pObj{ new RenderModule{} };
-	HRESULT hr{ pObj->Initialize(hWindow, width, height) };
+	HRESULT hr{ pObj->Initialize(hWindow, width, height, fullScreen) };
 	if (FAILED(hr))
 	{
 		delete pObj;
@@ -26,7 +29,7 @@ RenderModule::RenderModule()
 {
 }
 
-auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
+auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height, bool fullScreen) -> HRESULT
 {
 	HRESULT hr{E_FAIL};
 	try
@@ -65,7 +68,7 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 
 		d3dPP.SwapEffect = D3DSWAPEFFECT_DISCARD;
 		d3dPP.hDeviceWindow = (HWND)hWindow;
-		d3dPP.Windowed = true;
+		d3dPP.Windowed = !fullScreen;
 
 		d3dPP.EnableAutoDepthStencil = true;
 		d3dPP.AutoDepthStencilFormat = D3DFMT_D24S8;
@@ -80,7 +83,7 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height) -> HRESULT
 		CreateSimpleColorTexture(64, 64, { 0.f, 1.0f, 0.f, 1.f }, &m_pGreenTexture);
 		CreateSimpleColorTexture(64, 64, { 0.f, 0.f, 1.f, 1.f }, &m_pBlueTexture);
 		m_pDevice->GetSwapChain(0, &m_defaultSwapChain);
-		
+		m_defaultRenderTarget = MakeCOMPtr(new DefaultRenderTarget{ this });
 		return S_OK;
 	}
 	catch (HRESULT hr)
@@ -111,6 +114,45 @@ auto RenderModule::GetDevice(IDirect3DDevice9** pOut) -> HRESULT
 	{
 		return hr;
 	}
+}
+
+auto RenderModule::CreateRenderTarget(std::wstring const& id, u32 width, u32 height, D3DFORMAT format) -> HRESULT
+{
+	auto it{ this->m_renderTargets.find(id) };
+	if (it != this->m_renderTargets.end())
+	{
+		return E_INVALIDARG;
+	}
+	TextureRenderTarget* renderTarget{};
+	if (FAILED(TextureRenderTarget::Create(this, width, height, format, &renderTarget)))
+	{
+		return E_FAIL;
+	}
+	this->m_renderTargets.emplace(id, static_cast<IRenderTarget*>(renderTarget));
+	return S_OK;
+}
+
+auto RenderModule::GetRenderTarget(std::wstring const& id, IRenderTarget** out) -> HRESULT
+{
+	if (out == nullptr)
+		return E_POINTER;
+	auto it{ this->m_renderTargets.find(id) };
+	if (it == this->m_renderTargets.end())
+	{
+		return E_INVALIDARG;
+	}
+	*out = it->second.Get();
+	it->second->AddRef();
+	return S_OK;
+}
+
+auto RenderModule::GetDefaultRenderTarget(IRenderTarget** out) -> HRESULT
+{
+	if (out == nullptr)
+		return E_POINTER;
+	*out = m_defaultRenderTarget.Get();
+	m_defaultRenderTarget->AddRef();
+	return S_OK;
 }
 
 auto RenderModule::CreateTerrain(wchar_t const* szHeightMapPath, size_t len,  f32 interval, f32 maxHeight, RenderObject** pOut) -> HRESULT

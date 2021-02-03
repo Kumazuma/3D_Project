@@ -20,8 +20,10 @@ public:
 	struct Frame;
 public:
 	static auto Create(RenderModule* pRenderModule, std::wstring const& filePath, SkinnedXMeshObject** pOut)->HRESULT;
-	auto PrepareRender(IRenderer* pRenderModule)->void override;
+	//auto PrepareRender(IRenderer* pRenderModule)->void override;
 	auto Render(RenderModule* pRenderModule, IRenderer* pRenderer)->void;
+	auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void;
+
 	auto Clone()const->RenderObject*;
 	auto FindFrameTransfromByName(std::wstring const& frameName, DirectX::XMFLOAT4X4* const pOut)->HRESULT;
 	auto FindFrameTransfromByName(std::wstring const& frameName)->DirectX::XMFLOAT4X4 const*;

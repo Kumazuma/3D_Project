@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <memory>
 #include <list>
+#include "RenderTarget.hpp"
 struct IWICImagingFactory;
 enum class DefaultColorTexture {
 	RED,
@@ -19,12 +20,18 @@ class Frustum;
 struct RenderEntity;
 class DLL_CLASS RenderModule
 {
+protected:
+	RenderModule(RenderModule const&) = delete;
 public:
 	enum class Kind{NONE, ENVIRONMENT, TERRAIN, NONALPHA, SKINNED,  ALPHA, NAVIMASH, UI};
-	static auto Create(HWND hWindow, u32 width, u32 height, RenderModule** pOut)->HRESULT;
+	static auto Create(HWND hWindow, u32 width, u32 height, bool fullScreen, RenderModule** pOut)->HRESULT;
+
 public:
 	
 	auto GetDevice(IDirect3DDevice9** pOut)->HRESULT;
+	auto CreateRenderTarget(std::wstring const& id, u32 width, u32 height, D3DFORMAT format)->HRESULT;
+	auto GetRenderTarget(std::wstring const& id, IRenderTarget** out)->HRESULT;
+	auto GetDefaultRenderTarget(IRenderTarget** out)->HRESULT;
 	auto CreateTerrain(wchar_t const* szHeightMapPath, size_t len, f32 interval, f32 maxHeight, RenderObject** pOut)->HRESULT;
 	auto CreateTexture(wchar_t const* szFilePath, IDirect3DTexture9** pOut)->HRESULT;
 	auto CreateCubeTexture(wchar_t const* szFilePath, IDirect3DCubeTexture9** pOut)->HRESULT;
@@ -66,10 +73,13 @@ protected:
 	RenderModule();
 	auto BeginRender(float r, float g, float b, float a)->void;
 	auto EndRender(HWND hWnd)->void;
-	auto Initialize(HWND hWindow, u32 width, u32 height)->HRESULT;
+	auto Initialize(HWND hWindow, u32 width, u32 height, bool fullScreen)->HRESULT;
 	auto ClearEntityTable()->void;
 private:
 	std::unordered_map < Kind, std::list<std::shared_ptr<RenderEntity> > > m_renderEntities;
+
+
+
 	D3DPRESENT_PARAMETERS m_d3dpp;
 	COMPtr<IDirect3DDevice9> m_pDevice;
 	COMPtr<IDirect3D9> m_pSDK;
@@ -79,6 +89,8 @@ private:
 	COMPtr<IDirect3DTexture9> m_pBlueTexture;
 	COMPtr<IWICImagingFactory> m_pImageFactory;
 	COMPtr<IDirect3DSwapChain9> m_defaultSwapChain;
+	COMPtr<IRenderTarget> m_defaultRenderTarget;
+	std::unordered_map<std::wstring, COMPtr<IRenderTarget> > m_renderTargets;
 	Frustum m_frustum;
 	u32 m_width;
 	u32 m_height;

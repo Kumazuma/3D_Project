@@ -40,7 +40,8 @@ public:
 	auto RemoveLastTriangle()->void;
 	auto SetWeldDistance(f32 value)->void;
 	auto GetWeldDistance()const->f32;
-	auto PrepareRender(IRenderer* pRenderer)->void override;
+	auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void;
+	//auto PrepareRender(IRenderer* pRenderer)->void override;
 	auto GetIndexCount()const->u32;
 	auto GetVertices(DirectX::XMFLOAT4* const pBuffer, u32 bufferSize)->HRESULT;
 	auto GetIndices(u16* const pBuffer, u32 bufferSize)->HRESULT;

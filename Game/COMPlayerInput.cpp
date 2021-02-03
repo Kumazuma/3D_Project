@@ -15,6 +15,9 @@
 #include "PlayerBehavior.hpp"
 #include "PlayerNormalBehavior.hpp"
 #include "PlayerJumpBehavior.hpp"
+#include "PlayerSkillBehavior.hpp"
+#include "COMPlayerRender.hpp"
+#include "COMSkills.hpp"
 constexpr wchar_t CHARACTER_MESH[]{ L"CHARACTER" };
 constexpr wchar_t WEAPON_MESH[]{ L"WEAPON" };
 namespace Kumazuma::Client
@@ -53,6 +56,10 @@ namespace Kumazuma::Client
 
 		behaivors_.emplace(PlayerBehaviorID::Normal, new PlayerNormalBehavior{});
 		behaivors_.emplace(PlayerBehaviorID::Jump, new PlayerJumpBehavior{});
+		behaivors_.emplace(PlayerBehaviorID::Attack, new PlayerNormalAttackBehavior{});
+		behaivors_.emplace(PlayerBehaviorID::Skill1, new PlayerSkill1Behavior{});
+		behaivors_.emplace(PlayerBehaviorID::Skill2, new PlayerSkill2Behavior{});
+
 		nextBehaviorID_ = PlayerBehaviorID::Normal;
 	}
 	auto COMPlayerInput::Clone() const -> Game::Component*
@@ -83,45 +90,8 @@ namespace Kumazuma::Client
 				currentBehavior_ = behaivors_.find(currentBehaviorID_)->second.get();
 				currentBehavior_->Reset(obj.get(), this, event.GetDelta());
 			}
-			f32x44 transformMatrix{};
-			auto transform = obj->GetComponent<Game::TransformComponent>();
-			auto renderObjContainer{ obj->GetComponent<COMRenderObjectContainer>() };
-			auto skinnedMesh{ std::static_pointer_cast<SkinnedXMeshObject>(renderObjContainer->Get(CHARACTER_MESH)) };
-			auto weaponMesh{ renderObjContainer->Get(WEAPON_MESH) };
-			transform->GenerateTransformMatrix(&transformMatrix);
-			auto weaponSlotFramePtr{ skinnedMesh->FindFrameTransfromByName(L"character_human_male_humanmale_bone_73") };
-			auto mWeaponSlotTransform{ XMLoadFloat4x4(weaponSlotFramePtr) };
-			auto mTransform{ XMLoadFloat4x4(&transformMatrix) };
-			auto mWeaponTransfrom{ XMMatrixScaling(50.f, 50.f, 50.f) * XMMatrixRotationRollPitchYaw(XM_PI, 0.f, XM_PI * 0.5f) * mWeaponSlotTransform * mTransform };
-			f32x44 weaponTransformMatrix{ StoreF32x44(mWeaponTransfrom) };
-
-			weaponMesh->SetTransform(weaponTransformMatrix);
-			auto const& preferences{ Preferences::Current() };
-			auto		comCollider{ obj->GetComponent<COMCollider>() };
-			auto const& table{ comCollider->GetColliderTableRef() };
-			if (preferences.showCollisionBox)
-			{
-				for (auto const& item : table)
-				{
-					auto framePtr{ skinnedMesh->FindFrameTransfromByName(item.second.GetFrameName()) };
-					auto renderTransform{ StoreF32x44(LoadF32x44(*framePtr) * mTransform) };
-					auto renderObject{ renderObjContainer->Get(item.first) };
-					renderObject->SetTransform(renderTransform);
-					renderObject->SetVisible(true);
-				}
-			}
-			else
-			{
-				for (auto const& item : table)
-				{
-					//auto framePtr{ skinnedMesh->FindFrameTransfromByName(item.second.GetFrameName()) };
-					//auto renderTransform{ StoreF32x44(LoadF32x44(*framePtr) * LoadF32x44(transformMatrix)) };
-					auto renderObject{ renderObjContainer->Get(item.first) };
-					renderObject->SetVisible(false);
-				}
-			}
-			
-			return;
+			auto skillsCom{ obj->GetComponent<COMSkills>() };
+			skillsCom->UpdateSkillInfo(event.GetDelta());
 		}
 	}
 	auto COMPlayerInput::OnDamage(DamageEvent const& evt) -> void

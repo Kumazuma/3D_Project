@@ -1,13 +1,14 @@
 #pragma once
 #include<memory>
 #include<functional>
+#include"common.hpp"
 namespace Kumazuma
 {
 	namespace ThreadPool
 	{
 		class Task;
 		class TaskContext;
-		class Manager
+		class DLL_CLASS Manager
 		{
 		protected:
 			Manager() = default;
@@ -20,7 +21,7 @@ namespace Kumazuma
 			virtual auto DispatchTask()->void = 0;
 		};
 
-		class TaskContext
+		class DLL_CLASS TaskContext
 		{
 		public:
 			auto Then(std::function<void()>  fn)->void;
@@ -36,7 +37,7 @@ namespace Kumazuma
 		{
 			return process;
 		}
-		class Task
+		class DLL_CLASS Task
 		{
 		protected:
 			Task() = default;

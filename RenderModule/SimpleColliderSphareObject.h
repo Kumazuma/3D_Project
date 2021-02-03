@@ -5,19 +5,20 @@
 #include "COMPtr.hpp"
 #include <d3dx9.h>
 class SimpleSphareEntity;
-class DLL_CLASS SimpleSphareObject : public RenderObject
+class DLL_CLASS SimpleSphereObject : public RenderObject
 {
 	friend class SimpleSphareEntity;
 	using Entity = SimpleSphareEntity;
 protected:
-	SimpleSphareObject(RenderModule*);
-	SimpleSphareObject(SimpleSphareObject const& rhs);
-	SimpleSphareObject(SimpleSphareObject&& rhs)noexcept;
+	SimpleSphereObject(RenderModule*);
+	SimpleSphereObject(SimpleSphereObject const& rhs);
+	SimpleSphereObject(SimpleSphereObject&& rhs)noexcept;
 public:
-	static auto Create(RenderModule* pRenderModule, SimpleSphareObject** pOut)->HRESULT;
+	static auto Create(RenderModule* pRenderModule, SimpleSphereObject** pOut)->HRESULT;
 public:
 	auto Clone()const->RenderObject*;
-	auto PrepareRender(IRenderer* pRenderModule)->void override;
+	//auto PrepareRender(IRenderer* pRenderModule)->void override;
+	auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void;
 	auto SetRadius(f32 radius)->void;
 	auto SetOffset(f32 x, f32 y, f32 z)->void;
 
@@ -30,7 +31,7 @@ private:
 class SimpleSphareEntity : public RenderEntity
 {
 public:
-	SimpleSphareEntity(SimpleSphareObject* pObj);
+	SimpleSphareEntity(SimpleSphereObject* pObj);
 	auto Render(RenderModule* pRenderModule, IRenderer* pRenderer)->void override;
-	SimpleSphareObject* m_obj;
+	SimpleSphereObject* m_obj;
 };

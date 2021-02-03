@@ -11,6 +11,7 @@
 #include<d3d9.h>
 #include <game/ThreadPoolMgr.hpp>
 #include "PhysicsManager.hpp"
+#include "Env.hpp"
 #include <chrono>
 using namespace Kumazuma;
 std::shared_ptr<App> Kumazuma::App::s_instance = nullptr;
@@ -19,6 +20,7 @@ std::shared_ptr<App> Kumazuma::App::s_instance = nullptr;
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 #pragma comment(lib, "RenderModule.lib")
+#pragma comment(lib, "GameRenderer.lib")
 
 //#pragma comment(lib, "FMODSoundManager.lib")
 
@@ -49,11 +51,14 @@ App::App(HINSTANCE hInstance)
     RECT rc{ 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
     constexpr auto WS_STYLE = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX;
     AdjustWindowRect(&rc, WS_STYLE, false);
+   
+
     m_mainWindow = Window{ Kumazuma::WindowSystem::Window::Builder{}
         .title(L"hello!")
         .size(rc.right - rc.left, rc.bottom - rc.top)
         .style(WS_STYLE)
     };
+
     assert(m_mainWindow.IsValid() == true);
     if (m_mainWindow.IsValid() == false)
     {
@@ -62,7 +67,7 @@ App::App(HINSTANCE hInstance)
     m_mainWindow.Show();
     m_mainWindow.Connect(Kumazuma::WindowSystem::EVT_Destroy, this, &App::OnMainWindowDestory);
     RenderModule* renderModule;
-    if (FAILED(RenderModule::Create(m_mainWindow.GetHandle(), WINDOW_WIDTH, WINDOW_HEIGHT, &renderModule))) 
+    if (FAILED(RenderModule::Create(m_mainWindow.GetHandle(), WINDOW_WIDTH, WINDOW_HEIGHT, true, &renderModule))) 
     {
         throw E_FAIL;
     }
@@ -81,8 +86,20 @@ App::App(HINSTANCE hInstance)
     pInputManager->Bind(PLAYER_INPUT::MOUSE_LBUTTON, VK_LBUTTON);
     pInputManager->Bind(PLAYER_INPUT::MOUSE_RBUTTON, VK_RBUTTON);
     pInputManager->Bind(PLAYER_INPUT::TOGLE_COLLIDER_BOX, VK_F2);
-
+    pInputManager->Bind(PLAYER_INPUT::RUN, VK_SHIFT);
+    pInputManager->Bind(PLAYER_INPUT::SKILL_01, '1');
+    pInputManager->Bind(PLAYER_INPUT::SKILL_02, '2');
+    pInputManager->Bind(PLAYER_INPUT::SKILL_03, '3');
+    pInputManager->Bind(PLAYER_INPUT::SKILL_04, '4');
+    auto baseDir{ Client::Enviroment::GetValue<std::wstring>(Client::Enviroment::BASE_DIR) };
     Client::PhysicsManager::Initialize();
+    SoundManager::Initialize({
+        {Client::SoundID::Ragnaros, baseDir + L"/resource/sound/ragnarosattacka.ogg" },
+        {Client::SoundID::Attack,baseDir + L"/resource/sound/1h_sword_npc_hit_armor_plate_01.ogg" },
+        {Client::SoundID::Roar,baseDir + L"/resource/sound/vo_pcorcmaleroar01.ogg" },
+        {Client::SoundID::RagnarosAttack,baseDir + L"/resource/sound/fx_ragnaros_sulfuras_impact_01.ogg" },
+        {Client::SoundID::RagnarosDeath ,baseDir + L"/resource/sound/ragnarosdeath.ogg" },
+    });
 }   
     
 App::~App()
@@ -187,6 +204,7 @@ auto App::Loop()->int
 
             pTimerMgr->Update();
             pInputMgr->Update();
+            SoundManager::Instance().Update();
             m_pNowScene->Update(delta);
             //pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
             threadPoolMgr->DispatchTask();

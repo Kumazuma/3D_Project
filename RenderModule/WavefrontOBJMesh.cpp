@@ -455,26 +455,74 @@ auto WavefrontOBJMesh::Create(RenderModule* pRenderModule, std::wstring const& p
     return S_OK;
 }
 
-auto WavefrontOBJMesh::PrepareRender(IRenderer* pRenderer) -> void
+//auto WavefrontOBJMesh::PrepareRender(IRenderer* pRenderer) -> void
+//{
+//    if (IsVisible() == false) return;
+//    Frustum frustum{};
+//    pRenderer->GetFrustum(&frustum);
+//    XMMATRIX mWorldTransform{ XMLoadFloat4x4(&m_transform) };
+//    XMVECTOR t = XMVector3TransformCoord(XMLoadFloat3A(&m_center), mWorldTransform);
+//    XMVECTOR radius = XMVector3TransformNormal(XMVectorSet(m_radius, m_radius, m_radius, 0.f), mWorldTransform);
+//    if (!frustum.Intersact(t, m_radius))
+//    {
+//        return;
+//    }
+//    for (auto& it : m_entities)
+//    {
+//        XMVECTOR t = XMVector3TransformCoord(XMLoadFloat3A(&it->GetSubset()->GetCenter() ), XMLoadFloat4x4(&m_transform));
+//        float radius{ it->GetSubset()->GetRadius() };
+//        if (frustum.Intersact(t, radius))
+//        {
+//            pRenderer->AddEntity(it->GetRenderKind(), it);
+//        }
+//    }
+//}
+
+auto WavefrontOBJMesh::Render(IRendererBase* renderer, ID3DXEffect* effect) -> void
 {
-    if (IsVisible() == false) return;
-    Frustum frustum{};
-    pRenderer->GetFrustum(&frustum);
-    XMMATRIX mWorldTransform{ XMLoadFloat4x4(&m_transform) };
-    XMVECTOR t = XMVector3TransformCoord(XMLoadFloat3A(&m_center), mWorldTransform);
-    XMVECTOR radius = XMVector3TransformNormal(XMVectorSet(m_radius, m_radius, m_radius, 0.f), mWorldTransform);
-    if (!frustum.Intersact(t, m_radius))
+    //TODO:
+    // g_diffuseTexture
+    for (auto item : m_subsets)
     {
-        return;
-    }
-    for (auto& it : m_entities)
-    {
-        XMVECTOR t = XMVector3TransformCoord(XMLoadFloat3A(&it->GetSubset()->GetCenter() ), XMLoadFloat4x4(&m_transform));
-        float radius{ it->GetSubset()->GetRadius() };
-        if (frustum.Intersact(t, radius))
+        auto& subset{ item.second };
+        auto& renderModule{ renderer->GetRenderModuleRef() };
+        COMPtr<IDirect3DDevice9> pDevice{};
+        COMPtr<IDirect3DVertexBuffer9> pVertexBuffer{ m_pVertexBuffers };
+        COMPtr<IDirect3DIndexBuffer9> pIndexBuffer{ subset->GetIndexBuffer() };
+        u32 triangleCount{ subset->GetTriangleCount() };
+        renderer->GetDevice(&pDevice);
+        //pDevice->SetFVF(WavefrontOBJMesh::FVF);
+        pDevice->SetVertexDeclaration(m_pVertexDecl.Get());
+        //pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_obj->m_transform));
+        pDevice->SetStreamSource(0, pVertexBuffer.Get(), 0, WavefrontOBJMesh::VERTEX_SIZE);
+        pDevice->SetIndices(pIndexBuffer.Get());
+        const auto textureIt{ m_textures.find(subset->GetMaterialName()) };
+        COMPtr<IDirect3DTexture9> pTexture;
+        if (textureIt == m_textures.end())
         {
-            pRenderer->AddEntity(it->GetRenderKind(), it);
+            renderModule.GetDefaultTexture(&pTexture);
         }
+        else
+        {
+            pTexture = textureIt->second;
+        }
+        //XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_obj->m_transform) };
+        //mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+        //mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
+        //pEffect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
+        //pEffect->SetMatrix("g_mWorld", &reinterpret_cast<D3DXMATRIX&>(m_obj->m_transform));
+        if (effect != nullptr)
+        {
+            effect->SetTexture("g_diffuseTexture", pTexture.Get());
+            effect->CommitChanges();
+        }
+        else
+        {
+            pDevice->SetTexture(0, pTexture.Get());
+        }
+
+        pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, GetVertexCount(), 0, triangleCount);
+        pDevice->SetVertexDeclaration(nullptr);
     }
 }
 
@@ -499,40 +547,41 @@ auto WavefrontOBJMesh::CanRayPicking() const -> bool
 
 auto WavefrontOBJMesh::RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLOAT3 const& rayDirection, f32* pOut) -> bool 
 {
-    XMVECTOR vRayAt{ XMLoadFloat3(&rayAt) };
-    XMVECTOR vRayDir{ XMLoadFloat3(&rayDirection) };
-    XMVECTOR vSphare{ XMLoadFloat3(&m_center) };
-    //모든 버텍스를 월드 트랜스폼을 적용하느니, 레이를 변경시키자.
-    XMMATRIX mWorldInverse{ XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_transform)) };
-    vRayAt = XMVector3TransformCoord(vRayAt, mWorldInverse);
-    vRayDir = XMVector3TransformNormal(vRayDir, mWorldInverse);
-    f32 t{};
-    if (!Intersact(vRayAt, vRayDir, vSphare, m_radius, &t))
-    {
-        return false;
-    }
-    t = std::numeric_limits<f32>::max();
-    f32 t2{ std::numeric_limits<f32>::max() };
-
-    for (auto& it : m_subsets)
-    {
-        vSphare = XMLoadFloat3(&it.second->GetCenter());
-        f32 radius{ it.second->GetRadius() };
-        f32 t3{};
-        if (Intersact(vRayAt, vRayDir, vSphare, radius, &t3) )
-        {
-            if (it.second->RayPicking(vRayAt, vRayDir, &t2) && t2 < t)
-            {
-                t = t2;
-            }
-        }
-    }
-    if (t != std::numeric_limits<f32>::max())
-    {
-        *pOut = t;
-        return true;
-    }
     return false;
+    //XMVECTOR vRayAt{ XMLoadFloat3(&rayAt) };
+    //XMVECTOR vRayDir{ XMLoadFloat3(&rayDirection) };
+    //XMVECTOR vSphare{ XMLoadFloat3(&m_center) };
+    ////모든 버텍스를 월드 트랜스폼을 적용하느니, 레이를 변경시키자.
+    //XMMATRIX mWorldInverse{ XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_transform)) };
+    //vRayAt = XMVector3TransformCoord(vRayAt, mWorldInverse);
+    //vRayDir = XMVector3TransformNormal(vRayDir, mWorldInverse);
+    //f32 t{};
+    //if (!Intersact(vRayAt, vRayDir, vSphare, m_radius, &t))
+    //{
+    //    return false;
+    //}
+    //t = std::numeric_limits<f32>::max();
+    //f32 t2{ std::numeric_limits<f32>::max() };
+
+    //for (auto& it : m_subsets)
+    //{
+    //    vSphare = XMLoadFloat3(&it.second->GetCenter());
+    //    f32 radius{ it.second->GetRadius() };
+    //    f32 t3{};
+    //    if (Intersact(vRayAt, vRayDir, vSphare, radius, &t3) )
+    //    {
+    //        if (it.second->RayPicking(vRayAt, vRayDir, &t2) && t2 < t)
+    //        {
+    //            t = t2;
+    //        }
+    //    }
+    //}
+    //if (t != std::numeric_limits<f32>::max())
+    //{
+    //    *pOut = t;
+    //    return true;
+    //}
+    //return false;
 }
 
 auto WavefrontOBJMesh::GetVertices() const -> std::shared_ptr<const std::vector<DirectX::XMFLOAT3A>>
@@ -696,11 +745,11 @@ auto WavefrontOBJMeshEntity::Render(RenderModule* pRenderModule, IRenderer* pRen
     {
         pTexture = textureIt->second;
     }
-    XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_obj->m_transform) };
-    mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-    mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
-    pEffect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
-    pEffect->SetMatrix("g_mWorld", &reinterpret_cast<D3DXMATRIX&>(m_obj->m_transform));
+    //XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_obj->m_transform) };
+    //mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+    //mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
+    //pEffect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
+    //pEffect->SetMatrix("g_mWorld", &reinterpret_cast<D3DXMATRIX&>(m_obj->m_transform));
     pEffect->SetTexture("g_diffuseTexture", pTexture.Get());
     pEffect->CommitChanges();
 

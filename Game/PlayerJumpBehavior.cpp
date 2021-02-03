@@ -4,6 +4,7 @@
 #include "framework.h"
 #include <game/TransformComponent.hpp>
 #include "app.h"
+#include "COMPlayerRender.hpp"
 constexpr wchar_t CHARACTER_MESH[]{ L"CHARACTER" };
 using namespace DirectX;
 _BEGIN_NS(Kumazuma::Client)
@@ -12,26 +13,25 @@ auto PlayerJumpBehavior::Update(f32 timedelta) -> void
 	auto& object{ GetObjectRef() };
 	auto& component{ GetComponentRef() };
 	auto meta{ component.GetCharacterMeta() };
-	auto renderObjContainer{ object.GetComponent< COMRenderObjectContainer>() };
+	auto renderObjContainer{ object.GetComponent< COMSkinnedMeshRender>() };
 	auto characterContoller{ object.GetComponent<PhysicsCharacterController>() };
-	auto characterMesh{ std::static_pointer_cast<SkinnedXMeshObject>(renderObjContainer->Get(CHARACTER_MESH)) };
+	auto characterMesh{ renderObjContainer->GetMesh() };
 	auto transformComponent{ object.GetComponent<Game::TransformComponent>() };
 	auto inputMgr{ InputManager::Instance() };
 
 	f32x44 transformMatrix{};
-	characterMesh->PlayAnimation(timedelta);
 
 	if (!characterContoller->IsJumping() && jumpAnimID_ != JumpAnimID::END)
 	{
 		jumpAnimID_ = JumpAnimID::END;
-		characterMesh->SetAnimationSet(*meta->GetAnimIndex(L"JUMP_END"), false);
+		characterMesh->SetAnimationSet(*meta->GetAnimIndex(L"JUMP_END"));
 	}
 	else
 	{
 		f32 const seek{ characterMesh->GetCurrentSeek() };
 		f32 const length{ characterMesh->GetCurrentAnimSetLength() };
 		f32 const ratio{ seek / length };
-		if (ratio >= 1.f)
+		if (seek >= length - 0.3f)
 		{
 			switch (jumpAnimID_)
 			{
@@ -48,7 +48,9 @@ auto PlayerJumpBehavior::Update(f32 timedelta) -> void
 				return;
 			}
 		}
-	}						 
+	}
+	characterMesh->PlayAnimation(timedelta);
+
 	transformComponent->GenerateTransformMatrixWithoutScale(&transformMatrix);
 	XMVECTOR vDelta{};
 	XMMATRIX mTransform{ XMLoadFloat4x4(&transformMatrix) };
@@ -140,7 +142,8 @@ auto PlayerJumpBehavior::Update(f32 timedelta) -> void
 		//OutputDebugStringA(sistream.str().c_str());
 	}
 	transformComponent->GenerateTransformMatrix(&transformMatrix);
-	characterMesh->SetTransform(transformMatrix);
+	//characterMesh->SetTransform(transformMatrix);
+	//TODO
 }
 
 auto PlayerJumpBehavior::Reset(f32 timedelta) -> void 
@@ -149,11 +152,11 @@ auto PlayerJumpBehavior::Reset(f32 timedelta) -> void
 	auto& object{ GetObjectRef() };
 	auto& component{ GetComponentRef() };
 	auto meta{ component.GetCharacterMeta() };
-	auto renderObjContainer{ object.GetComponent< COMRenderObjectContainer>() };
+	auto renderCom{ object.GetComponent< COMSkinnedMeshRender>() };
 	auto characterContoller{ object.GetComponent<PhysicsCharacterController>() };
-	auto characterMesh{ std::static_pointer_cast<SkinnedXMeshObject>(renderObjContainer->Get(CHARACTER_MESH)) };
+	auto characterMesh{ renderCom->GetMesh() };
 	characterContoller->Jump(50.f);
-	characterMesh->SetAnimationSet(*meta->GetAnimIndex(L"JUMP_START"), false);
+	characterMesh->SetAnimationSet(*meta->GetAnimIndex(L"JUMP_START"), true);
 }
 
 _END_NS

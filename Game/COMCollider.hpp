@@ -19,6 +19,7 @@ namespace Kumazuma::Client
 		auto Add(std::wstring const& name, Collider const& collider)->void;
 		auto Remove(std::wstring const& name)->void;
 		auto Get(std::wstring const& name)->std::optional<Collider>;
+		auto GetRef(std::wstring const& name)->Collider&;
 		auto GetColliderTableRef()const->std::unordered_map<std::wstring, Collider> const&;
 	private:
 		mutable std::shared_mutex lock_;

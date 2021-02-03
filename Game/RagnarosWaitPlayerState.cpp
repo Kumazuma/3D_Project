@@ -4,6 +4,7 @@
 #include <game/object.hpp>
 #include<game/TransformComponent.hpp>
 #include"COMRenderObjectContainer.hpp"
+#include"COMPlayerRender.hpp"
 using namespace DirectX;
 constexpr wchar_t CHARACTER_MESH[]{ L"CHARACTER" };
 
@@ -41,7 +42,6 @@ auto Kumazuma::Client::RagnarosWaitPlayerState::Update(f32) -> void
 
 auto Kumazuma::Client::RagnarosWaitPlayerState::Reset() -> void 
 {
-	auto renderObjectContainer{ GetObjectRef().GetComponent<COMRenderObjectContainer>() };
-	auto characterMesh{ renderObjectContainer->Get(CHARACTER_MESH) };
-	characterMesh->SetVisible(false);
+	auto renderCom{ GetObjectRef().GetComponent<COMSkinnedMeshRender>() };
+	renderCom->SetVisible(false);
 }

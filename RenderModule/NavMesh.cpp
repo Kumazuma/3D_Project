@@ -211,10 +211,14 @@ auto NavMeshRenderingObject::GetWeldDistance() const -> f32
 {
     return m_weldDistance;
 }
-auto NavMeshRenderingObject::PrepareRender(IRenderer* pRenderer) -> void
+auto NavMeshRenderingObject::Render(IRendererBase* renderer, ID3DXEffect* effect) -> void
 {
-    pRenderer->AddEntity(RenderModule::Kind::NAVIMASH, m_entity);
+    //TODO
 }
+//auto NavMeshRenderingObject::PrepareRender(IRenderer* pRenderer) -> void
+//{
+//    pRenderer->AddEntity(RenderModule::Kind::NAVIMASH, m_entity);
+//}
 
 auto NavMeshRenderingObject::GetIndexCount() const -> u32
 {

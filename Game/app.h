@@ -61,7 +61,7 @@ namespace Kumazuma
 		//std::shared_ptr<kzTextureManager> m_textureManager;
 		//std::unordered_map<std::string, std::shared_ptr<kzMetaAnimation>> m_animations;
 		//std::unique_ptr<GameGraphics> m_grapics;
-		//Renderer m_renderer;
+		//GameRenderer m_renderer;
 		Scene* m_pNowScene;
 		std::atomic <Scene*> m_pNextScene;
 		int64_t m_preTick;

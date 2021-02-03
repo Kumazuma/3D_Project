@@ -13,7 +13,8 @@ public:
 	using Entity = SkyBoxEntity;
 	static auto Create(RenderModule* pRenderModule, SkyBoxObject** pObj)->HRESULT;
 
-	auto PrepareRender(IRenderer* pRenderer)->void override;
+	//auto PrepareRender(IRenderer* pRenderer)->void override;
+	auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void;
 	auto Clone()const->RenderObject*;
 	auto SetDiffuseTexture(IDirect3DCubeTexture9* pTexture)->void;
 protected:

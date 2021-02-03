@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="GameRenderer">
+      <UniqueIdentifier>{d5fad521-6f4b-41c0-be42-29aba9ba10d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderComponent">
+      <UniqueIdentifier>{5075727c-2276-482f-977d-2b00251dfa0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{4f75ebcc-5131-4104-a8d4-6a0f85b00f02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect">
+      <UniqueIdentifier>{f14fdfb9-2448-465a-bc6c-b9d614befda0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\FlameEffect">
+      <UniqueIdentifier>{f78c3f46-f575-49f6-b263-928045eb96fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SimplePlane">
+      <UniqueIdentifier>{a4e5915a-8415-438d-8713-0822ff019402}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameRenderer.hpp">
+      <Filter>GameRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RenderComponent.hpp">
+      <Filter>RenderComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameRendererImpl.hpp">
+      <Filter>GameRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Effect.hpp">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="SimplePlaneImpl.hpp">
+      <Filter>SimplePlane</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SimplePlane.hpp">
+      <Filter>SimplePlane</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRendererImpl.cpp">
+      <Filter>GameRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRenderer.cpp">
+      <Filter>GameRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderComponent.cpp">
+      <Filter>RenderComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="SimplePlaneImpl.cpp">
+      <Filter>SimplePlane</Filter>
+    </ClCompile>
+    <ClCompile Include="SimplePlane.cpp">
+      <Filter>SimplePlane</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ingame.fx" />
+    <Text Include="ingame_combine.fx" />
+    <Text Include="ingame_lighting.fx" />
+    <Text Include="effect.fx" />
+    <Text Include="ui.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

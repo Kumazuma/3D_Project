@@ -20,6 +20,8 @@
 #include "RenderModule.h"
 #include <game/inputmanager.hpp>
 #include "kzEnum.hpp"
+#include "enum.hpp"
+#include "SoundManager_FMOD.hpp"
 #ifndef fn_
 #define fn_ auto
 #endif
@@ -29,4 +31,5 @@
 namespace Kumazuma
 {
 	using InputManager = Game::InputManager<PLAYER_INPUT>;
+	using SoundManager = SoundManagerFMOD<Client::SoundID>;
 }

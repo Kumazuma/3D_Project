@@ -74,3 +74,11 @@ auto TextureRenderTarget::GetFormat() const -> D3DFORMAT
 {
     return m_fmt;
 }
+
+auto TextureRenderTarget::ReleaseForReset() -> void
+{
+}
+
+auto TextureRenderTarget::Restore(RenderModule* pRenderModule) -> void
+{
+}

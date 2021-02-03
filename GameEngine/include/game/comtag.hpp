@@ -1,9 +1,10 @@
 #pragma once
+#include"common.hpp"
 namespace Kumazuma
 {
 	namespace Game
 	{
-		class ComTagBase
+		class DLL_CLASS ComTagBase
 		{
 		public:
 			ComTagBase(const char* const tagName) :m_tagName{ tagName } {}
@@ -26,6 +27,7 @@ namespace Kumazuma
 		{
 		public:
 			ComponentTag(const char* const tagName) :ComTagBase{ tagName } {}
+			auto COMType()const->COM const& { return *((COM const*)nullptr); }
 		};
 	}
 }

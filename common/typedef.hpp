@@ -61,3 +61,6 @@ inline auto LoadF32x3(T&& val)->DirectX::XMVECTOR
 {
 	return XMLoadFloat3(&val);
 }
+
+template<typename T>
+using raw_ptr = T*;

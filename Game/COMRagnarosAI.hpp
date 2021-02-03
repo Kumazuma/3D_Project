@@ -9,6 +9,7 @@ namespace Kumazuma::Client
 {
 	class CharacterMeta;
 	class RagnarosAIState;
+	class DamageEvent;
 	class COMRagnarosAI : public Game::Component
 	{
 	public:
@@ -20,6 +21,8 @@ namespace Kumazuma::Client
 		auto SetState(u64 state)->void;
 		auto GetState()const->u64;
 		auto GetCharacterMetaRef()const->CharacterMeta const&;
+		//auto OnDamaged()
+		auto OnDamaged(DamageEvent const& evt)->void;
 	private:
 		std::shared_ptr<const CharacterMeta> characterMeta_;
 		std::unordered_map<u64, std::unique_ptr<RagnarosAIState> > aiStates_;

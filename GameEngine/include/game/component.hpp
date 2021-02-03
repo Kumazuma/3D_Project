@@ -4,7 +4,7 @@
 #include<map>
 #include<vector>
 #include<type_traits>
-
+#include"common.hpp"
 #include"game.hpp"
 #include<memory>
 #include "comtag.hpp"
@@ -16,7 +16,7 @@ namespace Kumazuma
 	namespace Game
 	{
 
-		class Component : public std::enable_shared_from_this<Component>
+		class DLL_CLASS Component : public std::enable_shared_from_this<Component>
 		{
 			friend class Runtime;
 			friend class Module;
@@ -56,7 +56,7 @@ namespace Kumazuma
 			static_assert(std::is_base_of<Event, EventT>::value == true, "");
 			_Bind(&handleEventTag, (EventHandleMthod)method);
 		}
-		extern const ComponentTag<Component> COM_ANY;
+		extern DLL_CLASS const ComponentTag<Component> COM_ANY;
 
 	}
 }

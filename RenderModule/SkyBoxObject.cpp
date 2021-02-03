@@ -22,9 +22,77 @@ auto SkyBoxObject::Create(RenderModule* pRenderModule, SkyBoxObject** pOut) -> H
 	return hr;
 }
 
-auto SkyBoxObject::PrepareRender(IRenderer* pRenderer) -> void
+//auto SkyBoxObject::PrepareRender(IRenderer* pRenderer) -> void
+//{
+//	pRenderer->AddEntity(RenderModule::Kind::ENVIRONMENT, m_entity);
+//}
+
+auto SkyBoxObject::Render(IRendererBase* renderer, ID3DXEffect* effect) -> void
 {
-	pRenderer->AddEntity(RenderModule::Kind::ENVIRONMENT, m_entity);
+	COMPtr<ID3DXEffect> pEffect{};
+	COMPtr<IDirect3DDevice9> pDevice;
+
+	auto pTexture{ m_pTexture };
+	auto pIndexBuffer{ m_pIndexBuffer };
+	auto pVertexBuffer{ m_pVertexBuffer };
+	auto vertexCount{ m_vertexCount };
+	auto triangleCount{ m_indexCount };
+	if (pTexture == nullptr)
+	{
+		return;
+	}
+	renderer->GetDevice(&pDevice);
+	XMFLOAT4X4 projMatrix{};
+	XMFLOAT4X4 viewMatrix{};
+
+	renderer->GetProjMatrix(&projMatrix);
+	renderer->GetViewMatrix(&viewMatrix);
+	XMMATRIX mProjInverse{ XMMatrixInverse(nullptr, XMLoadFloat4x4(&projMatrix)) };
+	XMMATRIX mCameraTransform{ XMMatrixInverse(nullptr, XMLoadFloat4x4(&viewMatrix)) };
+	XMVECTOR vFarSize{ XMVector4Transform(XMVectorSet(1.f, 1.f, 1.f, 1.f), mProjInverse) };
+
+	D3DMATRIX worldTransfromMaxtrix;
+	XMFLOAT4X4& rWorldTransform{ reinterpret_cast<XMFLOAT4X4&>(worldTransfromMaxtrix) };
+	XMMATRIX mWorldTransfrom{ XMMatrixIdentity() };
+	XMVECTOR vFar{ XMVectorSet(0.f, 0.f, 1.f, 0.f) };
+
+	vFar = XMVector3TransformCoord(vFar, mProjInverse);
+	float scaleFactor = XMVectorGetZ(vFar * 0.25f);
+	mWorldTransfrom = XMMatrixScaling(scaleFactor, scaleFactor, scaleFactor);
+	mWorldTransfrom.r[3] = mCameraTransform.r[3];
+	XMStoreFloat4x4(&rWorldTransform, mWorldTransfrom);
+
+	pDevice->SetTransform(D3DTS_WORLD, &worldTransfromMaxtrix);
+
+	pDevice->SetTexture(0, pTexture.Get());
+	// 그래픽 디바이스 장치에게 현재 내가 그리려는 버퍼를 링크시켜주는 함수
+	pDevice->SetStreamSource(0, pVertexBuffer.Get(), 0, SkyBoxObject::VERTEX_SIZE);
+	// 1인자 : 몇 번 슬롯에 보관할 것인가
+	// 2인자 : 어떤 것을 넘겨줄 것인가
+	// 3인자 : 어디서부터 그릴 것인가
+	// 4인자 : 어떤 단위로 표현할 것인가
+
+	pDevice->SetFVF(SkyBoxObject::FVF);
+	pDevice->SetIndices(pIndexBuffer.Get());
+	//m_pGraphicDev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, m_dwTriCnt);
+	DWORD lighting{};
+	DWORD zWriteEnable{};
+	pDevice->GetRenderState(D3DRS_LIGHTING, &lighting);
+	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &zWriteEnable);
+
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
+	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, vertexCount, 0, triangleCount);
+
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, zWriteEnable);
+	pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	pDevice->SetRenderState(D3DRS_LIGHTING, lighting);
+	pDevice->Clear(0, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0, 1.f, 0);
 }
 
 auto SkyBoxObject::Clone() const -> RenderObject*

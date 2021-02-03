@@ -38,24 +38,81 @@ auto SkinnedXMeshObject::Create(RenderModule* pRenderModule, std::wstring const&
     return hr;
 }
 
-auto SkinnedXMeshObject::PrepareRender(IRenderer* pRenderer) -> void
-{
-    pRenderer->AddEntity(RenderModule::Kind::SKINNED, m_entity);
-}
+//auto SkinnedXMeshObject::PrepareRender(IRenderer* pRenderer) -> void
+//{
+//    pRenderer->AddEntity(RenderModule::Kind::SKINNED, m_entity);
+//}
 auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
+{
+    //if (IsVisible() == false) return;
+    //COMPtr<IDirect3DDevice9> pDevice;
+    //COMPtr<ID3DXEffect> effect;     
+    //pRenderModule->GetDevice(&pDevice);
+    //pRenderer->GetEffect(&effect);  
+    //                                
+    //XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_transform) };
+    //mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+    //mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
+    //effect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
+    //effect->SetMatrix("g_mWorld", reinterpret_cast<D3DXMATRIX*>(&this->m_transform));
+    //
+    //for (auto& iter : m_meshContainters)
+    //{                               
+    //    auto& rRenderingMatries{ m_renderedMatrices[iter] };
+    //    void* pSrcVtx = nullptr;    
+    //    void* pDestVtx = nullptr;   
+
+    //    iter->pOriginalMesh->LockVertexBuffer(0, &pSrcVtx);
+    //    iter->MeshData.pMesh->LockVertexBuffer(0, &pDestVtx);
+
+    //    // 소프트웨어 스키닝을 수행하는 함수(스키닝 뿐 아니라 애니메이션 변경 시, 뼈대들과 정점 정보들의 변경을 동시에 수행하기도 함)
+    //    iter->pSkinInfo->UpdateSkinnedMesh(
+    //        reinterpret_cast<D3DXMATRIX const*>(rRenderingMatries.data()),	// 최종 뼈의 변환상태 행렬
+    //        nullptr,						// 원래 상태로 되돌리기 위한 상태 행렬(원래는 위 행렬의 역행렬을 구해서 넣어줘야 하지만 안넣어줘도 상관 없음)
+    //        pSrcVtx,						// 변하지 않는 원본 메쉬의 정점 정보
+    //        pDestVtx);						// 변환된 정보를 담기 위한 메쉬의 정점 정보
+    //    iter->pOriginalMesh->UnlockVertexBuffer();
+    //    iter->MeshData.pMesh->UnlockVertexBuffer();
+    //    COMPtr<IDirect3DVertexBuffer9> vertexBuffer{};
+    //    COMPtr<IDirect3DIndexBuffer9> indexBuffer{};
+    //    
+    //    iter->MeshData.pMesh->GetVertexBuffer(&vertexBuffer);
+    //    iter->MeshData.pMesh->GetIndexBuffer(&indexBuffer);
+    //    //pDevice->SetVertexDeclaration(m_vertexDecls[iter].Get());
+    //    pDevice->SetFVF(iter->fvf);
+    //    pDevice->SetStreamSource(0, vertexBuffer.Get(), 0, iter->vertexSize);
+    //    //pDevice->SetStreamSource(1, m_boneInfoBuffers[iter].Get(), 0, sizeof(BoneInfo));
+    //    pDevice->SetStreamSourceFreq(0, D3DSTREAMSOURCE_INDEXEDDATA | 1u);
+    //    //pDevice->SetStreamSourceFreq(1, D3DSTREAMSOURCE_INDEXEDDATA | 1u);
+
+    //    pDevice->SetIndices(indexBuffer.Get());
+    //    //effect->SetMatrixArray("g_frameMatrices", reinterpret_cast<D3DXMATRIX const*>(renderingMatrix.data()), 255);
+    //    for (u32 i = 0; i < iter->NumMaterials; ++i)
+    //    {
+    //        auto const& info{ iter->subsetTriangleInfo[i] };
+    //        auto rMaterial{ iter->materials[i].MatD3D };
+    //        auto specularColor{ rMaterial.Specular };
+    //        D3DXVECTOR4 specularVec{ specularColor.r,specularColor.g, specularColor.b, rMaterial.Power };
+    //        effect->SetTexture("g_diffuseTexture", iter->textures[i].Get());
+    //        effect->SetVector("g_vSpecular", &specularVec);
+    //        effect->CommitChanges();
+    //        pDevice->DrawIndexedPrimitive(
+    //            D3DPT_TRIANGLELIST,
+    //            0,
+    //            0,
+    //            iter->vertexCount,
+    //            static_cast<UINT>(std::get<0>(info)),
+    //            static_cast<UINT>(std::get<1>(info))
+    //        );
+    //    }
+    //}
+}
+
+auto SkinnedXMeshObject::Render(IRendererBase* renderer, ID3DXEffect* effect) -> void
 {
     if (IsVisible() == false) return;
     COMPtr<IDirect3DDevice9> pDevice;
-    COMPtr<ID3DXEffect> effect;     
-    pRenderModule->GetDevice(&pDevice);
-    pRenderer->GetEffect(&effect);  
-                                    
-    XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_transform) };
-    mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-    mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
-    effect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
-    effect->SetMatrix("g_mWorld", reinterpret_cast<D3DXMATRIX*>(&this->m_transform));
-    
+    renderer->GetDevice(&pDevice);
     for (auto& iter : m_meshContainters)
     {                               
         auto& rRenderingMatries{ m_renderedMatrices[iter] };
@@ -75,7 +132,7 @@ auto SkinnedXMeshObject::Render(RenderModule* pRenderModule, IRenderer* pRendere
         iter->MeshData.pMesh->UnlockVertexBuffer();
         COMPtr<IDirect3DVertexBuffer9> vertexBuffer{};
         COMPtr<IDirect3DIndexBuffer9> indexBuffer{};
-        
+    
         iter->MeshData.pMesh->GetVertexBuffer(&vertexBuffer);
         iter->MeshData.pMesh->GetIndexBuffer(&indexBuffer);
         //pDevice->SetVertexDeclaration(m_vertexDecls[iter].Get());
@@ -148,6 +205,8 @@ auto SkinnedXMeshObject::SetAnimationSet(u32 idx, bool repeat) -> void
 {
     m_repeat = repeat;
     m_pAnimCtrler->PlayAnimationSet(idx);
+    std::lock_guard<SpinLock> guard{ *m_spinLock };
+
     UpdateFrameMatrices(
         static_cast<Frame*>(m_pRootFrame),
         ToFloat4x4(XMMatrixIdentity())
@@ -175,7 +234,7 @@ auto SkinnedXMeshObject::PlayAnimation(f32 timeDelta) -> void
     f32 const seek{ m_pAnimCtrler->GetSeek() };
     if (seek + timeDelta >=  length && m_repeat == false)
     {
-        timeDelta = length - seek;
+        //timeDelta = length - seek;
     }
     m_pAnimCtrler->AdvanceTime(timeDelta);
     m_pAnimCtrler->AdjustAnimationToFrame();

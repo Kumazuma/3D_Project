@@ -14,6 +14,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
     CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     CoInitialize(nullptr);
+    
     if (Kumazuma::App::Initialize(hInstance) == false)
     {
         return -1;

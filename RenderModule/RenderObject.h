@@ -1,9 +1,11 @@
 #pragma once
 #include"Common.h"
 #include<d3d9.h>
+#include<d3dx9effect.h>
 #include<DirectXMath.h>
 class RenderModule;
 struct IRenderer;
+struct IRendererBase;
 class Frustum;
 class Ray;
 namespace Kumazuma
@@ -34,18 +36,19 @@ protected:
 	RenderObject();
 public:
 	virtual ~RenderObject() = default;
-	virtual auto PrepareRender(IRenderer* pDevice)->void = 0;
+	//virtual auto PrepareRender(IRenderer* pDevice)->void = 0;
 	virtual auto Clone()const->RenderObject* = 0;
 	virtual auto CanRayPicking()const->bool;
 	virtual auto RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLOAT3 const& rayDirection, f32* pOut)->bool;
+	virtual auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void = 0;
 	auto RayPicking(Ray* pRay, f32* pOut)->bool;
-	auto SetTransform(DirectX::XMFLOAT4X4 const& transform)->void;
-	auto GetTransform()const->DirectX::XMFLOAT4X4 const&;
+	//auto SetTransform(DirectX::XMFLOAT4X4 const& transform)->void;
+	//auto GetTransform()const->DirectX::XMFLOAT4X4 const&;
 	auto SetVisible(bool visible)->void;
 	auto IsVisible()const->bool;
 protected:
 	bool m_visible;
-	DirectX::XMFLOAT4X4 m_transform;
+	//DirectX::XMFLOAT4X4 m_transform;
 public:
 	static constexpr unsigned long FVF_TEX = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;
 	static constexpr unsigned long FVF_NAVI = D3DFVF_XYZ | D3DFVF_DIFFUSE;

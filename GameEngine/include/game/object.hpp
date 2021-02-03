@@ -9,11 +9,12 @@
 #include<unordered_set>
 #include<unordered_map>
 #include<shared_mutex>
+#include "common.hpp"
 namespace Kumazuma
 {
 	namespace Game
 	{
-		class Object final:public std::enable_shared_from_this<Object>
+		class DLL_CLASS Object final:public std::enable_shared_from_this<Object>
 		{
 			friend class Component;
 			friend class Runtime;
@@ -23,8 +24,8 @@ namespace Kumazuma
 			Object(_ObjTagTIt begin, _ObjTagTIt end);
 			Object() = default;
 			Object(const Object&) = delete;
-			Object(Object&& other) noexcept;
-			~Object() = default;
+			Object(Object && other) noexcept;
+			~Object();
 		public:
 			template<typename _COM>
 			auto GetComponent()->std::shared_ptr<_COM>;
@@ -34,18 +35,29 @@ namespace Kumazuma
 			auto AddComponent(Args&& ...args)->void;
 			template<typename _COM>
 			auto RemoveComponent()->void;
-		
+
 		public:
 			auto Tag(ObjectTag const& rTag)->void;
 			auto HasTag(ObjectTag const&)const->bool;
+			auto RemoveChild(Game::Object& child)->void;
+			auto RemoveChild(std::wstring const& child)->void;
+			auto AddChild(std::wstring const& id, std::shared_ptr <Object> const& child)->void;
+			auto GetChild(std::wstring const& id)->std::shared_ptr <Object>;
+			auto GetChildren(std::wstring const&)->std::shared_ptr <Object>;
+
+			auto GetChildren()->std::unordered_map<std::wstring, std::shared_ptr <Object> > const&;
+			auto GetParent()const->std::shared_ptr<Object const>;
 		private:
+			auto NotifyDeleteChild(Game::Object & child)->void;
 			auto GetComponent(ComTagBase const* comtagPtr)const->std::shared_ptr<Component>;
-			auto AddComponent(ComTagBase const* comtag, Component* ptr)->void;
+			auto AddComponent(ComTagBase const* comtag, Component * ptr)->void;
 			auto RemoveComponent(ComTagBase const* comtag)->void;
 		private:
 			std::unordered_map<ComTagBase const*, std::shared_ptr<Component> > m_components;
 			std::unordered_set<ObjectTag const*> m_tags;
 			mutable std::shared_mutex m_mutex;
+			std::unordered_map<std::wstring, std::shared_ptr <Object> > m_children;
+			std::weak_ptr<Object> m_parent;
 		};
 		template<typename _ObjTagTIt>
 		inline Object::Object(_ObjTagTIt begin, _ObjTagTIt end):

@@ -11,6 +11,7 @@ namespace Kumazuma::Client
 		public physx::PxControllerBehaviorCallback
 
 	{
+		friend class PhysXPhysicsManager;
 	public:
 		pxPhysicsCharacterControllerInner(std::weak_ptr<PhysXPhysicsManager>&& manager);
 		~pxPhysicsCharacterControllerInner();

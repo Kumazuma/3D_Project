@@ -157,6 +157,9 @@ void Runtime::DoBroadcast(const ComTagBase& comTag, Event* event, Object const* 
             auto& rList{ row.second };
             for (auto* com : rList)
             {
+                auto obj{ com->m_parent.lock() };
+                if (obj == nullptr) continue;
+                if (obj.get() != pObj) continue;
                 if (com->IsHandled(eventTag) && (comTag == COM_ANY || comTag == com->GetTag()))
                 {
                     item.ptr = com->weak_from_this();

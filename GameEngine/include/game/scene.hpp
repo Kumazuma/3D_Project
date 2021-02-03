@@ -8,11 +8,12 @@
 #include<unordered_map>
 #include "LayerTag.hpp"
 #include<shared_mutex>
+#include "common.hpp"
 namespace Kumazuma
 {
 	namespace Game
 	{
-		class Scene
+		class DLL_CLASS Scene
 		{
 		public:
 			using ObjList = LinkedList < std::shared_ptr<Object> >;

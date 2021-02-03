@@ -10,30 +10,32 @@
 #include"CharacterMeta.hpp"
 #include<game/scene.hpp>
 #include"EventTag.hpp"
+#include"COMPlayerRender.hpp"
 constexpr wchar_t CHARACTER_MESH[]{ L"CHARACTER" };
 
 using namespace DirectX;
 auto Kumazuma::Client::RagnarosPhase1AttackState::Update(f32 timeDelta) -> void 
 {
 	auto& object{ GetObjectRef() };
-	auto container{ object.GetComponent< COMRenderObjectContainer>() };
-	auto colliderContainer{ object.GetComponent<COMCollider>()};
+	auto renderComponent{ object.GetComponent< COMSkinnedMeshRender>() };
+	auto weapon{ object.GetChild(L"WEAPON") };
+
+	auto colliderContainer{ weapon->GetComponent<COMCollider>()};
 	auto transform{ object.GetComponent<Game::TransformComponent>() };
-	auto characterMesh{std::static_pointer_cast<SkinnedXMeshObject>( container->Get(CHARACTER_MESH)) };
-	auto weaponMesh{ std::static_pointer_cast<SkinnedXMeshObject>(container->Get(L"ARM")) };
+	auto characterMesh{ renderComponent->GetMesh() };
 	auto collider{ colliderContainer->Get(L"ARM") };
 	auto framePtr{ characterMesh->FindFrameTransfromByName(collider->GetFrameName()) };
 	auto const& r{ App::Instance()->GetScene().GetListRef(LAYER_PLAYER) };
 	std::shared_ptr<Game::Object> player{};
 	std::shared_ptr<COMCollider> playerComCollider{  };
 	std::shared_ptr<Game::TransformComponent>  playerComTransform{};
-	std::shared_ptr<COMRenderObjectContainer> playerRenderContainer{};
+	std::shared_ptr<COMSkinnedMeshRender> playerRenderCOM{};
 	if (r.empty() == false)
 	{
 		player = *r.begin();
 		playerComCollider = player->GetComponent<COMCollider>();
 		playerComTransform = player->GetComponent<Game::TransformComponent>();
-		playerRenderContainer = player->GetComponent<COMRenderObjectContainer>();
+		playerRenderCOM = player->GetComponent<COMSkinnedMeshRender>();
 	}
 
 	characterMesh->PlayAnimation(timeDelta);
@@ -94,7 +96,7 @@ auto Kumazuma::Client::RagnarosPhase1AttackState::Update(f32 timeDelta) -> void
 	}
 	f32x44 transformMatrix{ };
 	f32x44 frameRenderMatrix{};
-	transform->GenerateTransformMatrix(&transformMatrix);
+	transform->GenerateTransform(&transformMatrix);
 	XMMATRIX mWeaponTransform{};
 	XMMATRIX mCharacterTransfrom{};
 	XMMATRIX mArmFrame{};
@@ -103,21 +105,14 @@ auto Kumazuma::Client::RagnarosPhase1AttackState::Update(f32 timeDelta) -> void
 	mCharacterTransfrom = XMLoadFloat4x4(&transformMatrix);
 	mFrameRenderTransform = mArmFrame * mCharacterTransfrom;
 	XMStoreFloat4x4(&frameRenderMatrix, mFrameRenderTransform);
-	SetARMColliderTransform(frameRenderMatrix);
-	if (weaponMesh != nullptr)
-	{
-		auto mScale{ XMMatrixScaling(2000.f, 2000.f, 2000.f) };
-		auto mRotation{ XMMatrixRotationRollPitchYaw(XM_PI,0.f, XM_PI * 0.5f) };
-		auto mOffset{ XMMatrixTranslation(290.f, -200.f, 1000.f) };
-		auto renderTransform{ StoreF32x44(mScale * mRotation * mOffset * mFrameRenderTransform) };
-		weaponMesh->SetTransform(renderTransform);
-	}
+	//SetARMColliderTransform(frameRenderMatrix);
+
 	if (player == nullptr)
 	{
 		return;
 	}
 	auto& playerCollidersRef{ playerComCollider->GetColliderTableRef() };
-	auto playerCharacterMesh{ std::static_pointer_cast<SkinnedXMeshObject>(playerRenderContainer->Get(CHARACTER_MESH)) };
+	auto playerCharacterMesh{ playerRenderCOM->GetMesh() };
 	f32x44 playerTransformMatrix{};
 	XMMATRIX mPlayerWorldTransform{};
 	playerComTransform->GenerateTransformMatrix(&playerTransformMatrix);
@@ -141,6 +136,8 @@ auto Kumazuma::Client::RagnarosPhase1AttackState::Update(f32 timeDelta) -> void
 				objects_.emplace(player.get());
 				auto runtime{ Game::Runtime::Instance() };
 				Damage damage{L"Ragnaros", L"일반 공격", DamageType::Normal, 100};
+				SoundManager::Instance().Play(SoundID::RagnarosAttack);
+
 				runtime->Broadcast<DamageEvent>(*player, Game::COM_ANY, EVT_Damage, damage);
 			}
 			//TODO: 플레이어에게 데미지 이벤트보내기.
@@ -153,11 +150,12 @@ auto Kumazuma::Client::RagnarosPhase1AttackState::Reset() -> void
 	objects_.clear();
 	auto& object{ GetObjectRef() };
 	auto& meta{ GetComponentRef().GetCharacterMetaRef() };
+	SoundManager::Instance().Play(SoundID::Ragnaros);
+
 	if (auto index{ meta.GetAnimIndex(L"ATTACK2") }; index.has_value())
 	{
-		auto container{ object.GetComponent< COMRenderObjectContainer>() };
-		auto characterMesh{ std::static_pointer_cast<SkinnedXMeshObject>(container->Get(CHARACTER_MESH)) };
-		characterMesh->SetAnimationSet(*index, false);
-		
+		auto renderCom{ object.GetComponent<COMSkinnedMeshRender>() };
+		auto mesh{ renderCom->GetMesh() };
+		mesh->SetAnimationSet(*index, false);
 	}
 }

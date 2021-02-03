@@ -40,10 +40,21 @@ auto SimpleBoxObject::Clone() const -> RenderObject*
     return new SimpleBoxObject(*this);
 }
 
-auto SimpleBoxObject::PrepareRender(IRenderer* pRenderer) -> void
+//auto SimpleBoxObject::PrepareRender(IRenderer* pRenderer) -> void
+//{
+//	if (IsVisible() == false)return;
+//	pRenderer->AddEntity(RenderModule::Kind::ALPHA, m_entity);
+//}
+
+auto SimpleBoxObject::Render(IRendererBase* renderer, ID3DXEffect* effect) -> void
 {
-	if (IsVisible() == false)return;
-	pRenderer->AddEntity(RenderModule::Kind::ALPHA, m_entity);
+	COMPtr<IDirect3DDevice9> pDevice;
+	COMPtr<IDirect3DTexture9> pRedTexture;
+	renderer->GetDevice(&pDevice);
+	renderer->GetRenderModuleRef().GetSimpleColorTexture(DefaultColorTexture::RED, &pRedTexture);
+	pDevice->SetMaterial(&m_material);
+	pDevice->SetTexture(0, pRedTexture.Get());
+	m_pMesh->DrawSubset(0);
 }
 
 auto SimpleBoxObject::GetWidth() const -> f32
@@ -118,34 +129,34 @@ SimpleBoxEntity::SimpleBoxEntity(SimpleBoxObject* pObj):
 
 auto SimpleBoxEntity::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void 
 {
-	auto meterial{ m_obj->m_material };
-	auto size{ m_obj->m_size };
-	auto offset{ m_obj->m_offset };
+	//auto meterial{ m_obj->m_material };
+	//auto size{ m_obj->m_size };
+	//auto offset{ m_obj->m_offset };
 
-	auto* pTransfrom{ &m_obj->m_transform };
-	auto pMesh{ m_obj->m_pMesh };
-	DWORD fillMode;
-	DWORD cullMode;
-	COMPtr<IDirect3DDevice9> pDevice;
-	COMPtr<IDirect3DTexture9> pRedTexture;
-	pRenderModule->GetDevice(&pDevice);
-	pRenderModule->GetSimpleColorTexture(DefaultColorTexture::RED, &pRedTexture);
-	pDevice->GetRenderState(D3DRS_FILLMODE, &fillMode);
-	pDevice->GetRenderState(D3DRS_CULLMODE, &cullMode);
-	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	COMPtr<IDirect3DTexture9> pTexture;
-	//pDevice->CreateTexture(2048, 2048, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A32B32G32R32F, D3DPOOL_MANAGED, pTexture,);
-	pDevice->SetMaterial(&meterial);
-	pDevice->SetTexture(0, pRedTexture.Get());
-	XMMATRIX mSize{ XMMatrixScaling(size.x , size.y, size.z) };
-	XMMATRIX mOffset{ XMMatrixTranslation(offset.x,offset.y,offset.z) };
-	XMMATRIX mTransform{ XMLoadFloat4x4(pTransfrom) };
-	mTransform = mSize * mOffset * mTransform;
-	auto* pWorld{ reinterpret_cast<D3DMATRIX*>(&mTransform) };
+	//auto* pTransfrom{ &m_obj->m_transform };
+	//auto pMesh{ m_obj->m_pMesh };
+	//DWORD fillMode;
+	//DWORD cullMode;
+	//COMPtr<IDirect3DDevice9> pDevice;
+	//COMPtr<IDirect3DTexture9> pRedTexture;
+	//pRenderModule->GetDevice(&pDevice);
+	//pRenderModule->GetSimpleColorTexture(DefaultColorTexture::RED, &pRedTexture);
+	//pDevice->GetRenderState(D3DRS_FILLMODE, &fillMode);
+	//pDevice->GetRenderState(D3DRS_CULLMODE, &cullMode);
+	//pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	//pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	//COMPtr<IDirect3DTexture9> pTexture;
+	////pDevice->CreateTexture(2048, 2048, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A32B32G32R32F, D3DPOOL_MANAGED, pTexture,);
+	//pDevice->SetMaterial(&meterial);
+	//pDevice->SetTexture(0, pRedTexture.Get());
+	//XMMATRIX mSize{ XMMatrixScaling(size.x , size.y, size.z) };
+	//XMMATRIX mOffset{ XMMatrixTranslation(offset.x,offset.y,offset.z) };
+	//XMMATRIX mTransform{ XMLoadFloat4x4(pTransfrom) };
+	//mTransform = mSize * mOffset * mTransform;
+	//auto* pWorld{ reinterpret_cast<D3DMATRIX*>(&mTransform) };
 
-	pDevice->SetTransform(D3DTS_WORLD, pWorld);//vertex shader
-	pMesh->DrawSubset(0);
-	pDevice->SetRenderState(D3DRS_FILLMODE, fillMode);
-	pDevice->SetRenderState(D3DRS_CULLMODE, cullMode);
+	//pDevice->SetTransform(D3DTS_WORLD, pWorld);//vertex shader
+	//pMesh->DrawSubset(0);
+	//pDevice->SetRenderState(D3DRS_FILLMODE, fillMode);
+	//pDevice->SetRenderState(D3DRS_CULLMODE, cullMode);
 }

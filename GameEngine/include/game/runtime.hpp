@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <shared_mutex>
 #include <tbb/concurrent_queue.h>
+#include "common.hpp"
 namespace Kumazuma
 {
 	namespace ThreadPool
@@ -29,7 +30,7 @@ namespace Kumazuma
 			std::shared_ptr<Event> event;
 			std::weak_ptr<Component> ptr;
 		};
-		class Runtime
+		class DLL_CLASS Runtime
 		{
 			friend class ObjectFactory;
 			friend class Object;
@@ -114,6 +115,6 @@ namespace Kumazuma
 		private:
 			float m_delta;
 		};
-		extern const EventTag<UpdateEvent> EVT_UPDATE;
+		extern DLL_CLASS const EventTag<UpdateEvent> EVT_UPDATE;
 	}
 }

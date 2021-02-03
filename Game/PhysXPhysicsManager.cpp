@@ -67,7 +67,7 @@ namespace Kumazuma::Client
 		physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, physx::PxTolerancesScale{}, true, pvd);
 		cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, PxCookingParams(PxTolerancesScale{}));
 		dispatcher = physx::PxDefaultCpuDispatcherCreate(std::thread::hardware_concurrency());
-
+		
 		physx::PxSceneDesc sceneDesc{ physics->getTolerancesScale() };
 		sceneDesc.gravity = physx::PxVec3{ 0.f, -10.f, 0.f };
 		sceneDesc.cpuDispatcher = dispatcher;
@@ -135,6 +135,7 @@ namespace Kumazuma::Client
 		std::vector< std::vector<XMFLOAT3A> > verticesList;
 		std::vector< std::vector<XMUINT3> > trianglesList;
 		verticesList.reserve(meshs.size());
+		auto transformIt{ transforms.begin() };
 		for (auto const& mesh : meshs)
 		{
 			std::vector<DirectX::XMUINT3> triangles;
@@ -154,7 +155,8 @@ namespace Kumazuma::Client
 			}
 			auto vertices{ mesh->GetVertices() };
 			std::vector<XMFLOAT3A> newVertices;
-			auto mWorldTransform{ XMLoadFloat4x4(&mesh->GetTransform()) };
+			
+			auto mWorldTransform{ XMMatrixTranslationFromVector(XMLoadFloat3(&transformIt->position)) };
 			newVertices.assign(vertices->size(), {});
 			XMVector3TransformCoordStream(
 				newVertices.data(),
@@ -216,6 +218,7 @@ namespace Kumazuma::Client
 			}
 			scene->addActor(*staticRigidyBody);
 			mapMeshRigids.emplace_back(staticRigidyBody);
+			++transformIt;
 		}
 	}
 
@@ -309,10 +312,14 @@ namespace Kumazuma::Client
 	auto PhysXPhysicsManager::Delete(pxPhysicsCharacterControllerInner* inner) -> void
 	{
 		std::lock_guard<SpinLock> guard{ spinLocker_ };
+
 		auto it = std::find(this->charContollers_.begin(), this->charContollers_.end(), inner);
 		if (it != this->charContollers_.end())
 		{
+			PxSceneWriteLock scopedLock(*this->scene);
 			this->charContollers_.erase(it);
+			scene->removeActor(*inner->controller_->getActor());
+			inner->controller_->release();
 		}
 	}
 

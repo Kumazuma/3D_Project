@@ -153,6 +153,57 @@
     <ClCompile Include="PlayerJumpBehavior.cpp">
       <Filter>Component\Player\state\JumpBehavior</Filter>
     </ClCompile>
+    <ClCompile Include="COMTerrainRender.cpp">
+      <Filter>Component\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="COMWeaponRender.cpp">
+      <Filter>Component\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="COMColliderRender.cpp">
+      <Filter>Component\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="COMPlayerRender.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="COMPickingSphere.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillManager.cpp">
+      <Filter>Component\Player\skill</Filter>
+    </ClCompile>
+    <ClCompile Include="COMPlayerSkill.cpp">
+      <Filter>Component\Player\skill</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillMeta.cpp">
+      <Filter>Component\Player\skill</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAttackSkill.cpp">
+      <Filter>Component\Player\skill</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerSkillBehavior.cpp">
+      <Filter>Component\Player\state\SkillBehavior</Filter>
+    </ClCompile>
+    <ClCompile Include="COMRagnarosDead.cpp" />
+    <ClCompile Include="BuffEvent.cpp">
+      <Filter>Event</Filter>
+    </ClCompile>
+    <ClCompile Include="COMSkills.cpp" />
+    <ClCompile Include="FlameEffect.cpp">
+      <Filter>effect\FlameEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="FlameEffectShare.cpp">
+      <Filter>effect\FlameEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="COMRenderer.cpp" />
+    <ClCompile Include="Finale.cpp" />
+    <ClCompile Include="COMFinale.cpp">
+      <Filter>Component\finale</Filter>
+    </ClCompile>
+    <ClCompile Include="MainUI.cpp" />
+    <ClCompile Include="COMMainUIRender.cpp" />
+    <ClCompile Include="SoundManager_FMOD.cpp">
+      <Filter>SoundManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.hpp" />
@@ -345,6 +396,75 @@
     <ClInclude Include="PlayerJumpBehavior.hpp">
       <Filter>Component\Player\state\JumpBehavior</Filter>
     </ClInclude>
+    <ClInclude Include="COMTerrainRender.hpp">
+      <Filter>Component\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="COMPlayerRender.hpp">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="COMWeaponRender.hpp">
+      <Filter>Component\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="COMColliderRender.hpp">
+      <Filter>Component\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="COMPickingSphere.hpp">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSkillBehavior.hpp">
+      <Filter>Component\Player\state\SkillBehavior</Filter>
+    </ClInclude>
+    <ClInclude Include="COMPlayerSkill.hpp">
+      <Filter>Component\Player\skill</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillManager.hpp">
+      <Filter>Component\Player\skill</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillMeta.hpp">
+      <Filter>Component\Player\skill</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAttackSkill.hpp">
+      <Filter>Component\Player\skill</Filter>
+    </ClInclude>
+    <ClInclude Include="Skill.hpp">
+      <Filter>Component\Player\skill</Filter>
+    </ClInclude>
+    <ClInclude Include="COMRagnarosDead.hpp">
+      <Filter>Component\Ragnaros</Filter>
+    </ClInclude>
+    <ClInclude Include="BuffEvent.hpp">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="COMSkills.hpp">
+      <Filter>Component\Player\skill</Filter>
+    </ClInclude>
+    <ClInclude Include="FlameEffect.hpp">
+      <Filter>effect\FlameEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="FlameEffectShare.hpp">
+      <Filter>effect\FlameEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="COMRenderer.hpp">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Finale.hpp">
+      <Filter>Component\finale</Filter>
+    </ClInclude>
+    <ClInclude Include="COMFinale.hpp">
+      <Filter>Component\finale</Filter>
+    </ClInclude>
+    <ClInclude Include="MainUI.hpp">
+      <Filter>Component\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="COMMainUIRender.hpp">
+      <Filter>Component\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager_FMOD.hpp">
+      <Filter>SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="enum.hpp">
+      <Filter>App</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Game.ico">
@@ -450,6 +570,33 @@
     </Filter>
     <Filter Include="Component\Player\state\JumpBehavior">
       <UniqueIdentifier>{344c7832-5d61-47aa-8c1b-b5ba574e322b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Map">
+      <UniqueIdentifier>{c34c29b0-6a7b-4db1-ba1f-78a81647f440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Player\state\SkillBehavior">
+      <UniqueIdentifier>{3324715b-06b0-4dfd-aac4-8629325e74a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Player\skill">
+      <UniqueIdentifier>{2542f05d-12b3-4b85-9528-d8e353645465}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="effect">
+      <UniqueIdentifier>{2cff3f0d-9778-4a9d-a531-0d8b1ed564e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="effect\FlameEffect">
+      <UniqueIdentifier>{ad475970-af5e-4d2c-8aa7-aa0a77b74ca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Effect">
+      <UniqueIdentifier>{d4ea470a-3f0e-4e10-8c94-ba1f1f36b140}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\finale">
+      <UniqueIdentifier>{d1e51f7e-d4d1-4873-a8a0-4f6fcbfa0b0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\UI">
+      <UniqueIdentifier>{3d871cf2-fe73-4281-ac66-074056326782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SoundManager">
+      <UniqueIdentifier>{1c37d263-9344-46a9-9711-41c8cf425e8e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

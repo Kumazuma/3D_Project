@@ -16,6 +16,7 @@ constexpr StringLiteral<char> ID_DepthMap{ "RT_DEPTH" };
 constexpr StringLiteral<char> ID_CONST_INVSERSE_VIEW_PORJ_MATRIX{ "g_mInverseViewProj" };
 constexpr StringLiteral<char> ID_TEX_NORMAL_MAP{ "g_normalMap" };
 constexpr StringLiteral<char> ID_TEX_SPECULAR_MAP{ "g_specularMap" };
+constexpr StringLiteral<char> ID_TEX_DEPTH_MAP{ "g_depthMap" };
 
 InGameRenderer::InGameRenderer(RenderModule* pRenderModule, u32 width, u32 height) :
     m_viewMatrix{  },
@@ -66,7 +67,7 @@ InGameRenderer::InGameRenderer(RenderModule* pRenderModule, u32 width, u32 heigh
     HGLOBAL hResource = NULL;
     void* resourceDataPtr{};
     size_t resourceDataSize{};
-    hResMeta = FindResourceW(g_hDLLModule, MAKEINTRESOURCE(IDR_FX_INGAME), L"FX");
+    hResMeta = FindResourceW(g_hDLLModule, MAKEINTRESOURCEW(IDR_FX_INGAME), L"FX");
     if (hResMeta == NULL)
     {
         throw E_FAIL;
@@ -420,13 +421,14 @@ auto InGameRenderer::Lighting(RenderModule* pRenderModule) -> void
     COMPtr<IDirect3DDevice9> pDevice;
     COMPtr<IDirect3DSurface9> lightDiffuseTarget;
     COMPtr<IDirect3DSurface9> lightSpecularTarget;
-    COMPtr<IDirect3DSurface9> depthTarget;
+    COMPtr<IDirect3DTexture9> depthTarget;
     COMPtr<IDirect3DTexture9> normalDepthMapTexture{};
     COMPtr<IDirect3DTexture9> specularMapTexture{};
     m_renderTargets[ID_LightDiffuseMap]->GetSurface(&lightDiffuseTarget);
     m_renderTargets[ID_LightSpecularMap]->GetSurface(&lightSpecularTarget);
     m_renderTargets[ID_MatSpecularTarget]->GetTexture(&specularMapTexture);
     m_renderTargets[ID_NormapTarget]->GetTexture(&normalDepthMapTexture);
+    m_renderTargets[ID_DepthMap]->GetTexture(&depthTarget);
     pRenderModule->GetDevice(&pDevice);
 
     XMMATRIX mView{ XMLoadFloat4x4(&m_viewMatrix) };
@@ -446,6 +448,7 @@ auto InGameRenderer::Lighting(RenderModule* pRenderModule) -> void
     m_lightingEffect->SetMatrix(ID_CONST_INVSERSE_VIEW_PORJ_MATRIX, &InverseViewProMatrix);
     m_lightingEffect->SetTexture(ID_TEX_NORMAL_MAP, normalDepthMapTexture.Get());
     m_lightingEffect->SetTexture(ID_TEX_SPECULAR_MAP, specularMapTexture.Get());
+    m_lightingEffect->SetTexture(ID_TEX_DEPTH_MAP, depthTarget.Get());
 
     UINT passCount{};
     m_lightingEffect->Begin(&passCount, 0);

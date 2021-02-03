@@ -12,6 +12,7 @@ namespace Kumazuma
 		MOUSE_MBUTTON,
 		MOUSE_RBUTTON,
 		TOGLE_COLLIDER_BOX,
+		RUN,
 		SKILL_01,
 		SKILL_02,
 		SKILL_03,

@@ -158,6 +158,7 @@
     <ClInclude Include="SpinLock.hpp" />
     <ClInclude Include="StringLiteral.h" />
     <ClInclude Include="Transform.hpp" />
+    <ClInclude Include="WinAPIResourceLoader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

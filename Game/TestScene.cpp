@@ -19,12 +19,16 @@
 #include "CharacterMeta.hpp"
 #include "COMRenderObjectContainer.hpp"
 #include "Player.h"
+#include "Ragnaros.hpp"
 #include "HeightMapBuilder.hpp"
 #include "PhysicsManager.hpp"
 #include "COMRagnarosAI.hpp"
 #include "LayerTags.hpp"
 #include "SimpleTransform.hpp"
 #include "COMCollider.hpp"
+#include <GameRenderer.hpp>
+#include"COMTerrainRender.hpp"
+#include "MainUI.hpp"
 using namespace Kumazuma::Client;
 using namespace DirectX;
 using Task = Kumazuma::ThreadPool::Task;
@@ -43,32 +47,41 @@ Kumazuma::Client::TestScene::~TestScene()
 void TestScene::Loaded()
 {
 	auto renderObj{ App::Instance()->GetRenderModule() };
-	InGameRenderer* pRenderer{};
-	InGameRenderer::Create(renderObj.get(), renderObj->GetWidth(), renderObj->GetHeight(), &pRenderer);
+	Graphics::GameRenderer* pRenderer{};
+	Graphics::GameRenderer::Create(renderObj.get(), &pRenderer);
+	COMPtr<IDirect3DDevice9> pDevice;
+	renderObj->GetDevice(&pDevice);
+	pDevice->ShowCursor(false);
 	if (pRenderer == nullptr)
 	{
 		App::Instance()->Exit();
 		return;
 	}
-	m_pRenderer.reset(pRenderer);
+	renderer_.reset(pRenderer);
 	
 	auto resourceMgr{ ResourceManager::Instance() };
 	auto base_dir{ Enviroment::GetValue<std::wstring>(Enviroment::BASE_DIR) };
 
-	SkyBoxObject* skyboxObj{};
+	//SkyBoxObject* skyboxObj{};
 	COMPtr<IDirect3DCubeTexture9> pCubeTexture{};
-	SkyBoxObject::Create(renderObj.get(), &skyboxObj);
+	//SkyBoxObject::Create(renderObj.get(), &skyboxObj);
 	renderObj->CreateCubeTexture((base_dir + ConvertUTF8ToWide(m_file[u8"skybox"])).c_str(), &pCubeTexture);
-	skyboxObj->SetDiffuseTexture(pCubeTexture.Get());
-	m_skybox.reset(skyboxObj);
+	pRenderer->SetSkyBox(pCubeTexture.Get());
+	//skyboxObj->SetDiffuseTexture(pCubeTexture.Get());
+	//m_skybox.reset(skyboxObj);
 	std::unordered_map<std::wstring, XMFLOAT3> targets;
-	std::vector<SimpleTransform> transforms;
+	//std::vector<std::unique_ptr<WavefrontOBJMesh> > mapMeshs;
+	//std::vector<SimpleTransform> transforms;
 	for (auto it : m_file[u8"objects"])
 	{
 		if (it[u8"type"] == u8"OBJ_MESH")
 		{
 			std::wstring path{ ConvertUTF8ToWide(it[u8"path"]) };
-			auto meshObj = resourceMgr->GetOBJMesh(base_dir + path);
+
+			auto meshObj{ std::make_shared<Game::Object>() };
+			meshObj->AddComponent<Game::TransformComponent>();
+			auto transform{ meshObj->GetComponent<Game::TransformComponent>() };
+			auto mesh{ resourceMgr->GetOBJMesh(base_dir + path) };
 			XMFLOAT3 pos{
 				it[u8"transform"][u8"position"][u8"x"],
 				it[u8"transform"][u8"position"][u8"y"],
@@ -84,28 +97,26 @@ void TestScene::Loaded()
 				it[u8"transform"][u8"rotation"][u8"y"],
 				it[u8"transform"][u8"rotation"][u8"z"]
 			};
-			XMFLOAT4X4 transformMat{};
-			XMStoreFloat4x4(
-				&transformMat,
-				XMMatrixScaling				(scale.x, scale.y, scale.z) *
-				XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *
-				XMMatrixTranslation			(pos.x, pos.y, pos.z)
-			);
+			transform->SetPosition(pos);
+			transform->SetRotation(rotation);
+			transform->SetScale(scale.x);
 
-			meshObj->SetTransform(transformMat);
 			std::string usage{ it[u8"usage"] };
 			if (usage == u8"TERRAIN")
 			{
-				SimpleTransform st{};
-				st.scale = scale;
-				st.rotation = rotation;
-				st.position = pos;
-				transforms.emplace_back(st);
-				m_mapMeshs.emplace_back(std::move(meshObj));
+				meshObj->AddComponent<COMTerrainRender>(renderer_, std::shared_ptr< WavefrontOBJMesh>{ static_cast<WavefrontOBJMesh*>(mesh->Clone()) });
+				m_objects[&LAYER_TERRAIN].push_back(std::move(meshObj));
+				//SimpleTransform st{};
+				//st.scale = scale;
+				//st.rotation = rotation;
+				//st.position = pos;
+				//transforms.emplace_back(st);
+				//mapMeshs.emplace_back(std::move(mesh));
 			}
 			else
 			{
-				m_staticMapMeshs.emplace_back(std::move(meshObj));
+				//TODO:
+				//m_staticMapMeshs.emplace_back(std::move(meshObj));
 			}
 		}
 		else if (it[u8"type"] == u8"TARGET")
@@ -120,14 +131,14 @@ void TestScene::Loaded()
 		}
 	}
 	auto physicsManager{ Client::PhysicsManager::Instance() };
-	physicsManager->SetMap(m_mapMeshs, transforms);
+	//physicsManager->SetMap(mapMeshs, transforms);
 	physicsManager->SetCharacterColliderCapsule(L"PLAYER_CAPSULE", 0.2f, 8.f);
 
 	auto position{ targets[L"PLAYER_SPAWN_POSITION"] };
 
-	m_pPlayerObject = SpawnPlayer(position);
+	m_pPlayerObject = SpawnPlayer(renderer_, position);
 	m_pPlayerObject->GetComponent<Game::TransformComponent>()->SetPosition(position);
-	m_pPlayerObject->GetComponent<Game::TransformComponent>()->SetScale(XMFLOAT3{ 0.1f, 0.1f,0.1f });
+	m_pPlayerObject->GetComponent<Game::TransformComponent>()->SetScale(0.1f);
 	m_objects[&LAYER_PLAYER].push_back(m_pPlayerObject);
 
 	m_pCameraObject.reset(new Game::Object{});
@@ -137,29 +148,16 @@ void TestScene::Loaded()
 
 	XMFLOAT4X4 projMatrix;
 	renderObj->GenerateProjPerspective(30.f, static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT), 0.1f, 1000.f, &projMatrix);
-	m_pRenderer->SetProjMatrix(projMatrix);
-	m_pRenderer->SetNearFar(0.f, 500.f);
-
+	renderer_->SetProjMatrix(projMatrix);
+	renderer_->SetNearFar(0.f, 500.f);
+	AddObject(LAYER_ETC, SpawnUI(renderer_, m_pPlayerObject));
 	{
 		auto resourceMgr{ ResourceManager::Instance() };
 
 		for (auto i = 0; i < 1; ++i)
 		{
-			f32x3 ragnarosPosition{ -1187.73f,  15.1408f, 575.176f };
-			std::shared_ptr<Game::Object> ragnaros{ new Game::Object{} };
-			ragnaros->AddComponent<Game::TransformComponent>();
-			ragnaros->AddComponent<COMRenderObjectContainer>();
-			ragnaros->AddComponent<COMRagnarosAI>();
-			ragnaros->AddComponent<COMCollider>();
-			ragnaros->GetComponent<Game::TransformComponent>()->SetPosition(ragnarosPosition);
-			ragnaros->GetComponent<Game::TransformComponent>()->SetScale(XMFLOAT3{ 0.01f, 0.01f,0.01f });
-			
-			//pPlayerObj->AddComponent<COMHeightMap>(std::move(heightmap));
-			auto renderObj{ resourceMgr->GetSkinnedMesh(L"ragnaros") };
-			auto hammer{ resourceMgr->GetOBJMesh(L"sulfuras") };
-			renderObj->SetAnimationSet(i);
-			ragnaros->GetComponent<COMRenderObjectContainer>()->Insert(CHARACTER_MESH, std::move(renderObj));
-			ragnaros->GetComponent<COMRenderObjectContainer>()->Insert(L"ARM", std::move(hammer));
+			f32x3 ragnarosPosition{ -1187.73f,  16.1408f, 575.176f };
+			auto ragnaros{ SpawnRagnaros(renderer_ , ragnarosPosition) };
 
 			m_objects[&LAYER_MONSTER].push_back(ragnaros);
 		}
@@ -181,33 +179,11 @@ auto TestScene::Update(f32 timeDelta) -> void
 	light.Ambient = D3DCOLORVALUE{ 0.1f, 0.1f, 0.1f, 0.1f };
 	light.Diffuse = D3DCOLORVALUE{ 1.0f, 1.0f, 1.0f, 1.0f };
 	XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&light.Direction), XMVector3Normalize(XMVectorSet(1.f, -2.f, 0.f, 0.f)));
-	m_pRenderer->AddLight(L"global_light", light);
+	renderer_->AddLight(light);
 
-	m_pRenderer->SetViewMatrix(m_pCameraObject->GetComponent<CameraComponent>()->GetViewMatrix());
+	renderer_->SetViewMatrix(m_pCameraObject->GetComponent<CameraComponent>()->GetViewMatrix());
+	renderer_->Render();
 
-	m_skybox->PrepareRender(m_pRenderer.get());
-	for (auto& mapMash : m_mapMeshs)
-	{
-		mapMash->PrepareRender(m_pRenderer.get());
-	}
-	for (auto& staticMesh : m_staticMapMeshs)
-	{
-		staticMesh->PrepareRender(m_pRenderer.get());
-	}
-	for (auto& pair : m_objects)
-	{
-		auto const& list{ pair.second };
-		for (auto const& obj : list)
-		{
-			auto comRenderObjContainer{ obj->GetComponent<COMRenderObjectContainer>() };
-			for (auto mesh : *comRenderObjContainer)
-			{
-				mesh.second->PrepareRender(m_pRenderer.get());
-			}
-		}
-	}
-	
-	m_pRenderer->Render(renderModule.get());
 	COMPtr<IDirect3DDevice9> pDevice;
 	renderModule->GetDevice(&pDevice);
 	pDevice->Present(nullptr, nullptr, nullptr, nullptr);
@@ -239,7 +215,7 @@ auto TestLoadingScene::Update(f32 timeDelta) -> void
 	{
 		m_msg = *m_threadMsg;
 		LOAD_STATE currentState{ *m_threadState };
-
+		auto renderModule{ App::Instance()->GetRenderModule() };
 		switch (currentState)
 		{
 		case LOAD_STATE::COMPLETE:
@@ -352,6 +328,60 @@ auto __cdecl Kumazuma::Client::TestLoadingScene::LoadProcess(
 		{
 			it.second->Wait();
 		}
+
+		std::vector<std::unique_ptr<WavefrontOBJMesh> > mapMeshs;
+		std::vector<SimpleTransform> transforms;
+		for (auto it : file[u8"objects"])
+		{
+			if (it[u8"type"] == u8"OBJ_MESH")
+			{
+				std::wstring path{ ConvertUTF8ToWide(it[u8"path"]) };
+
+				auto meshObj{ std::make_shared<Game::Object>() };
+				meshObj->AddComponent<Game::TransformComponent>();
+				auto transform{ meshObj->GetComponent<Game::TransformComponent>() };
+				auto mesh{ resourceMgr->GetOBJMesh(base_dir + path) };
+				XMFLOAT3 pos{
+					it[u8"transform"][u8"position"][u8"x"],
+					it[u8"transform"][u8"position"][u8"y"],
+					it[u8"transform"][u8"position"][u8"z"]
+				};
+				XMFLOAT3 scale{
+					it[u8"transform"][u8"scale"][u8"x"],
+					it[u8"transform"][u8"scale"][u8"y"],
+					it[u8"transform"][u8"scale"][u8"z"]
+				};
+				XMFLOAT3 rotation{
+					it[u8"transform"][u8"rotation"][u8"x"],
+					it[u8"transform"][u8"rotation"][u8"y"],
+					it[u8"transform"][u8"rotation"][u8"z"]
+				};
+				transform->SetPosition(pos);
+				transform->SetRotation(rotation);
+				transform->SetScale(scale.x);
+
+				std::string usage{ it[u8"usage"] };
+				if (usage == u8"TERRAIN")
+				{
+					//meshObj->AddComponent<COMTerrainRender>(renderer_, std::shared_ptr< WavefrontOBJMesh>{ static_cast<WavefrontOBJMesh*>(mesh->Clone()) });
+					//m_objects[&LAYER_TERRAIN].push_back(std::move(meshObj));
+					SimpleTransform st{};
+					st.scale = scale.x;
+					st.rotation = rotation;
+					st.position = pos;
+					transforms.emplace_back(st);
+					mapMeshs.emplace_back(std::move(mesh));
+				}
+				else
+				{
+					//TODO:
+					//m_staticMapMeshs.emplace_back(std::move(meshObj));
+				}
+			}
+		}
+		auto physicsManager{ Client::PhysicsManager::Instance() };
+		physicsManager->SetMap(mapMeshs, transforms);
+
 		testScene->m_file = file;
 		*threadState = LOAD_STATE::COMPLETE;
 	}

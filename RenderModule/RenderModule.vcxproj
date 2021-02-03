@@ -82,11 +82,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\tinyobjloader\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)include;..\tinyobjloader\include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)lib/$(PlatformTarget);..\tinyobjloader\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\tinyobjloader\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)include;..\tinyobjloader\include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)lib/$(PlatformTarget);..\tinyobjloader\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -179,6 +179,7 @@
     <ClInclude Include="..\common\UnicodeHelper.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Common.h" />
+    <ClInclude Include="DefaultRenderTarget.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GraphicsObject.hpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="RenderObject.h" />
+    <ClInclude Include="RenderTarget.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Resource.hpp" />
     <ClInclude Include="SimpleColliderBoxObject.h" />
@@ -211,6 +213,7 @@
     <ClInclude Include="XMeshHierarchyLoader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DefaultRenderTarget.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="InGameRenderer.cpp" />
@@ -229,6 +232,7 @@
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="RenderObject.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="SimpleColliderBoxObject.cpp" />
     <ClCompile Include="SimpleColliderSphareObject.cpp" />
     <ClCompile Include="SkinnedXMeshObject.cpp" />

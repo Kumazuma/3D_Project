@@ -68,29 +68,29 @@ namespace Kumazuma::Client
         out->x = angleX;
     }
 
-    auto RagnarosAIState::SetARMColliderTransform(DirectX::XMFLOAT4X4 const& transform) -> void
-    {
-        auto const& preferences{ Preferences::Current() };
-        auto armMesh{ this->armMesh_.lock() };
-        if (armMesh == nullptr)
-        {
-            auto renderObjectContainter{ object_->GetComponent<COMRenderObjectContainer>() };
-            armMesh = renderObjectContainter->Get(L"ARM_COLLIDER");
-            this->armMesh_ = armMesh;
-            if (armMesh == nullptr)
-            {
-                return;
-            }
-        }
-        if (preferences.showCollisionBox)
-        {
-            armMesh->SetVisible(true);
-            armMesh->SetTransform(transform);
-        }
-        else
-        {
-            armMesh->SetVisible(false);
-        }
-        
-    }
+    //auto RagnarosAIState::SetARMColliderTransform(DirectX::XMFLOAT4X4 const& transform) -> void
+    //{
+    //    auto const& preferences{ Preferences::Current() };
+    //    auto armMesh{ this->armMesh_.lock() };
+    //    if (armMesh == nullptr)
+    //    {
+    //        auto renderObjectContainter{ object_->GetComponent<COMRenderObjectContainer>() };
+    //        armMesh = renderObjectContainter->Get(L"ARM_COLLIDER");
+    //        this->armMesh_ = armMesh;
+    //        if (armMesh == nullptr)
+    //        {
+    //            return;
+    //        }
+    //    }
+    //    if (preferences.showCollisionBox)
+    //    {
+    //        armMesh->SetVisible(true);
+    //        //armMesh->SetTransform(transform);
+    //        //TODO:
+    //    }
+    //    else
+    //    {
+    //        armMesh->SetVisible(false);
+    //    }
+    //}
 }

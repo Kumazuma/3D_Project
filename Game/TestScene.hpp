@@ -15,6 +15,10 @@ class RenderObject;
 class InGameRenderer;
 namespace Kumazuma
 {
+	namespace Graphics
+	{
+		class GameRenderer;
+	}
 	namespace Client
 	{
 		class HeightMap;
@@ -38,6 +42,8 @@ namespace Kumazuma
 				std::shared_ptr<std::wstring> errMsg,
 				std::shared_ptr<bool> die)->void;
 		private:
+			COMPtr<ID3DXSprite> m_dxSprite;
+			COMPtr<ID3DXFont>	m_dxFont;
 			std::shared_ptr<bool> m_die;
 			std::shared_ptr<std::mutex> m_pMutex;
 			std::shared_ptr<std::atomic<LOAD_STATE> > m_threadState;
@@ -55,14 +61,13 @@ namespace Kumazuma
 			auto Update(f32 timeDelta)->void;
 		private:
 			nlohmann::json m_file;
-			std::unique_ptr<InGameRenderer> m_pRenderer;
+			std::shared_ptr<Graphics::GameRenderer> renderer_;
 			std::unique_ptr<RenderObject> m_skybox;
-			std::vector<std::unique_ptr<WavefrontOBJMesh > > m_mapMeshs;
-			std::vector<std::unique_ptr<WavefrontOBJMesh> > m_staticMapMeshs;
 
 			std::shared_ptr<Game::Object> m_pCameraObject;
 			std::shared_ptr<Game::Object> m_pPlayerObject;
 			std::shared_ptr<HeightMap> m_heightMap;
+
 		};
 	}
 }

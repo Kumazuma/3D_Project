@@ -112,20 +112,20 @@ auto StaticXMeshObject::Create(RenderModule* pRenderModule, std::wstring const& 
     return hr;
 }
 
-auto StaticXMeshObject::PrepareRender(IRenderer* pRenderer) -> void
-{ 
-    for (auto it : m_entities)
-    {
-        if (it->IsEnableAlpha())
-        {
-            pRenderer->AddEntity(RenderModule::Kind::ALPHA, it);
-        }
-        else
-        {
-            pRenderer->AddEntity(RenderModule::Kind::NONALPHA, it);
-        }
-    }
-}
+//auto StaticXMeshObject::PrepareRender(IRenderer* pRenderer) -> void
+//{ 
+//    for (auto it : m_entities)
+//    {
+//        if (it->IsEnableAlpha())
+//        {
+//            pRenderer->AddEntity(RenderModule::Kind::ALPHA, it);
+//        }
+//        else
+//        {
+//            pRenderer->AddEntity(RenderModule::Kind::NONALPHA, it);
+//        }
+//    }
+//}
 
 auto StaticXMeshObject::Clone() const -> RenderObject*
 {
@@ -134,6 +134,10 @@ auto StaticXMeshObject::Clone() const -> RenderObject*
 auto StaticXMeshObject::SetEnableSubsetAlpha(u32 idx, bool enable) -> void
 {
     m_entities[idx]->EnableAlpha(enable);
+}
+auto StaticXMeshObject::Render(IRendererBase* renderer, ID3DXEffect* effect) -> void
+{
+    //TODO:?
 }
 auto StaticXMeshObject::GetMaterialCount() const -> u32
 {
@@ -149,32 +153,32 @@ StaticXMeshObjectSubset::StaticXMeshObjectSubset(StaticXMeshObject* mesh, u32 id
 
 auto StaticXMeshObjectSubset::Render(RenderModule* pRenderModule, IRenderer* pRenderer) -> void
 {
-    COMPtr<IDirect3DTexture9> pTexture;
-    COMPtr<IDirect3DDevice9> pDevice;
-    COMPtr<ID3DXEffect> pEffect;
-    pRenderModule->GetDevice(&pDevice);
-    pRenderer->GetEffect(&pEffect);
-    
-    pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_pMeshObject->m_transform));
-    pTexture = m_pMeshObject->m_textures[m_subsetIndex];
-    if (pTexture == nullptr)
-    {
-        pRenderModule->GetDefaultTexture(&pTexture);
-    }
-    auto& rMaterial{ m_pMeshObject->m_pMaterials[m_subsetIndex].MatD3D };
-    auto specularColor{ rMaterial.Specular };
-    D3DXVECTOR4 specularVec{ specularColor.r,specularColor.g, specularColor.b, rMaterial.Power };
+    //COMPtr<IDirect3DTexture9> pTexture;
+    //COMPtr<IDirect3DDevice9> pDevice;
+    //COMPtr<ID3DXEffect> pEffect;
+    //pRenderModule->GetDevice(&pDevice);
+    //pRenderer->GetEffect(&pEffect);
+    //
+    //pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_pMeshObject->m_transform));
+    //pTexture = m_pMeshObject->m_textures[m_subsetIndex];
+    //if (pTexture == nullptr)
+    //{
+    //    pRenderModule->GetDefaultTexture(&pTexture);
+    //}
+    //auto& rMaterial{ m_pMeshObject->m_pMaterials[m_subsetIndex].MatD3D };
+    //auto specularColor{ rMaterial.Specular };
+    //D3DXVECTOR4 specularVec{ specularColor.r,specularColor.g, specularColor.b, rMaterial.Power };
 
-    XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_pMeshObject->m_transform) };
-    mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-    mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
-    pEffect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
-    pEffect->SetVector("g_vSpecular", &specularVec);
-    pEffect->SetMatrix("g_mWorld", &reinterpret_cast<D3DXMATRIX&>(m_pMeshObject->m_transform));
-    pEffect->SetTexture("g_diffuseTexture", pTexture.Get());
-    
-    pEffect->CommitChanges();
-    m_pMeshObject->m_pMesh->DrawSubset(m_subsetIndex);
+    //XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_pMeshObject->m_transform) };
+    //mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+    //mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
+    //pEffect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
+    //pEffect->SetVector("g_vSpecular", &specularVec);
+    //pEffect->SetMatrix("g_mWorld", &reinterpret_cast<D3DXMATRIX&>(m_pMeshObject->m_transform));
+    //pEffect->SetTexture("g_diffuseTexture", pTexture.Get());
+    //
+    //pEffect->CommitChanges();
+    //m_pMeshObject->m_pMesh->DrawSubset(m_subsetIndex);
 }
 
 auto StaticXMeshObjectSubset::EnableAlpha(bool enabled) -> void

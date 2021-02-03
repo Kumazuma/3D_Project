@@ -22,14 +22,14 @@ class DLL_CLASS TerrainObject : public RenderObject
 public:
 	static auto Create(RenderModule* pRenderModule, u32 width, u32 height, f32 interval, f32 terrainMaxHeight, u8 const* pArray, TerrainObject** pObj)->HRESULT;
 	
-	auto PrepareRender(IRenderer* pRenderer)->void override;
+	//auto PrepareRender(IRenderer* pRenderer)->void override;
 	auto Clone()const->RenderObject*;
 	auto SetDiffuseTexture(IDirect3DTexture9* pTexture)->void;
 	auto SetInterval(f32 value)->void;
 	auto GetInterval()const->f32;
 	auto SetMaxHeight(f32 value)->void;
 	auto GetMaxHeight()const->f32;
-
+	auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void override;
 protected:
 	auto ResetTerrain(f32 newMaxHeight, f32 newInterval)->void;
 	auto GenerateSubMeshBoundingBox()->void;

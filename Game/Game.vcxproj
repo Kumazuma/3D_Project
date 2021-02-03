@@ -81,13 +81,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\physx\include</IncludePath>
-    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\physx\win.x86_64.vc142.md\debug;..\bullet\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\physx\include;..\GameRenderer\include;..\fmod\inc</IncludePath>
+    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\physx\win.x86_64.vc142.md\debug;..\bullet\lib\x64;$(LibraryPath);..\fmod\lib\x64</LibraryPath>
     <ReferencePath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\physx\include</IncludePath>
-    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\bullet\lib\x64;G:\projects\3D_Project\physx\win.x86_64.vc142.md\checked;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)/include;..\KumaWin\include;..\GameEngine\include;..\Utility;..\tbb\include;..\physx\include;..\GameRenderer\include;..\fmod\inc</IncludePath>
+    <LibraryPath>..\$(PlatformTarget)\$(Configuration);$(DXSDK_DIR)lib/$(PlatformTarget);..\tbb\lib\x64;..\bullet\lib\x64;..\physx\win.x86_64.vc142.md\checked;$(LibraryPath);..\fmod\lib\x64</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
@@ -179,6 +179,7 @@
     <ClInclude Include="app.h" />
     <ClInclude Include="BoundingSphere.hpp" />
     <ClInclude Include="BoxColliderAttribute.hpp" />
+    <ClInclude Include="BuffEvent.hpp" />
     <ClInclude Include="CameraComponent.hpp" />
     <ClInclude Include="CameraViewingState.hpp" />
     <ClInclude Include="CharacterController.hpp" />
@@ -188,15 +189,29 @@
     <ClInclude Include="ColliderManager.hpp" />
     <ClInclude Include="COMCharacterStateInfo.hpp" />
     <ClInclude Include="COMCollider.hpp" />
+    <ClInclude Include="COMColliderRender.hpp" />
+    <ClInclude Include="COMFinale.hpp" />
     <ClInclude Include="COMHeightmap.hpp" />
+    <ClInclude Include="COMMainUIRender.hpp" />
+    <ClInclude Include="COMPickingSphere.hpp" />
     <ClInclude Include="COMPlayerInput.hpp" />
+    <ClInclude Include="COMPlayerRender.hpp" />
+    <ClInclude Include="COMPlayerSkill.hpp" />
+    <ClInclude Include="COMRagnarosDead.hpp" />
+    <ClInclude Include="COMRenderer.hpp" />
     <ClInclude Include="COMRenderObjectContainer.hpp" />
+    <ClInclude Include="COMSkills.hpp" />
+    <ClInclude Include="COMWeaponRender.hpp" />
     <ClInclude Include="constvar.hpp" />
     <ClInclude Include="Damage.hpp" />
     <ClInclude Include="DamageEvent.hpp" />
     <ClInclude Include="DCC.hpp" />
+    <ClInclude Include="enum.hpp" />
     <ClInclude Include="Env.hpp" />
     <ClInclude Include="EventTag.hpp" />
+    <ClInclude Include="Finale.hpp" />
+    <ClInclude Include="FlameEffect.hpp" />
+    <ClInclude Include="FlameEffectShare.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="FreeViewingState.hpp" />
     <ClInclude Include="Game.h" />
@@ -209,7 +224,10 @@
     <ClInclude Include="LayerTags.hpp" />
     <ClInclude Include="LookForwardState.hpp" />
     <ClInclude Include="macro.hpp" />
+    <ClInclude Include="MainUI.hpp" />
     <ClInclude Include="ManaPoints.hpp" />
+    <ClInclude Include="COMTerrainRender.hpp" />
+    <ClInclude Include="NormalAttackSkill.hpp" />
     <ClInclude Include="Objects.hpp" />
     <ClInclude Include="ObjectTag.hpp" />
     <ClInclude Include="pch.h" />
@@ -217,6 +235,7 @@
     <ClInclude Include="PlayerBehavior.hpp" />
     <ClInclude Include="PlayerJumpBehavior.hpp" />
     <ClInclude Include="PlayerNormalBehavior.hpp" />
+    <ClInclude Include="PlayerSkillBehavior.hpp" />
     <ClInclude Include="Preferences.hpp" />
     <ClInclude Include="pxJump.hpp" />
     <ClInclude Include="pxPhysicsCharacterControllerInner.hpp" />
@@ -234,6 +253,10 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.hpp" />
     <ClInclude Include="SimpleTransform.hpp" />
+    <ClInclude Include="Skill.hpp" />
+    <ClInclude Include="SkillManager.hpp" />
+    <ClInclude Include="SkillMeta.hpp" />
+    <ClInclude Include="SoundManager_FMOD.hpp" />
     <ClInclude Include="SphareColliderAttribute.hpp" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestScene.hpp" />
@@ -244,6 +267,7 @@
     <ClCompile Include="app.cpp" />
     <ClCompile Include="BoundingSphere.cpp" />
     <ClCompile Include="BoxColliderAttribute.cpp" />
+    <ClCompile Include="BuffEvent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CameraViewingState.cpp" />
     <ClCompile Include="CharacterController.cpp" />
@@ -253,15 +277,29 @@
     <ClCompile Include="ColliderManager.cpp" />
     <ClCompile Include="COMCharacterStateInfo.cpp" />
     <ClCompile Include="COMCollider.cpp" />
+    <ClCompile Include="COMColliderRender.cpp" />
+    <ClCompile Include="COMFinale.cpp" />
     <ClCompile Include="COMHeightmap.cpp" />
+    <ClCompile Include="COMMainUIRender.cpp" />
+    <ClCompile Include="COMPickingSphere.cpp" />
     <ClCompile Include="COMPlayerInput.cpp" />
+    <ClCompile Include="COMPlayerRender.cpp" />
+    <ClCompile Include="COMPlayerSkill.cpp" />
     <ClCompile Include="COMRagnarosAI.cpp" />
+    <ClCompile Include="COMRagnarosDead.cpp" />
+    <ClCompile Include="COMRenderer.cpp" />
     <ClCompile Include="COMRenderObjectContainer.cpp" />
+    <ClCompile Include="COMSkills.cpp" />
+    <ClCompile Include="COMTerrainRender.cpp" />
+    <ClCompile Include="COMWeaponRender.cpp" />
     <ClCompile Include="Damage.cpp" />
     <ClCompile Include="DamageEvent.cpp" />
     <ClCompile Include="DCC.cpp" />
     <ClCompile Include="Env.cpp" />
     <ClCompile Include="EventTag.cpp" />
+    <ClCompile Include="Finale.cpp" />
+    <ClCompile Include="FlameEffect.cpp" />
+    <ClCompile Include="FlameEffectShare.cpp" />
     <ClCompile Include="FreeViewingState.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="HeightMap.cpp" />
@@ -271,13 +309,16 @@
     <ClCompile Include="kzEventTag.cpp" />
     <ClCompile Include="LayerTags.cpp" />
     <ClCompile Include="LookForwardState.cpp" />
+    <ClCompile Include="MainUI.cpp" />
     <ClCompile Include="ManaPoints.cpp" />
+    <ClCompile Include="NormalAttackSkill.cpp" />
     <ClCompile Include="ObjectTag.cpp" />
     <ClCompile Include="PhysicsCharacterController.cpp" />
     <ClCompile Include="PhysXPhysicsManager.cpp" />
     <ClCompile Include="PlayerBehavior.cpp" />
     <ClCompile Include="PlayerJumpBehavior.cpp" />
     <ClCompile Include="PlayerNormalBehavior.cpp" />
+    <ClCompile Include="PlayerSkillBehavior.cpp" />
     <ClCompile Include="Preferences.cpp" />
     <ClCompile Include="pxJump.cpp" />
     <ClCompile Include="pxPhysicsCharacterControllerInner.cpp" />
@@ -291,6 +332,9 @@
     <ClCompile Include="RagnarosPhase1Stance.cpp" />
     <ClCompile Include="RagnarosWaitPlayerState.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="SkillManager.cpp" />
+    <ClCompile Include="SkillMeta.cpp" />
+    <ClCompile Include="SoundManager_FMOD.cpp" />
     <ClCompile Include="SphareColliderAttribute.cpp" />
     <ClCompile Include="TestScene.cpp" />
   </ItemGroup>

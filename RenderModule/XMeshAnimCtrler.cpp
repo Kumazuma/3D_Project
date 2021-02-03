@@ -74,20 +74,20 @@ auto SkinnedXMeshObject::AnimationController::PlayAnimationSet(u32 _idx) -> void
     m_pAnimCtrl->UnkeyAllTrackEvents(newTrackIdx);
     m_pAnimCtrl->UnkeyAllTrackEvents(currentIdx);
     // 현재 설정된 트랙을 재생 또는 종료 시키기 위한 함수(3인자 : 언제부터 현재 트랙을 해제할 것인가)
-    m_pAnimCtrl->KeyTrackEnable(currentIdx, false, m_accTime + 0.25);
+    m_pAnimCtrl->KeyTrackEnable(currentIdx, false, m_accTime + 0.1);
     // 인자값으로 들어오는 트랙에 세팅된 애니메이션 셋을 어떤 속도로 움직일 것인지 설정하는 함수(속도의 상수 값은 1)
-    m_pAnimCtrl->KeyTrackSpeed(currentIdx, 1.f, m_accTime, 0.25, D3DXTRANSITION_LINEAR);
+    m_pAnimCtrl->KeyTrackSpeed(currentIdx, 1.f, m_accTime, 0.1, D3DXTRANSITION_LINEAR);
     // 인자값으로 들어오는 트랙의 가중치를 설정하는 함수
-    m_pAnimCtrl->KeyTrackWeight(currentIdx, 0.1f, m_accTime, 0.25, D3DXTRANSITION_LINEAR);
+    m_pAnimCtrl->KeyTrackWeight(currentIdx, 0.1f, m_accTime, 0.1, D3DXTRANSITION_LINEAR);
     // New 트랙의 활성화를 지시하는 함수
     m_pAnimCtrl->SetTrackEnable(newTrackIdx, TRUE);
-    m_pAnimCtrl->KeyTrackSpeed(newTrackIdx, 1.f, m_accTime, 0.25, D3DXTRANSITION_LINEAR);
-    m_pAnimCtrl->KeyTrackWeight(newTrackIdx, 0.9f, m_accTime, 0.25, D3DXTRANSITION_LINEAR);
-
+    m_pAnimCtrl->KeyTrackSpeed(newTrackIdx, 1.f, m_accTime, 0.1, D3DXTRANSITION_LINEAR);
+    m_pAnimCtrl->KeyTrackWeight(newTrackIdx, 0.9f, m_accTime, 0.1, D3DXTRANSITION_LINEAR);
+    
     m_pAnimCtrl->ResetTime(); // AdvanceTime 호출 시 내부적으로 누적되던 시간을 초기화하는 함수
     m_accTime = 0.f;
     m_oldAnimIdx = idx;
-    m_currentTrackIdx = static_cast<i32>(currentIdx);
+    m_currentTrackIdx = static_cast<i32>(newTrackIdx);
     m_period = static_cast<f32>(pAnimSet->GetPeriod());
 }
 
@@ -97,7 +97,6 @@ auto SkinnedXMeshObject::AnimationController::AdvanceTime(f32 timeDelta) -> void
     //하나의 X파일을 여러 오브젝트가 공유하므로 이떄 AdvanceTime을 한다고 해서 의미가 있을 것같지
     //않다. 차라리 함수를 하나 더 만들어서 각 시간때마다의 뼈대의 Transform을 적용시키는 함수를 만드는 것이 나을 것같다.
     // AdvanceTime 호출 시 내부적으로 누적되는 시간 값이 있음
-    m_accTime += timeDelta;
     m_lastTimeDelta += timeDelta;
     //m_accTime = fmodf(m_accTime, m_period);
 }
@@ -110,6 +109,7 @@ auto SkinnedXMeshObject::AnimationController::IsAnimationSetEnd() -> bool
 auto SkinnedXMeshObject::AnimationController::AdjustAnimationToFrame() -> void
 {
     m_pAnimCtrl->AdvanceTime(static_cast<f64>(m_lastTimeDelta), nullptr);
+    m_accTime += m_lastTimeDelta;
     m_lastTimeDelta = 0.f;
 }
 
@@ -125,5 +125,5 @@ auto SkinnedXMeshObject::AnimationController::GetAnimationSetLength() const -> f
 
 auto SkinnedXMeshObject::AnimationController::GetSeek() const -> f32
 {
-    return m_accTime;
+    return static_cast<f32>(m_pAnimCtrl->GetTime());
 }

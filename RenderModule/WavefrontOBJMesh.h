@@ -9,9 +9,7 @@
 #include"COMPtr.hpp"
 class WavefrontOBJSubMesh;
 class WavefrontOBJMeshEntity;
-
-
-
+class OBJSubMesh ;
 class DLL_CLASS WavefrontOBJMesh: public RenderObject
 {
 	static constexpr DWORD FVF = FVF_TEX;
@@ -29,7 +27,8 @@ protected:
 	WavefrontOBJMesh(WavefrontOBJMesh&&)noexcept;
 public:
 	static auto Create(RenderModule* pRenderModule, std::wstring const& path, WavefrontOBJMesh** pOut)->HRESULT;
-	auto PrepareRender(IRenderer* pRenderer)->void;;
+	//auto PrepareRender(IRenderer* pRenderer)->void;
+	auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void;
 	auto Clone()const->RenderObject*;
 	auto GetVertexCount()const->u32;
 	auto GetCenter()const->DirectX::XMFLOAT3A const&;
@@ -37,6 +36,7 @@ public:
 	auto RayPicking(DirectX::XMFLOAT3 const& rayAt, DirectX::XMFLOAT3 const& rayDirection, f32* pOut)->bool override;
 	auto GetVertices()const->std::shared_ptr<const std::vector<DirectX::XMFLOAT3A> >;
 	auto GetSubsets()const->std::unordered_map<std::wstring, std::shared_ptr<WavefrontOBJSubMesh> > const&;
+
 private:
 	auto ParseOBJFile(RenderModule* pRenderModule, std::wstring const& path, std::wstring* pOutMeterialFilePath)->void;
 private:
