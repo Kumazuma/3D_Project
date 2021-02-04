@@ -36,6 +36,7 @@ protected:
 	RenderObject();
 public:
 	virtual ~RenderObject() = default;
+
 	//virtual auto PrepareRender(IRenderer* pDevice)->void = 0;
 	virtual auto Clone()const->RenderObject* = 0;
 	virtual auto CanRayPicking()const->bool;

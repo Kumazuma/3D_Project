@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MapToolRender;
+using MaptoolRenderer;
 namespace MapTool.Doc
 {
     class ResourceManager
     {
         static ResourceManager s_instance = new ResourceManager();
-        Dictionary<string, StaticXMeshObj> m_staticMeshs = new Dictionary<string, StaticXMeshObj>();
-        Dictionary<string, SkinnedXMeshObj> m_skinnedMeshs = new Dictionary<string, SkinnedXMeshObj>();
-        Dictionary<string, WowMapMesh> m_objMeshs = new Dictionary<string, WowMapMesh>();
-        Dictionary<string, Task<WowMapMesh> > m_loadingMeshsPath = new Dictionary<string, Task<WowMapMesh>>();
-        TargetObject targetObject;
+        //TODO:
+        //Dictionary<string, StaticXMeshObj> m_staticMeshs = new Dictionary<string, StaticXMeshObj>();
+        //Dictionary<string, SkinnedXMeshObj> m_skinnedMeshs = new Dictionary<string, SkinnedXMeshObj>();
+        //Dictionary<string, WowMapMesh> m_objMeshs = new Dictionary<string, WowMapMesh>();
+        //TargetObject targetObject;
+        Dictionary<string, OBJMesh> m_objMeshs = new Dictionary<string, OBJMesh>();
+        Dictionary<string, Task<OBJMesh> > m_loadingMeshsPath = new Dictionary<string, Task<OBJMesh>>();
         public static ResourceManager Instance { get => s_instance; }
 
         public SkinnedXMeshObj GetSkinnedMesh(string path)

@@ -26,14 +26,14 @@ namespace Kumazuma::Client
     //    m_collection.erase(key);
     //}
 
-    //auto COMRenderObjectContainer::Insert(std::wstring const& key, std::shared_ptr<RenderObject> obj) -> void
+    //auto COMRenderObjectContainer::Insert(std::wstring const& key, std::shared_ptr<MeshObject> obj) -> void
     //{
     //    std::lock_guard<SpinLock> guard(m_mutex);
 
     //    m_collection[key] = std::move(obj);
     //}
 
-    //auto COMRenderObjectContainer::Get(std::wstring const& key) -> std::shared_ptr<RenderObject>
+    //auto COMRenderObjectContainer::Get(std::wstring const& key) -> std::shared_ptr<MeshObject>
     //{
     //    std::lock_guard<SpinLock> guard(m_mutex);
 

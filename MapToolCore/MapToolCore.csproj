@@ -66,6 +66,7 @@
     <Compile Include="Collider.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="IColliderObject.cs" />
+    <Compile Include="IHasTransform.cs" />
     <Compile Include="IInteractMouse.cs" />
     <Compile Include="IJSONSerializable.cs" />
     <Compile Include="Matrix.cs" />

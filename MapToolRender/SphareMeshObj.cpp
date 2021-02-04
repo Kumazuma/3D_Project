@@ -34,9 +34,9 @@ inline void CombineMatrix(
 using namespace System::ComponentModel;
 MapToolRender::SphareMesh::SphareMesh(GraphicsDevice^ device)
 {
-    SimpleSphareObject* sphareObj{};
+    SimpleSphereObject* sphareObj{};
     HRESULT hr{};
-    hr = SimpleSphareObject::Create(device->Handle, &sphareObj);
+    hr = SimpleSphereObject::Create(device->Handle, &sphareObj);
     if (FAILED(hr))
     {
         throw gcnew System::Exception("Could not create Sphare Mesh!");
@@ -113,7 +113,7 @@ auto MapToolRender::SphareMesh::Radius::get() -> float
 auto MapToolRender::SphareMesh::Radius::set(float value) -> void
 {
     m_radius = value;
-    static_cast<SimpleSphareObject*>(m_pNativeObject)->SetRadius(m_radius);
+    static_cast<SimpleSphereObject*>(m_pNativeObject)->SetRadius(m_radius);
 }
 auto MapToolRender::SphareMesh::Offset::get() -> MapToolCore::Offset
 {
@@ -123,5 +123,5 @@ auto MapToolRender::SphareMesh::Offset::get() -> MapToolCore::Offset
 auto MapToolRender::SphareMesh::Offset::set(MapToolCore::Offset value) -> void
 {
     m_offset = value;
-    static_cast<SimpleSphareObject*>(m_pNativeObject)->SetOffset(m_offset.X, m_offset.Y, m_offset.Z);
+    static_cast<SimpleSphereObject*>(m_pNativeObject)->SetOffset(m_offset.X, m_offset.Y, m_offset.Z);
 }

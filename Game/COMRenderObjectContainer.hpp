@@ -11,14 +11,14 @@ class RenderObject;
 //	class COMRenderObjectContainer: public Game::Component
 //	{
 //		using Self = COMRenderObjectContainer;
-//		using Collection = std::unordered_map<std::wstring, std::shared_ptr<RenderObject> >;
+//		using Collection = std::unordered_map<std::wstring, std::shared_ptr<MeshObject> >;
 //	public:
 //		
 //		COMRenderObjectContainer();
 //		COMRenderObjectContainer(Self const& rhs);
 //		auto Remove(std::wstring const& key)->void;
-//		auto Insert(std::wstring const& key, std::shared_ptr<RenderObject> obj)->void;
-//		auto Get(std::wstring const& key)->std::shared_ptr<RenderObject>;
+//		auto Insert(std::wstring const& key, std::shared_ptr<MeshObject> obj)->void;
+//		auto Get(std::wstring const& key)->std::shared_ptr<MeshObject>;
 //		auto Clone()const->Game::Component* override;
 //		auto begin()const->Collection::const_iterator;
 //		auto end()const->Collection::const_iterator;

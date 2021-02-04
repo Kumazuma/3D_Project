@@ -14,7 +14,8 @@ namespace MaptoolRenderer {
 		}
 
 	internal:
-		RenderObject* renderObject_;
+		::RenderObject* renderObject_;
+		array<System::String^>^ subsetNames_;
 	protected:
 	};
 }

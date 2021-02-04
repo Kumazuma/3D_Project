@@ -219,9 +219,9 @@
       <Project>{cc5ed826-3386-4240-8316-c09a6d07390b}</Project>
       <Name>MapToolCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MapToolRender\MapToolRender.vcxproj">
-      <Project>{0a8ced75-4ed9-4b0e-beb6-38fd6c6649d3}</Project>
-      <Name>MapToolRender</Name>
+    <ProjectReference Include="..\MaptoolRenderer\MaptoolRenderer.vcxproj">
+      <Project>{eedb3045-1639-4fe5-83eb-7c1b61f5538f}</Project>
+      <Name>MaptoolRenderer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

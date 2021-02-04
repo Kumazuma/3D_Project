@@ -29,6 +29,7 @@ public:
 	static auto Create(RenderModule* pRenderModule, std::wstring const& path, WavefrontOBJMesh** pOut)->HRESULT;
 	//auto PrepareRender(IRenderer* pRenderer)->void;
 	auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void;
+	auto DrawSubset(std::wstring const& id,RenderModule* renderModule, IDirect3DDevice9* device,  ID3DXEffect* effect)->void;
 	auto Clone()const->RenderObject*;
 	auto GetVertexCount()const->u32;
 	auto GetCenter()const->DirectX::XMFLOAT3A const&;

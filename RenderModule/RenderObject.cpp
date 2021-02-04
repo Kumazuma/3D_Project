@@ -26,12 +26,12 @@ auto RenderObject::RayPicking(Ray* pRay, f32* pOut) -> bool
     return RayPicking(pRay->GetRayOrigin(), pRay->GetRayDirection(), pOut);
 }
 
-//auto RenderObject::SetTransform(DirectX::XMFLOAT4X4 const& transform) -> void
+//auto MeshObject::SetTransform(DirectX::XMFLOAT4X4 const& transform) -> void
 //{
 //    m_transform = transform;
 //
 //}
-//auto RenderObject::GetTransform() const -> DirectX::XMFLOAT4X4 const&
+//auto MeshObject::GetTransform() const -> DirectX::XMFLOAT4X4 const&
 //{
 //    return m_transform;
 //}

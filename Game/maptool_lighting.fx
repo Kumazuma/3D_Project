@@ -54,7 +54,7 @@ float4 g_vLightDirectionAndPower;
 float4 g_vLightDiffuse;
 float4 g_vLightAmbient;
 float4 g_vCameraPosition;
-PS_OUT ps_directional_light(PS_IN input) 
+PS_OUT ps_directional_light(PS_IN input)
 {
 	PS_OUT output;
 	output.vSpecular = float4(0.f, 0.f, 0.f, 1.f);
@@ -69,7 +69,7 @@ PS_OUT ps_directional_light(PS_IN input)
 	//float3 vNormal = normalize(float3(fenc * g, 1.f - f / 2.f));
 	//float depth = vNormalFactor.z;
 	//float z = vNormalFactor.w;
-	
+
 	float depth = tex2D(DepthMapSampler, input.vUV).r;
 	float z = tex2D(DepthMapSampler, input.vUV).g;
 	float3 vNormal = normalize(vNormalFactor.xyz * 2.f - 1.f);

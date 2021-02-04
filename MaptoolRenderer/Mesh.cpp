@@ -8,7 +8,7 @@ MaptoolRenderer::Mesh::Mesh()
 
 MaptoolRenderer::Mesh::!Mesh()
 {
-    this->Dispose();
+    this->~Mesh();
 }
 
 MaptoolRenderer::Mesh::~Mesh()
@@ -21,5 +21,4 @@ MaptoolRenderer::Mesh::~Mesh()
 
 auto MaptoolRenderer::Mesh::Render(IRendererBase* renderer, ID3DXEffect* effect) -> void
 {
-    renderObject_->Render()
 }

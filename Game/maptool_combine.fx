@@ -28,6 +28,7 @@ VS_OUT vs_main(VS_IN input)
 texture g_shadeMap;
 texture g_albedoMap;
 texture g_specularMap;
+texture g_normalMap;
 sampler ShadeMapSampler = sampler_state
 {
 	texture = g_shadeMap;
@@ -45,6 +46,12 @@ sampler AlbedoMapSampler = sampler_state
 	texture = g_albedoMap;
 	minfilter = point;
 	magfilter = point;
+};
+sampler NormalMapSampler = sampler_state
+{
+	texture = g_normalMap;
+	minfilter = linear;
+	magfilter = linear;
 };
 float4 ps_main(PS_IN input) :COLOR0
 {

@@ -31,6 +31,15 @@
     <Filter Include="Object">
       <UniqueIdentifier>{4ec73552-11a1-4403-9d9e-1eaa4600c90a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="camera">
+      <UniqueIdentifier>{cf001a70-5423-4d2b-9f6f-41a8ab4bcb47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\OBJ">
+      <UniqueIdentifier>{0847ccfa-8140-4b24-a38e-4504dc6aa181}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\SkinnedXMesh">
+      <UniqueIdentifier>{849b48d8-a67b-4e16-9b29-d8940a63924c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MaptoolRenderer.h">
@@ -48,10 +57,37 @@
     <ClInclude Include="OBJMesh.hpp">
       <Filter>Resource\Mesh\OBJ</Filter>
     </ClInclude>
-    <ClInclude Include="OBJObject.hpp">
+    <ClInclude Include="IRenderable.hpp">
       <Filter>Object</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderable.hpp">
+    <ClInclude Include="Camera.hpp">
+      <Filter>camera</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJObject.hpp">
+      <Filter>Object\OBJ</Filter>
+    </ClInclude>
+    <ClInclude Include="XSkinnedMeshObject.hpp">
+      <Filter>Object\SkinnedXMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="COMRef.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="NativeRenderer.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJSubsetCollection.hpp">
+      <Filter>Object\OBJ</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJSubsetConverter.hpp">
+      <Filter>Object\OBJ</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedXMesh.hpp">
+      <Filter>Resource\Mesh\SkinnedMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ingame.fx" />
+    <ClInclude Include="ingame_combine.fx" />
+    <ClInclude Include="ingame_lighting.fx" />
+    <ClInclude Include="RenderObject.hpp">
       <Filter>Object</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,11 +101,35 @@
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="OBJMesh.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Resource\Mesh\OBJ</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Resource\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJObject.cpp">
+      <Filter>Object\OBJ</Filter>
+    </ClCompile>
+    <ClCompile Include="NativeRenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJSubsetCollection.cpp">
+      <Filter>Object\OBJ</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedXMesh.cpp">
+      <Filter>Resource\Mesh\SkinnedMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJSubsetConverter.cpp">
+      <Filter>Object\OBJ</Filter>
+    </ClCompile>
+    <ClCompile Include="XSkinnedMeshObject.cpp">
+      <Filter>Object\SkinnedXMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderObject.cpp">
+      <Filter>Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -81,5 +141,10 @@
     <Image Include="app.ico">
       <Filter>리소스 파일</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="shader.resx">
+      <Filter>리소스 파일</Filter>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

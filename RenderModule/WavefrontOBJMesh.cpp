@@ -329,13 +329,14 @@ auto WavefrontOBJMesh::ParseOBJFile(RenderModule* pRenderModule, std::wstring co
                 index.x = static_cast<u32>(idx.vertex_index);
                 index.y = static_cast<u32>(idx.normal_index);
                 index.z = static_cast<u32>(idx.texcoord_index);
+
                 auto findIt = itemIndexTable.find(index);
                 if (findIt == itemIndexTable.end())
                 {
                     size_t newVertexIndex{ m_pVertexPositions->size() };
                     auto& pos = positions[index.x];
-                    auto& uv = UVs[index.y];
-                    auto& normal = normals[index.z];
+                    auto& normal = normals[index.y];
+                    auto& uv = UVs[index.z];
                     VERTEX<FVF> newItem{};
                     newItem.vNormal = normal;
                     newItem.vUV = uv;
@@ -524,6 +525,53 @@ auto WavefrontOBJMesh::Render(IRendererBase* renderer, ID3DXEffect* effect) -> v
         pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, GetVertexCount(), 0, triangleCount);
         pDevice->SetVertexDeclaration(nullptr);
     }
+}
+
+auto WavefrontOBJMesh::DrawSubset(std::wstring const& id, RenderModule* renderModule, IDirect3DDevice9* device, ID3DXEffect* effect) -> void
+{
+    auto findIt{ m_subsets.find(id) };
+    if (findIt == m_subsets.end())
+    {
+        return;
+    }
+    
+    auto& subset{ findIt->second };
+    COMPtr<IDirect3DVertexBuffer9> pVertexBuffer{ m_pVertexBuffers };
+    COMPtr<IDirect3DIndexBuffer9> pIndexBuffer{ subset->GetIndexBuffer() };
+    u32 triangleCount{ subset->GetTriangleCount() };
+    
+    device->SetFVF(WavefrontOBJMesh::FVF);
+    //device->SetVertexDeclaration(m_pVertexDecl.Get());
+    //pDevice->SetTransform(D3DTS_WORLD, &reinterpret_cast<D3DMATRIX&>(m_obj->m_transform));
+    device->SetStreamSource(0, pVertexBuffer.Get(), 0, WavefrontOBJMesh::VERTEX_SIZE);
+    device->SetIndices(pIndexBuffer.Get());
+    const auto textureIt{ m_textures.find(subset->GetMaterialName()) };
+    COMPtr<IDirect3DTexture9> pTexture;
+    if (textureIt == m_textures.end())
+    {
+        renderModule->GetDefaultTexture(&pTexture);
+    }
+    else
+    {
+        pTexture = textureIt->second;
+    }
+    //XMMATRIX mNormalWorld{ XMLoadFloat4x4(&m_obj->m_transform) };
+    //mNormalWorld.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+    //mNormalWorld = XMMatrixTranspose(XMMatrixInverse(nullptr, mNormalWorld));
+    //pEffect->SetMatrix("g_mNormalWorld", reinterpret_cast<D3DXMATRIX*>(&mNormalWorld));
+    //pEffect->SetMatrix("g_mWorld", &reinterpret_cast<D3DXMATRIX&>(m_obj->m_transform));
+    if (effect != nullptr)
+    {
+        effect->SetTexture("g_diffuseTexture", pTexture.Get());
+        effect->CommitChanges();
+    }
+    else
+    {
+        device->SetTexture(0, pTexture.Get());
+    }
+
+    device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, GetVertexCount(), 0, triangleCount);
+    //device->SetVertexDeclaration(nullptr);
 }
 
 auto WavefrontOBJMesh::Clone() const -> RenderObject*

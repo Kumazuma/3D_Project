@@ -3,6 +3,7 @@ class RenderObject;
 class IRendererBase;
 struct ID3DXEffect;
 namespace MaptoolRenderer {
+	ref class MeshObject;
 	public ref class Mesh
 	{
 	protected:
@@ -12,9 +13,11 @@ namespace MaptoolRenderer {
 		~Mesh();
 		virtual auto Clone()->Mesh^ = 0;
 	internal:
-		auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void;
+		virtual auto Render(IRendererBase* renderer, ID3DXEffect* effect)->void;
 	internal:
-		RenderObject* renderObject_;
+		::RenderObject* renderObject_;
+		System::String^ filePath_;
+
 	protected:
 	};
 }

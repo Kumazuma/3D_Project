@@ -88,7 +88,7 @@ namespace MapTool.Doc
             Stream fileStream = null;
             StreamWriter streamWriter = null;
             var tokenWriter = new JTokenWriter();
-            var jRoot = new JObject(new JProperty("mesh", MeshFilePath));
+            var jRoot = new JObject(new JProperty("mesh", Utility.FormatString(MeshFilePath)));
             var jAnims = new JObject();
             //File.Delete(filePath);
             if(File.Exists(filePath))

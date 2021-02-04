@@ -13,7 +13,7 @@ namespace MapToolCore
     {
         Position position;
         Rotation rotation;
-        Scale scale = new Scale(1f, 1f, 1f);
+        float scale = 1.0f;
         public event PropertyChangedEventHandler PropertyChanged;
         public Position Position
         {
@@ -24,7 +24,7 @@ namespace MapToolCore
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Position"));
             }
         }
-        public Scale Scale
+        public float Scale
         {
             get => scale;
             set
@@ -52,7 +52,7 @@ namespace MapToolCore
         public JToken Serialize() => new JObject
         {
             {"position", position.Serialize() },
-            {"scale", scale.Serialize() },
+            {"scale", scale },
             {"rotation", rotation.Serialize() }
         };
         public static Transform Parse(JObject jObj)
@@ -60,8 +60,12 @@ namespace MapToolCore
             Transform res = new Transform();
             res.position = Position.Parse(jObj["position"] as JObject);
             res.rotation = Rotation.Parse(jObj["rotation"] as JObject);
-            res.scale = Scale.Parse(jObj["scale"] as JObject);
+            res.scale = jObj["scale"].Value<float>();
             return res;
+        }
+        public override string ToString()
+        {
+            return $"pos{{x:{position.X}, y:{position.Y}, z:{position.Z}}}, rotation{{x:{rotation.X}, y:{rotation.Y}, z:{rotation.Z}}}, scale{{{scale}}}";
         }
     }
 }

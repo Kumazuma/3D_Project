@@ -87,9 +87,10 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\common;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -109,9 +110,10 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\common;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,25 +128,41 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.hpp" />
+    <ClInclude Include="COMRef.hpp" />
     <ClInclude Include="IRenderable.hpp" />
     <ClInclude Include="MaptoolRenderer.h" />
     <ClInclude Include="Mesh.hpp" />
+    <ClInclude Include="NativeRenderer.hpp" />
     <ClInclude Include="OBJMesh.hpp" />
     <ClInclude Include="OBJObject.hpp" />
+    <ClInclude Include="OBJSubsetCollection.hpp" />
+    <ClInclude Include="OBJSubsetConverter.hpp" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RenderObject.hpp" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SkinnedXMesh.hpp" />
+    <ClInclude Include="XSkinnedMeshObject.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="MaptoolRenderer.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="NativeRenderer.cpp" />
     <ClCompile Include="OBJMesh.cpp" />
+    <ClCompile Include="OBJObject.cpp" />
+    <ClCompile Include="OBJSubsetCollection.cpp" />
+    <ClCompile Include="OBJSubsetConverter.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RenderObject.cpp" />
+    <ClCompile Include="SkinnedXMesh.cpp" />
+    <ClCompile Include="XSkinnedMeshObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />
@@ -165,6 +183,20 @@
     <ProjectReference Include="..\RenderModule\RenderModule.vcxproj">
       <Project>{8e09e8d9-324f-4dc7-be05-a0c9ed04d25e}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ingame.fx">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="ingame_combine.fx">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="ingame_lighting.fx">
+      <FileType>Document</FileType>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="shader.resx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

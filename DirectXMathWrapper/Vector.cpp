@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Vector.hpp"
 
 DirectXMathWrapper::Vector::Vector(float x, float y, float z, float w)

@@ -488,6 +488,7 @@ auto InGameRenderer::Combine(RenderModule* pRenderModule) -> void
     COMPtr<IDirect3DTexture9> pLightSpecularMapTexture;
     COMPtr<IDirect3DTexture9> pLightDiffuseMapTexture;
     COMPtr<IDirect3DTexture9> pAlbedoMapTexture;
+    COMPtr<IDirect3DTexture9> pNormalMapTexture;
     COMPtr<IDirect3DTexture9> pDepthMapTexture;
     pRenderModule->GetDefaultSwapChain(&pSwapChain);
     pRenderModule->GetDevice(&pDevice);

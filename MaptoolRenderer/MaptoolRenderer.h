@@ -2,16 +2,25 @@
 
 using namespace System;
 class RenderModule;
-class NativeMaptoolRenderer;
+struct ID3DXEffect;
+struct IDirect3DVertexBuffer9;
+struct IDirect3DIndexBuffer9;
+struct ID3DXSprite;
+namespace DirectX
+{
+	struct XMFLOAT4X4;
+}
 namespace MaptoolRenderer {
+	
+	class NativeRenderer;
 	ref class Camera;
 	interface struct IRenderable;
 	interface struct IRenderEntity;
-	enum class RenderGroupID {
+	public enum class RenderGroupID {
 		None,
 		Environment,
 		Deferred,
-		Alpha,
+		AlphaTest,
 		Effect,
 		Wireframe,
 		UI
@@ -27,18 +36,37 @@ namespace MaptoolRenderer {
 		!GraphicsDevice();
 		~GraphicsDevice();
 		static property GraphicsDevice^ Instance{auto get()->GraphicsDevice^;}
-		
 		auto Render(Control^ control, IEnumerable<IRenderable^>^ renderable, Camera^ camera)->void;
 	internal:
 		auto AddRenderObject(RenderGroupID group, IRenderEntity^ entity)->void;
+		auto GetEffect(String^ key, ID3DXEffect** effect)->void;
+	private:
+		auto ClearRenderTarget()->void;
+		auto RenderDeferred(DirectX::XMFLOAT4X4 const* viewSpacePtr, DirectX::XMFLOAT4X4 const* projSpacePtr, DirectX::XMFLOAT4X4 const* viewProj)->void;
+		auto DeferredLighting(DirectX::XMFLOAT4X4 const* viewSpacePtr, DirectX::XMFLOAT4X4 const* projSpacePtr, DirectX::XMFLOAT4X4 const* viewProj)->void;
+		auto DeferredCombine()->void;
+		auto DrawDebug()->void;
 	internal:
 		property RenderModule* RenderModuleHandle{auto get()->RenderModule*;}
-		property NativeMaptoolRenderer* RendererHandle {auto get()->NativeMaptoolRenderer*;}
+		NativeRenderer* renderer_;
 	private:
 		Dictionary<RenderGroupID, IList<IRenderEntity^>^> renderGroups_;
 	private:
 		RenderModule* renderModulePtr_;
-		NativeMaptoolRenderer* rendererPtr_;
+		IDirect3DVertexBuffer9* vertexBuffer_;
+		IDirect3DIndexBuffer9* indexBuffer_;
+		ID3DXSprite* sprite_;
+		IDictionary<String^, size_t>^ effects_;
+		ID3DXEffect* lightingEffect_;
+		ID3DXEffect* combineEffect_;
 		static GraphicsDevice^ s_instance;
 	};
+#pragma unmanaged
+	auto GenerateTransform(
+		DirectX::XMFLOAT3* position,
+		DirectX::XMFLOAT3* rotation,
+		float scale,
+		DirectX::XMFLOAT4X4* out
+	)->void;
+#pragma managed
 }
