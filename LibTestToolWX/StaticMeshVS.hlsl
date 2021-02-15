@@ -5,7 +5,6 @@ cbuffer WorldCBuffer : register(b0)
 cbuffer ObjectCBuffer : register(b1)
 {
 	float4x4 g_mWorld;
-	float4x4 g_mNormalWorld;
 }
 
 struct Input
@@ -27,7 +26,7 @@ Output main(Input input)
 	float4 vPosition = float4(input.vPosition.xyz, 1.f);
 	float4 vNormal = float4(input.vNormal.xyz, 0.f);
 	output.vPosition = mul(mul(vPosition, g_mWorld), g_mViewProj);
-	output.vNormal = mul(vNormal, g_mNormalWorld).xyz;
+	output.vNormal = mul(vNormal, g_mWorld).xyz;
 	output.vTex = input.vTex;
 	return output;
 }

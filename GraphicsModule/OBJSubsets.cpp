@@ -62,12 +62,12 @@ namespace Kumazuma
         return *mesh_;
     }
 
-    u32 OBJSubsets::GetCount()
+    u32 OBJSubsets::GetCount()const 
     {
         return static_cast<u32>( subsets_.size());
     }
 
-    Subset const& OBJSubsets::Get(u32 index)
+    Subset const& OBJSubsets::Get(u32 index)const
     {
         return subsets_[index];
     }

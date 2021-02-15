@@ -28,8 +28,8 @@ namespace Kumazuma
 	class OBJSubsets : public Subsets
 	{
 	public:
-		virtual u32				GetCount();
-		virtual Subset const&	Get(u32 index);
+		virtual u32				GetCount()  const override;
+		virtual Subset const&	Get(u32 index) const override;
 		std::vector<OBJSubset> subsets_;
 	};
 }

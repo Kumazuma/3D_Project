@@ -24,7 +24,7 @@ namespace Kumazuma
 		ComPtr<ID3D11Buffer> vertexBuffer_;
 		ComPtr<ID3D11Buffer> indexBuffer_;
 		std::vector<DirectX::XMFLOAT3A> vertexPositions;
-		std::vector<u32> indices;
+		std::vector<Triangle> triangles;
 		std::unordered_map<std::wstring, std::unique_ptr<Texture2D> > materialTextures_;
 	};
 }

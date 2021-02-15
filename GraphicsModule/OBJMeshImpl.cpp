@@ -184,24 +184,24 @@ namespace Kumazuma
         auto& materials = reader.GetMaterials();
         //버텍스 버퍼를 구축하자.
         std::vector<StaticMeshVertex> vertices;
-        std::vector<u32> indices;
         vertices.reserve(positions.size());
         size_t indexCount{ 0 };
         for (auto& shape : shapes)
         {
-            indexCount += shape.mesh.num_face_vertices.size();
+            indexCount += shape.mesh.indices.size();
         }
-        indices.reserve(indexCount);
+        triangles.reserve(indexCount/3);
         for (auto& shape : shapes)
         {
-            size_t indexBase{ indices.size() };
+            size_t indexOffset{};
+            size_t indexBase{ triangles.size() * 3};
             for (size_t faceIndex = 0; faceIndex < shape.mesh.num_face_vertices.size(); ++faceIndex)
             {
                 int fv = shape.mesh.num_face_vertices[faceIndex];
-
+                Triangle triangle;
                 for (size_t v = 0; v < fv; ++v)
                 {
-                    tinyobj::index_t idx = shape.mesh.indices[faceIndex*3 + v];
+                    tinyobj::index_t idx = shape.mesh.indices[indexOffset + v];
                     XMUINT3 index;
                     index.x = static_cast<u32>(idx.vertex_index);
                     index.y = static_cast<u32>(idx.normal_index);
@@ -223,35 +223,37 @@ namespace Kumazuma
                         vertexPositions.emplace_back(pos);
                         findIt = itemIndexTable.emplace(index, newVertexIndex).first;
                     }
-                    indices.emplace_back(findIt->second);
+                    triangle[v] = findIt->second;
+                    
+                    
                 }
+                indexOffset += fv;
+                triangles.push_back(triangle);
             }
 
             std::wstring name = ConvertUTF8ToWide(shape.name);
             std::wstring materialName = ConvertUTF8ToWide(reader.GetMaterials()[shape.mesh.material_ids[0]].name);
             OBJSubset objSubset;
             objSubset.indexBase_ = indexBase;
-            objSubset.triangleCount_ = shape.mesh.num_face_vertices.size();
+            objSubset.triangleCount_ = shape.mesh.indices.size() / 3;
             objSubset.materialName = materialName;
             objSubset.name = name;
             subsets_.subsets_.emplace_back(std::move(objSubset));
         }
-        for (size_t i = 0; i < indices.size() / 3; ++i)
+        for (auto& triangle: triangles)
         {
-            std::swap(indices[i * 3], indices[i * 3 + 2]);
+            std::swap(triangle[1], triangle[2]);
         }
-        vertices.shrink_to_fit();
-        indices.shrink_to_fit();
         ComPtr<ID3D11Device> device;
         gmodule->GetDevice(&device);
         
         CD3D11_BUFFER_DESC vertexBufferDesc = CD3D11_BUFFER_DESC(sizeof(StaticMeshVertex) * vertexPositions.size(), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DEFAULT);
-        CD3D11_BUFFER_DESC indexBufferDesc = CD3D11_BUFFER_DESC(sizeof(u32) * indices.size(), D3D11_BIND_INDEX_BUFFER, D3D11_USAGE_DEFAULT);
+        CD3D11_BUFFER_DESC indexBufferDesc = CD3D11_BUFFER_DESC(sizeof(Triangle) * triangles.size(), D3D11_BIND_INDEX_BUFFER, D3D11_USAGE_DEFAULT);
         D3D11_SUBRESOURCE_DATA subresourceData{};
         subresourceData.pSysMem = vertices.data();
         hr = device->CreateBuffer(&vertexBufferDesc, &subresourceData, &vertexBuffer_);
         assert(SUCCEEDED(hr));
-        subresourceData.pSysMem = indices.data();
+        subresourceData.pSysMem = triangles.data();
         hr = device->CreateBuffer(&indexBufferDesc, &subresourceData, &indexBuffer_);
         assert(SUCCEEDED(hr));
         TextureManager& manager = gmodule->GetTextureManager();
@@ -282,9 +284,13 @@ namespace Kumazuma
         vertexBuffer_{std::move(rhs.vertexBuffer_)},
         indexBuffer_{std::move(rhs.indexBuffer_)},
         vertexPositions{std::move(rhs.vertexPositions)},
-        indices{std::move(rhs.indices)},
+        triangles{std::move(rhs.triangles)},
         materialTextures_{std::move(rhs.materialTextures_)}
     {
+        for (OBJSubset& subset : subsets_.subsets_)
+        {
+            subset.mesh_ = this;
+        }
     }
 
     OBJMeshImpl::~OBJMeshImpl()
@@ -295,8 +301,9 @@ namespace Kumazuma
 	{
 		UINT stride{ static_cast<UINT>(sizeof(StaticMeshVertex)) };
 		UINT offset{ 0 };
-		device->IASetIndexBuffer(indexBuffer_.Get(), DXGI_FORMAT_R32_UINT, sizeof(u32));
-		device->IASetVertexBuffers(0, 1, &vertexBuffer_, &stride, &offset);
+        ID3D11Buffer* vertexBuffer{ vertexBuffer_.Get() };
+		device->IASetIndexBuffer(indexBuffer_.Get(), DXGI_FORMAT_R32_UINT, 0);
+		device->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 		device->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 

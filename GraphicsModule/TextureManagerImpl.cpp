@@ -57,7 +57,7 @@ namespace Kumazuma
 		std::vector<uint8_t> imageData(static_cast<size_t>(width) * static_cast<size_t>(height) * 4, 0);
 		hr = fmtConverter->CopyPixels(nullptr, width * 4, static_cast<UINT>(imageData.size()), imageData.data());
 		CD3D11_TEXTURE2D_DESC texture2DDesc =
-			CD3D11_TEXTURE2D_DESC(DXGI_FORMAT_R8G8B8A8_UINT, width, height, 1, 0, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET |D3D11_BIND_UNORDERED_ACCESS );
+			CD3D11_TEXTURE2D_DESC(DXGI_FORMAT_R8G8B8A8_UNORM, width, height, 1, 0, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET |D3D11_BIND_UNORDERED_ACCESS );
 		texture2DDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 		device->CreateTexture2D(&texture2DDesc, nullptr, &textureDX11);
 

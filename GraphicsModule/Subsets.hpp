@@ -8,8 +8,8 @@ namespace Kumazuma
 	{
 	public:
 		virtual ~Subsets();
-		virtual u32 GetCount() = 0;
-		virtual Subset const& Get(u32 index) = 0;
+		virtual u32 GetCount() const = 0;
+		virtual Subset const& Get(u32 index) const = 0;
 		
 	};
 }

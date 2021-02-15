@@ -7,6 +7,7 @@ namespace Kumazuma
 {
 	class Texture2D;
 	class TextureManager;
+	class RenderSystem;
 	class DLL_CLASS GraphicsModule
 	{
 	public:
@@ -17,11 +18,12 @@ namespace Kumazuma
 		virtual HRESULT GetImmediateContext(ID3D11DeviceContext** out) = 0;
 		virtual HRESULT GetSwapChain(IDXGISwapChain** out) = 0;
 		virtual HRESULT GetCBuffer(wchar_t const* name, ID3D11Buffer** out) = 0;
-		virtual HRESULT LoadPixelShader(wchar_t const* path, ID3D11PixelShader** out)		=0;
-		virtual HRESULT LoadVertexShader(wchar_t const* path, ID3D11VertexShader** out)		=0;
-		virtual HRESULT LoadComputeShader(wchar_t const* path, ID3D11ComputeShader** out)	=0;
+		virtual HRESULT LoadPixelShader(wchar_t const* id, wchar_t const* path, char const* entry)		=0;
+		virtual HRESULT LoadPixelShaderFromBytes(wchar_t const* id, u8 const* ptr, u32 len) = 0;
+		virtual HRESULT GetPixelShader(wchar_t const* id, ID3D11PixelShader** out) = 0;
 		virtual Texture2D* GetDefaultDepthBuffer() = 0;
 		virtual Texture2D* GetSwapChainTexture() = 0;
+		virtual RenderSystem& GetRenderSystem() = 0;
 		virtual TextureManager& GetTextureManager() = 0;
 		void LockDevice();
 		void UnlockDevice();

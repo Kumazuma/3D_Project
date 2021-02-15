@@ -5,7 +5,8 @@
 namespace Kumazuma
 {
 	class Subsets;
-	enum class MeshType
+	class Texture2D;
+	enum class MeshType:int
 	{
 		Static,
 		Skinned
@@ -31,5 +32,19 @@ namespace Kumazuma
 		DirectX::XMFLOAT3 vNormal;
 		DirectX::XMUINT4  vBones;
 		DirectX::XMFLOAT4 vWeights;
+	};
+	struct Triangle
+	{
+		uint32_t indices[3];
+		template<typename T>
+		auto operator[](T&& index)->u32&
+		{
+			return indices[index];
+		}
+		template<typename T>
+		auto operator[](T&& index)const->u32 const&
+		{
+			return indices[index];
+		}
 	};
 }

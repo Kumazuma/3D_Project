@@ -4,35 +4,72 @@
 #include <Texture2D.hpp>
 #include <OBJMesh.hpp>
 #include <array>
+#include <RenderSystem.hpp>
+#include <StandardMaterial.hpp>
+#include <Subsets.hpp>
+using namespace DirectX;
 wxWindowID const ID_CANVAS = 1001;
 bool LibTestApp::OnInit()
 {
     auto frame{ new wxFrame(nullptr, wxID_ANY, wxT("dx11")) };
-    auto renderCanvas{ new RenderCanvas(frame, ID_CANVAS) };
+    renderCanvas_ = new RenderCanvas(frame, ID_CANVAS);
     auto sizer{ new wxBoxSizer(wxVERTICAL) };
-    sizer->Add(renderCanvas, 1, wxEXPAND);
+    sizer->Add(renderCanvas_, 1, wxEXPAND);
     frame->SetSizer(sizer);
     frame->Layout();
-    frame->Show();
-    auto graphicsModule{ renderCanvas->GetGraphicsMoudle() };
-    IDXGISwapChain* swapChain;
-    ID3D11Device* device;
-    ID3D11DeviceContext* deviceContext;
-    ID3D11RenderTargetView* rtv;
-    graphicsModule->GetSwapChain(&swapChain);
-    graphicsModule->GetImmediateContext(&deviceContext);
-    graphicsModule->GetDevice(&device);
-    swapChain->Present(0, 0);
-    graphicsModule->GetSwapChainTexture()->GetView(&rtv);
-    deviceContext->ClearRenderTargetView(rtv, std::array<f32, 4>{0.f, 0.f, 1.f, 1.f}.data());
-    auto* objMesh = Kumazuma::OBJMesh::Create(graphicsModule.get(), L"./chino/gctitm001.obj");
-    OutputDebugStringA(typeid(*objMesh).name());
-    delete objMesh;
-    deviceContext->Release();
-    swapChain->Release();
-    rtv->Release();
-    device->Release();
+    frame->ShowFullScreen(true,0);
+    auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
+    XMFLOAT4X4 viewSpace{};
+    XMFLOAT4X4 projSpace{};
+    XMStoreFloat4x4(&viewSpace, XMMatrixIdentity());
+    XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 1920.f/1080.f, 0.1f, 1000.f));
 
+    XMStoreFloat4x4(&worldSpace, XMMatrixTranslation(0.f, -1.0f, 2.f));
+    mesh_ = std::shared_ptr<Kumazuma::OBJMesh>(Kumazuma::OBJMesh::Create(graphicsModule.get(), L"./chino/gctitm001.obj"));
+
+    for (int i = 0; i < mesh_->GetSubsetsRef().GetCount(); ++i)
+    {
+        auto* standardMaterial = new Kumazuma::StandardMaterial(graphicsModule.get(), &mesh_->GetSubsetsRef().Get(i));
+        graphicsModule->GetRenderSystem().AddMaterial(standardMaterial);
+        standardMaterial->SetWorldMatrixPtr(&worldSpace);
+        materials_.push_back(std::unique_ptr<Kumazuma::Material>(standardMaterial));
+
+    }
+    graphicsModule->GetRenderSystem().Render(&viewSpace, &projSpace);
+
+    IDXGISwapChain* swapChain{};
+    graphicsModule->GetSwapChain(&swapChain);
+    swapChain->Present(0, 0);
+    swapChain->Release();
+    this->Bind(wxEVT_IDLE, &LibTestApp::OnIdle, this);
+    renderCanvas_->Bind(wxEVT_CLOSE_WINDOW, &LibTestApp::OnClose, this);
     return true;
+}
+int LibTestApp::OnExit()
+{
+
+    return 0;
+}
+void LibTestApp::OnIdle(wxIdleEvent& evt)
+{
+    XMFLOAT4X4 viewSpace{};
+    XMFLOAT4X4 projSpace{};
+    XMStoreFloat4x4(&viewSpace, XMMatrixIdentity());
+    XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 1920.f / 1080.f, 0.1f, 1000.f));
+    auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
+    graphicsModule->GetRenderSystem().Render(&viewSpace, &projSpace);
+    IDXGISwapChain* swapChain{};
+    graphicsModule->GetSwapChain(&swapChain);
+    swapChain->Present(0, 0);
+    swapChain->Release();
+    evt.MoreRequested();
+}
+void LibTestApp::OnClose(wxCloseEvent& evt)
+{
+    auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
+    for (auto& material : materials_)
+    {
+        graphicsModule->GetRenderSystem().RemoveMaterial(material.get());
+    }
 }
 wxIMPLEMENT_APP(LibTestApp);

@@ -11,6 +11,7 @@ namespace Kumazuma
 		ForwardShading,
 		END
 	};
+
 	class DLL_CLASS Material
 	{
 	public:
@@ -21,5 +22,6 @@ namespace Kumazuma
 		MaterialShadingClass GetShadingClass()const;
 	private:
 		MaterialShadingClass shadingClass_;
+
 	};
 }

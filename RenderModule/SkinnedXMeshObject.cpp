@@ -130,6 +130,7 @@ auto SkinnedXMeshObject::Render(IRendererBase* renderer, ID3DXEffect* effect) ->
             pDestVtx);						// 변환된 정보를 담기 위한 메쉬의 정점 정보
         iter->pOriginalMesh->UnlockVertexBuffer();
         iter->MeshData.pMesh->UnlockVertexBuffer();
+        
         COMPtr<IDirect3DVertexBuffer9> vertexBuffer{};
         COMPtr<IDirect3DIndexBuffer9> indexBuffer{};
     

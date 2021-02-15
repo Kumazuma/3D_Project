@@ -23,7 +23,8 @@ namespace MaptoolNightbuild
             camera.Far = 1000.0f;
             camera.Near = 0.1f;
             chino = new MaptoolRenderer.OBJMesh("./chino/gctitm001.obj");
-            var objMeshObject = new MaptoolRenderer.OBJObject(chino);
+
+            var objMeshObject = MaptoolRenderer.MeshObject.Create(chino);
             objMeshObject.Transform.Position = new MapToolCore.Position(0f, -1f, 2f);
             renderables.Add(objMeshObject);
             propertyGrid1.SelectedObject = objMeshObject;

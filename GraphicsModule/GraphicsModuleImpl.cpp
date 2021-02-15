@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "GraphicsModuleImpl.hpp"
+#include "RenderSystemImpl.hpp"
 #include "TextureManagerImpl.h"
 #include "TextureManager.hpp"
 #include "Texture2DBuilder.hpp"
+#include <d3dcompiler.h>
 Kumazuma::GraphicsModuleImpl::GraphicsModuleImpl(HWND hWindow, Size2D<u32> const& bufferSize, bool fullScreen)
 {
     UINT creationFlags{ D3D11_CREATE_DEVICE_BGRA_SUPPORT };
@@ -43,9 +45,10 @@ Kumazuma::GraphicsModuleImpl::GraphicsModuleImpl(HWND hWindow, Size2D<u32> const
         &deviceContext_
     );
     swapChainTexture_.reset(new SwapChainTexture2D(device_.Get(), swapChain_.Get()));
+    defaultDepthBuffer_.reset(Texture2D::Create(device_.Get(), Texture2D::Builder(DXGI_FORMAT_D32_FLOAT, bufferSize.width, bufferSize.height).DepthStancilView()));
 
     textureManager_.reset(new TextureManagerImpl{ this });
-    defaultDepthBuffer_.reset(Texture2D::Create(device_.Get(), Texture2D::Builder(DXGI_FORMAT_D32_FLOAT, bufferSize.width, bufferSize.height).DepthStancilView()));
+    renderSystem_.reset(new RenderSystemImpl{ this });
 }
 //ComPtr<ID3D11Device>		device_;
 //ComPtr<ID3D11DeviceContext> deviceContext_;
@@ -57,12 +60,15 @@ Kumazuma::GraphicsModuleImpl::GraphicsModuleImpl(GraphicsModuleImpl&& rhs) noexc
     device_{std::move(rhs.device_)},
     deviceContext_{std::move(rhs.deviceContext_)},
     swapChain_{std::move(rhs.swapChain_)},
+    renderSystem_{std::move(rhs.renderSystem_)},
     textureManager_{std::move(rhs.textureManager_)},
     swapChainTexture_{std::move(rhs.swapChainTexture_)},
     cbuffers_{std::move(rhs.cbuffers_)},
-    defaultDepthBuffer_{std::move(rhs.defaultDepthBuffer_)}
+    defaultDepthBuffer_{std::move(rhs.defaultDepthBuffer_)},
+    pixelShaders_{std::move(rhs.pixelShaders_)}
 {
     static_cast<TextureManagerImpl*>(textureManager_.get())->SetGraphicsModule(this);
+    static_cast<RenderSystemImpl*>(renderSystem_.get())->SetGraphicsModule(this);
 }
 
 
@@ -134,24 +140,66 @@ HRESULT Kumazuma::GraphicsModuleImpl::GetCBuffer(wchar_t const* name, ID3D11Buff
     return S_OK;
 }
 
-HRESULT Kumazuma::GraphicsModuleImpl::LoadPixelShader(wchar_t const* path, ID3D11PixelShader** out)
+HRESULT Kumazuma::GraphicsModuleImpl::LoadPixelShader(wchar_t const* id, wchar_t const* path, char const* entry)
 {
-    return E_NOTIMPL;
+    HRESULT hr{};
+    auto shaderIt{ pixelShaders_.find(id) };
+    if (shaderIt != pixelShaders_.end())
+    {
+        return E_INVALIDARG;
+    }
+    ComPtr<ID3DBlob> code;
+    ComPtr<ID3DBlob> errMsg;
+    ComPtr<ID3D11PixelShader> pixelShader;
+    hr = D3DCompileFromFile(path, nullptr, nullptr, entry, "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &code, &errMsg);
+    if (FAILED(hr))
+    {
+        return E_FAIL;
+    }
+    device_->CreatePixelShader(code->GetBufferPointer(), code->GetBufferSize(), nullptr, &pixelShader);
+    pixelShaders_.emplace(id, pixelShader);
+    return S_OK;
 }
 
-HRESULT Kumazuma::GraphicsModuleImpl::LoadVertexShader(wchar_t const* path, ID3D11VertexShader** out)
+HRESULT Kumazuma::GraphicsModuleImpl::LoadPixelShaderFromBytes(wchar_t const* id, u8 const* ptr, u32 len)
 {
-    return E_NOTIMPL;
+    HRESULT hr{};
+    auto shaderIt{ pixelShaders_.find(id) };
+    if (shaderIt != pixelShaders_.end())
+    {
+        return E_INVALIDARG;
+    }
+    ComPtr<ID3DBlob> code;
+    ComPtr<ID3DBlob> errMsg;
+    ComPtr<ID3D11PixelShader> pixelShader;
+
+    device_->CreatePixelShader(code->GetBufferPointer(), code->GetBufferSize(), nullptr, &pixelShader);
+    pixelShaders_.emplace(id, pixelShader);
+    return S_OK;
 }
 
-HRESULT Kumazuma::GraphicsModuleImpl::LoadComputeShader(wchar_t const* path, ID3D11ComputeShader** out)
+HRESULT Kumazuma::GraphicsModuleImpl::GetPixelShader(wchar_t const* id, ID3D11PixelShader** out)
 {
-    return E_NOTIMPL;
+    auto shaderIt{ pixelShaders_.find(id) };
+    if (shaderIt == pixelShaders_.end())
+    {
+        return E_INVALIDARG;
+    }
+    ID3D11PixelShader* pixelShader = shaderIt->second.Get();
+    *out = pixelShader;
+    pixelShader->AddRef();
+    return S_OK;
 }
+
 
 Kumazuma::TextureManager& Kumazuma::GraphicsModuleImpl::GetTextureManager()
 {
     return *textureManager_;
+}
+
+Kumazuma::RenderSystem& Kumazuma::GraphicsModuleImpl::GetRenderSystem()
+{
+    return *renderSystem_;
 }
 
 Kumazuma::Texture2D* Kumazuma::GraphicsModuleImpl::GetSwapChainTexture()

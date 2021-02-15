@@ -25,8 +25,9 @@ namespace Kumazuma
 		RenderSystemImpl(GraphicsModule* gmodule);
 		virtual void AddMaterial(Material* material) override;
 		virtual void RemoveMaterial(Material* material) override;
-		virtual void Render() override;
-
+		virtual void Render(DirectX::XMFLOAT4X4 const* view, DirectX::XMFLOAT4X4 const* proj) override;
+		virtual void SettupVertexShader(MeshType type, ID3D11DeviceContext* context, DirectX::XMFLOAT4X4* worldSpace) override;
+		void SetGraphicsModule(GraphicsModule* module);
 	private:
 		void InitializeRenderState();
 		void RenderShadowMap();
@@ -45,5 +46,11 @@ namespace Kumazuma
 		ComPtr<ID3D11BlendState>		blendState_;
 		ComPtr<ID3D11RasterizerState>	rasterizerCullBackState_;
 		ComPtr<ID3D11RasterizerState>	rasterizerCullNoneState_;
+		//
+		ComPtr<ID3D11InputLayout>		staticMeshInputLayout_;
+		ComPtr<ID3D11VertexShader>		staticMeshVertexShader_;
+		//
+		ComPtr<ID3D11Buffer>			vsGlobalCBuffer_;
+		ComPtr<ID3D11Buffer>			vsLocalCBuffer_;
 	};
 }
