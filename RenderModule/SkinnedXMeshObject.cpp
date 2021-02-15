@@ -265,7 +265,6 @@ auto SkinnedXMeshObject::GetCurrentAnimSetLength()const->f32
 auto SkinnedXMeshObject::GetCurrentSeek()const->f32
 {
     return this->m_pAnimCtrler->GetSeek();
-
 }
 auto SkinnedXMeshObject::GetAnimationCount()const -> u32
 {

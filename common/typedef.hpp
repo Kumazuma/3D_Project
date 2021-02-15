@@ -64,3 +64,10 @@ inline auto LoadF32x3(T&& val)->DirectX::XMVECTOR
 
 template<typename T>
 using raw_ptr = T*;
+
+template<typename T>
+struct Size2D
+{
+	T width;
+	T height;
+};

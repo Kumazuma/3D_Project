@@ -16,6 +16,7 @@ MaptoolRenderer::Mesh::~Mesh()
     if (renderObject_ != nullptr)
     {
         delete renderObject_;
+        renderObject_ = nullptr;
     }
 }
 

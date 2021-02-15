@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="etc">
+      <UniqueIdentifier>{f3ee01f3-47dd-4d3b-b351-f7ecaafd0098}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphicsModule">
+      <UniqueIdentifier>{8297b636-9b46-4c52-9c75-b46df7c44868}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphicsModule\impl">
+      <UniqueIdentifier>{c24fc7b1-146b-405a-9e06-482e71affbea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{ffd0499f-547d-4221-b0cd-c0bdcd409400}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Texture">
+      <UniqueIdentifier>{811de5b8-f91e-4723-9099-1caa3bcedb0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Texture\impl">
+      <UniqueIdentifier>{cfad191f-eaa1-4eb8-9d76-14d1961fda4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Mesh">
+      <UniqueIdentifier>{ab1fc69b-36a5-4fcc-ba9e-cdd02d92d85d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Mesh\OBJ">
+      <UniqueIdentifier>{aebc8b3a-6d66-4e15-8ade-b13d39bda82a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Mesh\OBJ\Impl">
+      <UniqueIdentifier>{d9dd0c4a-62aa-4259-9593-0703bd5a4e8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Mesh\Subsets">
+      <UniqueIdentifier>{a3128ab5-6d2f-4e91-83dc-0e672e9b2c9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TextureManager">
+      <UniqueIdentifier>{3fe73e84-ceba-4983-b8a1-94c253af992d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TextureManager\impl">
+      <UniqueIdentifier>{91978f96-5950-499c-8364-4ab054b839d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Texture\impl\cachedtexture">
+      <UniqueIdentifier>{73b6250f-e745-425a-aacf-867b33e29e51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Texture\impl\swapchain">
+      <UniqueIdentifier>{7bfb4591-fb57-499b-b727-ed6e29d318ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="default_deferred_render">
+      <UniqueIdentifier>{45dc9e82-2ba2-462b-b920-d4a007f05758}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Mesh\CustumMesh">
+      <UniqueIdentifier>{06492c66-5123-46bb-a706-d0a6630613f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Mesh\CustumMesh\impl">
+      <UniqueIdentifier>{9f8d225b-0a7c-4f06-b81c-32cd5b59768d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Meterial">
+      <UniqueIdentifier>{9fdc6e29-076f-4a53-8dba-0f774087f0be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Meterial\Standard">
+      <UniqueIdentifier>{329ab83a-8589-41ec-a391-c5acf0a7356c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Meterial\Forward">
+      <UniqueIdentifier>{5bef515a-b276-40d6-bed8-2f91dadd8293}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MeshRenderer">
+      <UniqueIdentifier>{faf361ba-2595-4221-955c-2d349c57c40f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderSystem">
+      <UniqueIdentifier>{cacec2a5-f4c4-4d25-9648-c1abe13b1510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderSystem\impl">
+      <UniqueIdentifier>{4b6685ba-1f21-485b-8183-291fa5c1e618}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>etc</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>etc</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsModule.hpp">
+      <Filter>GraphicsModule</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsModuleImpl.hpp">
+      <Filter>GraphicsModule\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.hpp">
+      <Filter>resource\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2DImpl.hpp">
+      <Filter>resource\Texture\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="guidhashder.hpp">
+      <Filter>etc</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2DBuilder.hpp">
+      <Filter>resource\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChainTexture.hpp">
+      <Filter>resource\Texture\impl\swapchain</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.hpp">
+      <Filter>resource\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJMesh.hpp">
+      <Filter>resource\Mesh\OBJ</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJMeshImpl.hpp">
+      <Filter>resource\Mesh\OBJ\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Subsets.hpp">
+      <Filter>resource\Mesh\Subsets</Filter>
+    </ClInclude>
+    <ClInclude Include="Subset.hpp">
+      <Filter>resource\Mesh\Subsets</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJSubsets.hpp">
+      <Filter>resource\Mesh\OBJ\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.hpp">
+      <Filter>TextureManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CachedTextureImpl.hpp">
+      <Filter>resource\Texture\impl\cachedtexture</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManagerImpl.h">
+      <Filter>TextureManager\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomMesh.hpp">
+      <Filter>resource\Mesh\CustumMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomMeshImpl.hpp">
+      <Filter>resource\Mesh\CustumMesh\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.hpp">
+      <Filter>Meterial</Filter>
+    </ClInclude>
+    <ClInclude Include="StandardMaterial.hpp">
+      <Filter>Meterial\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="ForwardRenderingMaterial.hpp">
+      <Filter>Meterial\Forward</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.hpp">
+      <Filter>RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystemImpl.hpp">
+      <Filter>RenderSystem\impl</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>etc</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>etc</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsModule.cpp">
+      <Filter>GraphicsModule</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsModuleImpl.cpp">
+      <Filter>GraphicsModule\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>resource\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2DImpl.cpp">
+      <Filter>resource\Texture\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChainTexture.cpp">
+      <Filter>resource\Texture\impl\swapchain</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJMesh.cpp">
+      <Filter>resource\Mesh\OBJ</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJMeshImpl.cpp">
+      <Filter>resource\Mesh\OBJ\Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="Subsets.cpp">
+      <Filter>resource\Mesh\Subsets</Filter>
+    </ClCompile>
+    <ClCompile Include="Subset.cpp">
+      <Filter>resource\Mesh\Subsets</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJSubsets.cpp">
+      <Filter>resource\Mesh\OBJ\Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2DBuilder.cpp">
+      <Filter>resource\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="CachedTextureImpl.cpp">
+      <Filter>resource\Texture\impl\cachedtexture</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManagerImpl.cpp">
+      <Filter>TextureManager\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>TextureManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomMesh.cpp">
+      <Filter>resource\Mesh\CustumMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Meterial</Filter>
+    </ClCompile>
+    <ClCompile Include="StandardMaterial.cpp">
+      <Filter>Meterial\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomMeshImpl.cpp">
+      <Filter>resource\Mesh\CustumMesh\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemImpl.cpp">
+      <Filter>RenderSystem\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>RenderSystem</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="StaticMeshVS.hlsl">
+      <Filter>default_deferred_render</Filter>
+    </FxCompile>
+    <FxCompile Include="StaticMeshGBufferPS.hlsl">
+      <Filter>default_deferred_render</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>

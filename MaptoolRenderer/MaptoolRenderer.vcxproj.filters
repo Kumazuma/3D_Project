@@ -40,6 +40,21 @@
     <Filter Include="Object\SkinnedXMesh">
       <UniqueIdentifier>{849b48d8-a67b-4e16-9b29-d8940a63924c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource\Mesh\Simple">
+      <UniqueIdentifier>{fb46cc1f-2f12-432e-b4a7-ce490e69bd72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\Mesh\Simple\sphere">
+      <UniqueIdentifier>{92d815e0-0514-4017-977d-8660a9e28161}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\Mesh\Simple\box">
+      <UniqueIdentifier>{98d6c650-6d11-44e3-bcbc-f54af235b799}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Simple">
+      <UniqueIdentifier>{4f9fdac0-72e7-41d8-a510-2c857ea6f01d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Simple\Sphere">
+      <UniqueIdentifier>{5f2fef71-0954-4d6d-a72b-8f47ce40e533}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MaptoolRenderer.h">
@@ -90,6 +105,15 @@
     <ClInclude Include="RenderObject.hpp">
       <Filter>Object</Filter>
     </ClInclude>
+    <ClInclude Include="SphereMesh.hpp">
+      <Filter>Resource\Mesh\Simple\sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxMesh.hpp">
+      <Filter>Resource\Mesh\Simple\box</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleBoxObject.hpp">
+      <Filter>Object\Simple\Sphere</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MaptoolRenderer.cpp">
@@ -130,6 +154,15 @@
     </ClCompile>
     <ClCompile Include="RenderObject.cpp">
       <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereMesh.cpp">
+      <Filter>Resource\Mesh\Simple\sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxMesh.cpp">
+      <Filter>Resource\Mesh\Simple\box</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleBoxObject.cpp">
+      <Filter>Object\Simple\Sphere</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -20,10 +20,10 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{EEDB3045-1639-4FE5-83EB-7C1B61F5538F}</ProjectGuid>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <ProjectGuid>{EF5B5294-B06A-46B2-B916-3DA99D640D09}</ProjectGuid>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
-    <RootNamespace>MaptoolRenderer</RootNamespace>
+    <RootNamespace>KumazumaRendererDX11</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -73,25 +73,17 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\;$(DXSDK_DIR)include;..\Utility</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);../$(PlatformTarget)/$(Configuration);$(DXSDK_DIR)lib\$(PlatformTarget)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\;$(DXSDK_DIR)include;..\Utility</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);../$(PlatformTarget)/$(Configuration);$(DXSDK_DIR)lib\$(PlatformTarget)</LibraryPath>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\common;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies />
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -106,19 +98,6 @@
       <AdditionalDependencies />
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\common;</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -131,48 +110,32 @@
       <AdditionalDependencies />
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BoxMesh.hpp" />
-    <ClInclude Include="Camera.hpp" />
-    <ClInclude Include="COMRef.hpp" />
-    <ClInclude Include="IRenderable.hpp" />
-    <ClInclude Include="MaptoolRenderer.h" />
-    <ClInclude Include="Mesh.hpp" />
-    <ClInclude Include="NativeRenderer.hpp" />
-    <ClInclude Include="OBJMesh.hpp" />
-    <ClInclude Include="OBJObject.hpp" />
-    <ClInclude Include="OBJSubsetCollection.hpp" />
-    <ClInclude Include="OBJSubsetConverter.hpp" />
+    <ClInclude Include="Kumazuma.Renderer.DX11.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="RenderObject.hpp" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SimpleBoxObject.hpp" />
-    <ClInclude Include="SkinnedXMesh.hpp" />
-    <ClInclude Include="SphereMesh.hpp" />
-    <ClInclude Include="XSkinnedMeshObject.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="BoxMesh.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="MaptoolRenderer.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="NativeRenderer.cpp" />
-    <ClCompile Include="OBJMesh.cpp" />
-    <ClCompile Include="OBJObject.cpp" />
-    <ClCompile Include="OBJSubsetCollection.cpp" />
-    <ClCompile Include="OBJSubsetConverter.cpp" />
+    <ClCompile Include="Kumazuma.Renderer.DX11.cpp" />
     <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="RenderObject.cpp" />
-    <ClCompile Include="SimpleBoxObject.cpp" />
-    <ClCompile Include="SkinnedXMesh.cpp" />
-    <ClCompile Include="SphereMesh.cpp" />
-    <ClCompile Include="XSkinnedMeshObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />
@@ -187,26 +150,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MapToolCore\MapToolCore.csproj">
-      <Project>{cc5ed826-3386-4240-8316-c09a6d07390b}</Project>
+    <ProjectReference Include="..\GraphicsModule\GraphicsModule.vcxproj">
+      <Project>{540ad146-c1d7-4fb7-b487-e878bd7f7c5d}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\RenderModule\RenderModule.vcxproj">
-      <Project>{8e09e8d9-324f-4dc7-be05-a0c9ed04d25e}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ingame.fx">
-      <FileType>Document</FileType>
-    </ClInclude>
-    <ClInclude Include="ingame_combine.fx">
-      <FileType>Document</FileType>
-    </ClInclude>
-    <ClInclude Include="ingame_lighting.fx">
-      <FileType>Document</FileType>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="shader.resx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,38 @@
+#pragma once
+#include "GraphicsModule.hpp"
+#include <unordered_map>
+#include <string>
+#include <wrl.h>
+#include "SwapChainTexture.hpp"
+#include <memory>
+#include "TextureManager.hpp"
+using namespace Microsoft::WRL;
+namespace Kumazuma
+{
+	class TextureManager;
+	class GraphicsModuleImpl : public GraphicsModule
+	{
+	public:
+		GraphicsModuleImpl(HWND hWindow, Size2D<u32> const& bufferSize, bool fullScreen);
+		GraphicsModuleImpl(GraphicsModuleImpl&& rhs) noexcept;
+		HRESULT GetDevice(ID3D11Device** out) ;
+		HRESULT GetImmediateContext(ID3D11DeviceContext** out);
+		HRESULT GetSwapChain(IDXGISwapChain** out) ;
+		HRESULT CreateCBuffer(wchar_t const* name, size_t bufferSize);
+		HRESULT GetCBuffer(wchar_t const* name, ID3D11Buffer** out);
+		HRESULT LoadPixelShader(wchar_t const* path, ID3D11PixelShader** out)		override;
+		HRESULT LoadVertexShader(wchar_t const* path, ID3D11VertexShader** out)		override;
+		HRESULT LoadComputeShader(wchar_t const* path, ID3D11ComputeShader** out)	override;
+		TextureManager& GetTextureManager();
+		Texture2D* GetSwapChainTexture();
+		Texture2D* GetDefaultDepthBuffer();
+	private:
+		ComPtr<ID3D11Device>		device_;
+		ComPtr<ID3D11DeviceContext> deviceContext_;
+		ComPtr<IDXGISwapChain>		swapChain_;
+		std::unique_ptr<TextureManager>							textureManager_;
+		std::unique_ptr<Kumazuma::Texture2D>					swapChainTexture_;
+		std::unique_ptr<Kumazuma::Texture2D>					defaultDepthBuffer_;
+		std::unordered_map<std::wstring, ComPtr<ID3D11Buffer> > cbuffers_;
+	};
+}

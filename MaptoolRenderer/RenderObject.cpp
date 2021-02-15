@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "MaptoolRenderer.h"
 #include "RenderObject.hpp"
+#include "SkinnedXMesh.hpp"
+#include "XSkinnedMeshObject.hpp"
+#include "OBJMesh.hpp"
+#include "OBJObject.hpp"
 MaptoolRenderer::MeshObject::MeshObject()
 {
 	transformChangedHandler_ = gcnew System::ComponentModel::PropertyChangedEventHandler(this, &MeshObject::OnTransformChanged);
@@ -21,6 +25,20 @@ MaptoolRenderer::MeshObject::~MeshObject()
 MaptoolRenderer::MeshObject::!MeshObject()
 {
 	this->~MeshObject();
+}
+auto MaptoolRenderer::MeshObject::Create(Mesh^ mesh) -> MeshObject^
+{
+	if (mesh == nullptr)
+		return nullptr;
+	if (auto objMesh{ dynamic_cast<SkinnedXMesh^>(mesh) }; objMesh != nullptr)
+	{
+		return gcnew SkinnedXMeshObject(objMesh);
+	}
+	if (auto objMesh{ dynamic_cast<OBJMesh^>(mesh) }; objMesh != nullptr)
+	{
+		return gcnew OBJObject(objMesh);
+	}
+	return nullptr;
 }
 auto MaptoolRenderer::MeshObject::Transform::get()->MapToolCore::Transform^
 {

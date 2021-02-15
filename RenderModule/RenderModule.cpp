@@ -27,6 +27,7 @@ auto RenderModule::Create(HWND hWindow, u32 width, u32 height,bool fullScreen, R
 
 RenderModule::RenderModule()
 {
+
 }
 
 auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height, bool fullScreen) -> HRESULT

@@ -3,6 +3,7 @@
 
 namespace MaptoolRenderer
 {
+	ref class Mesh;
 	public ref class MeshObject abstract :
 		public IRenderable,
 		public MapToolCore::IHasTransform,
@@ -13,6 +14,7 @@ namespace MaptoolRenderer
 		~MeshObject();
 		!MeshObject();
 	public:
+		static auto Create(Mesh^ mesh)->MeshObject^;
 		// IRenderable을(를) 통해 상속됨
 		virtual auto PrepereRender(GraphicsDevice^ renderer) -> void = 0;
 		// IHasTransform을(를) 통해 상속됨
