@@ -15,8 +15,6 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	{
 		return;
 	}
-	vAmbient = ceil(vAmbient * 4.f) / 4.f;
-	vSpecular = ceil(vSpecular * 4.f) / 4.f;
 	float4 vColor = vSpecular + vAlbedo * vAmbient;
 	gRenderTarget[DTid.xy] = vColor;
 }

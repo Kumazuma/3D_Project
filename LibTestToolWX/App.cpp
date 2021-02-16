@@ -1,5 +1,6 @@
 #include "wx/wxprec.h"
 #include "App.hpp"
+#include "setup.h"
 #include "RenderFrame.hpp"
 #include <Texture2D.hpp>
 #include <OBJMesh.hpp>
@@ -7,6 +8,9 @@
 #include <RenderSystem.hpp>
 #include <StandardMaterial.hpp>
 #include <Subsets.hpp>
+
+
+
 using namespace DirectX;
 wxWindowID const ID_CANVAS = 1001;
 bool LibTestApp::OnInit()
@@ -41,17 +45,18 @@ bool LibTestApp::OnInit()
     graphicsModule->GetSwapChain(&swapChain);
     swapChain->Present(0, 0);
     swapChain->Release();
-    this->Bind(wxEVT_IDLE, &LibTestApp::OnIdle, this);
-    renderCanvas_->Bind(wxEVT_CLOSE_WINDOW, &LibTestApp::OnClose, this);
+    //this->Bind(wxEVT_IDLE, &LibTestApp::OnIdle, this);
+    frame->Bind(wxEVT_CLOSE_WINDOW, &LibTestApp::OnClose, this);
 
     timer_ = new wxTimer(this);
-    timer_->Bind(wxEVT_TIMER, &LibTestApp::OnTimer, this);
+    this->Bind(wxEVT_TIMER, &LibTestApp::OnTimer, this);
     timer_->Start(1);
     return true;
 }
 int LibTestApp::OnExit()
 {
-
+    timer_->Stop();
+    delete timer_;
     return 0;
 }
 void LibTestApp::OnIdle(wxIdleEvent& evt)
@@ -61,6 +66,7 @@ void LibTestApp::OnIdle(wxIdleEvent& evt)
     XMStoreFloat4x4(&viewSpace, XMMatrixIdentity());
     XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 1920.f / 1080.f, 0.1f, 1000.f));
     auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
+    
     graphicsModule->GetRenderSystem().Render(&viewSpace, &projSpace);
     IDXGISwapChain* swapChain{};
     graphicsModule->GetSwapChain(&swapChain);
@@ -70,14 +76,17 @@ void LibTestApp::OnIdle(wxIdleEvent& evt)
 }
 void LibTestApp::OnClose(wxCloseEvent& evt)
 {
+    evt.Skip();
     auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
     for (auto& material : materials_)
     {
         graphicsModule->GetRenderSystem().RemoveMaterial(material.get());
     }
+    renderCanvas_ = nullptr;
 }
 void LibTestApp::OnTimer(wxTimerEvent& evt)
 {
+    if (renderCanvas_ == nullptr)return;
     XMFLOAT4X4 viewSpace{};
     XMFLOAT4X4 projSpace{};
     XMStoreFloat4x4(&viewSpace, XMMatrixIdentity());
@@ -86,7 +95,7 @@ void LibTestApp::OnTimer(wxTimerEvent& evt)
     graphicsModule->GetRenderSystem().Render(&viewSpace, &projSpace);
     IDXGISwapChain* swapChain{};
     graphicsModule->GetSwapChain(&swapChain);
-    swapChain->Present(0, 0);
+    swapChain->Present(1, 0);
     swapChain->Release();
 }
 wxIMPLEMENT_APP(LibTestApp);

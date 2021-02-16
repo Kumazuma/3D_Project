@@ -363,7 +363,7 @@ void Kumazuma::RenderSystemImpl::DeferredLighting()
 	D3D11_MAPPED_SUBRESOURCE mappedResource{};
 	deviceContext->Map(csLightCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	CS::LightInfo* csLightCBuffer = reinterpret_cast<CS::LightInfo*>(mappedResource.pData);
-	csLightCBuffer->g_vLightAmbient = XMFLOAT4{ 1.f, 1.f, 1.f, 1.f};
+	csLightCBuffer->g_vLightAmbient = XMFLOAT4{ 0.2f, 0.2f, 0.2f, 0.2f};
 	csLightCBuffer->g_vLightDiffuse = XMFLOAT4{ 1.f, 1.f, 1.f, 1.f };
 	csLightCBuffer->g_vLightDirection = lightDirection;
 	csLightCBuffer->lightType = 0;

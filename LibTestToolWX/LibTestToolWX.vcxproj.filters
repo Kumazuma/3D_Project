@@ -24,6 +24,9 @@
     <ClInclude Include="RenderFrame.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="setup.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -32,8 +35,5 @@
     <ClCompile Include="RenderFrame.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>
