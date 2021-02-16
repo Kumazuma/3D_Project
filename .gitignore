@@ -36,7 +36,6 @@
 /MaptoolNightbuild/bin
 /MaptoolNightbuild/obj
 /MaptoolRenderer/x64/Debug
-/packages
 /physx/win.x86_64.vc142.md
 /GameRenderer/x64/Debug
 /GraphicsModule/x64/Debug
