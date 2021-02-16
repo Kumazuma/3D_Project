@@ -13,13 +13,24 @@ namespace Kumazuma
 		virtual HRESULT GetResource(ID3D11Texture2D** out) = 0;
 		virtual HRESULT GetSize(Size2D<u32>* out) = 0;
 		virtual HRESULT GetView(GUID, ID3D11View** out) = 0;
+		
 		virtual Texture2D* CreateGenerateMipmap(ID3D11Device* device, ID3D11DeviceContext* deviceContext) = 0;
 		template<typename T>
 		HRESULT GetView(T** out);
+		template<typename T>
+		T* GetViewRef();
 	};
 	template<typename T>
 	inline HRESULT Texture2D::GetView(T** out) 
 	{
 		return GetView(__uuidof(T), reinterpret_cast<ID3D11View**>(out));
+	}
+	template<typename T>
+	inline T* Texture2D::GetViewRef()
+	{
+		T* ptr{};
+		GetView(__uuidof(T), reinterpret_cast<ID3D11View**>(&ptr));
+		ptr->Release();
+		return ptr;
 	}
 }

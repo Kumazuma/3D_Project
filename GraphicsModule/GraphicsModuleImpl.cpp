@@ -65,7 +65,7 @@ Kumazuma::GraphicsModuleImpl::GraphicsModuleImpl(GraphicsModuleImpl&& rhs) noexc
     swapChainTexture_{std::move(rhs.swapChainTexture_)},
     cbuffers_{std::move(rhs.cbuffers_)},
     defaultDepthBuffer_{std::move(rhs.defaultDepthBuffer_)},
-    pixelShaders_{std::move(rhs.pixelShaders_)}
+    shaders_{std::move(rhs.shaders_)}
 {
     static_cast<TextureManagerImpl*>(textureManager_.get())->SetGraphicsModule(this);
     static_cast<RenderSystemImpl*>(renderSystem_.get())->SetGraphicsModule(this);
@@ -143,29 +143,33 @@ HRESULT Kumazuma::GraphicsModuleImpl::GetCBuffer(wchar_t const* name, ID3D11Buff
 HRESULT Kumazuma::GraphicsModuleImpl::LoadPixelShader(wchar_t const* id, wchar_t const* path, char const* entry)
 {
     HRESULT hr{};
-    auto shaderIt{ pixelShaders_.find(id) };
-    if (shaderIt != pixelShaders_.end())
+    std::unordered_map<std::wstring, ComPtr<ID3D11DeviceChild> >& pixelShaders =
+        shaders_[__uuidof(ID3D11PixelShader)];
+    auto shaderIt{ pixelShaders.find(id) };
+    if (shaderIt != pixelShaders.end())
     {
         return E_INVALIDARG;
     }
     ComPtr<ID3DBlob> code;
     ComPtr<ID3DBlob> errMsg;
     ComPtr<ID3D11PixelShader> pixelShader;
-    hr = D3DCompileFromFile(path, nullptr, nullptr, entry, "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &code, &errMsg);
+    hr = D3DCompileFromFile(path, nullptr, nullptr, entry, "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &code, &errMsg);
     if (FAILED(hr))
     {
         return E_FAIL;
     }
     device_->CreatePixelShader(code->GetBufferPointer(), code->GetBufferSize(), nullptr, &pixelShader);
-    pixelShaders_.emplace(id, pixelShader);
+    pixelShaders.emplace(id, pixelShader);
     return S_OK;
 }
 
 HRESULT Kumazuma::GraphicsModuleImpl::LoadPixelShaderFromBytes(wchar_t const* id, u8 const* ptr, u32 len)
 {
     HRESULT hr{};
-    auto shaderIt{ pixelShaders_.find(id) };
-    if (shaderIt != pixelShaders_.end())
+    std::unordered_map<std::wstring, ComPtr<ID3D11DeviceChild> >& pixelShaders =
+        shaders_[__uuidof(ID3D11PixelShader)];
+    auto shaderIt{ pixelShaders.find(id) };
+    if (shaderIt != pixelShaders.end())
     {
         return E_INVALIDARG;
     }
@@ -174,20 +178,75 @@ HRESULT Kumazuma::GraphicsModuleImpl::LoadPixelShaderFromBytes(wchar_t const* id
     ComPtr<ID3D11PixelShader> pixelShader;
 
     device_->CreatePixelShader(code->GetBufferPointer(), code->GetBufferSize(), nullptr, &pixelShader);
-    pixelShaders_.emplace(id, pixelShader);
+    pixelShaders.emplace(id, pixelShader);
     return S_OK;
 }
 
 HRESULT Kumazuma::GraphicsModuleImpl::GetPixelShader(wchar_t const* id, ID3D11PixelShader** out)
 {
-    auto shaderIt{ pixelShaders_.find(id) };
-    if (shaderIt == pixelShaders_.end())
+    std::unordered_map<std::wstring, ComPtr<ID3D11DeviceChild> >& pixelShaders =
+        shaders_[__uuidof(ID3D11PixelShader)];
+
+    auto shaderIt{ pixelShaders.find(id) };
+    if (shaderIt == pixelShaders.end())
     {
         return E_INVALIDARG;
     }
-    ID3D11PixelShader* pixelShader = shaderIt->second.Get();
-    *out = pixelShader;
-    pixelShader->AddRef();
+    shaderIt->second->QueryInterface(out);
+    return S_OK;
+}
+
+HRESULT Kumazuma::GraphicsModuleImpl::LoadComputeShader(wchar_t const* id, wchar_t const* path, char const* entry)
+{
+    HRESULT hr{};
+    std::unordered_map<std::wstring, ComPtr<ID3D11DeviceChild> >& computeShaders =
+        shaders_[__uuidof(ID3D11ComputeShader)];
+    auto shaderIt{ computeShaders.find(id) };
+    if (shaderIt != computeShaders.end())
+    {
+        return E_INVALIDARG;
+    }
+    ComPtr<ID3DBlob> code;
+    ComPtr<ID3DBlob> errMsg;
+    ComPtr<ID3D11ComputeShader> computeShader;
+    hr = D3DCompileFromFile(path, nullptr, nullptr, entry, "cs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3
+        , 0, &code, &errMsg);
+    if (FAILED(hr))
+    {
+        return E_FAIL;
+    }
+    device_->CreateComputeShader(code->GetBufferPointer(), code->GetBufferSize(), nullptr, &computeShader);
+    computeShaders.emplace(id, computeShader);
+    return S_OK;
+}
+
+HRESULT Kumazuma::GraphicsModuleImpl::LoadComputeShaderFromBytes(wchar_t const* id, u8 const* ptr, u32 len)
+{
+    HRESULT hr{};
+    std::unordered_map<std::wstring, ComPtr<ID3D11DeviceChild> >& computeShaders =
+        shaders_[__uuidof(ID3D11ComputeShader)];
+    auto shaderIt{ computeShaders.find(id) };
+    if (shaderIt != computeShaders.end())
+    {
+        return E_INVALIDARG;
+    }
+    ComPtr<ID3D11ComputeShader> computeShader;
+    device_->CreateComputeShader(ptr, len, nullptr, &computeShader);
+    computeShaders.emplace(id, computeShader);
+    return S_OK;
+}
+
+HRESULT Kumazuma::GraphicsModuleImpl::GetComputeShader(wchar_t const* id, ID3D11ComputeShader** out)
+{
+    std::unordered_map<std::wstring, ComPtr<ID3D11DeviceChild> >& pixelShaders =
+        shaders_[__uuidof(ID3D11ComputeShader)];
+
+    auto shaderIt{ pixelShaders.find(id) };
+    if (shaderIt == pixelShaders.end())
+    {
+        return E_INVALIDARG;
+    }
+    shaderIt->second->QueryInterface(out);
     return S_OK;
 }
 

@@ -230,5 +230,8 @@
     <FxCompile Include="LightingCS.hlsl">
       <Filter>default_deferred_render</Filter>
     </FxCompile>
+    <FxCompile Include="DeferredCombineCS.hlsl">
+      <Filter>default_deferred_render</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

@@ -32,6 +32,8 @@ namespace Kumazuma
 		void InitializeRenderState();
 		void RenderShadowMap();
 		void RenderDeferred();
+		void DeferredLighting();
+		void DeferredCombine();
 		void RenderForward();
 		void RenderUI();
 	private:
@@ -41,6 +43,14 @@ namespace Kumazuma
 		std::unique_ptr<Texture2D> normalGBuffer_;
 		std::unique_ptr<Texture2D> depthGBuffer_;
 		std::unique_ptr<Texture2D> sharpnessGBuffer_;
+		//
+		std::unique_ptr<Texture2D> lightSpecularMap_;
+		std::unique_ptr<Texture2D> lightAmbientMap_;
+
+		//
+		DirectX::XMFLOAT4X4 viewSpaceMatrix_;
+		DirectX::XMFLOAT4X4 projSpaceMatrix_;
+		DirectX::XMFLOAT4X4 viewProjMatrix_;
 		//for deferred state
 		ComPtr<ID3D11DepthStencilState> depthState_;
 		ComPtr<ID3D11BlendState>		blendState_;
@@ -52,5 +62,11 @@ namespace Kumazuma
 		//
 		ComPtr<ID3D11Buffer>			vsGlobalCBuffer_;
 		ComPtr<ID3D11Buffer>			vsLocalCBuffer_;
+		//
+		ComPtr<ID3D11ComputeShader>		directinalLightingCShader_;
+		ComPtr<ID3D11Buffer>			csLightCBuffer_;
+		ComPtr<ID3D11Buffer>			csGlobalCBuffer_;
+		ComPtr<ID3D11ComputeShader>		combineCShader_;
+
 	};
 }

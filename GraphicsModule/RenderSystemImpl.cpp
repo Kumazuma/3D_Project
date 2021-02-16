@@ -6,6 +6,25 @@
 #include <mutex>
 #include <d3dcompiler.h>
 using namespace DirectX;
+
+namespace CS
+{
+	struct LightInfo
+	{
+		int lightType;
+		DirectX::XMFLOAT3 g_vLightDirection;
+		DirectX::XMFLOAT4 g_vLightDiffuse;
+		DirectX::XMFLOAT4 g_vLightAmbient;
+	};
+	struct GlobalInfo
+	{
+		DirectX::XMFLOAT4X4 g_mInverseViewProj;
+		DirectX::XMFLOAT4	g_vCameraPosition;
+		DirectX::XMUINT2	g_bufferSize;
+		DirectX::XMUINT2	g_padding;
+	};
+}
+
 Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule)
 {
 	gmodule_ = gmodule;
@@ -38,13 +57,25 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule)
 		.Build(device.Get());
 	depthGBuffer_.reset(texture);
 
+	texture =
+		Texture2D::Builder(DXGI_FORMAT_R16G16B16A16_FLOAT, size.width, size.height)
+		.UnorderedResourceView()
+		.Build(device.Get());
+	lightAmbientMap_.reset(texture);
+
+	texture =
+		Texture2D::Builder(DXGI_FORMAT_R16G16B16A16_FLOAT, size.width, size.height)
+		.UnorderedResourceView()
+		.Build(device.Get());
+	lightSpecularMap_.reset(texture);
+
 	InitializeRenderState();
 
 	HRESULT hr{};
 	hr = gmodule_->LoadPixelShader(L"deferred_gbuffer_ps", L"./StaticMeshGBufferPS.hlsl", "main");
 	ComPtr<ID3DBlob> bytesCode;
 	ComPtr<ID3DBlob> errMsg;
-	hr = D3DCompileFromFile(L"./StaticMeshVS.hlsl", nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &bytesCode, &errMsg);
+	hr = D3DCompileFromFile(L"./StaticMeshVS.hlsl", nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &bytesCode, &errMsg);
 	if (errMsg != nullptr)
 	{
 		OutputDebugStringA((char* const)errMsg->GetBufferPointer());
@@ -88,6 +119,18 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule)
 	hr = device->CreateBuffer(&localCBufferDesc, nullptr, &vsLocalCBuffer_);
 	device->CreateVertexShader(bytesCode->GetBufferPointer(),
 		bytesCode->GetBufferSize(), nullptr, &staticMeshVertexShader_);
+
+	hr = gmodule_->LoadComputeShader(L"directional_lighting", L"./LightingCS.hlsl", "main");
+	gmodule_->GetComputeShader(L"directional_lighting", &directinalLightingCShader_);
+
+	auto cslightCBufferDesc = CD3D11_BUFFER_DESC(sizeof(CS::LightInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+	auto csGlobalCBufferDesc = CD3D11_BUFFER_DESC(sizeof(CS::GlobalInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+
+	hr = device->CreateBuffer(&csGlobalCBufferDesc, nullptr, &csGlobalCBuffer_);
+	hr = device->CreateBuffer(&cslightCBufferDesc, nullptr, &csLightCBuffer_);
+
+	hr = gmodule_->LoadComputeShader(L"combineCShader_", L"./DeferredCombineCS.hlsl", "main");
+	gmodule_->GetComputeShader(L"combineCShader_", &combineCShader_);
 }
 
 void Kumazuma::RenderSystemImpl::AddMaterial(Material* material)
@@ -117,24 +160,39 @@ void Kumazuma::RenderSystemImpl::RemoveMaterial(Material* material)
 void Kumazuma::RenderSystemImpl::Render(DirectX::XMFLOAT4X4 const* view, DirectX::XMFLOAT4X4 const* proj)
 {
 	std::lock_guard<GraphicsModule> guard{ *gmodule_ };
+	Size2D<u32> bufferSize{};
+
 	ComPtr<ID3D11RenderTargetView> swapChainRtv{};
 	ComPtr<ID3D11DeviceContext> deviceContext{};
 	ComPtr<ID3D11DepthStencilView> depthView{};
+	gmodule_->GetSwapChainTexture()->GetSize(&bufferSize);
 	gmodule_->GetSwapChainTexture()->GetView<ID3D11RenderTargetView>(&swapChainRtv);
 	gmodule_->GetDefaultDepthBuffer()->GetView<ID3D11DepthStencilView>(&depthView);
 	gmodule_->GetImmediateContext(&deviceContext);
 	deviceContext->ClearRenderTargetView(swapChainRtv.Get(), std::array<f32, 4>{ }.data());
 	deviceContext->ClearDepthStencilView(depthView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	using namespace DirectX;
-	DirectX::XMFLOAT4X4 viewProj{};
-	DirectX::XMStoreFloat4x4(&viewProj, XMLoadFloat4x4(view) * XMLoadFloat4x4(proj));
-	DirectX::XMFLOAT4X4* mapped;
+	
+	viewSpaceMatrix_ = *view;
+	projSpaceMatrix_ = *proj;
+	XMMATRIX mView{ XMLoadFloat4x4(view) };
+	XMMATRIX mViewProjection{ mView * XMLoadFloat4x4(proj) };
+	XMStoreFloat4x4(&viewProjMatrix_, mViewProjection);
+	XMMATRIX mInverseViewProj{ XMMatrixInverse(nullptr, mViewProjection) };
+	XMVECTOR vCameraPosition = XMMatrixInverse(nullptr, mView).r[3];
+
+	XMFLOAT4X4* mapped;
 	D3D11_MAPPED_SUBRESOURCE mappedResource{};
 	deviceContext->Map(vsGlobalCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	mapped = reinterpret_cast<DirectX::XMFLOAT4X4*>(mappedResource.pData);
-	XMStoreFloat4x4(mapped, XMMatrixTranspose(XMLoadFloat4x4(&viewProj)));
-
+	XMStoreFloat4x4(mapped, XMMatrixTranspose(XMLoadFloat4x4(&viewProjMatrix_)));
 	deviceContext->Unmap(vsGlobalCBuffer_.Get(), 0);
+
+	deviceContext->Map(csGlobalCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	CS::GlobalInfo* csGlobalCBuffer = reinterpret_cast<CS::GlobalInfo*>(mappedResource.pData);
+	csGlobalCBuffer->g_bufferSize = XMUINT2{ bufferSize.width, bufferSize.height };
+	XMStoreFloat4x4(&csGlobalCBuffer->g_mInverseViewProj, mInverseViewProj);
+	XMStoreFloat4(&csGlobalCBuffer->g_vCameraPosition, vCameraPosition);
+	deviceContext->Unmap(csGlobalCBuffer_.Get(), 0);
 
 	RenderDeferred();
 }
@@ -230,19 +288,29 @@ void Kumazuma::RenderSystemImpl::RenderShadowMap()
 
 void Kumazuma::RenderSystemImpl::RenderDeferred()
 {
+	f32 rgba[4]{};
 	ComPtr<ID3D11DeviceContext> deviceContext{};
 	ComPtr<ID3D11Device> device;
 	ComPtr<ID3D11DeviceContext> deferredDeviceContext;
 	gmodule_->GetImmediateContext(&deviceContext);
 	gmodule_->GetDevice(&device);
+	deviceContext->ClearRenderTargetView(lightAmbientMap_->GetViewRef<ID3D11RenderTargetView>(), rgba);
+	deviceContext->ClearRenderTargetView(lightSpecularMap_->GetViewRef<ID3D11RenderTargetView>(), rgba);
+	deviceContext->ClearRenderTargetView(albedoGBuffer_->GetViewRef<ID3D11RenderTargetView>(), rgba);
+	deviceContext->ClearRenderTargetView(normalGBuffer_->GetViewRef<ID3D11RenderTargetView>(), rgba);
+	deviceContext->ClearRenderTargetView(sharpnessGBuffer_->GetViewRef<ID3D11RenderTargetView>(), rgba);
+	deviceContext->ClearRenderTargetView(depthGBuffer_->GetViewRef<ID3D11RenderTargetView>(), rgba);
+
+	 
+
 	device->CreateDeferredContext(0, &deferredDeviceContext);
 
 	ComPtr<ID3D11DepthStencilView> depthView{};
 	ID3D11RenderTargetView* rtvs[4]{};
 
 	gmodule_->GetDefaultDepthBuffer()->GetView<ID3D11DepthStencilView>(&depthView);
-	//albedoGBuffer_->GetView(&rtvs[0]);
-	gmodule_->GetSwapChainTexture()->GetView(&rtvs[0]);
+	albedoGBuffer_->GetView(&rtvs[0]);
+	//gmodule_->GetSwapChainTexture()->GetView(&rtvs[0]);
 	normalGBuffer_->GetView(&rtvs[1]);
 	sharpnessGBuffer_->GetView(&rtvs[2]);
 	depthGBuffer_->GetView(&rtvs[3]);
@@ -276,6 +344,99 @@ void Kumazuma::RenderSystemImpl::RenderDeferred()
 	{
 		rtv->Release();
 	}
+	DeferredLighting();
+	DeferredCombine();
+}
+
+void Kumazuma::RenderSystemImpl::DeferredLighting()
+{
+	ComPtr<ID3D11DeviceContext> deviceContext{};
+	ComPtr<ID3D11Device> device;
+	ComPtr<ID3D11DeviceContext> deferredDeviceContext;
+	gmodule_->GetImmediateContext(&deviceContext);
+	gmodule_->GetDevice(&device);
+	Size2D<u32> size{};
+	gmodule_->GetSwapChainTexture()->GetSize(&size);
+
+	XMFLOAT3 lightDirection{ 1.f, -1.f, 1.f };
+	XMStoreFloat3(&lightDirection, XMVector3Normalize(XMLoadFloat3(&lightDirection)));
+	D3D11_MAPPED_SUBRESOURCE mappedResource{};
+	deviceContext->Map(csLightCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	CS::LightInfo* csLightCBuffer = reinterpret_cast<CS::LightInfo*>(mappedResource.pData);
+	csLightCBuffer->g_vLightAmbient = XMFLOAT4{ 1.f, 1.f, 1.f, 1.f};
+	csLightCBuffer->g_vLightDiffuse = XMFLOAT4{ 1.f, 1.f, 1.f, 1.f };
+	csLightCBuffer->g_vLightDirection = lightDirection;
+	csLightCBuffer->lightType = 0;
+	deviceContext->Unmap(csLightCBuffer_.Get(), 0);
+
+	ID3D11Buffer* csCBuffer0{ csLightCBuffer_.Get() };
+	ID3D11Buffer* csCBuffer1{ csGlobalCBuffer_.Get() };
+
+	ID3D11UnorderedAccessView* normalMapUAV;
+	ID3D11UnorderedAccessView* depthMapUAV;
+	ID3D11UnorderedAccessView* sharpnessMapUAV;
+	ID3D11UnorderedAccessView* lightAmbientMapUAV;
+	ID3D11UnorderedAccessView* lightSpecularMapUAV;
+
+	this->normalGBuffer_->GetView(&normalMapUAV);
+	this->depthGBuffer_->GetView(&depthMapUAV);
+	this->sharpnessGBuffer_->GetView(&sharpnessMapUAV);
+	this->lightAmbientMap_->GetView(&lightAmbientMapUAV);
+	this->lightSpecularMap_->GetView(&lightSpecularMapUAV);
+
+	deviceContext->CSSetConstantBuffers(0, 1, &csCBuffer0);
+	deviceContext->CSSetConstantBuffers(1, 1, &csCBuffer1);
+
+	deviceContext->CSSetUnorderedAccessViews(0, 1, &normalMapUAV, nullptr);
+	deviceContext->CSSetUnorderedAccessViews(1, 1, &depthMapUAV, nullptr);
+	deviceContext->CSSetUnorderedAccessViews(2, 1, &sharpnessMapUAV, nullptr);
+	deviceContext->CSSetUnorderedAccessViews(3, 1, &lightAmbientMapUAV, nullptr);
+	deviceContext->CSSetUnorderedAccessViews(4, 1, &lightSpecularMapUAV, nullptr);
+
+	deviceContext->CSSetShader(directinalLightingCShader_.Get(), nullptr, 0);
+	int x = size.width / 16 + static_cast<UINT>(size.width % 16 != 0);
+	int y = size.height / 16 + static_cast<UINT>(size.height % 16 != 0);
+	deviceContext->Dispatch(x, y, 1);
+
+	normalMapUAV->Release();
+	depthMapUAV->Release();
+	sharpnessMapUAV->Release();
+	lightAmbientMapUAV->Release();
+	lightSpecularMapUAV->Release();
+}
+
+void Kumazuma::RenderSystemImpl::DeferredCombine()
+{
+	ID3D11UnorderedAccessView* albedoMapUAV;
+	ID3D11UnorderedAccessView* lightAmbientMapUAV;
+	ID3D11UnorderedAccessView* lightSpecularMapUAV;
+	ID3D11UnorderedAccessView* backbufferUAV;
+	ComPtr<ID3D11DeviceContext> deviceContext{};
+	ComPtr<ID3D11Device> device;
+	ComPtr<ID3D11DeviceContext> deferredDeviceContext;
+	Size2D<u32> size{};
+	gmodule_->GetImmediateContext(&deviceContext);
+	gmodule_->GetDevice(&device);
+	gmodule_->GetSwapChainTexture()->GetSize(&size);
+	gmodule_->GetSwapChainTexture()->GetView(&backbufferUAV);
+	this->albedoGBuffer_->GetView(&albedoMapUAV);
+	this->lightAmbientMap_->GetView(&lightAmbientMapUAV);
+	this->lightSpecularMap_->GetView(&lightSpecularMapUAV);
+
+	deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+	deviceContext->ClearState();
+	deviceContext->CSSetShader(combineCShader_.Get(), nullptr, 0);
+	deviceContext->CSSetUnorderedAccessViews(0, 1, &albedoMapUAV,nullptr );
+	deviceContext->CSSetUnorderedAccessViews(1, 1, &lightAmbientMapUAV,nullptr );
+	deviceContext->CSSetUnorderedAccessViews(2, 1, &lightSpecularMapUAV,nullptr );
+	deviceContext->CSSetUnorderedAccessViews(3, 1, &backbufferUAV, nullptr);
+	deviceContext->Dispatch(size.width, size.height, 1);
+
+
+	backbufferUAV->Release();
+	albedoMapUAV->Release();
+	lightAmbientMapUAV->Release();
+	lightSpecularMapUAV->Release();
 }
 
 void Kumazuma::RenderSystemImpl::RenderForward()

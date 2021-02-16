@@ -21,6 +21,9 @@ namespace Kumazuma
 		virtual HRESULT LoadPixelShader(wchar_t const* id, wchar_t const* path, char const* entry)		=0;
 		virtual HRESULT LoadPixelShaderFromBytes(wchar_t const* id, u8 const* ptr, u32 len) = 0;
 		virtual HRESULT GetPixelShader(wchar_t const* id, ID3D11PixelShader** out) = 0;
+		virtual HRESULT LoadComputeShader(wchar_t const* id, wchar_t const* path, char const* entry) = 0;
+		virtual HRESULT LoadComputeShaderFromBytes(wchar_t const* id, u8 const* ptr, u32 len) = 0;
+		virtual HRESULT GetComputeShader(wchar_t const* id, ID3D11ComputeShader** out) = 0;
 		virtual Texture2D* GetDefaultDepthBuffer() = 0;
 		virtual Texture2D* GetSwapChainTexture() = 0;
 		virtual RenderSystem& GetRenderSystem() = 0;

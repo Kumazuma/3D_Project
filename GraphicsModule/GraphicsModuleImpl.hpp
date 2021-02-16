@@ -24,6 +24,10 @@ namespace Kumazuma
 		HRESULT LoadPixelShader(wchar_t const* id, wchar_t const* path, char const* entry);
 		HRESULT LoadPixelShaderFromBytes(wchar_t const* id, u8 const* ptr, u32 len);
 		HRESULT GetPixelShader(wchar_t const* id, ID3D11PixelShader** out) ;
+		HRESULT LoadComputeShader(wchar_t const* id, wchar_t const* path, char const* entry);
+		HRESULT LoadComputeShaderFromBytes(wchar_t const* id, u8 const* ptr, u32 len);
+		HRESULT GetComputeShader(wchar_t const* id, ID3D11ComputeShader** out);
+
 		TextureManager& GetTextureManager();
 		RenderSystem& GetRenderSystem() override;
 		Texture2D* GetSwapChainTexture();
@@ -32,8 +36,7 @@ namespace Kumazuma
 		ComPtr<ID3D11Device>		device_;
 		ComPtr<ID3D11DeviceContext> deviceContext_;
 		ComPtr<IDXGISwapChain>		swapChain_;
-		std::unordered_map<std::wstring, ComPtr<ID3D11PixelShader> >	pixelShaders_;
-
+		std::unordered_map < GUIDEx, std::unordered_map<std::wstring, ComPtr<ID3D11DeviceChild> > >shaders_;
 		std::unique_ptr<TextureManager>							textureManager_;
 		std::unique_ptr<RenderSystem>							renderSystem_;
 		std::unique_ptr<Kumazuma::Texture2D>					swapChainTexture_;

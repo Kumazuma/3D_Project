@@ -43,6 +43,10 @@ bool LibTestApp::OnInit()
     swapChain->Release();
     this->Bind(wxEVT_IDLE, &LibTestApp::OnIdle, this);
     renderCanvas_->Bind(wxEVT_CLOSE_WINDOW, &LibTestApp::OnClose, this);
+
+    timer_ = new wxTimer(this);
+    timer_->Bind(wxEVT_TIMER, &LibTestApp::OnTimer, this);
+    timer_->Start(1);
     return true;
 }
 int LibTestApp::OnExit()
@@ -71,5 +75,18 @@ void LibTestApp::OnClose(wxCloseEvent& evt)
     {
         graphicsModule->GetRenderSystem().RemoveMaterial(material.get());
     }
+}
+void LibTestApp::OnTimer(wxTimerEvent& evt)
+{
+    XMFLOAT4X4 viewSpace{};
+    XMFLOAT4X4 projSpace{};
+    XMStoreFloat4x4(&viewSpace, XMMatrixIdentity());
+    XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 1920.f / 1080.f, 0.1f, 1000.f));
+    auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
+    graphicsModule->GetRenderSystem().Render(&viewSpace, &projSpace);
+    IDXGISwapChain* swapChain{};
+    graphicsModule->GetSwapChain(&swapChain);
+    swapChain->Present(0, 0);
+    swapChain->Release();
 }
 wxIMPLEMENT_APP(LibTestApp);
