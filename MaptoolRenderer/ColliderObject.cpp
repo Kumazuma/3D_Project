@@ -147,6 +147,15 @@ namespace MaptoolRenderer
     {
         return attribute_;
     }
+    auto ColliderObject::Name::get()->String^
+    {
+        return name_;
+    }
+    auto ColliderObject::Name::set(String^ value)->void
+    {
+        name_ = value;
+        this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "Name" });
+    }
 }
 
 

@@ -35,9 +35,20 @@ namespace MaptoolNightbuild.View
             (renderView.Content.CurrentCamera as MaptoolRenderer.PersCamera).Angle = 45.0f;
             renderView.Content.CurrentCamera.Far = 1000.0f;
             renderView.Content.CurrentCamera.Near = 0.1f;
-
+            renderView.Content.CurrentCamera.PropertyChanged += CurrentCamera_PropertyChanged;
+            listbox.Content.Items.Add(renderView.Content.CurrentCamera);
             listbox.Content.Items.Add(objMeshObject);
         }
+
+        private void CurrentCamera_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(propertyView.Content.SelectedObject == renderView.Content.CurrentCamera)
+            {
+                propertyView.Content.SelectedObject = renderView.Content.CurrentCamera;
+            }
+
+        }
+
         public void InitializeDocViews()
         {
             renderView = new DockView<RenderView>();

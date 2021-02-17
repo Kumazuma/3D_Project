@@ -82,6 +82,7 @@ namespace MaptoolRenderer
 		m_position.X = position.x;
 		m_position.Y = position.y;
 		m_position.Z = position.z;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Position"));
 	}
 
 	auto Camera::MoveForward(float delta) -> void
@@ -92,6 +93,7 @@ namespace MaptoolRenderer
 		m_position.X = position.x;
 		m_position.Y = position.y;
 		m_position.Z = position.z;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Position"));
 	}
 
 	auto Camera::MoveRight(float delta) -> void
@@ -102,14 +104,17 @@ namespace MaptoolRenderer
 		m_position.X = position.x;
 		m_position.Y = position.y;
 		m_position.Z = position.z;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Position"));
 	}
 	auto Camera::RotationX(float delta) -> void
 	{
 		m_rotation.X += delta;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Rotation"));
 	}
 	auto Camera::RotationY(float delta) -> void
 	{
 		m_rotation.Y += delta;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Rotation"));
 	}
 	auto Camera::GenerateMatrix(DirectX::XMFLOAT4X4* out) -> void
 	{
@@ -124,6 +129,7 @@ namespace MaptoolRenderer
 	auto Camera::Position::set(MapToolCore::Position value)->void
 	{
 		m_position = value;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Position"));
 	}
 	auto Camera::Rotation::get()->MapToolCore::Rotation
 	{
@@ -132,6 +138,7 @@ namespace MaptoolRenderer
 	auto Camera::Rotation::set(MapToolCore::Rotation value)->void
 	{
 		m_rotation = value;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Rotation"));
 	}
 	auto Camera::Far::get()->float
 	{
@@ -140,6 +147,7 @@ namespace MaptoolRenderer
 	auto Camera::Far::set(float value)->void
 	{
 		far_ = value;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Far"));
 	}
 	auto Camera::Near::get()->float
 	{
@@ -148,6 +156,7 @@ namespace MaptoolRenderer
 	auto Camera::Near::set(float value)->void
 	{
 		near_ = value;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Near"));
 	}
 	auto OrthoCamera::Aspect::get()->float
 	{
@@ -156,6 +165,7 @@ namespace MaptoolRenderer
 	auto OrthoCamera::Aspect::set(float value)->void
 	{
 		aspect_ = value;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Aspect"));
 	}
 	auto PersCamera::Angle::get()->float
 	{
@@ -164,6 +174,7 @@ namespace MaptoolRenderer
 	auto PersCamera::Angle::set(float value)->void
 	{
 		angle_ = value;
+		PropertyChanged(this, gcnew PropertyChangedEventArgs("Angle"));
 	}
 	auto OrthoCamera::GenerateProjMatrix(float width, float height, DirectX::XMFLOAT4X4* out) -> void
 	{

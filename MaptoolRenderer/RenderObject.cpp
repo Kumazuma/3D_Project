@@ -14,7 +14,7 @@ MaptoolRenderer::MeshObject::MeshObject()
 	DirectX::XMFLOAT3 position{ transform_->Position.X, transform_->Position.Y, transform_->Position.Z };
 	DirectX::XMFLOAT3 rotation{ transform_->Rotation.X, transform_->Rotation.Y, transform_->Rotation.Z };
 	GenerateTransform(&position, &rotation, transform_->Scale, transformPtr_);
-
+	name_ = "";
 }
 
 MaptoolRenderer::MeshObject::~MeshObject()
@@ -54,6 +54,15 @@ auto MaptoolRenderer::MeshObject::Transform::set(MapToolCore::Transform^ value)-
     transform_ = value;
     transform_->PropertyChanged += transformChangedHandler_;
     OnTransformChanged(transform_, nullptr);
+}
+auto MaptoolRenderer::MeshObject::Name::get()->String^
+{
+	return name_;
+}
+auto MaptoolRenderer::MeshObject::Name::set(String^ value)->void
+{
+	name_ = value;
+	this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "Name" });
 }
 auto MaptoolRenderer::MeshObject::OnTransformChanged(Object^ obj, System::ComponentModel::PropertyChangedEventArgs^ e) -> void
 {

@@ -31,8 +31,14 @@ namespace MaptoolNightbuild.View
         {
             InitializeComponent();
             camera = new MaptoolRenderer.PersCamera();
+            camera.PropertyChanged += Camera_PropertyChanged;
             this.MouseWheel += RenderView_MouseWheel;
             this.SizeChanged += RenderView_SizeChanged;
+        }
+
+        private void Camera_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Render();
         }
 
         public MaptoolRenderer.GraphicsDevice GraphicsDevice

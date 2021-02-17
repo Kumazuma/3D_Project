@@ -3,11 +3,13 @@
 
 namespace MaptoolRenderer
 {
+	using namespace System;
 	ref class Mesh;
 	public ref class MeshObject abstract :
 		public IRenderable,
 		public MapToolCore::IHasTransform,
-		public System::ComponentModel::INotifyPropertyChanged
+		public System::ComponentModel::INotifyPropertyChanged,
+		public MapToolCore::IHasName
 	{
 	protected:
 		MeshObject();
@@ -22,11 +24,17 @@ namespace MaptoolRenderer
 			virtual auto get()->MapToolCore::Transform^ ;
 			virtual auto set(MapToolCore::Transform^)->void ;
 		}
+		property String^ Name
+		{
+			virtual auto get()->String^;
+			virtual auto set(String^)->void;
+		}
 		// INotifyPropertyChanged을(를) 통해 상속됨
 		virtual event System::ComponentModel::PropertyChangedEventHandler^ PropertyChanged;
 	internal:
 		auto OnTransformChanged(Object^ obj, System::ComponentModel::PropertyChangedEventArgs^ e) -> void;
 	internal:
+		String^ name_;
 		MapToolCore::Transform^ transform_;
 		DirectX::XMFLOAT4X4* transformPtr_;
 		System::ComponentModel::PropertyChangedEventHandler^ transformChangedHandler_;

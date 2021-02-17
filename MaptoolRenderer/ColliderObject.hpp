@@ -16,7 +16,8 @@ namespace MaptoolRenderer
 	public ref class ColliderObject :
 		public IRenderable,
 		public System::ComponentModel::INotifyPropertyChanged,
-		public IRenderEntity
+		public IRenderEntity,
+		public IHasName
 	{
 	public:
 		ColliderObject();
@@ -24,6 +25,11 @@ namespace MaptoolRenderer
 		{
 			auto get()->SkinnedXMeshObject^;
 			auto set(SkinnedXMeshObject^ object)->void;
+		}
+		property String^ Name
+		{
+			virtual auto get()->String^;
+			virtual auto set(String^ value)-> void;
 		}
 		[CategoryAttribute("Common")]
 		property ColliderType Type
@@ -56,6 +62,7 @@ namespace MaptoolRenderer
 	public:
 
 	internal:
+		String^ name_;
 		ColliderType type_ = ColliderType::None;
 		ColliderAttribute^ attribute_;
 		Offset offset_;

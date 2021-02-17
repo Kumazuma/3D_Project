@@ -4,7 +4,9 @@ namespace DirectX
 	struct XMFLOAT4X4;
 }
 namespace MaptoolRenderer {
-	public ref class Camera abstract
+	using namespace System::ComponentModel;
+	public ref class Camera abstract:
+		public INotifyPropertyChanged
 	{
 	public:
 		Camera();
@@ -33,6 +35,8 @@ namespace MaptoolRenderer {
 			auto get()->float;
 			auto set(float)->void;
 		}
+		// INotifyPropertyChanged을(를) 통해 상속됨
+		virtual event System::ComponentModel::PropertyChangedEventHandler^ PropertyChanged;
 	internal:
 		virtual auto GenerateProjMatrix(float width, float height, DirectX::XMFLOAT4X4* out)->void = 0;
 		auto GenerateMatrix(DirectX::XMFLOAT4X4* out)->void;
@@ -42,6 +46,8 @@ namespace MaptoolRenderer {
 	protected:
 		float near_;
 		float far_;
+
+		
 	};
 	public ref class OrthoCamera : public Camera
 	{
