@@ -11,6 +11,10 @@ MaptoolRenderer::MeshObject::MeshObject()
 	transform_ = gcnew MapToolCore::Transform{};
 	transform_->PropertyChanged += transformChangedHandler_;
 	transformPtr_ = new DirectX::XMFLOAT4X4{};
+	DirectX::XMFLOAT3 position{ transform_->Position.X, transform_->Position.Y, transform_->Position.Z };
+	DirectX::XMFLOAT3 rotation{ transform_->Rotation.X, transform_->Rotation.Y, transform_->Rotation.Z };
+	GenerateTransform(&position, &rotation, transform_->Scale, transformPtr_);
+
 }
 
 MaptoolRenderer::MeshObject::~MeshObject()

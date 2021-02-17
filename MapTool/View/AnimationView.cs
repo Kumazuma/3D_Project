@@ -156,7 +156,7 @@ namespace MapTool.View
                         case MapToolCore.ColliderType.Box:
                             newObject = new BoxColliderMeshObject(GraphicsDevice.Instance);
                             break;
-                        case MapToolCore.ColliderType.Sphare:
+                        case MapToolCore.ColliderType.Sphere:
                             newObject = new SphareMesh(GraphicsDevice.Instance);
                             break;
                     }
@@ -290,7 +290,7 @@ namespace MapTool.View
                         case MapToolCore.ColliderType.Box:
                             newObject = new BoxColliderMeshObject(GraphicsDevice.Instance);
                             break;
-                        case MapToolCore.ColliderType.Sphare:
+                        case MapToolCore.ColliderType.Sphere:
                             newObject = new SphareMesh(GraphicsDevice.Instance);
                             break;
                     }

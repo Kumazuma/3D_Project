@@ -4,7 +4,7 @@ class IRendererBase;
 struct ID3DXEffect;
 namespace MaptoolRenderer {
 	ref class MeshObject;
-	public ref class Mesh
+	public ref class Mesh abstract
 	{
 	protected:
 		Mesh();

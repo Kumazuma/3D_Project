@@ -19,6 +19,8 @@ namespace MaptoolRenderer
 		SphereMesh();
 		~SphereMesh();
 		!SphereMesh();
+		auto Clone()->Mesh^ override;
+
 	private:
 		static System::WeakReference<SphereMeshPtr^>^ s_ptr;
 		SphereMeshPtr^ inner_;

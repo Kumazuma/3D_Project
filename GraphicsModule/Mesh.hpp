@@ -18,6 +18,7 @@ namespace Kumazuma
 		virtual void SetupIA(ID3D11DeviceContext* device) = 0;
 		virtual Subsets const& GetSubsetsRef() = 0;
 		virtual Texture2D* GetMaterialTexture(wchar_t const* materialName) = 0;
+		virtual MeshType GetType() = 0;
 	};
 	struct StaticMeshVertex
 	{

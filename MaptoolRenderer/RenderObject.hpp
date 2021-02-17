@@ -19,8 +19,8 @@ namespace MaptoolRenderer
 		virtual auto PrepereRender(GraphicsDevice^ renderer) -> void = 0;
 		// IHasTransform을(를) 통해 상속됨
 		property MapToolCore::Transform^ Transform {
-			virtual auto get()->MapToolCore::Transform^ override;
-			virtual auto set(MapToolCore::Transform^)->void override;
+			virtual auto get()->MapToolCore::Transform^ ;
+			virtual auto set(MapToolCore::Transform^)->void ;
 		}
 		// INotifyPropertyChanged을(를) 통해 상속됨
 		virtual event System::ComponentModel::PropertyChangedEventHandler^ PropertyChanged;

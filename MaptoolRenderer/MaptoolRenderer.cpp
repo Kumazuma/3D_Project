@@ -242,6 +242,7 @@ auto MaptoolRenderer::GraphicsDevice::Render(Control^ control, IEnumerable<IRend
 		renderable->PrepereRender(this);
 	}
 	RenderDeferred(&viewSpaceMatrix, &projSpaceMatrix, &viewProjMatrix);
+	RenderWireframe(&viewSpaceMatrix, &projSpaceMatrix, &viewProjMatrix);
 	device->SetRenderState(D3DRS_LIGHTING, TRUE);
 	DrawDebug();
 	device->EndScene();
@@ -462,6 +463,28 @@ auto MaptoolRenderer::GraphicsDevice::DeferredCombine() -> void
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 4, 0, 2);
 	combineEffect_->EndPass();
 	combineEffect_->End();
+}
+auto MaptoolRenderer::GraphicsDevice::RenderWireframe(DirectX::XMFLOAT4X4 const* viewSpacePtr, DirectX::XMFLOAT4X4 const* projSpacePtr, DirectX::XMFLOAT4X4 const* viewProj) -> void
+{
+	IList<IRenderEntity^>^ list;
+	D3DXVECTOR4 defaultSpecular{ 0.0f,0.0f,0.0f,1.f };
+	for each (auto item in effects_)
+	{
+		ID3DXEffect* effect{ reinterpret_cast<ID3DXEffect*>(item.Value) };
+		effect->SetVector("g_vSpecular", &defaultSpecular);
+	}
+	if (renderGroups_.TryGetValue(RenderGroupID::Wireframe, list))
+	{
+		for each (auto entity in list)
+		{
+			entity->Render(this);
+			for each (auto item in effects_)
+			{
+				ID3DXEffect* effect{ reinterpret_cast<ID3DXEffect*>(item.Value) };
+				effect->SetVector("g_vSpecular", &defaultSpecular);
+			}
+		}
+	}
 }
 auto MaptoolRenderer::GraphicsDevice::DrawDebug() -> void
 {

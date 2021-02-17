@@ -19,6 +19,8 @@ namespace MaptoolRenderer
 		BoxMesh();
 		~BoxMesh();
 		!BoxMesh();
+		virtual auto Clone()->Mesh^ override;
+
 	private:
 		static System::WeakReference<BoxMeshPtr^>^ s_ptr;
 		BoxMeshPtr^ inner_;

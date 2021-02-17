@@ -49,22 +49,33 @@ MaptoolRenderer::SphereMesh::SphereMesh()
         }
     }
     s_ptr->TryGetTarget(ptr);
+    inner_ = ptr;
+    msclr::lock r(inner_);
+    ++inner_->count_;
     renderObject_ = ptr->ptr_;
 }
 
 MaptoolRenderer::SphereMesh::~SphereMesh()
 {
-    renderObject_ = nullptr;
-    msclr::lock r(inner_);
-    --inner_->count_;
-    if (inner_->count_ == 0)
+    if (inner_ != nullptr)
     {
-        inner_->~SphereMeshPtr();
-        inner_ = nullptr;
+        renderObject_ = nullptr;
+        msclr::lock r(inner_);
+        --inner_->count_;
+        if (inner_->count_ == 0)
+        {
+            inner_->~SphereMeshPtr();
+            inner_ = nullptr;
+        }
     }
 }
 
 MaptoolRenderer::SphereMesh::!SphereMesh()
 {
     this->~SphereMesh();
+}
+
+auto MaptoolRenderer::SphereMesh::Clone() -> Mesh^ 
+{
+    return this;
 }

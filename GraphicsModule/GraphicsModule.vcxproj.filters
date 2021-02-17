@@ -74,6 +74,12 @@
     <Filter Include="RenderSystem\impl">
       <UniqueIdentifier>{4b6685ba-1f21-485b-8183-291fa5c1e618}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resource\Mesh\SkinnedMesh">
+      <UniqueIdentifier>{47812982-ca47-4cfa-b104-4fa4b9237bb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Mesh\FBX">
+      <UniqueIdentifier>{e3eb0d7b-6f94-472b-ad0d-eb65e6aa6297}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -151,6 +157,12 @@
     <ClInclude Include="RenderSystemImpl.hpp">
       <Filter>RenderSystem\impl</Filter>
     </ClInclude>
+    <ClInclude Include="SkinnedMesh.hpp">
+      <Filter>resource\Mesh\SkinnedMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXMesh.hpp">
+      <Filter>resource\Mesh\FBX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -218,6 +230,9 @@
     </ClCompile>
     <ClCompile Include="RenderSystem.cpp">
       <Filter>RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXMesh.cpp">
+      <Filter>resource\Mesh\FBX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
