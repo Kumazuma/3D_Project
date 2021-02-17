@@ -31,8 +31,8 @@ namespace MaptoolNightbuild.View
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.pgCollider = new System.Windows.Forms.PropertyGrid();
-            this.button1 = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
+            this.btnAddColiider = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -53,7 +53,7 @@ namespace MaptoolNightbuild.View
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.listBox1);
-            this.splitContainer1.Panel2.Controls.Add(this.button1);
+            this.splitContainer1.Panel2.Controls.Add(this.btnAddColiider);
             this.splitContainer1.Size = new System.Drawing.Size(1161, 978);
             this.splitContainer1.SplitterDistance = 387;
             this.splitContainer1.TabIndex = 0;
@@ -66,23 +66,29 @@ namespace MaptoolNightbuild.View
             this.pgCollider.Size = new System.Drawing.Size(1161, 387);
             this.pgCollider.TabIndex = 1;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(3, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(1155, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // listBox1
             // 
+            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 12;
             this.listBox1.Location = new System.Drawing.Point(3, 32);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(1155, 544);
             this.listBox1.TabIndex = 1;
+            // 
+            // btnAddColiider
+            // 
+            this.btnAddColiider.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddColiider.Location = new System.Drawing.Point(3, 3);
+            this.btnAddColiider.Name = "btnAddColiider";
+            this.btnAddColiider.Size = new System.Drawing.Size(1155, 23);
+            this.btnAddColiider.TabIndex = 0;
+            this.btnAddColiider.Text = "btnAddColiider";
+            this.btnAddColiider.UseVisualStyleBackColor = true;
+            this.btnAddColiider.Click += new System.EventHandler(this.btnAddColiider_Click);
             // 
             // ColliderPropertyView
             // 
@@ -104,6 +110,6 @@ namespace MaptoolNightbuild.View
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.PropertyGrid pgCollider;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnAddColiider;
     }
 }

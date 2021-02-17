@@ -17,6 +17,7 @@ namespace MaptoolNightbuild.View
         Rotating,
         MovingForward
     }
+
     public partial class RenderView : Control
     {
         MaptoolRenderer.GraphicsDevice graphicsDevice;
@@ -25,6 +26,7 @@ namespace MaptoolNightbuild.View
         MouseOperation m_mouseOperation = MouseOperation.None;
         Point? m_prevMousePosition = null;
         IAsyncResult asyncResult = null;
+        bool cameraMoveEnable = true;
         public RenderView()
         {
             InitializeComponent();
@@ -41,7 +43,27 @@ namespace MaptoolNightbuild.View
                 graphicsDevice = value;
             }
         }
-
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            if(cameraMoveEnable == true)
+            {
+                RenderView_MouseMove(this, e);
+            }
+        }
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            if (cameraMoveEnable == true)
+            {
+                RenderView_MouseDown(this, e);
+            }
+        }
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+            RenderView_MouseUp(this, e);
+        }
         protected override void OnPaint(PaintEventArgs pe)
         {
             base.OnPaint(pe);

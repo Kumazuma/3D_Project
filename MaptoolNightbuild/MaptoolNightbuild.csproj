@@ -74,6 +74,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Doc\CharacterMetaDoc.cs" />
+    <Compile Include="Doc\ResourceManager.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,6 +95,12 @@
     </Compile>
     <Compile Include="View\CharacterMetaEditor.Designer.cs">
       <DependentUpon>CharacterMetaEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\CharacterMetaRenderView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="View\CharacterMetaRenderView.Designer.cs">
+      <DependentUpon>CharacterMetaRenderView.cs</DependentUpon>
     </Compile>
     <Compile Include="View\ColliderPropertyView.cs">
       <SubType>UserControl</SubType>
@@ -132,6 +140,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\CharacterMetaEditor.resx">
       <DependentUpon>CharacterMetaEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\CharacterMetaRenderView.resx">
+      <DependentUpon>CharacterMetaRenderView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\ColliderPropertyView.resx">
       <DependentUpon>ColliderPropertyView.cs</DependentUpon>
