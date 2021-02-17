@@ -9,11 +9,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Collections.Specialized;
 using MaptoolNightbuild.View;
+using System.Diagnostics;
+
 namespace MaptoolNightbuild.CharacterMetaEditor.View
 {
     public partial class CharacterMetaRenderView : UserControl
     {
         RenderView renderView;
+        Timer timer = new Timer();
+        Stopwatch stopWatch = new Stopwatch();
+        TimeSpan lastTimeSpan;
+        bool isPlaying = false;
         public CharacterMetaRenderView()
         {
             InitializeComponent();
@@ -21,7 +27,42 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             Controls.Add(renderView);
             renderView.Dock = DockStyle.Fill;
             var document = Doc.CharacterMetaDoc.Instance;
+            document.PropertyChanged += Document_PropertyChanged;
             document.RenderObjects.CollectionChanged += RenderObjects_CollectionChanged;
+            timer.Tick += Timer_Tick;
+            timer.Interval = 1;
+        }
+
+        private void Document_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var document = Doc.CharacterMetaDoc.Instance;
+            if (e.PropertyName == "Mesh")
+            {
+                if(document.Mesh == null)
+                {
+                    timer.Stop();
+                    stopWatch.Stop();
+                }
+                else
+                {
+                    //timer.Start();
+                    //stopWatch.Start();
+                }
+            }
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            var document = Doc.CharacterMetaDoc.Instance;
+            var timeSpan = stopWatch.Elapsed;
+            var delta = timeSpan - lastTimeSpan;
+            lastTimeSpan = timeSpan;
+
+            if (document.Mesh != null)
+            {
+                document.Mesh.PlayAnimation((float)delta.TotalSeconds);
+                renderView.Render();
+            }
         }
 
         private void RenderObjects_CollectionChanged(
@@ -41,11 +82,11 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
 
         public void Play()
         {
-
+            isPlaying = true;
         }
         public void Stop()
         {
-
+            isPlaying = false;
         }
         public MaptoolRenderer.Camera CurrentCamera
         {
@@ -93,6 +134,19 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
         private void XSkinnedMeshObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             renderView.Render();
+        }
+
+        private void btnPlay_Click(object sender, EventArgs e)
+        {
+            timer.Start();
+            stopWatch.Start();
+            lastTimeSpan = stopWatch.Elapsed;
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            timer.Stop();
+            stopWatch.Stop();
         }
     }
 }

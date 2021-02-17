@@ -82,15 +82,19 @@ namespace MaptoolNightbuild.View
                 return;
             if (mapObjects == null) return;
             if (!this.Created) return;
-            if (asyncResult != null)
+            if (asyncResult != null && !asyncResult.IsCompleted) return;
+            var oldAsyncId = asyncResult;
+            lock (this)
             {
-                this.EndInvoke(asyncResult);
+                if(oldAsyncId == asyncResult)
+                {
+                    var renderAction = new Action(() =>
+                    {
+                        graphicsDevice.Render(this, mapObjects, camera);
+                    });
+                    asyncResult = this.BeginInvoke(renderAction);
+                }
             }
-            var renderAction = new Action(() =>
-            {
-                graphicsDevice.Render(this, mapObjects, camera);
-            });
-            asyncResult = this.BeginInvoke(renderAction);
         }
         public MaptoolRenderer.Camera CurrentCamera
         {

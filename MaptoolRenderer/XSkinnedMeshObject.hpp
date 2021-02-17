@@ -16,10 +16,16 @@ namespace MaptoolRenderer
 
 		// IRenderEntity을(를) 통해 상속됨
 		virtual auto Render(GraphicsDevice^ renderer) -> void;
+		property unsigned int AnimationSet
+		{
+			auto get()->unsigned int;
+			auto set(unsigned int)->void;
+		}
 	public:
 		auto SetAnimationSet(int i)->void;
 		auto PlayAnimation(float timeDelta)->void;
 	internal:
 		SkinnedXMesh^ mesh_;
+		int animationSet_;
 	};
 }

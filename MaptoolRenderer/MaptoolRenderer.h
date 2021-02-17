@@ -41,6 +41,8 @@ namespace MaptoolRenderer {
 		auto AddRenderObject(RenderGroupID group, IRenderEntity^ entity)->void;
 		auto GetEffect(String^ key, ID3DXEffect** effect)->void;
 	private:
+		auto InitalizeEffect()->void;
+		auto ClearEffect()->void;
 		auto ClearRenderTarget()->void;
 		auto RenderDeferred(DirectX::XMFLOAT4X4 const* viewSpacePtr, DirectX::XMFLOAT4X4 const* projSpacePtr, DirectX::XMFLOAT4X4 const* viewProj)->void;
 		auto DeferredLighting(DirectX::XMFLOAT4X4 const* viewSpacePtr, DirectX::XMFLOAT4X4 const* projSpacePtr, DirectX::XMFLOAT4X4 const* viewProj)->void;
@@ -53,6 +55,7 @@ namespace MaptoolRenderer {
 	private:
 		Dictionary<RenderGroupID, IList<IRenderEntity^>^> renderGroups_;
 	private:
+		WeakReference<Control^>^ control;
 		RenderModule* renderModulePtr_;
 		IDirect3DVertexBuffer9* vertexBuffer_;
 		IDirect3DIndexBuffer9* indexBuffer_;

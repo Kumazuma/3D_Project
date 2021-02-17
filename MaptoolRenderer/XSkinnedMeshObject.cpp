@@ -11,6 +11,7 @@ MaptoolRenderer::SkinnedXMeshObject::SkinnedXMeshObject(SkinnedXMesh^ mesh)
     mesh_ = safe_cast<SkinnedXMesh^>(mesh->Clone());
     static_cast<::SkinnedXMeshObject*>(mesh_->renderObject_)->SetAnimationSet(0);
     mesh_->PlayAnimation(0.1f);
+    animationSet_ = 0.f;
 }
 
 auto MaptoolRenderer::SkinnedXMeshObject::PrepereRender(GraphicsDevice^ renderer) -> void
@@ -54,4 +55,14 @@ auto MaptoolRenderer::SkinnedXMeshObject::PlayAnimation(float timeDelta) -> void
 {
     ::SkinnedXMeshObject* mesh{ static_cast<::SkinnedXMeshObject*> (mesh_->renderObject_) };
     mesh->PlayAnimation(timeDelta);
+}
+auto MaptoolRenderer::SkinnedXMeshObject::AnimationSet::get()->unsigned int
+{
+    return animationSet_;
+}
+auto MaptoolRenderer::SkinnedXMeshObject::AnimationSet::set(unsigned int value)->void
+{
+    animationSet_ = value;
+    static_cast<::SkinnedXMeshObject*>(mesh_->renderObject_)->SetAnimationSet(animationSet_);
+    this->PropertyChanged(this, gcnew PropertyChangedEventArgs( "AnimationSet"));
 }

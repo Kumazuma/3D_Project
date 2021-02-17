@@ -30,11 +30,11 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.btnLoadXMesh = new System.Windows.Forms.Button();
-            this.btnOpenJson = new System.Windows.Forms.Button();
-            this.btnSaveJSON = new System.Windows.Forms.Button();
-            this.btnPlay = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
+            this.btnPlay = new System.Windows.Forms.Button();
+            this.btnSaveJSON = new System.Windows.Forms.Button();
+            this.btnOpenJson = new System.Windows.Forms.Button();
+            this.btnLoadXMesh = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -51,24 +51,25 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             this.panel1.Size = new System.Drawing.Size(1400, 29);
             this.panel1.TabIndex = 0;
             // 
-            // btnLoadXMesh
+            // btnStop
             // 
-            this.btnLoadXMesh.Location = new System.Drawing.Point(3, 3);
-            this.btnLoadXMesh.Name = "btnLoadXMesh";
-            this.btnLoadXMesh.Size = new System.Drawing.Size(94, 23);
-            this.btnLoadXMesh.TabIndex = 0;
-            this.btnLoadXMesh.Text = "X 메시 로드";
-            this.btnLoadXMesh.UseVisualStyleBackColor = true;
-            this.btnLoadXMesh.Click += new System.EventHandler(this.btnLoadXMesh_Click);
+            this.btnStop.Location = new System.Drawing.Point(346, 3);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(75, 23);
+            this.btnStop.TabIndex = 1;
+            this.btnStop.Text = "정지";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
-            // btnOpenJson
+            // btnPlay
             // 
-            this.btnOpenJson.Location = new System.Drawing.Point(103, 3);
-            this.btnOpenJson.Name = "btnOpenJson";
-            this.btnOpenJson.Size = new System.Drawing.Size(75, 23);
-            this.btnOpenJson.TabIndex = 1;
-            this.btnOpenJson.Text = "JSON 열기";
-            this.btnOpenJson.UseVisualStyleBackColor = true;
+            this.btnPlay.Location = new System.Drawing.Point(265, 3);
+            this.btnPlay.Name = "btnPlay";
+            this.btnPlay.Size = new System.Drawing.Size(75, 23);
+            this.btnPlay.TabIndex = 1;
+            this.btnPlay.Text = "재생";
+            this.btnPlay.UseVisualStyleBackColor = true;
+            this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
             // 
             // btnSaveJSON
             // 
@@ -79,23 +80,24 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             this.btnSaveJSON.Text = "JSON 저장";
             this.btnSaveJSON.UseVisualStyleBackColor = true;
             // 
-            // btnPlay
+            // btnOpenJson
             // 
-            this.btnPlay.Location = new System.Drawing.Point(265, 3);
-            this.btnPlay.Name = "btnPlay";
-            this.btnPlay.Size = new System.Drawing.Size(75, 23);
-            this.btnPlay.TabIndex = 1;
-            this.btnPlay.Text = "재생";
-            this.btnPlay.UseVisualStyleBackColor = true;
+            this.btnOpenJson.Location = new System.Drawing.Point(103, 3);
+            this.btnOpenJson.Name = "btnOpenJson";
+            this.btnOpenJson.Size = new System.Drawing.Size(75, 23);
+            this.btnOpenJson.TabIndex = 1;
+            this.btnOpenJson.Text = "JSON 열기";
+            this.btnOpenJson.UseVisualStyleBackColor = true;
             // 
-            // btnStop
+            // btnLoadXMesh
             // 
-            this.btnStop.Location = new System.Drawing.Point(346, 3);
-            this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(75, 23);
-            this.btnStop.TabIndex = 1;
-            this.btnStop.Text = "정지";
-            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnLoadXMesh.Location = new System.Drawing.Point(3, 3);
+            this.btnLoadXMesh.Name = "btnLoadXMesh";
+            this.btnLoadXMesh.Size = new System.Drawing.Size(94, 23);
+            this.btnLoadXMesh.TabIndex = 0;
+            this.btnLoadXMesh.Text = "X 메시 로드";
+            this.btnLoadXMesh.UseVisualStyleBackColor = true;
+            this.btnLoadXMesh.Click += new System.EventHandler(this.btnLoadXMesh_Click);
             // 
             // CharacterMetaRenderView
             // 

@@ -67,7 +67,7 @@ App::App(HINSTANCE hInstance)
     m_mainWindow.Show();
     m_mainWindow.Connect(Kumazuma::WindowSystem::EVT_Destroy, this, &App::OnMainWindowDestory);
     RenderModule* renderModule;
-    if (FAILED(RenderModule::Create(m_mainWindow.GetHandle(), WINDOW_WIDTH, WINDOW_HEIGHT, true, &renderModule))) 
+    if (FAILED(RenderModule::Create(m_mainWindow.GetHandle(), WINDOW_WIDTH, WINDOW_HEIGHT, false, &renderModule))) 
     {
         throw E_FAIL;
     }

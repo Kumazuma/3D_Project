@@ -59,6 +59,7 @@ char constexpr ID_TEX_DEPTH_MAP[]{ "g_depthMap" };
 
 MaptoolRenderer::GraphicsDevice::GraphicsDevice(Control^ control, int width, int height)
 {
+	this->control = gcnew WeakReference<Control^>( control);
 	HWND hwnd{reinterpret_cast<HWND>( control->Handle.ToPointer()) };
 	RenderModule* renderModule{};
 	RenderModule::Create(hwnd, width, height,false, &renderModule);
@@ -66,32 +67,7 @@ MaptoolRenderer::GraphicsDevice::GraphicsDevice(Control^ control, int width, int
 	this->renderer_ = new NativeRenderer{ renderModule };
 	this->effects_ = gcnew Dictionary<String^, size_t>{};
 	COMPtr<IDirect3DDevice9> device;
-	COMPtr<ID3DXBuffer> msgBuffer;
-	ID3DXEffect* effect;
 	renderModulePtr_->GetDevice(&device);
-	Resources::ResourceManager^ rm = 
-		gcnew Resources::ResourceManager(L"MaptoolRenderer.shader", this->GetType()->Assembly);
-	array<char>^ arr = nullptr;
-	arr = safe_cast<array<char>^> (rm->GetObject("deferred"));
-	pin_ptr<char> pin = nullptr;
-	pin = &arr[0];
-	D3DXCreateEffect(device.Get(), pin, static_cast<UINT>(arr->Length), nullptr, nullptr, D3DXSHADER_OPTIMIZATION_LEVEL3, nullptr, &effect, &msgBuffer);
-	effects_->Add("deferred", (size_t)effect);
-	arr = safe_cast<array<char>^> (rm->GetObject("combine"));
-	pin = &arr[0];
-	D3DXCreateEffect(device.Get(), pin, static_cast<UINT>(arr->Length), nullptr, nullptr, D3DXSHADER_OPTIMIZATION_LEVEL3, nullptr, &effect, &msgBuffer);
-	combineEffect_ = effect;
-
-	arr = safe_cast<array<char>^> (rm->GetObject("deferred_lighting"));
-	pin = &arr[0];
-	D3DXCreateEffect(device.Get(), pin, static_cast<UINT>(arr->Length), nullptr, nullptr, D3DXSHADER_OPTIMIZATION_LEVEL3, nullptr, &effect, &msgBuffer);
-	lightingEffect_ = effect;
-	if (msgBuffer != nullptr)
-	{
-		char const* errMsg{ reinterpret_cast<char const*>( msgBuffer->GetBufferPointer()) };
-		OutputDebugStringA(errMsg);
-
-	}
 	renderModule->CreateRenderTarget(RENDER_TARGET_ALBEDO, width, height, D3DFMT_A8R8G8B8);
 	renderModule->CreateRenderTarget(RENDER_TARGET_NORMAL, width, height, D3DFMT_A16B16G16R16F);
 	renderModule->CreateRenderTarget(RENDER_TARGET_SPECULAR, width, height, D3DFMT_A16B16G16R16F);
@@ -101,9 +77,9 @@ MaptoolRenderer::GraphicsDevice::GraphicsDevice(Control^ control, int width, int
 
 	IDirect3DVertexBuffer9* vertexBuffer;
 	IDirect3DIndexBuffer9* indexBuffer;
-	
-	device->CreateVertexBuffer(sizeof(PPVertexFVF) * 4, 0, FVF, D3DPOOL_MANAGED, &vertexBuffer, nullptr);
-	device->CreateIndexBuffer(sizeof(int) * 6, 0, D3DFMT_INDEX32, D3DPOOL_MANAGED, &indexBuffer, nullptr);
+	InitalizeEffect();
+	device->CreateVertexBuffer(sizeof(PPVertexFVF) * 4,  D3DUSAGE_WRITEONLY, FVF, D3DPOOL_MANAGED, &vertexBuffer, nullptr);
+	device->CreateIndexBuffer(sizeof(int) * 6, D3DUSAGE_WRITEONLY, D3DFMT_INDEX32, D3DPOOL_MANAGED, &indexBuffer, nullptr);
 	vertexBuffer_ = vertexBuffer;
 	indexBuffer_ = indexBuffer;
 	PPVertexFVF* pVertices;
@@ -221,14 +197,56 @@ auto MaptoolRenderer::GraphicsDevice::Render(Control^ control, IEnumerable<IRend
 	DirectX::XMFLOAT4X4 viewProjMatrix{};
 	COMPtr<IDirect3DDevice9> device;
 	renderModulePtr_->GetDevice(&device);
-
+	HRESULT hr = device->TestCooperativeLevel();
+	if (hr == D3DERR_DEVICENOTRESET)
+	{
+		device->SetRenderTarget(0, nullptr);
+		device->SetRenderTarget(1, nullptr);
+		device->SetRenderTarget(2, nullptr);
+		device->SetRenderTarget(3, nullptr);
+		if (effects_ != nullptr)
+		{
+			for each (auto item in effects_)
+			{
+				auto effect{ (ID3DXEffect*)item.Value };
+				effect->OnLostDevice();
+			}
+		}
+		sprite_->OnLostDevice();
+		lightingEffect_->OnLostDevice();
+		combineEffect_->OnLostDevice();
+		//ClearEffect();
+		Control^ defaultRenderWindow;
+		this->control->TryGetTarget(defaultRenderWindow);
+		if (renderModulePtr_->Reset())
+		{
+			sprite_->OnResetDevice();
+			combineEffect_->OnResetDevice();
+			lightingEffect_->OnResetDevice();
+			if (effects_ != nullptr)
+			{
+				for each (auto item in effects_)
+				{
+					auto effect{ (ID3DXEffect*)item.Value };
+					effect->OnResetDevice();
+				}
+			}
+		}
+		else
+		{
+			return;
+		}
+	}
 	camera->GenerateProjMatrix(control->Width, control->Height, &projSpaceMatrix);
 	camera->GenerateMatrix(&viewSpaceMatrix);
 	GenerateViewProjMatrix(&viewSpaceMatrix, &projSpaceMatrix, &viewProjMatrix);
 	device->SetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&projSpaceMatrix));
 	device->SetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&viewSpaceMatrix));
 	device->SetRenderState(D3DRS_LIGHTING, FALSE);
-	device->BeginScene();
+
+	hr = device->BeginScene();
+	
+	
 	device->Clear(0, nullptr, D3DCLEAR_STENCIL | D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_COLORVALUE(0.f, 0.f, 1.f, 1.f), 1.f, 0);
 	for each (auto item in effects_)
 	{
@@ -270,6 +288,44 @@ auto MaptoolRenderer::GraphicsDevice::GetEffect(String^ key, ID3DXEffect** out) 
 		*out = ptr;
 		ptr->AddRef();
 	}
+}
+auto MaptoolRenderer::GraphicsDevice::InitalizeEffect()->void
+{
+	COMPtr<IDirect3DDevice9> device;
+	COMPtr<ID3DXBuffer> msgBuffer;
+	ID3DXEffect* effect;
+	renderModulePtr_->GetDevice(&device);
+	Resources::ResourceManager^ rm =
+		gcnew Resources::ResourceManager(L"MaptoolRenderer.shader", this->GetType()->Assembly);
+	array<char>^ arr = nullptr;
+	arr = safe_cast<array<char>^> (rm->GetObject("deferred"));
+	pin_ptr<char> pin = nullptr;
+	pin = &arr[0];
+	D3DXCreateEffect(device.Get(), pin, static_cast<UINT>(arr->Length), nullptr, nullptr, D3DXSHADER_OPTIMIZATION_LEVEL3, nullptr, &effect, &msgBuffer);
+	effects_->Add("deferred", (size_t)effect);
+	arr = safe_cast<array<char>^> (rm->GetObject("combine"));
+	pin = &arr[0];
+	D3DXCreateEffect(device.Get(), pin, static_cast<UINT>(arr->Length), nullptr, nullptr, D3DXSHADER_OPTIMIZATION_LEVEL3, nullptr, &effect, &msgBuffer);
+	combineEffect_ = effect;
+
+	arr = safe_cast<array<char>^> (rm->GetObject("deferred_lighting"));
+	pin = &arr[0];
+	D3DXCreateEffect(device.Get(), pin, static_cast<UINT>(arr->Length), nullptr, nullptr, D3DXSHADER_OPTIMIZATION_LEVEL3, nullptr, &effect, &msgBuffer);
+	lightingEffect_ = effect;
+	if (msgBuffer != nullptr)
+	{
+		char const* errMsg{ reinterpret_cast<char const*>(msgBuffer->GetBufferPointer()) };
+		OutputDebugStringA(errMsg);
+	}
+}
+auto MaptoolRenderer::GraphicsDevice::ClearEffect() -> void
+{
+	for each (auto item in effects_)
+	{
+		auto effect{ (ID3DXEffect*)item.Value };
+		effect->Release();
+	}
+	effects_->Clear();
 }
 auto MaptoolRenderer::GraphicsDevice::ClearRenderTarget() -> void
 {

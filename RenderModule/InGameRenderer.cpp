@@ -221,7 +221,7 @@ auto InGameRenderer::Render(RenderModule* const pRenderModule) -> void
     COMPtr<IDirect3DDevice9> pDevice;
     XMStoreFloat4x4(&m_viewProjMatrix, XMLoadFloat4x4(&m_viewMatrix) * XMLoadFloat4x4(&m_projMatrix));
     pRenderModule->GetDevice(&pDevice);
-    if (!pRenderModule->Renderable())
+    if (!pRenderModule->Reset())
     {
         ClearEntityTable();
         return;

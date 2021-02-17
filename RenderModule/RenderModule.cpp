@@ -74,7 +74,7 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height, bool fullScre
 		d3dPP.EnableAutoDepthStencil = true;
 		d3dPP.AutoDepthStencilFormat = D3DFMT_D24S8;
 		d3dPP.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
-		d3dPP.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
+		d3dPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 		m_d3dpp = d3dPP;
 		hr = m_pSDK->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, (HWND)hWindow, iFlag, &d3dPP,  &m_pDevice);
 		if (FAILED(hr))
@@ -85,6 +85,7 @@ auto RenderModule::Initialize(HWND hWindow, u32 width, u32 height, bool fullScre
 		CreateSimpleColorTexture(64, 64, { 0.f, 0.f, 1.f, 1.f }, &m_pBlueTexture);
 		m_pDevice->GetSwapChain(0, &m_defaultSwapChain);
 		m_defaultRenderTarget = MakeCOMPtr(new DefaultRenderTarget{ this });
+		m_defaultRenderTarget->Release();
 		return S_OK;
 	}
 	catch (HRESULT hr)
@@ -130,6 +131,7 @@ auto RenderModule::CreateRenderTarget(std::wstring const& id, u32 width, u32 hei
 		return E_FAIL;
 	}
 	this->m_renderTargets.emplace(id, static_cast<IRenderTarget*>(renderTarget));
+	renderTarget->Release();
 	return S_OK;
 }
 
@@ -362,7 +364,7 @@ auto RenderModule::GetSimpleColorTexture(DefaultColorTexture kind, IDirect3DText
 
 auto RenderModule::BeginRender(float r, float g, float b, float a) -> void
 {
-	if (!Renderable())
+	if (!Reset())
 	{
 		return;
 	}
@@ -385,12 +387,37 @@ auto RenderModule::ConvertProjToWorld(DirectX::XMFLOAT3 const& cameraPos, Direct
 	return DirectX::XMFLOAT3{};
 }
 
-auto RenderModule::Renderable() -> bool
+auto RenderModule::Reset() -> bool
 {
 	HRESULT hr = m_pDevice->TestCooperativeLevel();
 	if (hr == D3DERR_DEVICENOTRESET)
 	{
+		for (auto& pair : m_renderTargets)
+		{
+			D3DSURFACE_DESC desc;
+			COMPtr<IDirect3DSurface9> surface;
+			pair.second->GetSurface(&surface);
+			surface->GetDesc(&desc);
+			surface.Release();
+			auto refCnt = pair.second.Release();
+			assert(refCnt == 0);
+			surfaceDescTable.emplace(pair.first, desc);
+		}
+		m_defaultSwapChain = nullptr;
+		m_defaultRenderTarget.Release();
+		m_renderTargets.clear();
 		hr = m_pDevice->Reset(&m_d3dpp);
+		if (hr == S_OK)
+		{
+			for (auto& pair : surfaceDescTable)
+			{
+				CreateRenderTarget(pair.first, pair.second.Width, pair.second.Height, pair.second.Format);
+			}
+			surfaceDescTable.clear();
+			m_pDevice->GetSwapChain(0, &m_defaultSwapChain);
+			m_defaultRenderTarget = MakeCOMPtr(new DefaultRenderTarget{ this });
+			m_defaultRenderTarget->Release();
+		}
 	}
 	return hr == S_OK;
 }

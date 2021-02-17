@@ -13,6 +13,7 @@
 #include "BoxMesh.hpp"
 #include "SphereMesh.hpp"
 #include "msclr\marshal_cppstd.h"
+auto constexpr null = nullptr;
 using namespace msclr::interop;
 namespace MaptoolRenderer
 {
@@ -20,8 +21,6 @@ namespace MaptoolRenderer
     ColliderObject::ColliderObject()
     {
         parent_ = nullptr;
-        collider_ = gcnew MapToolCore::Collider();
-        collider_->PropertyChanged += gcnew System::ComponentModel::PropertyChangedEventHandler(this, &MaptoolRenderer::ColliderObject::OnPropertyChanged);
     }
 
  
@@ -50,7 +49,7 @@ namespace MaptoolRenderer
         D3DXMatrixIdentity(&mParentMatrix);
         D3DXMatrixIdentity(&mFrameMatrix);
 
-        D3DXMatrixTranslation(&mOffset, collider_->Offset.X, collider_->Offset.Y, collider_->Offset.Z);
+        D3DXMatrixTranslation(&mOffset, offset_.X, offset_.Y, offset_.Z);
         
         if (parent_ != nullptr)
         {
@@ -66,18 +65,18 @@ namespace MaptoolRenderer
                 }
             }
         }
-        if (collider_->Attribute == nullptr)
+        if (attribute_ == nullptr)
         {
             D3DXMatrixScaling(&mSize, 1, 1, 1);
         }
-        else if (collider_->Attribute->GetType() == MapToolCore::BoxColliderAttribute::typeid)
+        else if (attribute_->GetType() == MapToolCore::BoxColliderAttribute::typeid)
         {
-            auto boxAttr{ dynamic_cast<MapToolCore::BoxColliderAttribute^>(collider_->Attribute) };
+            auto boxAttr{ dynamic_cast<MapToolCore::BoxColliderAttribute^>(attribute_) };
             D3DXMatrixScaling(&mSize, boxAttr->Width, boxAttr->Height, boxAttr->Depth);
         }
-        else if (collider_->Attribute->GetType() == MapToolCore::SphereColliderAttribute::typeid)
+        else if (attribute_->GetType() == MapToolCore::SphereColliderAttribute::typeid)
         {
-            auto sphereAttr{ dynamic_cast<MapToolCore::SphereColliderAttribute^>(collider_->Attribute) };
+            auto sphereAttr{ dynamic_cast<MapToolCore::SphereColliderAttribute^>(attribute_) };
             D3DXMatrixScaling(&mSize, sphereAttr->Radius, sphereAttr->Radius, sphereAttr->Radius);
         }
         mTransform = mSize * mOffset * mFrameMatrix * mParentMatrix;
@@ -106,10 +105,6 @@ namespace MaptoolRenderer
         }
         return nullptr;
     }
-    auto ColliderObject::Collider::get()->MapToolCore::Collider^
-    {
-        return collider_;
-    }
     auto ColliderObject::FrameName::get()->String^
     {
         return frameName_;
@@ -120,34 +115,42 @@ namespace MaptoolRenderer
         this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "FrameName" });
 
     }
+    auto ColliderObject::Type::get()->ColliderType
+    {
+        return type_;
+    }
+    auto ColliderObject::Type::set(ColliderType value)->void
+    {
+        if (value == type_)
+            return;
+        type_ = value;
+        switch (type_)
+        {
+        case ColliderType::None:
+            attribute_ = nullptr;
+            break;
+        case ColliderType::Box:
+            attribute_ = gcnew BoxColliderAttribute();
+            break;
+        case ColliderType::Sphere:
+            attribute_ = gcnew SphereColliderAttribute();
+            break;
+        }
+        if (attribute_ != nullptr)
+        {
+            attribute_->PropertyChanged += gcnew PropertyChangedEventHandler(this, &ColliderObject::OnPropertyChanged);
+        }
+        this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "Type" });
+        this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "Attribute" });
+    }
+    auto ColliderObject::Attribute::get()->ColliderAttribute^
+    {
+        return attribute_;
+    }
 }
 
 
 void MaptoolRenderer::ColliderObject::OnPropertyChanged(System::Object^ sender, System::ComponentModel::PropertyChangedEventArgs^ e)
 {
-    if (e->PropertyName == "Attribute")
-    {
-        if (
-            collider_->Type == MapToolCore::ColliderType::Box && 
-            dynamic_cast<BoxMesh^>( mesh_) ==nullptr
-            )
-        {
-            mesh_ = gcnew BoxMesh();
-        }
-        else if (
-            collider_->Type == MapToolCore::ColliderType::Sphere &&
-            dynamic_cast<SphereMesh^>(mesh_) == nullptr)
-        {
-            mesh_ = gcnew SphereMesh();
-        }
-    }
-    if (sender == collider_)
-    {
-        this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "Collider" });
-    }
-    else
-    {
-
-    }
-
+    this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "Attribute" });
 }

@@ -10,6 +10,7 @@ namespace MaptoolRenderer
 {
 	using namespace System;
 	using namespace System::ComponentModel;
+	using namespace MapToolCore;
 	ref class Mesh;
 	ref class SkinnedXMeshObject;
 	public ref class ColliderObject :
@@ -24,19 +25,26 @@ namespace MaptoolRenderer
 			auto get()->SkinnedXMeshObject^;
 			auto set(SkinnedXMeshObject^ object)->void;
 		}
+		[CategoryAttribute("Common")]
+		property ColliderType Type
+		{
+			auto get()->ColliderType;
+			auto set(ColliderType)->void;
+		}
+		[Browsable(false)]
 		property cli::array<String^>^ FrameNames
 		{
 			auto get()->cli::array<String^>^;
 		}
-		[TypeConverter(MapToolCore::FormatStringConverter::typeid)]
+		[TypeConverter(FormatStringConverter::typeid)]
 		property String^ FrameName
 		{
 			auto get()->String^;
 			auto set(String^)->void;
 		}
-		property MapToolCore::Collider^ Collider
+		property ColliderAttribute^ Attribute
 		{
-			auto get()->MapToolCore::Collider^;
+			auto get()->ColliderAttribute^;
 		}
 		// INotifyPropertyChanged을(를) 통해 상속됨
 		virtual event System::ComponentModel::PropertyChangedEventHandler^ PropertyChanged;
@@ -48,7 +56,9 @@ namespace MaptoolRenderer
 	public:
 
 	internal:
-		MapToolCore::Collider^ collider_;
+		ColliderType type_ = ColliderType::None;
+		ColliderAttribute^ attribute_;
+		Offset offset_;
 		Mesh^ mesh_;
 		SkinnedXMeshObject^ parent_;
 		String^ frameName_;

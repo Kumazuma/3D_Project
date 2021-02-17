@@ -62,7 +62,7 @@ public:
 		float farZ,
 		DirectX::XMFLOAT3 const& pos
 		)->DirectX::XMFLOAT3;
-	auto Renderable()->bool;
+	auto Reset()->bool;
 	
 	auto GetDefaultSwapChain(IDirect3DSwapChain9** ppSwapChain)->void;
 	static auto GenerateViewMatrix(DirectX::XMFLOAT3 const& cameraPosition, DirectX::XMFLOAT3 const& at, DirectX::XMFLOAT3 const& up, DirectX::XMFLOAT4X4* pOut)->void;
@@ -79,7 +79,7 @@ private:
 	std::unordered_map < Kind, std::list<std::shared_ptr<RenderEntity> > > m_renderEntities;
 
 
-
+	std::unordered_map<std::wstring, D3DSURFACE_DESC> surfaceDescTable;
 	D3DPRESENT_PARAMETERS m_d3dpp;
 	COMPtr<IDirect3DDevice9> m_pDevice;
 	COMPtr<IDirect3D9> m_pSDK;
