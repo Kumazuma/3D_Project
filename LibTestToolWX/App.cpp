@@ -37,7 +37,6 @@ bool LibTestApp::OnInit()
         graphicsModule->GetRenderSystem().AddMaterial(standardMaterial);
         standardMaterial->SetWorldMatrixPtr(&worldSpace);
         materials_.push_back(std::unique_ptr<Kumazuma::Material>(standardMaterial));
-
     }
     graphicsModule->GetRenderSystem().Render(&viewSpace, &projSpace);
 
@@ -90,7 +89,8 @@ void LibTestApp::OnTimer(wxTimerEvent& evt)
     XMFLOAT4X4 viewSpace{};
     XMFLOAT4X4 projSpace{};
     XMStoreFloat4x4(&viewSpace, XMMatrixIdentity());
-    XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 1920.f / 1080.f, 0.1f, 1000.f));
+    auto size = renderCanvas_->GetClientSize();
+    XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), static_cast<float>(size.GetWidth()) / static_cast<float>( size.GetHeight()), 0.1f, 1000.f));
     auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
     graphicsModule->GetRenderSystem().Render(&viewSpace, &projSpace);
     IDXGISwapChain* swapChain{};

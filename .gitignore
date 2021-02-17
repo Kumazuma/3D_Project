@@ -44,6 +44,10 @@
 /GraphicsModule/x64/Release
 /LibTestToolWX/x64/Release
 /.vs/3D_Project/v16/ipch
+/.vs
+/packages/wxWidgetsTemplate.2.5.3
+/LibTestToolWX/Debug
+/packages
 /DX11RenderSystem/x64/Release
 /packages
 /wxtest1/x64/Release
