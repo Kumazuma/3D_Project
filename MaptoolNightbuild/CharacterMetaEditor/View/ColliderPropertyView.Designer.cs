@@ -1,5 +1,5 @@
 ﻿
-namespace MaptoolNightbuild.View
+namespace MaptoolNightbuild.CharacterMetaEditor.View
 {
     partial class ColliderPropertyView
     {
@@ -68,8 +68,8 @@ namespace MaptoolNightbuild.View
             // 
             // listBox1
             // 
-            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 12;
@@ -80,7 +80,7 @@ namespace MaptoolNightbuild.View
             // 
             // btnAddColiider
             // 
-            this.btnAddColiider.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.btnAddColiider.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAddColiider.Location = new System.Drawing.Point(3, 3);
             this.btnAddColiider.Name = "btnAddColiider";

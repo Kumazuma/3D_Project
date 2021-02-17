@@ -1,5 +1,5 @@
 ﻿
-namespace MaptoolNightbuild.View
+namespace MaptoolNightbuild.CharacterMetaEditor.View
 {
     partial class CharacterMetaRenderView
     {

@@ -28,7 +28,7 @@ namespace MaptoolNightbuild
             var editorView = new View.MapEditorView();
             tabPage1.Controls.Add(editorView);
             editorView.Dock = DockStyle.Fill;
-            var metaEditorView = new View.CharacterMetaEditor();
+            var metaEditorView = new CharacterMetaEditor.MainFrame();
             tabPage2.Controls.Add(metaEditorView);
             metaEditorView.Dock = DockStyle.Fill;
             //camera.Angle = 45.0f;

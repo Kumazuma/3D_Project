@@ -1,7 +1,7 @@
 ﻿
-namespace MaptoolNightbuild.View
+namespace MaptoolNightbuild.CharacterMetaEditor
 {
-    partial class CharacterMetaEditor
+    partial class MainFrame
     {
         /// <summary> 
         /// 필수 디자이너 변수입니다.

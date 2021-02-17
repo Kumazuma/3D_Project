@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Collections.Specialized;
 using WeifenLuo.WinFormsUI.Docking;
-
-namespace MaptoolNightbuild.View
+using MaptoolNightbuild.View;
+namespace MaptoolNightbuild.CharacterMetaEditor
 {
-    public partial class CharacterMetaEditor : UserControl
+    public partial class MainFrame : UserControl
     {
-        View.DockView<CharacterMetaRenderView> renderView;
-        View.DockView<ColliderPropertyView> colliderView;
-        View.DockView<AnimationTableView> animationTableView;
-        View.DockView<PropertyGrid> propertyView;
+        DockView<View.CharacterMetaRenderView> renderView;
+        DockView<View.ColliderPropertyView> colliderView;
+        DockView<View.AnimationTableView> animationTableView;
+        DockView<PropertyGrid> propertyView;
         //MaptoolRenderer.OBJMesh chino;
-        public CharacterMetaEditor()
+        public MainFrame()
         {
             InitializeComponent();
             InitializeDocViews();
@@ -86,9 +86,9 @@ namespace MaptoolNightbuild.View
 
         public void InitializeDocViews()
         {
-            renderView = new DockView<CharacterMetaRenderView>();
-            colliderView = new DockView<ColliderPropertyView>();
-            animationTableView = new DockView<AnimationTableView>();
+            renderView = new DockView<View.CharacterMetaRenderView>();
+            colliderView = new DockView<View.ColliderPropertyView>();
+            animationTableView = new DockView<View.AnimationTableView>();
             propertyView = new DockView<PropertyGrid>();
             renderView.TabText = "View";
             renderView.Show(dockPanel1, DockState.Document);

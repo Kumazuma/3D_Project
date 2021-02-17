@@ -74,7 +74,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Doc\CharacterMetaDoc.cs" />
+    <Compile Include="CharacterMetaEditor\CharacterMetaDoc.cs" />
+    <Compile Include="CharacterMetaEditor\Controller\CharacterMetaEditor.Contoller.cs" />
     <Compile Include="Doc\ResourceManager.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -84,28 +85,28 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="View\AnimationTableView.cs">
+    <Compile Include="CharacterMetaEditor\View\AnimationTableView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="View\AnimationTableView.Designer.cs">
+    <Compile Include="CharacterMetaEditor\View\AnimationTableView.Designer.cs">
       <DependentUpon>AnimationTableView.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\CharacterMetaEditor.cs">
+    <Compile Include="CharacterMetaEditor\View\CharacterMetaEditor.MainFrame.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="View\CharacterMetaEditor.Designer.cs">
-      <DependentUpon>CharacterMetaEditor.cs</DependentUpon>
+    <Compile Include="CharacterMetaEditor\View\CharacterMetaEditor.MainFrame.Designer.cs">
+      <DependentUpon>CharacterMetaEditor.MainFrame.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\CharacterMetaRenderView.cs">
+    <Compile Include="CharacterMetaEditor\View\CharacterMetaRenderView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="View\CharacterMetaRenderView.Designer.cs">
+    <Compile Include="CharacterMetaEditor\View\CharacterMetaRenderView.Designer.cs">
       <DependentUpon>CharacterMetaRenderView.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\ColliderPropertyView.cs">
+    <Compile Include="CharacterMetaEditor\View\ColliderPropertyView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="View\ColliderPropertyView.Designer.cs">
+    <Compile Include="CharacterMetaEditor\View\ColliderPropertyView.Designer.cs">
       <DependentUpon>ColliderPropertyView.cs</DependentUpon>
     </Compile>
     <Compile Include="View\DocView.cs">
@@ -135,16 +136,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="View\AnimationTableView.resx">
+    <EmbeddedResource Include="CharacterMetaEditor\View\AnimationTableView.resx">
       <DependentUpon>AnimationTableView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="View\CharacterMetaEditor.resx">
-      <DependentUpon>CharacterMetaEditor.cs</DependentUpon>
+    <EmbeddedResource Include="CharacterMetaEditor\View\CharacterMetaEditor.MainFrame.resx">
+      <DependentUpon>CharacterMetaEditor.MainFrame.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="View\CharacterMetaRenderView.resx">
+    <EmbeddedResource Include="CharacterMetaEditor\View\CharacterMetaRenderView.resx">
       <DependentUpon>CharacterMetaRenderView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="View\ColliderPropertyView.resx">
+    <EmbeddedResource Include="CharacterMetaEditor\View\ColliderPropertyView.resx">
       <DependentUpon>ColliderPropertyView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\MapEditorView.resx">
@@ -173,6 +174,9 @@
       <Project>{eedb3045-1639-4fe5-83eb-7c1b61f5538f}</Project>
       <Name>MaptoolRenderer</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controller\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
