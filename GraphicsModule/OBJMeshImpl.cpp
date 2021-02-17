@@ -320,4 +320,8 @@ namespace Kumazuma
         }
         return nullptr;
     }
+    MeshType OBJMeshImpl::GetType()
+    {
+        return MeshType::Static;
+    }
 }

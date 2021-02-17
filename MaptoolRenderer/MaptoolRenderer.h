@@ -45,6 +45,7 @@ namespace MaptoolRenderer {
 		auto RenderDeferred(DirectX::XMFLOAT4X4 const* viewSpacePtr, DirectX::XMFLOAT4X4 const* projSpacePtr, DirectX::XMFLOAT4X4 const* viewProj)->void;
 		auto DeferredLighting(DirectX::XMFLOAT4X4 const* viewSpacePtr, DirectX::XMFLOAT4X4 const* projSpacePtr, DirectX::XMFLOAT4X4 const* viewProj)->void;
 		auto DeferredCombine()->void;
+		auto RenderWireframe(DirectX::XMFLOAT4X4 const* viewSpacePtr, DirectX::XMFLOAT4X4 const* projSpacePtr, DirectX::XMFLOAT4X4 const* viewProj)->void;
 		auto DrawDebug()->void;
 	internal:
 		property RenderModule* RenderModuleHandle{auto get()->RenderModule*;}

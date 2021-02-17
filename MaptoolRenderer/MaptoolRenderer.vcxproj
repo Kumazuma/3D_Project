@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="BoxMesh.hpp" />
     <ClInclude Include="Camera.hpp" />
+    <ClInclude Include="ColliderObject.hpp" />
     <ClInclude Include="COMRef.hpp" />
     <ClInclude Include="IRenderable.hpp" />
     <ClInclude Include="MaptoolRenderer.h" />
@@ -155,6 +156,7 @@
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="BoxMesh.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ColliderObject.cpp" />
     <ClCompile Include="MaptoolRenderer.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="NativeRenderer.cpp" />

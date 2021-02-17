@@ -19,6 +19,7 @@ namespace Kumazuma
 		virtual void				SetupIA(ID3D11DeviceContext* device) override;
 		virtual Subsets const&		GetSubsetsRef();
 		virtual Texture2D*			GetMaterialTexture(wchar_t const* materialName) override;
+		virtual MeshType			GetType();
 
 		OBJSubsets subsets_;
 		ComPtr<ID3D11Buffer> vertexBuffer_;

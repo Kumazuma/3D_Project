@@ -171,6 +171,7 @@
     <ClInclude Include="CachedTextureImpl.hpp" />
     <ClInclude Include="CustomMesh.hpp" />
     <ClInclude Include="CustomMeshImpl.hpp" />
+    <ClInclude Include="FBXMesh.hpp" />
     <ClInclude Include="ForwardRenderingMaterial.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GraphicsModule.hpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="RenderSystem.hpp" />
     <ClInclude Include="RenderSystemImpl.hpp" />
+    <ClInclude Include="SkinnedMesh.hpp" />
     <ClInclude Include="StandardMaterial.hpp" />
     <ClInclude Include="Subset.hpp" />
     <ClInclude Include="Subsets.hpp" />
@@ -199,6 +201,7 @@
     <ClCompile Include="CustomMesh.cpp" />
     <ClCompile Include="CustomMeshImpl.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FBXMesh.cpp" />
     <ClCompile Include="GraphicsModule.cpp" />
     <ClCompile Include="GraphicsModuleImpl.cpp" />
     <ClCompile Include="Material.cpp" />

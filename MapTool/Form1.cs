@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using MapToolRender;
+using MaptoolRenderer;
 using System.Drawing.Design;
 using System.Diagnostics;
 
@@ -23,9 +23,9 @@ namespace MapTool
         DockView<View.ProjectDirectoryPanel> m_projectDirectoryView;
         DockView<View.AnimationView> m_animationJsonEditView;
         DockView<View.ColiiderEditView> m_colliderEditView;
-        HashSet<RenderObject> renderObjects = new HashSet<RenderObject>();
+        HashSet<MaptoolRenderer.IRenderable> renderObjects = new HashSet<MaptoolRenderer.IRenderable>();
         Doc.MapFile file;
-        SkyBox skyBox;
+        //SkyBox skyBox;
         public Form1()
         {
             InitializeComponent();
@@ -33,17 +33,11 @@ namespace MapTool
             MapToolCore.Environment.Instance.ProjectDirectory =System.IO.Path.GetFullPath(Properties.Settings.Default.ProjectDir);
             MapToolCore.Environment.Instance.PropertyChanged += Env_PropertyChanged;
             m_renderView = new DockView<View.RenderView>();
-            GraphicsDevice.Initialize(m_renderView.Content, 800, 600);
+            MaptoolRenderer.GraphicsDevice.Initalize(m_renderView.Content, 1920, 1080);
             m_renderView.Content.Initialize(800, 600);
 
-            skyBox = new SkyBox(GraphicsDevice.Instance);
-            renderObjects.Add(skyBox);
-
-            Doc.Document.Instance.World = skyBox;
+         
             Doc.Document.Instance.PropertyChanged += Document_PropertyChanged;
-            //GraphicsDevice.Instance.Add(RenderGroup.PRIORITY, terrain);
-            //terrain.Name = "Terrain";
-            //Doc.Document.Instance.AddObject(terrain);
 
             m_mapObjTreePanel = new DockView<View.MapObjectTreePanel>();
             m_propertyView = new DockView<PropertyGrid>();
@@ -90,44 +84,7 @@ namespace MapTool
 
         private void RederView_MouseClick(object sender, MouseEventArgs e)
         {
-            if (ModifierKeys != 0)
-                return;
-            var point = new Point(e.X, e.Y);
-            var contextMesh = new ContextMenuStrip();
 
-            contextMesh.Show(m_renderView.Content, point);
-            if (m_propertyView.Content.SelectedObject == null)
-            {
-                return;
-            }
-            if(m_propertyView.Content.SelectedObject.GetType() != typeof(NaviMesh))
-            {
-                return;
-            }
-            var selectedObject = m_propertyView.Content.SelectedObject as NaviMesh;
-            if (!renderObjects.Contains(selectedObject))
-            {
-                return;
-            }
-            
-            var ray = GraphicsDevice.Instance.CreateMouseRay(m_renderView.Content, m_renderView.Content.CurrentCamera, point);
-            float t = float.MaxValue;
-            foreach(var renderObj in renderObjects)
-            {
-                if (!renderObj.IsRayPick) continue;
-                float? res = renderObj.RayPick(ray);
-                if (res == null) continue;
-                if(res.Value < t)
-                {
-                    t = res.Value;
-                }
-            }
-            if(t != float.MaxValue)
-            {
-                var p = ray.GetPosition(t);
-                selectedObject.PushPoint(p.X, p.Y, p.Z, m_renderView.Content.CurrentCamera);
-                m_renderView.Content.Render();
-            }
         }
 
         private void PropertyView_DragDrop(object sender, DragEventArgs e)
@@ -185,25 +142,25 @@ namespace MapTool
 
         private void TerrainToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var dialog = new View.TerrainCreateDialog())
-            {
-                if(dialog.ShowDialog() == DialogResult.OK)
-                {
-                    TerrainObject terrain =
-                        new TerrainObject(
-                            GraphicsDevice.Instance,
-                            dialog.HeightmapImgPath,
-                            dialog.Interval,
-                            dialog.MaxHeight
-                        );
-                    renderObjects.Add(terrain);
-                    terrain.Name = "Terrain";
-                    Doc.Document.Instance.AddObject(terrain);
-                    terrain.PropertyChanged += RenderObj_PropertyChanged;
-                    m_renderView.Content.Render();
-                    //m_mapObjTreePanel.Content.
-                }
-            }
+            //using (var dialog = new View.TerrainCreateDialog())
+            //{
+            //    if(dialog.ShowDialog() == DialogResult.OK)
+            //    {
+            //        TerrainObject terrain =
+            //            new TerrainObject(
+            //                GraphicsDevice.Instance,
+            //                dialog.HeightmapImgPath,
+            //                dialog.Interval,
+            //                dialog.MaxHeight
+            //            );
+            //        renderObjects.Add(terrain);
+            //        terrain.Name = "Terrain";
+            //        Doc.Document.Instance.AddObject(terrain);
+            //        terrain.PropertyChanged += RenderObj_PropertyChanged;
+            //        m_renderView.Content.Render();
+            //        //m_mapObjTreePanel.Content.
+            //    }
+            //}
         }
 
         private void StaticXMeshToolStripMenuItem_Click(object sender, EventArgs e)
@@ -239,10 +196,10 @@ namespace MapTool
                 return;
             }
             var paths = fileDialog.FileNames;
-            List<Task<WowMapMesh> > taskList = new List<Task<WowMapMesh>>();
+            List<Task<OBJMesh> > taskList = new List<Task<OBJMesh>>();
             foreach(var path in paths)
             {
-                var task = System.Threading.Tasks.Task<WowMapMesh>.Factory.StartNew(() =>
+                var task = System.Threading.Tasks.Task<OBJMesh>.Factory.StartNew(() =>
                 {
                     var mesh = Doc.ResourceManager.Instance.GetObjMesh(path).Result;
                     mesh.Name = System.IO.Path.GetFileNameWithoutExtension(path);
@@ -253,9 +210,10 @@ namespace MapTool
             foreach(var task in taskList)
             {
                 var mesh = await task;
-                renderObjects.Add(mesh);
-                mesh.PropertyChanged += RenderObj_PropertyChanged;
-                Doc.Document.Instance.AddObject(mesh);
+                var meshObject = MeshObject.Create(mesh);
+                renderObjects.Add(meshObject);
+                meshObject.PropertyChanged += RenderObj_PropertyChanged;
+                Doc.Document.Instance.AddObject(meshObject);
             }
             m_renderView.Content.Render();
         }

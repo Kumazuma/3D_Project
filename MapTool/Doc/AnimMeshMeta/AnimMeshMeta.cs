@@ -59,9 +59,9 @@ namespace MapTool.Doc
                         }
                         break;
                     case "SPHARE":
-                        collider.Type = ColliderType.Sphare;
+                        collider.Type = ColliderType.Sphere;
                         {
-                            var attribute = collider.Attribute as SphareColliderAttribute;
+                            var attribute = collider.Attribute as SphereColliderAttribute;
                             attribute.Radius= item.Value<float>("radius");
                         }
                         break;

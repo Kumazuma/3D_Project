@@ -9,6 +9,8 @@
 MaptoolRenderer::SkinnedXMeshObject::SkinnedXMeshObject(SkinnedXMesh^ mesh)
 {
     mesh_ = safe_cast<SkinnedXMesh^>(mesh->Clone());
+    static_cast<::SkinnedXMeshObject*>(mesh_->renderObject_)->SetAnimationSet(0);
+    mesh_->PlayAnimation(0.1f);
 }
 
 auto MaptoolRenderer::SkinnedXMeshObject::PrepereRender(GraphicsDevice^ renderer) -> void

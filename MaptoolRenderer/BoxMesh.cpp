@@ -48,22 +48,33 @@ MaptoolRenderer::BoxMesh::BoxMesh()
         }
     }
     s_ptr->TryGetTarget(ptr);
+    inner_ = ptr;
+    msclr::lock r(inner_);
+    ++inner_->count_;
     renderObject_ = ptr->ptr_;
 }
 
 MaptoolRenderer::BoxMesh::~BoxMesh()
 {
-    renderObject_ = nullptr;
-    msclr::lock r(inner_);
-    --inner_->count_;
-    if (inner_->count_ == 0)
+    if (inner_ != nullptr)
     {
-        inner_->~BoxMeshPtr();
-        inner_ = nullptr;
+        renderObject_ = nullptr;
+        msclr::lock r(inner_);
+        --inner_->count_;
+        if (inner_->count_ == 0)
+        {
+            inner_->~BoxMeshPtr();
+            inner_ = nullptr;
+        }
     }
 }
 
 MaptoolRenderer::BoxMesh::!BoxMesh()
 {
     this->~BoxMesh();
+}
+
+auto MaptoolRenderer::BoxMesh::Clone() -> Mesh^
+{
+    return this;
 }

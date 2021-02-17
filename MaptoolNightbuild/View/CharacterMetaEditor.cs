@@ -11,57 +11,60 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace MaptoolNightbuild.View
 {
-    public partial class MapEditorView : UserControl
+    public partial class CharacterMetaEditor : UserControl
     {
         View.DockView<RenderView> renderView;
-        View.DockView<ListBox> listbox;
+        View.DockView<ColliderPropertyView> colliderView;
+        View.DockView<AnimationTableView> animationTableView;
         View.DockView<PropertyGrid> propertyView;
         MaptoolRenderer.OBJMesh chino;
         List<MaptoolRenderer.IRenderable> renderObjects = new List<MaptoolRenderer.IRenderable>();
-
-        public MapEditorView()
+        public CharacterMetaEditor()
         {
             InitializeComponent();
             InitializeDocViews();
-            if(MaptoolRenderer.GraphicsDevice.Instance != null)
+
+            (renderView.Content.CurrentCamera as MaptoolRenderer.PersCamera).Angle = 45.0f;
+            renderView.Content.CurrentCamera.Far = 1000.0f;
+            renderView.Content.CurrentCamera.Near = 0.1f;
+
+            if (MaptoolRenderer.GraphicsDevice.Instance != null)
             {
                 renderView.Content.GraphicsDevice = MaptoolRenderer.GraphicsDevice.Instance;
+                renderView.Content.Render();
             }
+
             chino = new MaptoolRenderer.OBJMesh("./chino/gctitm001.obj");
             var objMeshObject = MaptoolRenderer.MeshObject.Create(chino);
             objMeshObject.Transform.Position = new MapToolCore.Position(0f, -1f, 2f);
             renderObjects.Add(objMeshObject);
             renderView.Content.RenderObjects = renderObjects;
-            (renderView.Content.CurrentCamera as MaptoolRenderer.PersCamera).Angle = 45.0f;
-            renderView.Content.CurrentCamera.Far = 1000.0f;
-            renderView.Content.CurrentCamera.Near = 0.1f;
-
-            listbox.Content.Items.Add(objMeshObject);
+            GotFocus += CharacterMetaEditor_GotFocus;
         }
+
+        private void CharacterMetaEditor_GotFocus(object sender, EventArgs e)
+        {
+            renderView.Content.Render();
+
+        }
+
         public void InitializeDocViews()
         {
             renderView = new DockView<RenderView>();
-            listbox = new DockView<ListBox>();
-            propertyView = new DockView<PropertyGrid>();
-            listbox.TabText = "월드 오브젝트";
-            listbox.Show(dockPanel1, DockState.DockLeft);
-
-            propertyView.Text = "Properties";
-            propertyView.Show(dockPanel1, DockState.DockRight);
-
+            colliderView = new DockView<ColliderPropertyView>();
+            animationTableView = new DockView<AnimationTableView>();
             renderView.TabText = "View";
             renderView.Show(dockPanel1, DockState.Document);
             renderView.CloseButtonVisible = false;
             renderView.CloseButton = false;
             renderView.IsFloat = false;
-            listbox.Content.SelectedIndexChanged += ListBox_SelectedIndexChanged;
-            
-        }
-        private void ListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            object[] objects = new object[listbox.Content.SelectedItems.Count];
-            listbox.Content.SelectedItems.CopyTo(objects, 0);
-            propertyView.Content.SelectedObject = listbox.Content.SelectedItem;
+
+            colliderView.TabText = "Colliders";
+            colliderView.Show(dockPanel1, DockState.DockLeft);
+
+            animationTableView.TabText = "Animations";
+            animationTableView.Show(dockPanel1, DockState.DockLeft);
+
         }
     }
 }

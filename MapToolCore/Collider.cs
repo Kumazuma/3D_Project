@@ -17,15 +17,21 @@ namespace MapToolCore
         }
         public abstract ColliderAttribute Clone() ;
     }
-    public enum ColliderType { None, Box, Sphare };
+    public enum ColliderType { None, Box, Sphere };
     public class FormatStringConverter : StringConverter
     {
         public override Boolean GetStandardValuesSupported(ITypeDescriptorContext context) { return true; }
         public override Boolean GetStandardValuesExclusive(ITypeDescriptorContext context) { return true; }
         public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            var t = context.Instance as Collider;
-            return new StandardValuesCollection(t.FrameNames as System.Collections.ICollection);
+            var type = context.Instance.GetType();
+            var property = type.GetProperty("FrameNames");
+            if(property == null)
+            {
+                return new StandardValuesCollection(null);
+            }
+            var list = property.GetValue(context.Instance);
+            return new StandardValuesCollection(list as System.Collections.ICollection);
         }
     }
     [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -33,9 +39,7 @@ namespace MapToolCore
     {
         protected Offset offset;
         protected ColliderType type = ColliderType.None;
-        protected string frameName;
         protected ColliderAttribute attribute;
-        protected ICollection<string> frameNames;
         protected Transform transform;
         PropertyChangedEventHandler attributePropertyChangedEventHandler;
         PropertyChangedEventHandler transformPropertyChangedEventHandler;
@@ -66,38 +70,6 @@ namespace MapToolCore
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Transform"));
         }
-        [Browsable(false)]
-        public ICollection<string> FrameNames
-        {
-            get => frameNames;
-            set
-            {
-                frameNames = value;
-            }
-        }
-        [TypeConverter(typeof(FormatStringConverter))]
-        public string FrameName
-        {
-            get => frameName;
-            set 
-            {
-                frameName = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FrameName"));
-
-            }
-        }
-        [CategoryAttribute("Common")]
-        public Transform Transform
-        {
-            get => transform;
-            set
-            {
-                transform.PropertyChanged -= transformPropertyChangedEventHandler;
-                transform = value;
-                transform.PropertyChanged += transformPropertyChangedEventHandler;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Transform"));
-            }
-        }
 
         [CategoryAttribute("Common")]
         public ColliderType Type
@@ -118,8 +90,8 @@ namespace MapToolCore
                     case ColliderType.Box:
                         attribute = new BoxColliderAttribute();
                         break;
-                    case ColliderType.Sphare:
-                        attribute = new SphareColliderAttribute();
+                    case ColliderType.Sphere:
+                        attribute = new SphereColliderAttribute();
                         break;
                 }
                 if(attribute != null)
@@ -199,19 +171,19 @@ namespace MapToolCore
             return new BoxColliderAttribute(this);
         }
     }
-    public class SphareColliderAttribute : ColliderAttribute
+    public class SphereColliderAttribute : ColliderAttribute
     {
         private float radius;
 
-        public SphareColliderAttribute()
+        public SphereColliderAttribute()
         {
             radius = 1f;
         }
-        public SphareColliderAttribute(SphareColliderAttribute rhs)
+        public SphereColliderAttribute(SphereColliderAttribute rhs)
         {
             radius = rhs.radius;
         }
-        [CategoryAttribute("Sphare")]
+        [CategoryAttribute("Sphere")]
         public float Radius
         {
             get => radius;
@@ -223,7 +195,7 @@ namespace MapToolCore
         }
         public override ColliderAttribute Clone()
         {
-            return new SphareColliderAttribute(this);
+            return new SphereColliderAttribute(this);
         }
     }
     public class BoxCollider : Collider

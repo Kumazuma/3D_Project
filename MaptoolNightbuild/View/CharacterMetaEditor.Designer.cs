@@ -1,7 +1,7 @@
 ﻿
 namespace MaptoolNightbuild.View
 {
-    partial class MapEditorView
+    partial class CharacterMetaEditor
     {
         /// <summary> 
         /// 필수 디자이너 변수입니다.
@@ -31,7 +31,6 @@ namespace MaptoolNightbuild.View
         {
             this.components = new System.ComponentModel.Container();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.vS2005Theme1 = new WeifenLuo.WinFormsUI.Docking.VS2005Theme();
             this.visualStudioToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.SuspendLayout();
             // 
@@ -41,20 +40,19 @@ namespace MaptoolNightbuild.View
             this.dockPanel1.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
             this.dockPanel1.Location = new System.Drawing.Point(0, 0);
             this.dockPanel1.Name = "dockPanel1";
-            this.dockPanel1.Size = new System.Drawing.Size(1667, 933);
+            this.dockPanel1.Size = new System.Drawing.Size(150, 150);
             this.dockPanel1.TabIndex = 0;
             // 
             // visualStudioToolStripExtender1
             // 
             this.visualStudioToolStripExtender1.DefaultRenderer = null;
             // 
-            // MapEditorView
+            // CharacterMetaEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.dockPanel1);
-            this.Name = "MapEditorView";
-            this.Size = new System.Drawing.Size(1667, 933);
+            this.Name = "CharacterMetaEditor";
             this.ResumeLayout(false);
 
         }
@@ -62,7 +60,6 @@ namespace MaptoolNightbuild.View
         #endregion
 
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
-        private WeifenLuo.WinFormsUI.Docking.VS2005Theme vS2005Theme1;
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender visualStudioToolStripExtender1;
     }
 }

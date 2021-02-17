@@ -17,7 +17,7 @@ namespace MapTool.Doc
         
         static JObject SerializerSphareCollider(Collider collider)
         {
-            var attribute = collider.Attribute as SphareColliderAttribute;
+            var attribute = collider.Attribute as SphereColliderAttribute;
             var jCollider = new JObject();
             jCollider["type"] = "SPHARE";
             jCollider["frame_name"] = collider.FrameName;
@@ -43,7 +43,7 @@ namespace MapTool.Doc
         {
             var serializerTable = new Dictionary<Type, SerializerCollider> {
 
-                { typeof(SphareColliderAttribute),SerializerSphareCollider },
+                { typeof(SphereColliderAttribute),SerializerSphareCollider },
                 { typeof(BoxColliderAttribute), SerializerBoxCollider }
             };
             

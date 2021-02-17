@@ -7,61 +7,68 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-namespace MapTool.View
+
+namespace MaptoolNightbuild.View
 {
-    public partial class RenderView : UserControl
+    enum MouseOperation
     {
-        enum MouseOperation
-        {
-            None,
-            MovingUpRight,
-            Rotating,
-            MovingForward
-        }
+        None,
+        MovingUpRight,
+        Rotating,
+        MovingForward
+    }
+    public partial class RenderView : Control
+    {
+        MaptoolRenderer.GraphicsDevice graphicsDevice;
         MaptoolRenderer.Camera camera;
         IEnumerable<MaptoolRenderer.IRenderable> mapObjects;
         MouseOperation m_mouseOperation = MouseOperation.None;
         Point? m_prevMousePosition = null;
-        Action renderAction = null;
+        IAsyncResult asyncResult = null;
         public RenderView()
         {
             InitializeComponent();
             camera = new MaptoolRenderer.PersCamera();
-            this.Paint += RenderView_Paint;
             this.MouseWheel += RenderView_MouseWheel;
+            this.SizeChanged += RenderView_SizeChanged;
         }
 
+        public MaptoolRenderer.GraphicsDevice GraphicsDevice
+        {
+            get => graphicsDevice;
+            set
+            {
+                graphicsDevice = value;
+            }
+        }
+
+        protected override void OnPaint(PaintEventArgs pe)
+        {
+            base.OnPaint(pe);
+            Render();
+        }
         private void RenderView_MouseWheel(object sender, MouseEventArgs e)
         {
-            var wheelCount = e.Delta /10f;
+            var wheelCount = e.Delta / 10f;
             camera.MoveForward(wheelCount);
             Render();
 
         }
-
-        private void RenderView_Paint(object sender, PaintEventArgs e)
-        {
-            Render();
-        }
-
-        public void Initialize(uint backBufferWidth, uint backBufferHeight)
-        {
-            
-        }
         public void Render()
         {
+            if (graphicsDevice == null)
+                return;
             if (mapObjects == null) return;
             if (!this.Created) return;
-            if (renderAction != null) return;
-            renderAction = new Action(() =>
+            if (asyncResult != null)
             {
-                if (renderAction == null) return;
-                MaptoolRenderer.GraphicsDevice.Instance.Render(this, mapObjects, camera);
-                renderAction = null;
+                this.EndInvoke(asyncResult);
+            }
+            var renderAction = new Action(() =>
+            {
+                graphicsDevice.Render(this, mapObjects, camera);
             });
-            this.BeginInvoke(renderAction);
-
-
+            asyncResult = this.BeginInvoke(renderAction);
         }
         public MaptoolRenderer.Camera CurrentCamera
         {
@@ -108,7 +115,7 @@ namespace MapTool.View
 
         private void RenderView_Move(object sender, EventArgs e)
         {
-            
+
         }
 
         private void RenderView_MouseMove(object sender, MouseEventArgs e)
@@ -153,7 +160,7 @@ namespace MapTool.View
                     }
                     break;
                 case MouseOperation.MovingForward:
-                    newPrevPos.X = nowMousePoint.X; 
+                    newPrevPos.X = nowMousePoint.X;
                     if (Math.Abs(deltaY) >= 1.0f)
                     {
                         deltaY /= (float)Size.Height * 0.01f;
@@ -167,7 +174,6 @@ namespace MapTool.View
             m_prevMousePosition = newPrevPos;
             Render();
         }
-
         private void RenderView_SizeChanged(object sender, EventArgs e)
         {
             Render();
