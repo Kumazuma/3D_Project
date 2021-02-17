@@ -169,7 +169,7 @@ void Kumazuma::RenderSystemImpl::Render(DirectX::XMFLOAT4X4 const* view, DirectX
 	gmodule_->GetSwapChainTexture()->GetView<ID3D11RenderTargetView>(&swapChainRtv);
 	gmodule_->GetDefaultDepthBuffer()->GetView<ID3D11DepthStencilView>(&depthView);
 	gmodule_->GetImmediateContext(&deviceContext);
-	deviceContext->ClearRenderTargetView(swapChainRtv.Get(), std::array<f32, 4>{ }.data());
+	deviceContext->ClearRenderTargetView(swapChainRtv.Get(), std::array<f32, 4>{0.f, 0.f, 1.f, 1.f }.data());
 	deviceContext->ClearDepthStencilView(depthView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	
 	viewSpaceMatrix_ = *view;
