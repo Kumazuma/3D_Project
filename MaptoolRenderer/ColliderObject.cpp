@@ -128,12 +128,15 @@ namespace MaptoolRenderer
         {
         case ColliderType::None:
             attribute_ = nullptr;
+            mesh_ = nullptr;
             break;
         case ColliderType::Box:
             attribute_ = gcnew BoxColliderAttribute();
+            mesh_ = gcnew BoxMesh();
             break;
         case ColliderType::Sphere:
             attribute_ = gcnew SphereColliderAttribute();
+            mesh_ = gcnew SphereMesh();
             break;
         }
         if (attribute_ != nullptr)

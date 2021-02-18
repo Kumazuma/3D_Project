@@ -84,6 +84,7 @@ namespace MaptoolNightbuild.View
         }
         public void Render()
         {
+            //렌더가 여러번 호출되더라도 이전에 진행중인 렌더 명령이 있다면 무시해버린다.
             if (graphicsDevice == null)
                 return;
             if (mapObjects == null) return;
@@ -94,11 +95,19 @@ namespace MaptoolNightbuild.View
             {
                 if(oldAsyncId == asyncResult)
                 {
+                    if(oldAsyncId !=null)
+                    {
+                        this.EndInvoke(oldAsyncId);
+                    }
                     var renderAction = new Action(() =>
                     {
                         graphicsDevice.Render(this, mapObjects, camera);
                     });
                     asyncResult = this.BeginInvoke(renderAction);
+                }
+                else
+                {
+                    Console.WriteLine("건너 띄어짐!");
                 }
             }
         }

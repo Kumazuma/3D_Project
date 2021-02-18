@@ -33,29 +33,102 @@ namespace MaptoolNightbuild.View
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.vS2005Theme1 = new WeifenLuo.WinFormsUI.Docking.VS2005Theme();
             this.visualStudioToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.파일ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.새맵파일ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.저장ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.열기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.오브젝트추가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.oBJ메시ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.타겟추가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dockPanel1
             // 
             this.dockPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dockPanel1.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
-            this.dockPanel1.Location = new System.Drawing.Point(0, 0);
+            this.dockPanel1.Location = new System.Drawing.Point(0, 24);
             this.dockPanel1.Name = "dockPanel1";
-            this.dockPanel1.Size = new System.Drawing.Size(1667, 933);
+            this.dockPanel1.Size = new System.Drawing.Size(1667, 909);
             this.dockPanel1.TabIndex = 0;
             // 
             // visualStudioToolStripExtender1
             // 
             this.visualStudioToolStripExtender1.DefaultRenderer = null;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.파일ToolStripMenuItem,
+            this.오브젝트추가ToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1667, 24);
+            this.menuStrip1.TabIndex = 1;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // 파일ToolStripMenuItem
+            // 
+            this.파일ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.새맵파일ToolStripMenuItem,
+            this.저장ToolStripMenuItem,
+            this.열기ToolStripMenuItem});
+            this.파일ToolStripMenuItem.Name = "파일ToolStripMenuItem";
+            this.파일ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.파일ToolStripMenuItem.Text = "파일";
+            // 
+            // 새맵파일ToolStripMenuItem
+            // 
+            this.새맵파일ToolStripMenuItem.Name = "새맵파일ToolStripMenuItem";
+            this.새맵파일ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.새맵파일ToolStripMenuItem.Text = "새 맵파일";
+            // 
+            // 저장ToolStripMenuItem
+            // 
+            this.저장ToolStripMenuItem.Name = "저장ToolStripMenuItem";
+            this.저장ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.저장ToolStripMenuItem.Text = "저장";
+            // 
+            // 열기ToolStripMenuItem
+            // 
+            this.열기ToolStripMenuItem.Name = "열기ToolStripMenuItem";
+            this.열기ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.열기ToolStripMenuItem.Text = "열기";
+            // 
+            // 오브젝트추가ToolStripMenuItem
+            // 
+            this.오브젝트추가ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.oBJ메시ToolStripMenuItem,
+            this.타겟추가ToolStripMenuItem});
+            this.오브젝트추가ToolStripMenuItem.Name = "오브젝트추가ToolStripMenuItem";
+            this.오브젝트추가ToolStripMenuItem.Size = new System.Drawing.Size(95, 20);
+            this.오브젝트추가ToolStripMenuItem.Text = "오브젝트 추가";
+            // 
+            // oBJ메시ToolStripMenuItem
+            // 
+            this.oBJ메시ToolStripMenuItem.Name = "oBJ메시ToolStripMenuItem";
+            this.oBJ메시ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.oBJ메시ToolStripMenuItem.Text = "OBJ 메시";
+            // 
+            // 타겟추가ToolStripMenuItem
+            // 
+            this.타겟추가ToolStripMenuItem.Name = "타겟추가ToolStripMenuItem";
+            this.타겟추가ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.타겟추가ToolStripMenuItem.Text = "타겟 추가";
+            // 
             // MapEditorView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.dockPanel1);
+            this.Controls.Add(this.menuStrip1);
             this.Name = "MapEditorView";
             this.Size = new System.Drawing.Size(1667, 933);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -64,5 +137,13 @@ namespace MaptoolNightbuild.View
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
         private WeifenLuo.WinFormsUI.Docking.VS2005Theme vS2005Theme1;
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender visualStudioToolStripExtender1;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem 파일ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 새맵파일ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 저장ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 열기ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 오브젝트추가ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem oBJ메시ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 타겟추가ToolStripMenuItem;
     }
 }
