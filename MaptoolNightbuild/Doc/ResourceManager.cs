@@ -10,7 +10,7 @@ namespace MaptoolNightbuild.Doc
     {
         static ResourceManager s_instance = new ResourceManager();
 
-        Dictionary<string, OBJMesh> m_objMeshs = new Dictionary<string, OBJMesh>();
+        Dictionary<string, WeakReference<OBJMesh>> m_objMeshs = new Dictionary<string, WeakReference<OBJMesh>>();
         Dictionary<string, SkinnedXMesh> m_skinnedXMeshs = new Dictionary<string, SkinnedXMesh>();
         Dictionary<string, Task<OBJMesh>> m_loadingMeshs = new Dictionary<string, Task<OBJMesh>>();
         Dictionary<string, Task<SkinnedXMesh>> m_loadingXMeshs = new Dictionary<string, Task<SkinnedXMesh>>();
@@ -71,11 +71,15 @@ namespace MaptoolNightbuild.Doc
                 throw new ArgumentNullException();
             }
             path = System.IO.Path.GetFullPath(path);
+            WeakReference<OBJMesh> weakRef;
             OBJMesh mesh;
-            if(m_objMeshs.TryGetValue(path, out mesh))
+            m_objMeshs.TryGetValue(path, out weakRef);
+            if(weakRef != null && weakRef.TryGetTarget(out mesh))
             {
                 return mesh;
             }
+            m_objMeshs.Remove(path);
+
             Task<OBJMesh> loadingTask;
             lock (this)
             {
@@ -84,31 +88,25 @@ namespace MaptoolNightbuild.Doc
             if(loadingTask != null)
             {
                 mesh = await loadingTask;
-                lock (this)
-                {
-                    if(m_loadingMeshs.Remove(path))
-                    {
-                        m_objMeshs.Add(path, mesh);
-                    }
-                }
                 return mesh;
             }
-            
             lock (this)
             {
                 loadingTask = Task<OBJMesh>.Factory.StartNew(() =>
                 {
-                    return new OBJMesh(path);
+                    var loadedMesh = new OBJMesh(path);
+                    lock(this)
+                    {
+                        m_objMeshs.Add(path, new WeakReference<OBJMesh>(loadedMesh));
+                    }
+                    return loadedMesh;
                 });
                 m_loadingMeshs.Add(path, loadingTask);
             }
             mesh = await loadingTask;
             lock (this)
             {
-                if (m_loadingMeshs.Remove(path))
-                {
-                    m_objMeshs.Add(path, mesh);
-                }
+                m_loadingMeshs.Remove(path);
             }
             return mesh;
         }

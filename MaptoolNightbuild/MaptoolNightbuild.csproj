@@ -44,7 +44,7 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
+    <OutputPath>..\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -76,12 +76,31 @@
   <ItemGroup>
     <Compile Include="CharacterMetaEditor\CharacterMetaDoc.cs" />
     <Compile Include="CharacterMetaEditor\Controller\CharacterMetaEditor.Contoller.cs" />
+    <Compile Include="CharacterMetaEditor\View\LoadingDialog.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CharacterMetaEditor\View\LoadingDialog.Designer.cs">
+      <DependentUpon>LoadingDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CharacterMetaEditor\View\XMeshLoadingDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CharacterMetaEditor\View\XMeshLoadingDialog.Designer.cs">
+      <DependentUpon>XMeshLoadingDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Doc\ResourceManager.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MapEditor\MapEditor.Document.cs" />
+    <Compile Include="MapEditor\OBJMeshLoadingDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MapEditor\OBJMeshLoadingDialog.Designer.cs">
+      <DependentUpon>OBJMeshLoadingDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -112,10 +131,10 @@
     <Compile Include="View\DocView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="View\MapEditorView.cs">
+    <Compile Include="MapEditor\MapEditorView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="View\MapEditorView.Designer.cs">
+    <Compile Include="MapEditor\MapEditorView.Designer.cs">
       <DependentUpon>MapEditorView.cs</DependentUpon>
     </Compile>
     <Compile Include="View\RenderView.cs">
@@ -124,8 +143,17 @@
     <Compile Include="View\RenderView.Designer.cs">
       <DependentUpon>RenderView.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="CharacterMetaEditor\View\LoadingDialog.resx">
+      <DependentUpon>LoadingDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CharacterMetaEditor\View\XMeshLoadingDialog.resx">
+      <DependentUpon>XMeshLoadingDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MapEditor\OBJMeshLoadingDialog.resx">
+      <DependentUpon>OBJMeshLoadingDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -148,9 +176,10 @@
     <EmbeddedResource Include="CharacterMetaEditor\View\ColliderPropertyView.resx">
       <DependentUpon>ColliderPropertyView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="View\MapEditorView.resx">
+    <EmbeddedResource Include="MapEditor\MapEditorView.resx">
       <DependentUpon>MapEditorView.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="MapEditor\MapEditor.Controller.cs" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

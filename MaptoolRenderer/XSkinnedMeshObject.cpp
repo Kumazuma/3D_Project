@@ -66,3 +66,8 @@ auto MaptoolRenderer::SkinnedXMeshObject::AnimationSet::set(unsigned int value)-
     static_cast<::SkinnedXMeshObject*>(mesh_->renderObject_)->SetAnimationSet(animationSet_);
     this->PropertyChanged(this, gcnew PropertyChangedEventArgs( "AnimationSet"));
 }
+auto MaptoolRenderer::SkinnedXMeshObject::AnimationCount::get()->unsigned int
+{
+    auto count = static_cast<::SkinnedXMeshObject*>(mesh_->renderObject_)->GetAnimationCount();
+    return count;
+}

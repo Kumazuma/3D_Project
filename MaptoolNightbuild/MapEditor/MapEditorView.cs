@@ -8,18 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-
-namespace MaptoolNightbuild.View
+using MaptoolNightbuild.View;
+using System.Collections.Specialized;
+namespace MaptoolNightbuild.MapEditor
 {
-    public partial class MapEditorView : UserControl
+    public partial class MainFrame : UserControl
     {
         View.DockView<RenderView> renderView;
         View.DockView<ListBox> listbox;
         View.DockView<PropertyGrid> propertyView;
-        MaptoolRenderer.OBJMesh chino;
-        List<MaptoolRenderer.IRenderable> renderObjects = new List<MaptoolRenderer.IRenderable>();
 
-        public MapEditorView()
+        public MainFrame()
         {
             InitializeComponent();
             InitializeDocViews();
@@ -27,17 +26,46 @@ namespace MaptoolNightbuild.View
             {
                 renderView.Content.GraphicsDevice = MaptoolRenderer.GraphicsDevice.Instance;
             }
-            chino = new MaptoolRenderer.OBJMesh("./chino/gctitm001.obj");
-            var objMeshObject = MaptoolRenderer.MeshObject.Create(chino);
-            objMeshObject.Transform.Position = new MapToolCore.Position(0f, -1f, 2f);
-            renderObjects.Add(objMeshObject);
-            renderView.Content.RenderObjects = renderObjects;
+
+            renderView.Content.RenderObjects = Document.Instance.RenderObjects;
             (renderView.Content.CurrentCamera as MaptoolRenderer.PersCamera).Angle = 45.0f;
             renderView.Content.CurrentCamera.Far = 1000.0f;
             renderView.Content.CurrentCamera.Near = 0.1f;
             renderView.Content.CurrentCamera.PropertyChanged += CurrentCamera_PropertyChanged;
             listbox.Content.Items.Add(renderView.Content.CurrentCamera);
-            listbox.Content.Items.Add(objMeshObject);
+
+            Document.Instance.RenderObjects.CollectionChanged += RenderObjects_CollectionChanged;
+        }
+
+        private void RenderObjects_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            renderView.Content.Render();
+            var action = new Action(() =>
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        foreach (var obj in e.NewItems)
+                        {
+                            listbox.Content.Items.Add(obj);
+                        }
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        foreach (var obj in e.OldItems)
+                        {
+                            listbox.Content.Items.Remove(obj);
+                        }
+                        break;
+                }
+            });
+            if (this.InvokeRequired)
+            {
+                this.Invoke(action);
+            }
+            else
+            {
+                action();
+            }
         }
 
         private void CurrentCamera_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -46,7 +74,6 @@ namespace MaptoolNightbuild.View
             {
                 propertyView.Content.SelectedObject = renderView.Content.CurrentCamera;
             }
-
         }
 
         public void InitializeDocViews()
@@ -73,6 +100,32 @@ namespace MaptoolNightbuild.View
             object[] objects = new object[listbox.Content.SelectedItems.Count];
             listbox.Content.SelectedItems.CopyTo(objects, 0);
             propertyView.Content.SelectedObject = listbox.Content.SelectedItem;
+        }
+        
+        private async void miAddOBJMesh_Click(object sender, EventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "OBJ파일(*.obj)|*.obj"
+            };
+            openFileDialog.Multiselect = true;
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            var loadingDialog = new OBJMeshLoadingDialog();
+            loadingDialog.Show(this.ParentForm);
+
+            this.ParentForm.Enabled = false;
+            await Controller.Instance.AddObjMesh(openFileDialog.FileNames);
+            this.ParentForm.Enabled = true;
+            loadingDialog.Close();
+
+        }
+
+        private async void imNewMap_Click(object sender, EventArgs e)
+        {
+            await Controller.Instance.NewMap();
         }
     }
 }

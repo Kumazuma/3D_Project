@@ -1,7 +1,7 @@
 ﻿
-namespace MaptoolNightbuild.View
+namespace MaptoolNightbuild.MapEditor
 {
-    partial class MapEditorView
+    partial class MainFrame
     {
         /// <summary> 
         /// 필수 디자이너 변수입니다.
@@ -35,11 +35,11 @@ namespace MaptoolNightbuild.View
             this.visualStudioToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.파일ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.새맵파일ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imNewMap = new System.Windows.Forms.ToolStripMenuItem();
             this.저장ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.열기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.오브젝트추가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.oBJ메시ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miAddOBJMesh = new System.Windows.Forms.ToolStripMenuItem();
             this.타겟추가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -71,18 +71,19 @@ namespace MaptoolNightbuild.View
             // 파일ToolStripMenuItem
             // 
             this.파일ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.새맵파일ToolStripMenuItem,
+            this.imNewMap,
             this.저장ToolStripMenuItem,
             this.열기ToolStripMenuItem});
             this.파일ToolStripMenuItem.Name = "파일ToolStripMenuItem";
             this.파일ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.파일ToolStripMenuItem.Text = "파일";
             // 
-            // 새맵파일ToolStripMenuItem
+            // imNewMap
             // 
-            this.새맵파일ToolStripMenuItem.Name = "새맵파일ToolStripMenuItem";
-            this.새맵파일ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.새맵파일ToolStripMenuItem.Text = "새 맵파일";
+            this.imNewMap.Name = "imNewMap";
+            this.imNewMap.Size = new System.Drawing.Size(180, 22);
+            this.imNewMap.Text = "새 맵파일";
+            this.imNewMap.Click += new System.EventHandler(this.imNewMap_Click);
             // 
             // 저장ToolStripMenuItem
             // 
@@ -99,17 +100,18 @@ namespace MaptoolNightbuild.View
             // 오브젝트추가ToolStripMenuItem
             // 
             this.오브젝트추가ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.oBJ메시ToolStripMenuItem,
+            this.miAddOBJMesh,
             this.타겟추가ToolStripMenuItem});
             this.오브젝트추가ToolStripMenuItem.Name = "오브젝트추가ToolStripMenuItem";
             this.오브젝트추가ToolStripMenuItem.Size = new System.Drawing.Size(95, 20);
             this.오브젝트추가ToolStripMenuItem.Text = "오브젝트 추가";
             // 
-            // oBJ메시ToolStripMenuItem
+            // miAddOBJMesh
             // 
-            this.oBJ메시ToolStripMenuItem.Name = "oBJ메시ToolStripMenuItem";
-            this.oBJ메시ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.oBJ메시ToolStripMenuItem.Text = "OBJ 메시";
+            this.miAddOBJMesh.Name = "miAddOBJMesh";
+            this.miAddOBJMesh.Size = new System.Drawing.Size(180, 22);
+            this.miAddOBJMesh.Text = "OBJ 메시";
+            this.miAddOBJMesh.Click += new System.EventHandler(this.miAddOBJMesh_Click);
             // 
             // 타겟추가ToolStripMenuItem
             // 
@@ -117,13 +119,13 @@ namespace MaptoolNightbuild.View
             this.타겟추가ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.타겟추가ToolStripMenuItem.Text = "타겟 추가";
             // 
-            // MapEditorView
+            // MainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.dockPanel1);
             this.Controls.Add(this.menuStrip1);
-            this.Name = "MapEditorView";
+            this.Name = "MainFrame";
             this.Size = new System.Drawing.Size(1667, 933);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -139,11 +141,11 @@ namespace MaptoolNightbuild.View
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender visualStudioToolStripExtender1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 파일ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 새맵파일ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem imNewMap;
         private System.Windows.Forms.ToolStripMenuItem 저장ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 열기ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 오브젝트추가ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem oBJ메시ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miAddOBJMesh;
         private System.Windows.Forms.ToolStripMenuItem 타겟추가ToolStripMenuItem;
     }
 }

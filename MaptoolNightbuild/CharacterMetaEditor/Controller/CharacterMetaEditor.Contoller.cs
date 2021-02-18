@@ -15,6 +15,15 @@ namespace MaptoolNightbuild.CharacterMetaEditor
             var document = Doc.CharacterMetaDoc.Instance;
 
         }
-
+        public async Task LoadXMesh(String path)
+        {
+            var xmesh = await Doc.ResourceManager.Instance.GetSkinnedMesh(path);
+            var xSkinnedMeshObject = new MaptoolRenderer.SkinnedXMeshObject(xmesh);
+            var prevXMesh = Doc.CharacterMetaDoc.Instance.Mesh;
+            Doc.CharacterMetaDoc.Instance.Mesh = xSkinnedMeshObject;
+            Doc.CharacterMetaDoc.Instance.RenderObjects.Remove(prevXMesh);
+            Doc.CharacterMetaDoc.Instance.RenderObjects.Add(xSkinnedMeshObject);
+            
+        }
     }
 }

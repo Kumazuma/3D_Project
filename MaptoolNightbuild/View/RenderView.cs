@@ -77,10 +77,9 @@ namespace MaptoolNightbuild.View
         }
         private void RenderView_MouseWheel(object sender, MouseEventArgs e)
         {
-            var wheelCount = e.Delta / 10f;
+            var wheelCount = e.Delta / 120f;
             camera.MoveForward(wheelCount);
             Render();
-
         }
         public void Render()
         {

@@ -21,6 +21,10 @@ namespace MaptoolRenderer
 			auto get()->unsigned int;
 			auto set(unsigned int)->void;
 		}
+		property unsigned int AnimationCount
+		{
+			auto get()->unsigned int;
+		}
 	public:
 		auto SetAnimationSet(int i)->void;
 		auto PlayAnimation(float timeDelta)->void;

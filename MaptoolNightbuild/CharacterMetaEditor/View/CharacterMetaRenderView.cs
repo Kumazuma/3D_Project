@@ -117,19 +117,14 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             {
                 return;
             }
-            await LoadXMesh(openFileDialog.FileName);
+            var loadingDialog = new XMeshLoadingDialog();
+            loadingDialog.Show();
+            this.ParentForm.Enabled = false;
+            await Controller.Instance.LoadXMesh(openFileDialog.FileName);
+            this.ParentForm.Enabled = true;
+            loadingDialog.Close();
         }
-        async Task LoadXMesh(String path)
-        {
-            var preTime = DateTime.Now;
-            var xmesh = await Doc.ResourceManager.Instance.GetSkinnedMesh(path);
-            var xSkinnedMeshObject = new MaptoolRenderer.SkinnedXMeshObject(xmesh);
-            var prevXMesh = Doc.CharacterMetaDoc.Instance.Mesh;
-            Doc.CharacterMetaDoc.Instance.Mesh = xSkinnedMeshObject;
-            Doc.CharacterMetaDoc.Instance.RenderObjects.Remove(prevXMesh);
-            Doc.CharacterMetaDoc.Instance.RenderObjects.Add(xSkinnedMeshObject);
-            xSkinnedMeshObject.PropertyChanged += XSkinnedMeshObject_PropertyChanged;
-        }
+
 
         private void XSkinnedMeshObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
