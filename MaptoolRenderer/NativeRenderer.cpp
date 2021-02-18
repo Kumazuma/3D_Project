@@ -19,20 +19,24 @@ auto MaptoolRenderer::NativeRenderer::GetDevice(IDirect3DDevice9** out) -> HRESU
 
 auto MaptoolRenderer::NativeRenderer::SetProjMatrix(DirectX::XMFLOAT4X4 const& mat) -> void
 {
+    projSpaceMatrix_ = mat;
 }
 
 auto MaptoolRenderer::NativeRenderer::SetViewMatrix(DirectX::XMFLOAT4X4 const& mat) -> void
 {
+    viewSpaceMatrix_ = mat;
 }
 
 auto MaptoolRenderer::NativeRenderer::GetProjMatrix(DirectX::XMFLOAT4X4* pOut) -> HRESULT
 {
-    return E_NOTIMPL;
+    *pOut = projSpaceMatrix_;
+    return S_OK;
 }
 
 auto MaptoolRenderer::NativeRenderer::GetViewMatrix(DirectX::XMFLOAT4X4* pOut) -> HRESULT
 {
-    return E_NOTIMPL;
+    *pOut = viewSpaceMatrix_;
+    return S_OK;
 }
 
 auto MaptoolRenderer::NativeRenderer::GetFrustum(Frustum* const pOutFrustum) -> HRESULT

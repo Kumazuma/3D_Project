@@ -237,9 +237,12 @@ auto MaptoolRenderer::GraphicsDevice::Render(Control^ control, IEnumerable<IRend
 			return;
 		}
 	}
+
 	camera->GenerateProjMatrix(control->Width, control->Height, &projSpaceMatrix);
 	camera->GenerateMatrix(&viewSpaceMatrix);
 	GenerateViewProjMatrix(&viewSpaceMatrix, &projSpaceMatrix, &viewProjMatrix);
+	renderer_->SetProjMatrix(projSpaceMatrix);
+	renderer_->SetViewMatrix(viewSpaceMatrix);
 	device->SetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&projSpaceMatrix));
 	device->SetTransform(D3DTS_VIEW, reinterpret_cast<D3DMATRIX*>(&viewSpaceMatrix));
 	device->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -258,6 +261,14 @@ auto MaptoolRenderer::GraphicsDevice::Render(Control^ control, IEnumerable<IRend
 	for each (IRenderable ^ renderable in renderables)
 	{
 		renderable->PrepereRender(this);
+	}
+	IList<IRenderEntity^>^ list;
+	if (renderGroups_.TryGetValue(RenderGroupID::Environment, list))
+	{
+		for each (auto entity in list)
+		{
+			entity->Render(this);
+		}
 	}
 	RenderDeferred(&viewSpaceMatrix, &projSpaceMatrix, &viewProjMatrix);
 	RenderWireframe(&viewSpaceMatrix, &projSpaceMatrix, &viewProjMatrix);
@@ -330,7 +341,6 @@ auto MaptoolRenderer::GraphicsDevice::ClearEffect() -> void
 auto MaptoolRenderer::GraphicsDevice::ClearRenderTarget() -> void
 {
 	COMPtr<IDirect3DDevice9> pDevice{};
-
 	COMPtr<IRenderTarget> albedo;
 	COMPtr<IRenderTarget> normal;
 	COMPtr<IRenderTarget> specular;
@@ -446,8 +456,8 @@ auto MaptoolRenderer::GraphicsDevice::DeferredLighting(DirectX::XMFLOAT4X4 const
 	D3DLIGHT9 light{};
 	light.Type = D3DLIGHT_DIRECTIONAL;
 	light.Direction = D3DVECTOR{ 0.f, 0.0f,1.f };
-	light.Ambient = D3DCOLORVALUE{ 0.2f, 0.2f, 0.2f, 1.0f};
-	light.Diffuse = D3DCOLORVALUE{ 0.7f, 0.7f, 0.7f, 1.0f };
+	light.Ambient = D3DCOLORVALUE{ 0.5f, 0.5f, 0.5f, 1.0f};
+	light.Diffuse = D3DCOLORVALUE{ 0.5f, 0.5f, 0.5f, 1.0f };
 	D3DXVec3Normalize(
 		reinterpret_cast<D3DXVECTOR3*>(&light.Direction),
 		reinterpret_cast<D3DXVECTOR3*>(&light.Direction));

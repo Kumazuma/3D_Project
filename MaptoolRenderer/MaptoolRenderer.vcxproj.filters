@@ -55,6 +55,15 @@
     <Filter Include="Object\Simple\Sphere">
       <UniqueIdentifier>{5f2fef71-0954-4d6d-a72b-8f47ce40e533}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Skybox">
+      <UniqueIdentifier>{8c8f7467-82aa-4c85-bb78-c1eb807bb127}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\CubeTexture">
+      <UniqueIdentifier>{8be98c62-57f9-4798-a499-0246d5229cae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\CubeTexture\CubeTextureEditor">
+      <UniqueIdentifier>{43f355ea-828e-438c-8551-8197c7013a45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MaptoolRenderer.h">
@@ -117,6 +126,15 @@
     <ClInclude Include="ColliderObject.hpp">
       <Filter>Object\Simple</Filter>
     </ClInclude>
+    <ClInclude Include="SkyBox.hpp">
+      <Filter>Object\Skybox</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeTexture.hpp">
+      <Filter>Resource\CubeTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeTextureFileEditor.hpp">
+      <Filter>Resource\CubeTexture\CubeTextureEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MaptoolRenderer.cpp">
@@ -169,6 +187,15 @@
     </ClCompile>
     <ClCompile Include="ColliderObject.cpp">
       <Filter>Object\Simple</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeTexture.cpp">
+      <Filter>Resource\CubeTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>Object\Skybox</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeTextureFileEditor.cpp">
+      <Filter>Resource\CubeTexture\CubeTextureEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -14,7 +14,7 @@ namespace MaptoolNightbuild.MapEditor
         static Document s_instance = new Document();
         public static Document Instance { get => s_instance; }
         public event PropertyChangedEventHandler PropertyChanged;
-
+        public SkyBox SkyBox { get; set; }
         ObjectCollection<HashSet<IRenderable>, IRenderable> renderObjects;
         Document()
         {

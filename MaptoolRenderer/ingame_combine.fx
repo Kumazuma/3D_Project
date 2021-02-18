@@ -60,7 +60,7 @@ float4 ps_main(PS_IN input) :COLOR0
 	float4 vAlbedo = tex2D(AlbedoMapSampler, input.vUV);
 	float4 vSpecular = tex2D(SpecularMapSampler, input.vUV);
 	float4 vColor = vSpecular + vAlbedo * vShade;
-
+	vColor.a = vAlbedo.a;
 	return vColor;
 }
 

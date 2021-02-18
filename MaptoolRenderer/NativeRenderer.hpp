@@ -16,8 +16,8 @@ namespace MaptoolRenderer
 		auto GetFrustum(Frustum* const pOutFrustum)->HRESULT;
 	private:
 		RenderModule* renderModule_;
-		DirectX::XMFLOAT4X4* projSpaceMatrix_;
-		DirectX::XMFLOAT4X4* viewSpaceMatrix_;
+		DirectX::XMFLOAT4X4 projSpaceMatrix_;
+		DirectX::XMFLOAT4X4 viewSpaceMatrix_;
 	};
 }
 #pragma managed

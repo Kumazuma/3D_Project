@@ -37,6 +37,7 @@ namespace MaptoolNightbuild.MapEditor
             await Task.Run(() =>
             {
                 Document.Instance.RenderObjects.Clear();
+                Document.Instance.RenderObjects.Add(Document.Instance.SkyBox);
             });
         }
     }

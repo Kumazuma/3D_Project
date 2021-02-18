@@ -35,6 +35,29 @@ namespace MaptoolNightbuild.MapEditor
             listbox.Content.Items.Add(renderView.Content.CurrentCamera);
 
             Document.Instance.RenderObjects.CollectionChanged += RenderObjects_CollectionChanged;
+            Document.Instance.SkyBox = new MaptoolRenderer.SkyBox();
+            Document.Instance.SkyBox.PropertyChanged += Object_PropertyChanged;
+            Controller.Instance.NewMap();
+            this.KeyDown += MainFrame_KeyDown;
+            renderView.Content.KeyDown += MainFrame_KeyDown;
+        }
+
+        private void Object_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            renderView.Content.Render();
+        }
+
+        private void MainFrame_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.W)
+            {
+                renderView.Content.CurrentCamera.MoveForward(1);
+            }
+            else if(e.KeyCode == Keys.S)
+            {
+                renderView.Content.CurrentCamera.MoveForward(-1);
+
+            }
         }
 
         private void RenderObjects_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -48,6 +71,7 @@ namespace MaptoolNightbuild.MapEditor
                         foreach (var obj in e.NewItems)
                         {
                             listbox.Content.Items.Add(obj);
+                            (obj as INotifyPropertyChanged).PropertyChanged += Object_PropertyChanged;
                         }
                         break;
                     case NotifyCollectionChangedAction.Remove:
@@ -67,6 +91,7 @@ namespace MaptoolNightbuild.MapEditor
                 action();
             }
         }
+
 
         private void CurrentCamera_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
