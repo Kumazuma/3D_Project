@@ -32,6 +32,10 @@ namespace MaptoolNightbuild.MapEditor
             }
             Document.Instance.RenderObjects.AddRange(meshObjects);
         }
+        public async Task OpenMap(string path)
+        {
+
+        }
         public async Task NewMap()
         {
             await Task.Run(() =>

@@ -23,3 +23,7 @@ MaptoolRenderer::Mesh::~Mesh()
 auto MaptoolRenderer::Mesh::Render(IRendererBase* renderer, ID3DXEffect* effect) -> void
 {
 }
+auto MaptoolRenderer::Mesh::FilePath::get()->String^
+{
+    return filePath_;
+}

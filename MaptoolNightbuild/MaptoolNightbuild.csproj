@@ -96,6 +96,8 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="MapEditor\MapEditor.Document.cs" />
+    <Compile Include="MapEditor\MapTarget.cs" />
+    <Compile Include="MapEditor\MultiSelectTransforms.cs" />
     <Compile Include="MapEditor\OBJMeshLoadingDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -163,6 +165,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="CharacterMetaEditor\View\AnimationTableView.resx">
       <DependentUpon>AnimationTableView.cs</DependentUpon>

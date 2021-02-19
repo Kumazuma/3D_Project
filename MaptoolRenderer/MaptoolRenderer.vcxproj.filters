@@ -135,6 +135,9 @@
     <ClInclude Include="CubeTextureFileEditor.hpp">
       <Filter>Resource\CubeTexture\CubeTextureEditor</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleSphereObject.hpp">
+      <Filter>Object\Simple</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MaptoolRenderer.cpp">
@@ -196,6 +199,9 @@
     </ClCompile>
     <ClCompile Include="CubeTextureFileEditor.cpp">
       <Filter>Resource\CubeTexture\CubeTextureEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleSphereObject.cpp">
+      <Filter>Object\Simple</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

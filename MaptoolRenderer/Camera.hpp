@@ -6,7 +6,8 @@ namespace DirectX
 namespace MaptoolRenderer {
 	using namespace System::ComponentModel;
 	public ref class Camera abstract:
-		public INotifyPropertyChanged
+		public INotifyPropertyChanged,
+		public MapToolCore::IHasText
 	{
 	public:
 		Camera();
@@ -37,6 +38,12 @@ namespace MaptoolRenderer {
 		}
 		// INotifyPropertyChanged을(를) 통해 상속됨
 		virtual event System::ComponentModel::PropertyChangedEventHandler^ PropertyChanged;
+		// IHasText을(를) 통해 상속됨
+		[BrowsableAttribute(false)]
+		virtual property System::String^ Text
+		{
+			System::String^ get();
+		}
 	internal:
 		virtual auto GenerateProjMatrix(float width, float height, DirectX::XMFLOAT4X4* out)->void = 0;
 		auto GenerateMatrix(DirectX::XMFLOAT4X4* out)->void;
@@ -48,6 +55,9 @@ namespace MaptoolRenderer {
 		float far_;
 
 		
+
+		
+
 	};
 	public ref class OrthoCamera : public Camera
 	{

@@ -69,6 +69,7 @@
     <Compile Include="Environment.cs" />
     <Compile Include="IColliderObject.cs" />
     <Compile Include="IHasName.cs" />
+    <Compile Include="IHasText.cs" />
     <Compile Include="IHasTransform.cs" />
     <Compile Include="IInteractMouse.cs" />
     <Compile Include="IJSONSerializable.cs" />

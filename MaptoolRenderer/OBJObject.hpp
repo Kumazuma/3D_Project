@@ -33,6 +33,10 @@ namespace MaptoolRenderer {
 		property OBJSubsetCollection^ Subsets {
 			auto get()->OBJSubsetCollection^;
 		}
+		[TypeConverter(ExpandableObjectConverter::typeid)]
+		property MaptoolRenderer::Mesh^ Mesh {
+			auto get()->MaptoolRenderer::Mesh^;
+		}
 	internal:
 		OBJMesh^ mesh_;
 		IList<OBJSubset^>^ subsets_;

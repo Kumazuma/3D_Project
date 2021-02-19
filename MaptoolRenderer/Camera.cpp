@@ -158,6 +158,10 @@ namespace MaptoolRenderer
 		near_ = value;
 		PropertyChanged(this, gcnew PropertyChangedEventArgs("Near"));
 	}
+	System::String^ Camera::Text::get()
+	{
+		return "Camera";
+	}
 	auto OrthoCamera::Aspect::get()->float
 	{
 		return aspect_;
@@ -176,6 +180,7 @@ namespace MaptoolRenderer
 		angle_ = value;
 		PropertyChanged(this, gcnew PropertyChangedEventArgs("Angle"));
 	}
+
 	auto OrthoCamera::GenerateProjMatrix(float width, float height, DirectX::XMFLOAT4X4* out) -> void
 	{
 		GenerateOrthoProjMatrix(aspect_, width, height, near_, far_, out);

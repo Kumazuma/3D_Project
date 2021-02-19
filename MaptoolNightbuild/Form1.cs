@@ -45,5 +45,14 @@ namespace MaptoolNightbuild
             //propertyGrid1.SelectedObject = comboBox1.SelectedItem;
 
         }
+
+        private void miRrcBaseDirToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var properties = Properties.Settings.Default;
+            var folderDialog = new FolderBrowserDialog();
+            folderDialog.SelectedPath = System.IO.Path.GetFullPath(properties.ProjectDir);
+            if (folderDialog.ShowDialog() != DialogResult.OK) return;
+            properties.ProjectDir = folderDialog.SelectedPath;
+        }
     }
 }

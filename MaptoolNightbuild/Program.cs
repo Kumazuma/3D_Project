@@ -14,9 +14,16 @@ namespace MaptoolNightbuild
         [STAThread]
         static void Main()
         {
+            String projectDir = Properties.Settings.Default.ProjectDir;
+            if (projectDir == null || projectDir == "")
+            {
+                projectDir = System.IO.Path.GetFullPath("./");
+                Properties.Settings.Default.ProjectDir = projectDir;
+            }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
+            Properties.Settings.Default.Save();
         }
     }
 }

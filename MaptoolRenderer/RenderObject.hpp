@@ -4,9 +4,11 @@
 namespace MaptoolRenderer
 {
 	using namespace System;
+	using namespace System::ComponentModel;
 	ref class Mesh;
 	public ref class MeshObject abstract :
 		public IRenderable,
+		public MapToolCore::IHasText,
 		public MapToolCore::IHasTransform,
 		public System::ComponentModel::INotifyPropertyChanged,
 		public MapToolCore::IHasName
@@ -29,6 +31,12 @@ namespace MaptoolRenderer
 			virtual auto get()->String^;
 			virtual auto set(String^)->void;
 		}
+		[BrowsableAttribute(false)]
+		property String^ Text
+		{
+			virtual auto get()->String^;
+		}
+		String^ ToString() override;
 		// INotifyPropertyChanged을(를) 통해 상속됨
 		virtual event System::ComponentModel::PropertyChangedEventHandler^ PropertyChanged;
 	internal:

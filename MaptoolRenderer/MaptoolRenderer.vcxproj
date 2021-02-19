@@ -150,6 +150,7 @@
     <ClInclude Include="RenderObject.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SimpleBoxObject.hpp" />
+    <ClInclude Include="SimpleSphereObject.hpp" />
     <ClInclude Include="SkinnedXMesh.hpp" />
     <ClInclude Include="SkyBox.hpp" />
     <ClInclude Include="SphereMesh.hpp" />
@@ -177,6 +178,7 @@
     </ClCompile>
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="SimpleBoxObject.cpp" />
+    <ClCompile Include="SimpleSphereObject.cpp" />
     <ClCompile Include="SkinnedXMesh.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SphereMesh.cpp" />

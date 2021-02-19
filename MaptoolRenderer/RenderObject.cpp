@@ -59,10 +59,19 @@ auto MaptoolRenderer::MeshObject::Name::get()->String^
 {
 	return name_;
 }
+auto MaptoolRenderer::MeshObject::Text::get()->String^
+{
+	return ToString();
+}
 auto MaptoolRenderer::MeshObject::Name::set(String^ value)->void
 {
 	name_ = value;
 	this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "Name" });
+	this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "Text" });
+}
+String^ MaptoolRenderer::MeshObject::ToString()
+{
+	return String::Format("{0}(type: {1})", Name, GetType()->Name);
 }
 auto MaptoolRenderer::MeshObject::OnTransformChanged(Object^ obj, System::ComponentModel::PropertyChangedEventArgs^ e) -> void
 {

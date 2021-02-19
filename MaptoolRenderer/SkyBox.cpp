@@ -44,4 +44,9 @@ auto MaptoolRenderer::SkyBox::Texture::set(CubeTexture^ texture) -> void
 {
     texture_ = texture;
     PropertyChanged(this, gcnew PropertyChangedEventArgs("Texture"));
+    PropertyChanged(this, gcnew PropertyChangedEventArgs("Text"));
+}
+String^ MaptoolRenderer::SkyBox::Text::get()
+{
+    return "SkyBox";
 }

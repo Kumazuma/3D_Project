@@ -24,7 +24,7 @@ namespace MaptoolRenderer
         {
             subsets_->Add(gcnew OBJSubset{ this, name });
         }
-        
+        name_ = System::IO::Path::GetFileNameWithoutExtension(mesh_->FilePath);
         
     }
     OBJObject::OBJObject(OBJObject^ rhs):
@@ -46,7 +46,10 @@ namespace MaptoolRenderer
             }
         }
     }
-
+    auto OBJObject::Mesh::get()->MaptoolRenderer::Mesh^
+    {
+        return this->mesh_;
+    }
     auto OBJObject::Subsets::get()->OBJSubsetCollection^
     {
         return gcnew OBJSubsetCollection{ this, subsets_ };
@@ -97,4 +100,5 @@ namespace MaptoolRenderer
     {
         return this->name_;
     }
+
 }

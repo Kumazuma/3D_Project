@@ -12,6 +12,7 @@ namespace MaptoolRenderer {
 	ref class CubeTexture;
 	public ref class SkyBox :
 		public IRenderable,
+		public MapToolCore::IHasText,
 		public IRenderEntity,
 		public INotifyPropertyChanged
 	{
@@ -29,11 +30,20 @@ namespace MaptoolRenderer {
 			auto get()->CubeTexture^;
 			auto set(CubeTexture^ )->void;
 		}
+		// IHasText을(를) 통해 상속됨
+		[BrowsableAttribute(false)]
+		virtual property System::String^ Text
+		{
+			System::String^ get();
+		}
 	internal:
 	private:
 		CubeTexture^ texture_;
 		SkyBoxObject* mesh_;
 		// INotifyPropertyChanged을(를) 통해 상속됨
+
+
+
 
 	};
 }

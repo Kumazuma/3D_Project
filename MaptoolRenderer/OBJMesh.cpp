@@ -22,6 +22,7 @@ namespace MaptoolRenderer
 			subsetNames_[i] = ctx.marshal_as<String^>(it.first);
 			++i;
 		}
+		filePath_ = path;
 	}
 	OBJMesh::OBJMesh(OBJMesh^ rhs)
 	{
@@ -36,5 +37,10 @@ namespace MaptoolRenderer
 	auto OBJMesh::SubsetNames::get()->array<System::String^>^ 
 	{
 		return safe_cast<array<System::String^>^>(subsetNames_->Clone());
+	}
+	auto OBJMesh::Position::get()->MapToolCore::Position
+	{
+		auto center = static_cast<DirectX::XMFLOAT3 const&>(static_cast<WavefrontOBJMesh*>(this->renderObject_)->GetCenter());
+		return MapToolCore::Position(center.x, center.y, center.z);
 	}
 }
