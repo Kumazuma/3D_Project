@@ -17,7 +17,7 @@ namespace MaptoolNightbuild
         {
             InitializeComponent();
             MaptoolRenderer.GraphicsDevice.Initalize(this, 1920, 1080);
-
+            
             var editorView = new MapEditor.MainFrame();
             tabPage1.Controls.Add(editorView);
             editorView.Dock = DockStyle.Fill;
