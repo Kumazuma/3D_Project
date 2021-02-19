@@ -55,6 +55,9 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -96,6 +99,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="MapEditor\MapEditor.Document.cs" />
+    <Compile Include="MapEditor\MapFile.cs" />
     <Compile Include="MapEditor\MapTarget.cs" />
     <Compile Include="MapEditor\MultiSelectTransforms.cs" />
     <Compile Include="MapEditor\OBJMeshLoadingDialog.cs">

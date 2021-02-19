@@ -190,5 +190,31 @@ namespace MaptoolNightbuild.MapEditor
         {
             Document.Instance.RenderObjects.Add(new MapTarget());
         }
+
+        private async void miSaveFile_Click(object sender, EventArgs e)
+        {
+            using (var saveFileDialog = new SaveFileDialog{Filter = "JSON파일(*.json)|*.json"})
+            {
+                if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                await Controller.Instance.SaveMap(saveFileDialog.FileName);
+                MessageBox.Show("완료되었습니다");
+            }
+        }
+
+        private async void miOpenFile_Click(object sender, EventArgs e)
+        {
+            using (var openFileDialog = new OpenFileDialog { Filter = "JSON파일(*.json)|*.json" })
+            {
+                if (openFileDialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                await Controller.Instance.OpenMap(openFileDialog.FileName);
+                MessageBox.Show("완료되었습니다");
+            }
+        }
     }
 }

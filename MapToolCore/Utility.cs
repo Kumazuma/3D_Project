@@ -29,10 +29,10 @@ namespace MapToolCore
             }
             return path.ToString();
         }
-        public static string FormatString(string path)
+        public static string ToRelativePath(string basePath, string path)
         {
             if (path == null) return null;
-            string currentProjectDirectory = Environment.Instance.ProjectDirectory;
+            string currentProjectDirectory = basePath;
             path = System.IO.Path.GetFullPath(path);
             path = GetRelativePath(currentProjectDirectory, path);
 

@@ -37,17 +37,22 @@ namespace MaptoolRenderer {
 		property MaptoolRenderer::Mesh^ Mesh {
 			auto get()->MaptoolRenderer::Mesh^;
 		}
+		property OBJMeshObjectUsage Usage
+		{
+			auto get()->OBJMeshObjectUsage;
+			auto set(OBJMeshObjectUsage)->void;
+		}
 	internal:
 		OBJMesh^ mesh_;
+		OBJMeshObjectUsage usage_;
 		IList<OBJSubset^>^ subsets_;
 	private:
 
 	};
-	private ref class OBJSubset: public IRenderEntity
+	public ref class OBJSubset: public IRenderEntity
 	{
 	public:
 		OBJSubset(OBJObject^ parent, String^ name);
-		virtual auto Render(GraphicsDevice^ renderer)->void override;
 		property OBJSubsetRenderKind RenderKind {
 			auto get()->OBJSubsetRenderKind;
 			auto set(OBJSubsetRenderKind kind)->void;
@@ -55,6 +60,7 @@ namespace MaptoolRenderer {
 		property String^ Name {
 			auto get()->String^;
 		}
+		virtual auto Render(GraphicsDevice^ renderer)->void override;
 	private:
 		OBJSubsetRenderKind renderKind_;
 		OBJObject^ objObject_;
