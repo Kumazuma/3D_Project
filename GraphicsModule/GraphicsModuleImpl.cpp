@@ -5,32 +5,17 @@
 #include "TextureManager.hpp"
 #include "Texture2DBuilder.hpp"
 #include <d3dcompiler.h>
-Kumazuma::GraphicsModuleImpl::GraphicsModuleImpl(HWND hWindow, Size2D<u32> const& bufferSize, bool fullScreen)
+Kumazuma::GraphicsModuleImpl::GraphicsModuleImpl( )
 {
     UINT creationFlags{ D3D11_CREATE_DEVICE_BGRA_SUPPORT };
     D3D_FEATURE_LEVEL featureLevel{ D3D_FEATURE_LEVEL_11_0 };
-    DXGI_SWAP_CHAIN_DESC swapChainDesc{};
-    swapChainDesc.BufferCount = 1;
-    swapChainDesc.BufferDesc.Width = bufferSize.width;
-    swapChainDesc.BufferDesc.Height = bufferSize.height;
-    swapChainDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-    swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-    swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
-    swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-    swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_UNORDERED_ACCESS;
-    swapChainDesc.SampleDesc.Count = 1;
-    swapChainDesc.SampleDesc.Quality = 0;
-    swapChainDesc.OutputWindow = hWindow;
-    swapChainDesc.Windowed = !fullScreen;
-    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-    swapChainDesc.Flags = 0;
+
 #if defined(_DEBUG)
     // If the project is in a debug build, enable the debug layer.
     creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-    D3D11CreateDeviceAndSwapChain(
+    D3D11CreateDevice(
         nullptr,
         D3D_DRIVER_TYPE_HARDWARE,
         nullptr,
@@ -38,17 +23,15 @@ Kumazuma::GraphicsModuleImpl::GraphicsModuleImpl(HWND hWindow, Size2D<u32> const
         &featureLevel,
         1,
         D3D11_SDK_VERSION,
-        &swapChainDesc,
-        &swapChain_,
         &device_,
         nullptr,
         &deviceContext_
     );
-    swapChainTexture_.reset(new SwapChainTexture2D(device_.Get(), swapChain_.Get()));
-    defaultDepthBuffer_.reset(Texture2D::Create(device_.Get(), Texture2D::Builder(DXGI_FORMAT_D32_FLOAT, bufferSize.width, bufferSize.height).DepthStancilView()));
+    CreateDXGIFactory(__uuidof(IDXGIFactory), &dxgiFactory_);
+    //swapChainTexture_.reset(new SwapChainTexture2D(device_.Get(), swapChain_.Get()));
+    //defaultDepthBuffer_.reset(Texture2D::Create(device_.Get(), Texture2D::Builder(DXGI_FORMAT_D32_FLOAT, bufferSize.width, bufferSize.height).DepthStancilView()));
 
     textureManager_.reset(new TextureManagerImpl{ this });
-    renderSystem_.reset(new RenderSystemImpl{ this });
 }
 //ComPtr<ID3D11Device>		device_;
 //ComPtr<ID3D11DeviceContext> deviceContext_;
@@ -59,16 +42,15 @@ Kumazuma::GraphicsModuleImpl::GraphicsModuleImpl(HWND hWindow, Size2D<u32> const
 Kumazuma::GraphicsModuleImpl::GraphicsModuleImpl(GraphicsModuleImpl&& rhs) noexcept:
     device_{std::move(rhs.device_)},
     deviceContext_{std::move(rhs.deviceContext_)},
-    swapChain_{std::move(rhs.swapChain_)},
-    renderSystem_{std::move(rhs.renderSystem_)},
+    //swapChain_{std::move(rhs.swapChain_)},
     textureManager_{std::move(rhs.textureManager_)},
-    swapChainTexture_{std::move(rhs.swapChainTexture_)},
+    //swapChainTexture_{std::move(rhs.swapChainTexture_)},
     cbuffers_{std::move(rhs.cbuffers_)},
-    defaultDepthBuffer_{std::move(rhs.defaultDepthBuffer_)},
-    shaders_{std::move(rhs.shaders_)}
+    //defaultDepthBuffer_{std::move(rhs.defaultDepthBuffer_)},
+    shaders_{std::move(rhs.shaders_)},
+    dxgiFactory_{std::move(rhs.dxgiFactory_)}
 {
     static_cast<TextureManagerImpl*>(textureManager_.get())->SetGraphicsModule(this);
-    static_cast<RenderSystemImpl*>(renderSystem_.get())->SetGraphicsModule(this);
 }
 
 
@@ -95,18 +77,18 @@ HRESULT Kumazuma::GraphicsModuleImpl::GetImmediateContext(ID3D11DeviceContext** 
     deviceContext->AddRef();
     return S_OK;
 }
-
-HRESULT Kumazuma::GraphicsModuleImpl::GetSwapChain(IDXGISwapChain** out)
-{
-    if (out == nullptr)
-    {
-        return E_POINTER;
-    }
-    IDXGISwapChain* swapChain{ swapChain_.Get() };
-    *out = swapChain;
-    swapChain->AddRef();
-    return S_OK;
-}
+//
+//HRESULT Kumazuma::GraphicsModuleImpl::GetSwapChain(IDXGISwapChain** out)
+//{
+//    if (out == nullptr)
+//    {
+//        return E_POINTER;
+//    }
+//    IDXGISwapChain* swapChain{ swapChain_.Get() };
+//    *out = swapChain;
+//    swapChain->AddRef();
+//    return S_OK;
+//}
 
 HRESULT Kumazuma::GraphicsModuleImpl::CreateCBuffer(wchar_t const* name, size_t bufferSize)
 {
@@ -256,17 +238,18 @@ Kumazuma::TextureManager& Kumazuma::GraphicsModuleImpl::GetTextureManager()
     return *textureManager_;
 }
 
-Kumazuma::RenderSystem& Kumazuma::GraphicsModuleImpl::GetRenderSystem()
+
+IDXGIFactory* Kumazuma::GraphicsModuleImpl::GetDXGIFactory()
 {
-    return *renderSystem_;
+    return dxgiFactory_.Get();
 }
 
-Kumazuma::Texture2D* Kumazuma::GraphicsModuleImpl::GetSwapChainTexture()
-{
-    return swapChainTexture_.get();
-}
-
-Kumazuma::Texture2D* Kumazuma::GraphicsModuleImpl::GetDefaultDepthBuffer()
-{
-    return defaultDepthBuffer_.get();;
-}
+//Kumazuma::Texture2D* Kumazuma::GraphicsModuleImpl::GetSwapChainTexture()
+//{
+//    return swapChainTexture_.get();
+//}
+//
+//Kumazuma::Texture2D* Kumazuma::GraphicsModuleImpl::GetDefaultDepthBuffer()
+//{
+//    return defaultDepthBuffer_.get();;
+//}

@@ -2,6 +2,7 @@
 #include "RenderSystemImpl.hpp"
 #include "Texture2DBuilder.hpp"
 #include "GraphicsModule.hpp"
+#include "SwapChain.hpp"
 #include "Mesh.hpp"
 #include <mutex>
 #include <d3dcompiler.h>
@@ -25,13 +26,13 @@ namespace CS
 	};
 }
 
-Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule)
+Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule, SwapChain* swapChain)
 {
-	gmodule_ = gmodule;
+	swapChain_ = swapChain;
 	Size2D<u32> size{};
 	ComPtr<ID3D11Device> device{};
 	gmodule->GetDevice(&device);
-	gmodule->GetSwapChainTexture()->GetSize(&size);
+	swapChain->GetBackbuffer()->GetSize(&size);
 	Texture2D* texture{};
 	texture =
 		Texture2D::Builder(DXGI_FORMAT_R8G8B8A8_UNORM, size.width, size.height)
@@ -69,10 +70,10 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule)
 		.Build(device.Get());
 	lightSpecularMap_.reset(texture);
 
-	InitializeRenderState();
+	InitializeRenderState(device.Get());
 
 	HRESULT hr{};
-	hr = gmodule_->LoadPixelShader(L"deferred_gbuffer_ps", L"./StaticMeshGBufferPS.hlsl", "main");
+	hr = gmodule->LoadPixelShader(L"deferred_gbuffer_ps", L"./StaticMeshGBufferPS.hlsl", "main");
 	ComPtr<ID3DBlob> bytesCode;
 	ComPtr<ID3DBlob> errMsg;
 	hr = D3DCompileFromFile(L"./StaticMeshVS.hlsl", nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &bytesCode, &errMsg);
@@ -120,8 +121,8 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule)
 	device->CreateVertexShader(bytesCode->GetBufferPointer(),
 		bytesCode->GetBufferSize(), nullptr, &staticMeshVertexShader_);
 
-	hr = gmodule_->LoadComputeShader(L"directional_lighting", L"./LightingCS.hlsl", "main");
-	gmodule_->GetComputeShader(L"directional_lighting", &directinalLightingCShader_);
+	hr = gmodule->LoadComputeShader(L"directional_lighting", L"./LightingCS.hlsl", "main");
+	gmodule->GetComputeShader(L"directional_lighting", &directinalLightingCShader_);
 
 	auto cslightCBufferDesc = CD3D11_BUFFER_DESC(sizeof(CS::LightInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 	auto csGlobalCBufferDesc = CD3D11_BUFFER_DESC(sizeof(CS::GlobalInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
@@ -129,8 +130,8 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule)
 	hr = device->CreateBuffer(&csGlobalCBufferDesc, nullptr, &csGlobalCBuffer_);
 	hr = device->CreateBuffer(&cslightCBufferDesc, nullptr, &csLightCBuffer_);
 
-	hr = gmodule_->LoadComputeShader(L"combineCShader_", L"./DeferredCombineCS.hlsl", "main");
-	gmodule_->GetComputeShader(L"combineCShader_", &combineCShader_);
+	hr = gmodule->LoadComputeShader(L"combineCShader_", L"./DeferredCombineCS.hlsl", "main");
+	gmodule->GetComputeShader(L"combineCShader_", &combineCShader_);
 }
 
 void Kumazuma::RenderSystemImpl::AddMaterial(Material* material)
@@ -157,21 +158,16 @@ void Kumazuma::RenderSystemImpl::RemoveMaterial(Material* material)
 	materialList.erase(it);
 }
 
-void Kumazuma::RenderSystemImpl::Render(DirectX::XMFLOAT4X4 const* view, DirectX::XMFLOAT4X4 const* proj)
+void Kumazuma::RenderSystemImpl::Render(GraphicsModule* gmodule, DirectX::XMFLOAT4X4 const* view, DirectX::XMFLOAT4X4 const* proj)
 {
-	std::lock_guard<GraphicsModule> guard{ *gmodule_ };
+	std::lock_guard<GraphicsModule> guard{ *gmodule };
+	ComPtr<ID3D11DeviceContext> deviceContext;
+	ComPtr<ID3D11Device> device;
 	Size2D<u32> bufferSize{};
-
-	ComPtr<ID3D11RenderTargetView> swapChainRtv{};
-	ComPtr<ID3D11DeviceContext> deviceContext{};
-	ComPtr<ID3D11DepthStencilView> depthView{};
-	gmodule_->GetSwapChainTexture()->GetSize(&bufferSize);
-	gmodule_->GetSwapChainTexture()->GetView<ID3D11RenderTargetView>(&swapChainRtv);
-	gmodule_->GetDefaultDepthBuffer()->GetView<ID3D11DepthStencilView>(&depthView);
-	gmodule_->GetImmediateContext(&deviceContext);
-	deviceContext->ClearRenderTargetView(swapChainRtv.Get(), std::array<f32, 4>{0.f, 0.f, 1.f, 1.f }.data());
-	deviceContext->ClearDepthStencilView(depthView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	
+	gmodule->GetDevice(&device);
+	gmodule->GetImmediateContext(&deviceContext);
+	swapChain_->Clear(deviceContext.Get(), { 0.f, 0.f, 1.f, 1.f }, 1.f);
+	swapChain_->GetBackbuffer()->GetSize(&bufferSize);
 	viewSpaceMatrix_ = *view;
 	projSpaceMatrix_ = *proj;
 	XMMATRIX mView{ XMLoadFloat4x4(view) };
@@ -194,7 +190,7 @@ void Kumazuma::RenderSystemImpl::Render(DirectX::XMFLOAT4X4 const* view, DirectX
 	XMStoreFloat4(&csGlobalCBuffer->g_vCameraPosition, vCameraPosition);
 	deviceContext->Unmap(csGlobalCBuffer_.Get(), 0);
 
-	RenderDeferred();
+	RenderDeferred(device.Get(), deviceContext.Get());
 }
 
 void Kumazuma::RenderSystemImpl::SettupVertexShader(MeshType type, ID3D11DeviceContext* context, DirectX::XMFLOAT4X4* worldSpace)
@@ -226,13 +222,10 @@ void Kumazuma::RenderSystemImpl::SettupVertexShader(MeshType type, ID3D11DeviceC
 
 void Kumazuma::RenderSystemImpl::SetGraphicsModule(GraphicsModule* module)
 {
-	gmodule_ = module;
 }
 
-void Kumazuma::RenderSystemImpl::InitializeRenderState()
+void Kumazuma::RenderSystemImpl::InitializeRenderState(ID3D11Device* device)
 {
-	ComPtr<ID3D11Device> device{};
-	gmodule_->GetDevice(&device);
 	auto depthDesc = CD3D11_DEPTH_STENCIL_DESC(
 		true,
 		D3D11_DEPTH_WRITE_MASK_ALL,
@@ -281,19 +274,15 @@ void Kumazuma::RenderSystemImpl::InitializeRenderState()
 
 }
 
-void Kumazuma::RenderSystemImpl::RenderShadowMap()
+void Kumazuma::RenderSystemImpl::RenderShadowMap(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 
 }
 
-void Kumazuma::RenderSystemImpl::RenderDeferred()
+void Kumazuma::RenderSystemImpl::RenderDeferred(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 	f32 rgba[4]{};
-	ComPtr<ID3D11DeviceContext> deviceContext{};
-	ComPtr<ID3D11Device> device;
 	ComPtr<ID3D11DeviceContext> deferredDeviceContext;
-	gmodule_->GetImmediateContext(&deviceContext);
-	gmodule_->GetDevice(&device);
 	deviceContext->ClearRenderTargetView(lightAmbientMap_->GetViewRef<ID3D11RenderTargetView>(), rgba);
 	deviceContext->ClearRenderTargetView(lightSpecularMap_->GetViewRef<ID3D11RenderTargetView>(), rgba);
 	deviceContext->ClearRenderTargetView(albedoGBuffer_->GetViewRef<ID3D11RenderTargetView>(), rgba);
@@ -308,7 +297,7 @@ void Kumazuma::RenderSystemImpl::RenderDeferred()
 	ComPtr<ID3D11DepthStencilView> depthView{};
 	ID3D11RenderTargetView* rtvs[4]{};
 
-	gmodule_->GetDefaultDepthBuffer()->GetView<ID3D11DepthStencilView>(&depthView);
+	swapChain_->GetDepthBuffer()->GetView<ID3D11DepthStencilView>(&depthView);
 	albedoGBuffer_->GetView(&rtvs[0]);
 	//gmodule_->GetSwapChainTexture()->GetView(&rtvs[0]);
 	normalGBuffer_->GetView(&rtvs[1]);
@@ -318,7 +307,7 @@ void Kumazuma::RenderSystemImpl::RenderDeferred()
 
 	Size2D<u32> size{};
 	D3D11_VIEWPORT viewport{};
-	gmodule_->GetSwapChainTexture()->GetSize(&size);
+	swapChain_->GetBackbuffer()->GetSize(&size);
 	viewport.Width = static_cast<f32>(size.width);
 	viewport.Height = static_cast<f32>(size.height);
 	viewport.MinDepth = 0.f;
@@ -335,7 +324,7 @@ void Kumazuma::RenderSystemImpl::RenderDeferred()
 	LinkedList<Material*, 32>& materialList{ materials_[NumOf(MaterialShadingClass::DeferredShading)] };
 	for (auto* material : materialList)
 	{
-		material->Render(deferredDeviceContext.Get());
+		material->Render(this, deferredDeviceContext.Get());
 	}
 	ComPtr<ID3D11CommandList> commandList;
 	deferredDeviceContext->FinishCommandList(false, &commandList);
@@ -344,26 +333,23 @@ void Kumazuma::RenderSystemImpl::RenderDeferred()
 	{
 		rtv->Release();
 	}
-	DeferredLighting();
-	DeferredCombine();
+	DeferredLighting(device, deviceContext);
+	DeferredCombine(device, deviceContext);
 }
 
-void Kumazuma::RenderSystemImpl::DeferredLighting()
+void Kumazuma::RenderSystemImpl::DeferredLighting(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
-	ComPtr<ID3D11DeviceContext> deviceContext{};
-	ComPtr<ID3D11Device> device;
+	deviceContext->ClearState();
 	ComPtr<ID3D11DeviceContext> deferredDeviceContext;
-	gmodule_->GetImmediateContext(&deviceContext);
-	gmodule_->GetDevice(&device);
 	Size2D<u32> size{};
-	gmodule_->GetSwapChainTexture()->GetSize(&size);
+	swapChain_->GetBackbuffer()->GetSize(&size);
 
 	XMFLOAT3 lightDirection{ 1.f, -1.f, 1.f };
 	XMStoreFloat3(&lightDirection, XMVector3Normalize(XMLoadFloat3(&lightDirection)));
 	D3D11_MAPPED_SUBRESOURCE mappedResource{};
 	deviceContext->Map(csLightCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	CS::LightInfo* csLightCBuffer = reinterpret_cast<CS::LightInfo*>(mappedResource.pData);
-	csLightCBuffer->g_vLightAmbient = XMFLOAT4{ 0.2f, 0.2f, 0.2f, 0.2f};
+	csLightCBuffer->g_vLightAmbient = XMFLOAT4{ 0.5f, 0.5f, 0.5f, 0.5f};
 	csLightCBuffer->g_vLightDiffuse = XMFLOAT4{ 1.f, 1.f, 1.f, 1.f };
 	csLightCBuffer->g_vLightDirection = lightDirection;
 	csLightCBuffer->lightType = 0;
@@ -405,20 +391,17 @@ void Kumazuma::RenderSystemImpl::DeferredLighting()
 	lightSpecularMapUAV->Release();
 }
 
-void Kumazuma::RenderSystemImpl::DeferredCombine()
+void Kumazuma::RenderSystemImpl::DeferredCombine(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 	ID3D11UnorderedAccessView* albedoMapUAV;
 	ID3D11UnorderedAccessView* lightAmbientMapUAV;
 	ID3D11UnorderedAccessView* lightSpecularMapUAV;
 	ID3D11UnorderedAccessView* backbufferUAV;
-	ComPtr<ID3D11DeviceContext> deviceContext{};
-	ComPtr<ID3D11Device> device;
 	ComPtr<ID3D11DeviceContext> deferredDeviceContext;
 	Size2D<u32> size{};
-	gmodule_->GetImmediateContext(&deviceContext);
-	gmodule_->GetDevice(&device);
-	gmodule_->GetSwapChainTexture()->GetSize(&size);
-	gmodule_->GetSwapChainTexture()->GetView(&backbufferUAV);
+
+	swapChain_->GetBackbuffer()->GetSize(&size);
+	swapChain_->GetBackbuffer()->GetView(&backbufferUAV);
 	this->albedoGBuffer_->GetView(&albedoMapUAV);
 	this->lightAmbientMap_->GetView(&lightAmbientMapUAV);
 	this->lightSpecularMap_->GetView(&lightSpecularMapUAV);
@@ -439,12 +422,12 @@ void Kumazuma::RenderSystemImpl::DeferredCombine()
 	lightSpecularMapUAV->Release();
 }
 
-void Kumazuma::RenderSystemImpl::RenderForward()
+void Kumazuma::RenderSystemImpl::RenderForward(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 
 }
 
-void Kumazuma::RenderSystemImpl::RenderUI()
+void Kumazuma::RenderSystemImpl::RenderUI(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 
 }

@@ -55,18 +55,17 @@ namespace Kumazuma
 	{
 
 	}
-	void StandardMaterial::Render(ID3D11DeviceContext* deviceContext)
+	void StandardMaterial::Render(RenderSystem* renderSystem, ID3D11DeviceContext* deviceContext)
 	{
 		ID3D11ShaderResourceView* srv{};
 		ID3D11SamplerState* samplerState{ samplerState_ };
-		auto& renderSystem{ gmodule_->GetRenderSystem() };
 		auto& mesh{ subset_->GetMesh() };
 		auto* texture2D{ mesh.GetMaterialTexture(subset_->GetMaterial().c_str()) };
 		if (texture2D != nullptr)
 		{
 			texture2D->GetView(&srv);
 		}
-		renderSystem.SettupVertexShader(MeshType::Static, deviceContext,worldMatrixPtr_);
+		renderSystem->SettupVertexShader(MeshType::Static, deviceContext,worldMatrixPtr_);
 		mesh.SetupIA(deviceContext);
 		deviceContext->PSSetShader(pixelShader_, nullptr, 0);
 		deviceContext->PSSetSamplers(0, 1, &samplerState);

@@ -189,6 +189,7 @@
     <ClInclude Include="StandardMaterial.hpp" />
     <ClInclude Include="Subset.hpp" />
     <ClInclude Include="Subsets.hpp" />
+    <ClInclude Include="SwapChain.hpp" />
     <ClInclude Include="SwapChainTexture.hpp" />
     <ClInclude Include="Texture2D.hpp" />
     <ClInclude Include="Texture2DBuilder.hpp" />
@@ -219,6 +220,7 @@
     <ClCompile Include="StandardMaterial.cpp" />
     <ClCompile Include="Subset.cpp" />
     <ClCompile Include="Subsets.cpp" />
+    <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="SwapChainTexture.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Texture2DBuilder.cpp" />

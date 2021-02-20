@@ -80,6 +80,12 @@
     <Filter Include="resource\Mesh\FBX">
       <UniqueIdentifier>{e3eb0d7b-6f94-472b-ad0d-eb65e6aa6297}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SwapChain">
+      <UniqueIdentifier>{f6c1d9d2-a31f-47ab-b920-87b9478b0811}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SwapChain\impl">
+      <UniqueIdentifier>{5c2b061e-f57f-4e98-968f-62dccce1fd19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -163,6 +169,9 @@
     <ClInclude Include="FBXMesh.hpp">
       <Filter>resource\Mesh\FBX</Filter>
     </ClInclude>
+    <ClInclude Include="SwapChain.hpp">
+      <Filter>SwapChain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -233,6 +242,9 @@
     </ClCompile>
     <ClCompile Include="FBXMesh.cpp">
       <Filter>resource\Mesh\FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChain.cpp">
+      <Filter>SwapChain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

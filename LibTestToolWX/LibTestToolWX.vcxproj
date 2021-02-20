@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\GraphicsModule;$(IncludePath)</IncludePath>
-    <LibraryPath>../$(PlatformTarget)/$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>..\GraphicsModule;$(WXWIN)\lib\vc_x64_lib\mswud;$(WXWIN)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>../$(PlatformTarget)/$(Configuration);$(WXWIN)\lib\vc_x64_lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

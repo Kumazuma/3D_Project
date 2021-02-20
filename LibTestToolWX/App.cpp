@@ -31,19 +31,20 @@ bool LibTestApp::OnInit()
     XMStoreFloat4x4(&worldSpace, XMMatrixTranslation(0.f, -1.0f, 2.f));
     mesh_ = std::shared_ptr<Kumazuma::OBJMesh>(Kumazuma::OBJMesh::Create(graphicsModule.get(), L"./chino/gctitm001.obj"));
 
+    renderSystem_.reset(Kumazuma::RenderSystem::Create(graphicsModule.get(), renderCanvas_->GetSwapChain().get()));
+
+
     for (int i = 0; i < mesh_->GetSubsetsRef().GetCount(); ++i)
     {
         auto* standardMaterial = new Kumazuma::StandardMaterial(graphicsModule.get(), &mesh_->GetSubsetsRef().Get(i));
-        graphicsModule->GetRenderSystem().AddMaterial(standardMaterial);
+        renderSystem_->AddMaterial(standardMaterial);
         standardMaterial->SetWorldMatrixPtr(&worldSpace);
         materials_.push_back(std::unique_ptr<Kumazuma::Material>(standardMaterial));
     }
-    graphicsModule->GetRenderSystem().Render(&viewSpace, &projSpace);
+    renderSystem_->Render(graphicsModule.get(), &viewSpace, &projSpace);
 
-    IDXGISwapChain* swapChain{};
-    graphicsModule->GetSwapChain(&swapChain);
-    swapChain->Present(0, 0);
-    swapChain->Release();
+    renderCanvas_->GetSwapChain()->Present();
+
     //this->Bind(wxEVT_IDLE, &LibTestApp::OnIdle, this);
     frame->Bind(wxEVT_CLOSE_WINDOW, &LibTestApp::OnClose, this);
 
@@ -60,18 +61,6 @@ int LibTestApp::OnExit()
 }
 void LibTestApp::OnIdle(wxIdleEvent& evt)
 {
-    XMFLOAT4X4 viewSpace{};
-    XMFLOAT4X4 projSpace{};
-    XMStoreFloat4x4(&viewSpace, XMMatrixIdentity());
-    XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 1920.f / 1080.f, 0.1f, 1000.f));
-    auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
-    
-    graphicsModule->GetRenderSystem().Render(&viewSpace, &projSpace);
-    IDXGISwapChain* swapChain{};
-    graphicsModule->GetSwapChain(&swapChain);
-    swapChain->Present(0, 0);
-    swapChain->Release();
-    evt.MoreRequested();
 }
 void LibTestApp::OnClose(wxCloseEvent& evt)
 {
@@ -79,7 +68,7 @@ void LibTestApp::OnClose(wxCloseEvent& evt)
     auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
     for (auto& material : materials_)
     {
-        graphicsModule->GetRenderSystem().RemoveMaterial(material.get());
+        renderSystem_->RemoveMaterial(material.get());
     }
     renderCanvas_ = nullptr;
 }
@@ -92,10 +81,8 @@ void LibTestApp::OnTimer(wxTimerEvent& evt)
     auto size = renderCanvas_->GetClientSize();
     XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), static_cast<float>(size.GetWidth()) / static_cast<float>( size.GetHeight()), 0.1f, 1000.f));
     auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
-    graphicsModule->GetRenderSystem().Render(&viewSpace, &projSpace);
-    IDXGISwapChain* swapChain{};
-    graphicsModule->GetSwapChain(&swapChain);
-    swapChain->Present(1, 0);
-    swapChain->Release();
+    renderSystem_->Render(graphicsModule.get(), &viewSpace, &projSpace);
+    renderCanvas_->GetSwapChain()->Present();
+
 }
 wxIMPLEMENT_APP(LibTestApp);

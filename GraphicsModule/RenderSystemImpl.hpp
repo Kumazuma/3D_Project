@@ -22,22 +22,22 @@ namespace Kumazuma
 	class RenderSystemImpl : public RenderSystem
 	{
 	public:
-		RenderSystemImpl(GraphicsModule* gmodule);
+		RenderSystemImpl(GraphicsModule* gModule, SwapChain* swapChain);
 		virtual void AddMaterial(Material* material) override;
 		virtual void RemoveMaterial(Material* material) override;
-		virtual void Render(DirectX::XMFLOAT4X4 const* view, DirectX::XMFLOAT4X4 const* proj) override;
+		virtual void Render(GraphicsModule* gmodule, DirectX::XMFLOAT4X4 const* view, DirectX::XMFLOAT4X4 const* proj) override;
 		virtual void SettupVertexShader(MeshType type, ID3D11DeviceContext* context, DirectX::XMFLOAT4X4* worldSpace) override;
 		void SetGraphicsModule(GraphicsModule* module);
 	private:
-		void InitializeRenderState();
-		void RenderShadowMap();
-		void RenderDeferred();
-		void DeferredLighting();
-		void DeferredCombine();
-		void RenderForward();
-		void RenderUI();
+		void InitializeRenderState(ID3D11Device* device);
+		void RenderShadowMap(ID3D11Device* device, ID3D11DeviceContext* context);
+		void RenderDeferred(ID3D11Device* device, ID3D11DeviceContext* context);
+		void DeferredLighting(ID3D11Device* device, ID3D11DeviceContext* context);
+		void DeferredCombine(ID3D11Device* device, ID3D11DeviceContext* context);
+		void RenderForward(ID3D11Device* device, ID3D11DeviceContext* context);
+		void RenderUI(ID3D11Device* device, ID3D11DeviceContext* context);
 	private:
-		GraphicsModule* gmodule_;
+		SwapChain* swapChain_;
 		std::array< LinkedList<Material*, 32>, NumOf<MaterialShadingClass>() > materials_;
 		std::unique_ptr<Texture2D> albedoGBuffer_;
 		std::unique_ptr<Texture2D> normalGBuffer_;

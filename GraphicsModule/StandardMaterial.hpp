@@ -12,7 +12,7 @@ namespace Kumazuma
 		~StandardMaterial();
 		void SetWorldMatrixPtr(DirectX::XMFLOAT4X4* ptr);
 		void RenderShadowMap();
-		void Render(ID3D11DeviceContext* deviceContext) override;
+		void Render(RenderSystem* renderSystem, ID3D11DeviceContext* deviceContext) override;
 	private:
 		Subset const* subset_;
 		GraphicsModule* gmodule_;

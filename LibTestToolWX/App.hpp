@@ -4,6 +4,7 @@
 #include<OBJMesh.hpp>
 #include<Material.hpp>
 #include"RenderFrame.hpp"
+#include<RenderSystem.hpp>
 class LibTestApp : public wxApp
 {
 public:
@@ -14,6 +15,7 @@ protected:
 	void OnClose(wxCloseEvent& evt);
 	void OnTimer(wxTimerEvent& evt);
 	std::shared_ptr<Kumazuma::OBJMesh> mesh_;
+	std::unique_ptr<Kumazuma::RenderSystem> renderSystem_;
 	std::vector < std::unique_ptr<Kumazuma::Material> > materials_;
 	DirectX::XMFLOAT4X4 worldSpace;
 	wxTimer* timer_;

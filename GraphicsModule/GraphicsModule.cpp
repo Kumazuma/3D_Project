@@ -5,11 +5,11 @@
 namespace Kumazuma
 {
 	std::mutex graphicsMutex;
-	GraphicsModule* GraphicsModule::Create(HWND hWindow, Size2D<u32> const& bufferSize, bool fullScreen)
+	GraphicsModule* GraphicsModule::Create( )
 	{
 		try
 		{
-			GraphicsModuleImpl module{ hWindow, bufferSize, fullScreen };
+			GraphicsModuleImpl module{  };
 			return new GraphicsModuleImpl{std::move( module )};
 		}
 		catch (...)
