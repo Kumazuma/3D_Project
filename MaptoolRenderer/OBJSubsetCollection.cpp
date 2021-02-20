@@ -83,3 +83,31 @@ System::Object^ MaptoolRenderer::OBJSubsetCollection::GetPropertyOwner(System::C
 {
 	return this;
 }
+System::Collections::IEnumerator^ MaptoolRenderer::OBJSubsetCollection::GetEnumerator2()
+{
+	return subsets_->GetEnumerator();
+}
+
+
+void MaptoolRenderer::OBJSubsetCollection::Add(MaptoolRenderer::OBJSubset^ item)
+{
+}
+
+void MaptoolRenderer::OBJSubsetCollection::Clear()
+{
+}
+
+bool MaptoolRenderer::OBJSubsetCollection::Contains(MaptoolRenderer::OBJSubset^ item)
+{
+	return subsets_->Contains(item);;
+}
+
+void MaptoolRenderer::OBJSubsetCollection::CopyTo(array<MaptoolRenderer::OBJSubset^, 1>^ array, int arrayIndex)
+{
+	subsets_->CopyTo(array, arrayIndex);
+}
+
+bool MaptoolRenderer::OBJSubsetCollection::Remove(MaptoolRenderer::OBJSubset^ item)
+{
+	return false;
+}

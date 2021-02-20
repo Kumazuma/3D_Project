@@ -15,7 +15,8 @@ namespace MaptoolRenderer
     [TypeConverter(ExpandableObjectConverter::typeid)]
 	public ref class OBJSubsetCollection:
 		public System::ComponentModel::INotifyPropertyChanged,
-        public ICustomTypeDescriptor
+        public ICustomTypeDescriptor,
+        public ICollection<OBJSubset^>
 	{
 	internal:
 		OBJSubsetCollection(OBJObject^ objObject, IList<OBJSubset^>^ subsets);
@@ -41,6 +42,22 @@ namespace MaptoolRenderer
         virtual System::ComponentModel::PropertyDescriptorCollection^ GetProperties();
         virtual System::ComponentModel::PropertyDescriptorCollection^ GetProperties(array<System::Attribute^, 1>^ attributes);
         virtual System::Object^ GetPropertyOwner(System::ComponentModel::PropertyDescriptor^ pd);
+
+        // IEnumerable을(를) 통해 상속됨
+        virtual System::Collections::IEnumerator^ GetEnumerator2() = System::Collections::ICollection::GetEnumerator;
+
+        // ICollection을(를) 통해 상속됨
+        virtual System::Collections::Generic::IEnumerator<MaptoolRenderer::OBJSubset^>^ GetEnumerator()
+        {
+            return subsets_->GetEnumerator();
+        }
+        virtual property int Count;
+        virtual property bool IsReadOnly;
+        virtual void Add(MaptoolRenderer::OBJSubset^ item);
+        virtual void Clear();
+        virtual bool Contains(MaptoolRenderer::OBJSubset^ item);
+        virtual void CopyTo(array<MaptoolRenderer::OBJSubset^, 1>^ array, int arrayIndex);
+        virtual bool Remove(MaptoolRenderer::OBJSubset^ item);
     };
     public ref class OBJSubsetCollectionItemDescriptor : public PropertyDescriptor
     {

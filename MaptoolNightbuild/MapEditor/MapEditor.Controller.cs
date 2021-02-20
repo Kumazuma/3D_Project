@@ -34,7 +34,27 @@ namespace MaptoolNightbuild.MapEditor
         }
         public async Task OpenMap(string path)
         {
+            var file = await MapFile.Load(path, Properties.Settings.Default.ProjectDir);
+            Document.Instance.RenderObjects.Clear();
+            var s = from node in file.Nodes where node is IRenderable select node as IRenderable;
+            Document.Instance.RenderObjects.Add(Document.Instance.SkyBox);
+            Document.Instance.RenderObjects.AddRange(s);
+            Document.Instance.SkyBox.Texture = new CubeTexture(GraphicsDevice.Instance, file.SkyBoxTexturePath);
 
+        }
+        public async Task SaveMap(string path)
+        {
+            var file = new MapFile();
+            file.ProjectPath = Properties.Settings.Default.ProjectDir;
+            file.SkyBoxTexturePath = null;
+            file.SkyBoxTexturePath = Document.Instance.SkyBox.Texture?.FilePath;
+            foreach(var obj in Document.Instance.RenderObjects)
+            {
+                if (obj is SkyBox) continue;
+                if (obj is Camera) continue;
+                file.Nodes.Add(obj);
+            }
+            await file.Save(path);
         }
         public async Task NewMap()
         {

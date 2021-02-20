@@ -25,6 +25,7 @@ namespace MaptoolRenderer
             subsets_->Add(gcnew OBJSubset{ this, name });
         }
         name_ = System::IO::Path::GetFileNameWithoutExtension(mesh_->FilePath);
+        usage_ = OBJMeshObjectUsage::Terrain;
         
     }
     OBJObject::OBJObject(OBJObject^ rhs):
@@ -53,6 +54,15 @@ namespace MaptoolRenderer
     auto OBJObject::Subsets::get()->OBJSubsetCollection^
     {
         return gcnew OBJSubsetCollection{ this, subsets_ };
+    }
+    auto OBJObject::Usage::get()->OBJMeshObjectUsage
+    {
+        return this->usage_;
+    }
+    auto OBJObject::Usage::set(OBJMeshObjectUsage value)->void
+    {
+        this->usage_ = value;
+        PropertyChanged(this, gcnew PropertyChangedEventArgs("Usage"));
     }
     OBJSubset::OBJSubset(OBJObject^ parent, String^ name)
     {
