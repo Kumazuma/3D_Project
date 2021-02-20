@@ -30,35 +30,18 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
         private void InitializeComponent()
         {
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.AnimIndex = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.animStringID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.AnimIndex,
-            this.animStringID});
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.Size = new System.Drawing.Size(810, 858);
             this.dataGridView1.TabIndex = 10;
-            // 
-            // AnimIndex
-            // 
-            this.AnimIndex.HeaderText = "anim Index";
-            this.AnimIndex.Name = "AnimIndex";
-            this.AnimIndex.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.AnimIndex.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // animStringID
-            // 
-            this.animStringID.HeaderText = "ID";
-            this.animStringID.Name = "animStringID";
             // 
             // AnimationTableView
             // 
@@ -75,7 +58,5 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
         #endregion
 
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewComboBoxColumn AnimIndex;
-        private System.Windows.Forms.DataGridViewTextBoxColumn animStringID;
     }
 }

@@ -77,8 +77,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CharacterMetaEditor\CharacterMetaDoc.cs" />
+    <Compile Include="CharacterMetaEditor\CharacterMetaEditor.Document.cs" />
     <Compile Include="CharacterMetaEditor\Controller\CharacterMetaEditor.Contoller.cs" />
+    <Compile Include="CharacterMetaEditor\Controller\MetaFile.cs" />
+    <Compile Include="CharacterMetaEditor\View\DataIntToString.cs" />
     <Compile Include="CharacterMetaEditor\View\LoadingDialog.cs">
       <SubType>UserControl</SubType>
     </Compile>
