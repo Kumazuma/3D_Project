@@ -8,18 +8,19 @@ using System.Text;
 using System.Threading.Tasks;
 using MaptoolRenderer;
 using MapToolCore;
-namespace MaptoolNightbuild.Doc
+namespace MaptoolNightbuild.CharacterMetaEditor
 {
 
-    class CharacterMetaDoc:
+    public class Document:
         INotifyPropertyChanged
     {
+        
         public event PropertyChangedEventHandler PropertyChanged;
-        static CharacterMetaDoc s_instance;
+        static Document s_instance;
         ObjectCollection<HashSet<IRenderable>, IRenderable> renderObjects;
         ObjectCollection<List<ColliderObject>, ColliderObject> colliderObjects;
         SkinnedXMeshObject xMeshObject;
-        private CharacterMetaDoc()
+        private Document()
         {
             renderObjects = new ObjectCollection<HashSet<IRenderable>, IRenderable>();
             renderObjects.CollectionChanged += RenderObjects_CollectionChanged;
@@ -72,17 +73,17 @@ namespace MaptoolNightbuild.Doc
         {
             PropertyChanged?.Invoke(this,new PropertyChangedEventArgs("RenderObjects"));
         }
-        public static CharacterMetaDoc Instance
+        public static Document Instance
         {
             get
             {
                 if(s_instance == null)
                 {
-                    lock(typeof(CharacterMetaDoc))
+                    lock(typeof(Document))
                     {
                         if(s_instance == null)
                         {
-                            s_instance = new CharacterMetaDoc();
+                            s_instance = new Document();
                         }
                     }
                 }

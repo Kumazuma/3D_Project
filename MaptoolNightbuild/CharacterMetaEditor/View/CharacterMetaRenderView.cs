@@ -26,7 +26,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             renderView = new RenderView();
             Controls.Add(renderView);
             renderView.Dock = DockStyle.Fill;
-            var document = Doc.CharacterMetaDoc.Instance;
+            var document = Document.Instance;
             document.PropertyChanged += Document_PropertyChanged;
             document.RenderObjects.CollectionChanged += RenderObjects_CollectionChanged;
             timer.Tick += Timer_Tick;
@@ -35,7 +35,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
 
         private void Document_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var document = Doc.CharacterMetaDoc.Instance;
+            var document = Document.Instance;
             if (e.PropertyName == "Mesh")
             {
                 if(document.Mesh == null)
@@ -53,7 +53,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            var document = Doc.CharacterMetaDoc.Instance;
+            var document = Document.Instance;
             var timeSpan = stopWatch.Elapsed;
             var delta = timeSpan - lastTimeSpan;
             lastTimeSpan = timeSpan;

@@ -33,7 +33,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor
                 renderView.Content.GraphicsDevice = MaptoolRenderer.GraphicsDevice.Instance;
                 renderView.Content.Render();
             }
-            Doc.CharacterMetaDoc doc = Doc.CharacterMetaDoc.Instance;
+            var doc = Document.Instance;
             doc.PropertyChanged += Doc_PropertyChanged;
             //chino = new MaptoolRenderer.OBJMesh("./chino/gctitm001.obj");
             //var objMeshObject = MaptoolRenderer.MeshObject.Create(chino);
@@ -74,7 +74,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor
                     renderView.Content.Render();
                     break;
                 case "Mesh":
-                    propertyView.Content.SelectedObject = Doc.CharacterMetaDoc.Instance.Mesh;
+                    propertyView.Content.SelectedObject = Document.Instance.Mesh;
                     break;
             }
         }

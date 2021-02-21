@@ -12,18 +12,21 @@ namespace MaptoolNightbuild.CharacterMetaEditor
         public static Controller Instance{ get => s_instance; }
         public void Save()
         {
-            var document = Doc.CharacterMetaDoc.Instance;
+            
 
         }
         public async Task LoadXMesh(String path)
         {
             var xmesh = await Doc.ResourceManager.Instance.GetSkinnedMesh(path);
             var xSkinnedMeshObject = new MaptoolRenderer.SkinnedXMeshObject(xmesh);
-            var prevXMesh = Doc.CharacterMetaDoc.Instance.Mesh;
-            Doc.CharacterMetaDoc.Instance.Mesh = xSkinnedMeshObject;
-            Doc.CharacterMetaDoc.Instance.RenderObjects.Remove(prevXMesh);
-            Doc.CharacterMetaDoc.Instance.RenderObjects.Add(xSkinnedMeshObject);
-            
+            var prevXMesh = Document.Instance.Mesh;
+            Document.Instance.Mesh = xSkinnedMeshObject;
+            Document.Instance.RenderObjects.Remove(prevXMesh);
+            Document.Instance.RenderObjects.Add(xSkinnedMeshObject);
+        }
+        public async Task Load(String path)
+        {
+
         }
     }
 }
