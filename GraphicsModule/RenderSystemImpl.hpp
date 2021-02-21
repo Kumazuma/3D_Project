@@ -23,6 +23,7 @@ namespace Kumazuma
 	{
 	public:
 		RenderSystemImpl(GraphicsModule* gModule, SwapChain* swapChain);
+		static void Initialize(GraphicsModule* gModule);
 		virtual void AddMaterial(Material* material) override;
 		virtual void RemoveMaterial(Material* material) override;
 		virtual void Render(GraphicsModule* gmodule, DirectX::XMFLOAT4X4 const* view, DirectX::XMFLOAT4X4 const* proj) override;

@@ -12,11 +12,14 @@ namespace Kumazuma
 		Material{MaterialShadingClass::DeferredShading},
 		gmodule_{ gmodule },
 		subset_{ subset },
-		worldMatrixPtr_{nullptr}
+		worldMatrixPtr_{nullptr},
+		pixelShader_{}
 	{
 		float borderColor[4]{ 0.f,0.f,0.f,0.f };
 		gmodule_->GetPixelShader(L"deferred_gbuffer_ps",  &pixelShader_);
-		D3D11_SAMPLER_DESC samplerDesc{};
+		gmodule_->CreateCBuffer(L"deferred_gbuffer_material", sizeof(DirectX::XMFLOAT4));
+		gmodule_->GetCBuffer(L"deferred_gbuffer_material", &materialCBuffer_);
+		D3D11_SAMPLER_DESC samplerDesc{};;
 		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -46,6 +49,11 @@ namespace Kumazuma
 			samplerState_->Release();
 			samplerState_ = nullptr;
 		}
+		if (materialCBuffer_ != nullptr)
+		{
+			materialCBuffer_->Release();
+			materialCBuffer_ = nullptr;
+		}
 	}
 	void StandardMaterial::SetWorldMatrixPtr(DirectX::XMFLOAT4X4* ptr)
 	{
@@ -67,9 +75,16 @@ namespace Kumazuma
 		}
 		renderSystem->SettupVertexShader(MeshType::Static, deviceContext,worldMatrixPtr_);
 		mesh.SetupIA(deviceContext);
+		{
+			D3D11_MAPPED_SUBRESOURCE mappedResource{};
+			HRESULT hr = deviceContext->Map(materialCBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			*((DirectX::XMFLOAT4*)mappedResource.pData) = DirectX::XMFLOAT4{0.f, 0.f, 0.f, 0.f };
+			deviceContext->Unmap(materialCBuffer_, 0);
+		}
 		deviceContext->PSSetShader(pixelShader_, nullptr, 0);
 		deviceContext->PSSetSamplers(0, 1, &samplerState);
 		deviceContext->PSSetShaderResources(0, 1, &srv);
+		deviceContext->PSSetConstantBuffers(0, 1, &materialCBuffer_);
 		deviceContext->DrawIndexed(subset_->GetTriangleCount() * 3, subset_->GetIndexBase(), 0);
 		if (srv != nullptr)
 		{

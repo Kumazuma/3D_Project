@@ -32,6 +32,8 @@ Kumazuma::GraphicsModuleImpl::GraphicsModuleImpl( )
     //defaultDepthBuffer_.reset(Texture2D::Create(device_.Get(), Texture2D::Builder(DXGI_FORMAT_D32_FLOAT, bufferSize.width, bufferSize.height).DepthStancilView()));
 
     textureManager_.reset(new TextureManagerImpl{ this });
+
+    RenderSystemImpl::Initialize(this);
 }
 //ComPtr<ID3D11Device>		device_;
 //ComPtr<ID3D11DeviceContext> deviceContext_;

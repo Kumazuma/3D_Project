@@ -19,5 +19,6 @@ namespace Kumazuma
 		DirectX::XMFLOAT4X4* worldMatrixPtr_;
 		ID3D11PixelShader* pixelShader_;
 		ID3D11SamplerState* samplerState_;
+		ID3D11Buffer* materialCBuffer_;
 	};
 }

@@ -67,8 +67,10 @@ System::ComponentModel::PropertyDescriptorCollection^ MaptoolRenderer::OBJSubset
 	}
 	for each (auto subset in subsets_)
 	{
+		
 		OBJSubsetCollectionItemDescriptor^ pd = gcnew OBJSubsetCollectionItemDescriptor(subset);
 		pds->Add(pd);
+
 	}
 	// return the property descriptor collection
 	return pds;

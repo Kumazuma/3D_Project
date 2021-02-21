@@ -25,10 +25,10 @@ bool LibTestApp::OnInit()
     auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
     XMFLOAT4X4 viewSpace{};
     XMFLOAT4X4 projSpace{};
-    XMStoreFloat4x4(&viewSpace, XMMatrixIdentity());
+    XMStoreFloat4x4(&viewSpace, XMMatrixLookAtLH({ 0.f, 1.f, -10.f, 0.f }, { 0.f, 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f, 0.f }));
     XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 1920.f/1080.f, 0.1f, 1000.f));
 
-    XMStoreFloat4x4(&worldSpace, XMMatrixTranslation(0.f, -1.0f, 2.f));
+    XMStoreFloat4x4(&worldSpace, XMMatrixIdentity());
     mesh_ = std::shared_ptr<Kumazuma::OBJMesh>(Kumazuma::OBJMesh::Create(graphicsModule.get(), L"./chino/gctitm001.obj"));
 
     renderSystem_.reset(Kumazuma::RenderSystem::Create(graphicsModule.get(), renderCanvas_->GetSwapChain().get()));
@@ -77,9 +77,10 @@ void LibTestApp::OnTimer(wxTimerEvent& evt)
     if (renderCanvas_ == nullptr)return;
     XMFLOAT4X4 viewSpace{};
     XMFLOAT4X4 projSpace{};
-    XMStoreFloat4x4(&viewSpace, XMMatrixIdentity());
     auto size = renderCanvas_->GetClientSize();
-    XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), static_cast<float>(size.GetWidth()) / static_cast<float>( size.GetHeight()), 0.1f, 1000.f));
+    XMStoreFloat4x4(&viewSpace, XMMatrixLookAtLH({ 0.f, 1.f, -2.f, 0.f }, { 0.f, 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f, 0.f }));
+    XMStoreFloat4x4(&projSpace, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 1920.f / 1080.f, 0.1f, 1000.f));
+
     auto graphicsModule{ renderCanvas_->GetGraphicsMoudle() };
     renderSystem_->Render(graphicsModule.get(), &viewSpace, &projSpace);
     renderCanvas_->GetSwapChain()->Present();

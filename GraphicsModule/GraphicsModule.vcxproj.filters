@@ -246,6 +246,9 @@
     <ClCompile Include="SwapChain.cpp">
       <Filter>SwapChain</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>resource\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="StaticMeshVS.hlsl">

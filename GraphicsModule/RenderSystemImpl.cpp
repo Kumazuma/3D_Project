@@ -73,7 +73,6 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule, SwapChain*
 	InitializeRenderState(device.Get());
 
 	HRESULT hr{};
-	hr = gmodule->LoadPixelShader(L"deferred_gbuffer_ps", L"./StaticMeshGBufferPS.hlsl", "main");
 	ComPtr<ID3DBlob> bytesCode;
 	ComPtr<ID3DBlob> errMsg;
 	hr = D3DCompileFromFile(L"./StaticMeshVS.hlsl", nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &bytesCode, &errMsg);
@@ -121,7 +120,6 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule, SwapChain*
 	device->CreateVertexShader(bytesCode->GetBufferPointer(),
 		bytesCode->GetBufferSize(), nullptr, &staticMeshVertexShader_);
 
-	hr = gmodule->LoadComputeShader(L"directional_lighting", L"./LightingCS.hlsl", "main");
 	gmodule->GetComputeShader(L"directional_lighting", &directinalLightingCShader_);
 
 	auto cslightCBufferDesc = CD3D11_BUFFER_DESC(sizeof(CS::LightInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
@@ -130,8 +128,15 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule, SwapChain*
 	hr = device->CreateBuffer(&csGlobalCBufferDesc, nullptr, &csGlobalCBuffer_);
 	hr = device->CreateBuffer(&cslightCBufferDesc, nullptr, &csLightCBuffer_);
 
-	hr = gmodule->LoadComputeShader(L"combineCShader_", L"./DeferredCombineCS.hlsl", "main");
 	gmodule->GetComputeShader(L"combineCShader_", &combineCShader_);
+}
+
+void Kumazuma::RenderSystemImpl::Initialize(GraphicsModule* gmodule)
+{
+	gmodule->LoadComputeShader(L"directional_lighting", L"./LightingCS.hlsl", "main");
+	gmodule->LoadComputeShader(L"combineCShader_", L"./DeferredCombineCS.hlsl", "main");
+	gmodule->LoadPixelShader(L"deferred_gbuffer_ps", L"./StaticMeshGBufferPS.hlsl", "main");
+
 }
 
 void Kumazuma::RenderSystemImpl::AddMaterial(Material* material)
@@ -160,12 +165,14 @@ void Kumazuma::RenderSystemImpl::RemoveMaterial(Material* material)
 
 void Kumazuma::RenderSystemImpl::Render(GraphicsModule* gmodule, DirectX::XMFLOAT4X4 const* view, DirectX::XMFLOAT4X4 const* proj)
 {
+	
 	std::lock_guard<GraphicsModule> guard{ *gmodule };
 	ComPtr<ID3D11DeviceContext> deviceContext;
 	ComPtr<ID3D11Device> device;
 	Size2D<u32> bufferSize{};
 	gmodule->GetDevice(&device);
 	gmodule->GetImmediateContext(&deviceContext);
+
 	swapChain_->Clear(deviceContext.Get(), { 0.f, 0.f, 1.f, 1.f }, 1.f);
 	swapChain_->GetBackbuffer()->GetSize(&bufferSize);
 	viewSpaceMatrix_ = *view;

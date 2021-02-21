@@ -13,7 +13,7 @@ RenderCanvas::RenderCanvas(wxWindow* parent, wxWindowID id):
 		
 	}
 	graphicsModule_ = graphicsModule;
-	swapChain_.reset(Kumazuma::SwapChain::Create(GetHWND(), graphicsModule.get(), { 1920, 1080 }, DXGI_FORMAT_R8G8B8A8_UNORM, false));
+	swapChain_.reset(Kumazuma::SwapChain::Create(GetHWND(), graphicsModule.get(), { 1920, 1080 }, DXGI_FORMAT_B8G8R8A8_UNORM, false));
 
 }
 

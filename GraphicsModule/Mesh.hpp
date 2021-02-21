@@ -14,7 +14,7 @@ namespace Kumazuma
 	class DLL_CLASS Mesh
 	{
 	public:
-		virtual ~Mesh() {}
+		virtual ~Mesh();
 		virtual void SetupIA(ID3D11DeviceContext* device) = 0;
 		virtual Subsets const& GetSubsetsRef() = 0;
 		virtual Texture2D* GetMaterialTexture(wchar_t const* materialName) = 0;

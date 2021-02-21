@@ -295,6 +295,8 @@ namespace Kumazuma
 
     OBJMeshImpl::~OBJMeshImpl()
     {
+        vertexBuffer_.Reset();
+        indexBuffer_.Reset();
     }
 
 	void OBJMeshImpl::SetupIA(ID3D11DeviceContext* device)
