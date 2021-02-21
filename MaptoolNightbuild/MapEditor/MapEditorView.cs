@@ -37,6 +37,7 @@ namespace MaptoolNightbuild.MapEditor
             listbox.Content.DataSource = worldObjectsBindList;
             listbox.Content.DisplayMember = "Text";
             listbox.Content.SelectionMode = SelectionMode.MultiExtended;
+            listbox.Content.MouseUp += list_MouseClick;
             worldObjectsBindList.Add(renderView.Content.CurrentCamera);
             worldObjectsBindList.ResetBindings();
             
@@ -46,6 +47,15 @@ namespace MaptoolNightbuild.MapEditor
             Controller.Instance.NewMap();
             this.KeyDown += MainFrame_KeyDown;
             renderView.Content.KeyDown += MainFrame_KeyDown;
+        }
+
+        private void list_MouseClick(object sender, MouseEventArgs e)
+        {
+            if(e.Button != MouseButtons.Right)
+            {
+                return;
+            }
+            contextMenuStrip1.Show((sender as Control).PointToScreen(e.Location));
         }
 
         private void Object_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -214,6 +224,24 @@ namespace MaptoolNightbuild.MapEditor
                 }
                 await Controller.Instance.OpenMap(openFileDialog.FileName);
                 MessageBox.Show("완료되었습니다");
+            }
+        }
+
+        private void miDelete_Click(object sender, EventArgs e)
+        {
+            var listBox = listbox.Content;
+            if (listBox.SelectedItems.Count == 0)
+            {
+                return;
+            }
+            var selectedItems = new MapToolCore.IHasText[listBox.SelectedItems.Count];
+            listBox.SelectedItems.CopyTo(selectedItems, 0);
+            foreach(var item in selectedItems)
+            {
+                if(item is MaptoolRenderer.SkyBox == false)
+                {
+                    Document.Instance.RenderObjects.Remove(item as MaptoolRenderer.IRenderable);
+                }
             }
         }
     }

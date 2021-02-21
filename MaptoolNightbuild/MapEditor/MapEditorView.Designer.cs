@@ -41,7 +41,10 @@ namespace MaptoolNightbuild.MapEditor
             this.오브젝트추가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miAddOBJMesh = new System.Windows.Forms.ToolStripMenuItem();
             this.miAddTarget = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.miDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dockPanel1
@@ -81,21 +84,21 @@ namespace MaptoolNightbuild.MapEditor
             // imNewMap
             // 
             this.imNewMap.Name = "imNewMap";
-            this.imNewMap.Size = new System.Drawing.Size(180, 22);
+            this.imNewMap.Size = new System.Drawing.Size(126, 22);
             this.imNewMap.Text = "새 맵파일";
             this.imNewMap.Click += new System.EventHandler(this.imNewMap_Click);
             // 
             // miSaveFile
             // 
             this.miSaveFile.Name = "miSaveFile";
-            this.miSaveFile.Size = new System.Drawing.Size(180, 22);
+            this.miSaveFile.Size = new System.Drawing.Size(126, 22);
             this.miSaveFile.Text = "저장";
             this.miSaveFile.Click += new System.EventHandler(this.miSaveFile_Click);
             // 
             // miOpenFile
             // 
             this.miOpenFile.Name = "miOpenFile";
-            this.miOpenFile.Size = new System.Drawing.Size(180, 22);
+            this.miOpenFile.Size = new System.Drawing.Size(126, 22);
             this.miOpenFile.Text = "열기";
             this.miOpenFile.Click += new System.EventHandler(this.miOpenFile_Click);
             // 
@@ -111,16 +114,30 @@ namespace MaptoolNightbuild.MapEditor
             // miAddOBJMesh
             // 
             this.miAddOBJMesh.Name = "miAddOBJMesh";
-            this.miAddOBJMesh.Size = new System.Drawing.Size(180, 22);
+            this.miAddOBJMesh.Size = new System.Drawing.Size(126, 22);
             this.miAddOBJMesh.Text = "OBJ 메시";
             this.miAddOBJMesh.Click += new System.EventHandler(this.miAddOBJMesh_Click);
             // 
             // miAddTarget
             // 
             this.miAddTarget.Name = "miAddTarget";
-            this.miAddTarget.Size = new System.Drawing.Size(180, 22);
+            this.miAddTarget.Size = new System.Drawing.Size(126, 22);
             this.miAddTarget.Text = "타겟 추가";
             this.miAddTarget.Click += new System.EventHandler(this.miAddTarget_Click);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miDelete});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 48);
+            // 
+            // miDelete
+            // 
+            this.miDelete.Name = "miDelete";
+            this.miDelete.Size = new System.Drawing.Size(180, 22);
+            this.miDelete.Text = "삭제";
+            this.miDelete.Click += new System.EventHandler(this.miDelete_Click);
             // 
             // MainFrame
             // 
@@ -132,6 +149,7 @@ namespace MaptoolNightbuild.MapEditor
             this.Size = new System.Drawing.Size(1667, 933);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -150,5 +168,7 @@ namespace MaptoolNightbuild.MapEditor
         private System.Windows.Forms.ToolStripMenuItem 오브젝트추가ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miAddOBJMesh;
         private System.Windows.Forms.ToolStripMenuItem miAddTarget;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem miDelete;
     }
 }
