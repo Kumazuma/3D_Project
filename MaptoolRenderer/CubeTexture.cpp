@@ -10,6 +10,10 @@ MaptoolRenderer::CubeTexture::CubeTexture(GraphicsDevice^ device, System::String
     IDirect3DCubeTexture9* cubeTexture;
     std::wstring szFilePath{ ctx.marshal_as<std::wstring>(filePath) };
     device->RenderModuleHandle->CreateCubeTexture(szFilePath.c_str(), &cubeTexture);
+    if (cubeTexture == nullptr)
+    {
+        throw gcnew System::Exception(String::Format("Failed Load Cube Texture({0})", filePath));
+    }
     texture_ = cubeTexture;
     filePath_ = System::IO::Path::GetFullPath(filePath);
     D3DSURFACE_DESC surfaceDesc{};

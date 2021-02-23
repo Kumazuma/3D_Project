@@ -88,6 +88,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             this.btnOpenJson.TabIndex = 1;
             this.btnOpenJson.Text = "JSON 열기";
             this.btnOpenJson.UseVisualStyleBackColor = true;
+            this.btnOpenJson.Click += new System.EventHandler(this.btnOpenJson_Click);
             // 
             // btnLoadXMesh
             // 

@@ -60,7 +60,19 @@ namespace MapToolCore
             Transform res = new Transform();
             res.position = Position.Parse(jObj["position"] as JObject);
             res.rotation = Rotation.Parse(jObj["rotation"] as JObject);
-            res.scale = jObj["scale"].Value<float>();
+            var scale = jObj["scale"];
+            switch (scale.Type)
+            {
+                case JTokenType.Object:
+                    res.scale = scale.Value<float>("x");
+                    break;
+                case JTokenType.Float:
+                    res.scale = scale.Value<float>();
+                    break;
+                default:
+                    res.scale = 1.0f;
+                    break;
+            }
             return res;
         }
         public override string ToString()

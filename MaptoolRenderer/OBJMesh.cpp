@@ -13,6 +13,10 @@ namespace MaptoolRenderer
 		auto instance{ GraphicsDevice::Instance };
 		WavefrontOBJMesh* mesh{};
 		WavefrontOBJMesh::Create(instance->RenderModuleHandle, szFilePath, &mesh);
+		if (mesh == nullptr)
+		{
+			throw gcnew System::Exception(String::Format("Failed Load OBJ Mesh({0})", path));
+		}
 		renderObject_ = mesh;
 		auto const& subsets{ mesh->GetSubsets() };
 		subsetNames_ = gcnew array<String^>(subsets.size());

@@ -25,6 +25,10 @@ namespace MaptoolRenderer
 		{
 			auto get()->unsigned int;
 		}
+		property String^ FilePath
+		{
+			auto get()->String^;
+		}
 	public:
 		auto SetAnimationSet(int i)->void;
 		auto PlayAnimation(float timeDelta)->void;

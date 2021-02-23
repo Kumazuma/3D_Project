@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,7 +41,10 @@ namespace MaptoolNightbuild.Doc
                 {
                     if (m_loadingXMeshs.Remove(path))
                     {
-                        m_skinnedXMeshs.Add(path, mesh);
+                        if (mesh != null)
+                        {
+                            m_skinnedXMeshs.Add(path, mesh);
+                        }
                     }
                 }
                 return mesh;
@@ -50,7 +54,17 @@ namespace MaptoolNightbuild.Doc
             {
                 loadingTask = Task<SkinnedXMesh>.Factory.StartNew(() =>
                 {
-                    return new SkinnedXMesh(path);
+                    SkinnedXMesh skinnedLoadedMesh = null;
+                    try
+                    {
+                        skinnedLoadedMesh = new SkinnedXMesh(path);
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.Write(e.StackTrace);
+                        Debug.Write(e.Message);
+                    }
+                    return skinnedLoadedMesh;
                 });
                 m_loadingXMeshs.Add(path, loadingTask);
             }
@@ -59,7 +73,10 @@ namespace MaptoolNightbuild.Doc
             {
                 if (m_loadingXMeshs.Remove(path))
                 {
-                    m_skinnedXMeshs.Add(path, mesh);
+                    if(mesh != null)
+                    {
+                        m_skinnedXMeshs.Add(path, mesh);
+                    }
                 }
             }
             return mesh;
@@ -94,10 +111,19 @@ namespace MaptoolNightbuild.Doc
             {
                 loadingTask = Task<OBJMesh>.Factory.StartNew(() =>
                 {
-                    var loadedMesh = new OBJMesh(path);
-                    lock(this)
+                    OBJMesh loadedMesh = null;
+                    try
                     {
-                        m_objMeshs.Add(path, new WeakReference<OBJMesh>(loadedMesh));
+                        loadedMesh = new OBJMesh(path);
+                        lock (this)
+                        {
+                            m_objMeshs.Add(path, new WeakReference<OBJMesh>(loadedMesh));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Write(e.StackTrace);
+                        Debug.Write(e.Message);
                     }
                     return loadedMesh;
                 });

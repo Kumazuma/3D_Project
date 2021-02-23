@@ -1,89 +1,156 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MaptoolNightbuild.CharacterMetaEditor
 {
-    public class AnimationTableRow
+    class AnimationIDEnumerator :
+    IEnumerator<KeyValuePair<int, String>>
     {
-        public AnimationTableRow(uint index, string id)
+        List<String> animationIDs;
+        int index;
+        public AnimationIDEnumerator(List<String> ids)
         {
-            Index = index;
-            ID = id;
+            animationIDs = ids;
+            index = 0;
         }
-        public uint Index { get; }
-        public string ID { get; } = "";
-        public override int GetHashCode()
+        public KeyValuePair<int, string> Current => new KeyValuePair<int, string>(index, animationIDs[index]);
+
+        object IEnumerator.Current => new KeyValuePair<int, string>(index, animationIDs[index]);
+
+        public void Dispose()
         {
-            uint index = Index;
-            string id = ID;
-            return index.GetHashCode() + id.GetHashCode();
+            animationIDs = null;
         }
-        public override bool Equals(object obj)
+
+        public bool MoveNext()
         {
-            if (obj == this) return true;
-            var o = obj as AnimationTableRow;
-            if (o == null) return false;
-            return o.ID == ID && o.Index == Index;
+            index++;
+            return index < animationIDs.Count;
+        }
+
+        public void Reset()
+        {
+            index = 0;
         }
     }
-    public class AnimationTable : ICollection<AnimationTableRow>
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class AnimationTable :
+        ICollection<KeyValuePair<int, String>>,
+        ICustomTypeDescriptor
+
     {
-        Dictionary<uint, AnimationTableRow> animIndices = new Dictionary<uint, AnimationTableRow>();
-        Dictionary<string, AnimationTableRow> animIDs = new Dictionary<string, AnimationTableRow>();
-        HashSet<AnimationTableRow> items = new HashSet<AnimationTableRow>();
-
-        public int Count => throw new NotImplementedException();
-
-        public bool IsReadOnly => throw new NotImplementedException();
-
-        public bool HasIndex(uint index) => animIndices.ContainsKey(index);
-        public bool HasID(string id) => animIDs.ContainsKey(id);
-
-        public void Add(AnimationTableRow item)
+        List<String> animationIDs = new List<string>();
+        public AnimationTable(int animCount)
         {
-            if (HasIndex(item.Index) || HasID(item.ID)) return;
-            items.Add(item);
-            animIndices.Add(item.Index, item);
-            animIDs.Add(item.ID, item);
+            animationIDs.Capacity = animCount + 1;
+            for (int i = 0; i < animCount; ++i)
+            {
+                animationIDs.Add("");
+            }
         }
-        public IEnumerator<AnimationTableRow> Item { get => items.GetEnumerator(); }
+        public String this[int index]
+        {
+            get => animationIDs[index];
+            set => animationIDs[index] = value;
+        }
+
+        public int Count => animationIDs.Count;
+
+        public bool IsReadOnly => true;
+
+        public void Add(KeyValuePair<int, string> item)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Clear()
         {
-            items.Clear();
-            animIndices.Clear();
-            animIDs.Clear();
+
         }
 
-        public bool Contains(AnimationTableRow item)
+        public bool Contains(KeyValuePair<int, string> item)
         {
-            return items.Contains(item);
+            return item.Key < animationIDs.Count;
         }
 
-        public void CopyTo(AnimationTableRow[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<int, string>[] array, int arrayIndex)
         {
-            items.CopyTo(array, arrayIndex);
+            int count = Math.Min(array.Length - arrayIndex, animationIDs.Count);
+            for (int i = 0; i < count; ++i)
+            {
+                array[i + arrayIndex] = new KeyValuePair<int, string>(i, animationIDs[i]);
+            }
+        }
+        public IEnumerator<KeyValuePair<int, string>> GetEnumerator()
+        {
+            return new AnimationIDEnumerator(animationIDs);
+        }
+        public bool Remove(KeyValuePair<int, string> item)
+        {
+            throw new NotImplementedException();
         }
 
-        public bool Remove(AnimationTableRow item)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            if (!items.Contains(item)) return false;
-            items.Remove(item);
-            animIDs.Remove(item.ID);
-            animIndices.Remove(item.Index);
-            return true;
+            return new AnimationIDEnumerator(animationIDs);
         }
 
-        public IEnumerator<AnimationTableRow> GetEnumerator()
+        public AttributeCollection GetAttributes() => TypeDescriptor.GetAttributes(this, true);
+        public string GetClassName() => TypeDescriptor.GetClassName(this,true);
+        public string GetComponentName() => TypeDescriptor.GetComponentName(this, true);
+        public TypeConverter GetConverter() => TypeDescriptor.GetConverter(this, true);
+        public EventDescriptor GetDefaultEvent() => TypeDescriptor.GetDefaultEvent(this, true);
+        public PropertyDescriptor GetDefaultProperty() => TypeDescriptor.GetDefaultProperty(this, true);
+        public object GetEditor(Type editorBaseType) => TypeDescriptor.GetEditor(this, editorBaseType, true);
+
+        public EventDescriptorCollection GetEvents() => TypeDescriptor.GetEvents(this, true);
+
+        public EventDescriptorCollection GetEvents(Attribute[] attributes) => TypeDescriptor.GetEvents(this, attributes,true);
+        public PropertyDescriptorCollection GetProperties(Attribute[] attributes) => GetProperties();
+        public object GetPropertyOwner(PropertyDescriptor pd) => this;
+
+        public PropertyDescriptorCollection GetProperties()
         {
-            return items.GetEnumerator();
+            var collection = new PropertyDescriptorCollection(null);
+            for (int i = 0; i < animationIDs.Count; ++i)
+            {
+                collection.Add(new AnimationTableItemDescriptor(animationIDs, i));
+            }
+            return collection;
+        }
+    }
+
+    public class AnimationTableItemDescriptor : PropertyDescriptor
+    {
+        List<String> animationIDs;
+        int index;
+
+        public AnimationTableItemDescriptor(List<String> animationIDs, int index_) :
+            base(index_.ToString(), null)
+        {
+            this.animationIDs = animationIDs;
+            this.index = index_;
+        }
+        public override Type ComponentType => typeof(AnimationTable);
+        public override bool IsReadOnly => false;
+        public override Type PropertyType => typeof(String);
+        public override bool CanResetValue(object component) => false;
+        public override object GetValue(object component) => animationIDs[index];
+
+        public override void ResetValue(object component)
+        {
+            animationIDs[index] = "";
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        public override void SetValue(object component, Object value) => animationIDs[index] = value as String;
+        public override bool ShouldSerializeValue(object component)
         {
-            return items.GetEnumerator();
+            return false;
         }
     }
 }

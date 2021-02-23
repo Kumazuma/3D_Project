@@ -143,5 +143,23 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             timer.Stop();
             stopWatch.Stop();
         }
+
+        private async void btnOpenJson_Click(object sender, EventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "JSON파일(*.json)|*.json"
+            };
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            var loadingDialog = new XMeshLoadingDialog();
+            loadingDialog.Show();
+            this.ParentForm.Enabled = false;
+            await Controller.Instance.Load(openFileDialog.FileName);
+            this.ParentForm.Enabled = true;
+            loadingDialog.Close();
+        }
     }
 }

@@ -52,6 +52,11 @@ namespace MaptoolRenderer
 		{
 			auto get()->ColliderAttribute^;
 		}
+		property MapToolCore::Offset Offset
+		{
+			auto get()->MapToolCore::Offset;
+			auto set(MapToolCore::Offset offset)->void;
+		}
 		// INotifyPropertyChanged을(를) 통해 상속됨
 		virtual event System::ComponentModel::PropertyChangedEventHandler^ PropertyChanged;
 	public:
@@ -65,7 +70,7 @@ namespace MaptoolRenderer
 		String^ name_;
 		ColliderType type_ = ColliderType::None;
 		ColliderAttribute^ attribute_;
-		Offset offset_;
+		MapToolCore::Offset offset_;
 		Mesh^ mesh_;
 		SkinnedXMeshObject^ parent_;
 		String^ frameName_;

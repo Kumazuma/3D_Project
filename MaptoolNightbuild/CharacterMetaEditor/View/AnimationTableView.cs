@@ -22,25 +22,15 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
 
         private void Document_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName != "Mesh")
+            if(e.PropertyName != "AnimationTable")
             {
                 return;
             }
-            table = new DataTable
+            this.Invoke(new Action(() =>
             {
-                Locale = CultureInfo.InvariantCulture
-            };
-            DataColumn dataColumn;
-            dataColumn = new DataColumn
-            { ColumnName = "anim idx", DataType = typeof(int) };
-            table.Columns.Add(dataColumn);
-            dataColumn = new DataColumn
-            { ColumnName = "ID", DataType = typeof(String) };
-            table.Columns.Add(dataColumn);
-            table.PrimaryKey = new DataColumn[1] { table.Columns[0] };
-            DataSet ds = new DataSet();
-            ds.Tables.Add(table);
-            dataGridView1.DataSource = table;
+                propertyGrid1.PropertySort = PropertySort.NoSort;
+                propertyGrid1.SelectedObject = Document.Instance.AnimationTable;
+            }));
         }
 
     }

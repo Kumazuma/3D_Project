@@ -19,6 +19,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor
         static Document s_instance;
         ObjectCollection<HashSet<IRenderable>, IRenderable> renderObjects;
         ObjectCollection<List<ColliderObject>, ColliderObject> colliderObjects;
+        AnimationTable animationTable;
         SkinnedXMeshObject xMeshObject;
         private Document()
         {
@@ -68,7 +69,15 @@ namespace MaptoolNightbuild.CharacterMetaEditor
                 PropertyChanged?.Invoke(this,new PropertyChangedEventArgs("Mesh"));
             }
         }
-
+        public AnimationTable AnimationTable
+        {
+            get => animationTable;
+            set
+            {
+                animationTable = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AnimationTable"));
+            }
+        }
         private void RenderObjects_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             PropertyChanged?.Invoke(this,new PropertyChangedEventArgs("RenderObjects"));

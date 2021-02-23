@@ -159,6 +159,15 @@ namespace MaptoolRenderer
         name_ = value;
         this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "Name" });
     }
+    auto ColliderObject::Offset::get()->MapToolCore::Offset
+    {
+        return offset_;
+    }
+    auto ColliderObject::Offset::set(MapToolCore::Offset value)->void
+    {
+        offset_ = value;
+        this->PropertyChanged(this, gcnew System::ComponentModel::PropertyChangedEventArgs{ "Offset" });
+    }
 }
 
 

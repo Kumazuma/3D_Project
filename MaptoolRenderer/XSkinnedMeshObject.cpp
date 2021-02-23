@@ -71,3 +71,7 @@ auto MaptoolRenderer::SkinnedXMeshObject::AnimationCount::get()->unsigned int
     auto count = static_cast<::SkinnedXMeshObject*>(mesh_->renderObject_)->GetAnimationCount();
     return count;
 }
+auto MaptoolRenderer::SkinnedXMeshObject::FilePath::get()->String^
+{
+    return mesh_->FilePath;
+}
