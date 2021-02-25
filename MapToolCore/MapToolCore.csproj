@@ -74,7 +74,6 @@
     <Compile Include="IInteractMouse.cs" />
     <Compile Include="IJSONSerializable.cs" />
     <Compile Include="Matrix.cs" />
-    <Compile Include="NaviMesh.cs" />
     <Compile Include="ObjectCollection.cs" />
     <Compile Include="Offset.cs" />
     <Compile Include="Position.cs" />
@@ -83,7 +82,6 @@
     <Compile Include="Scale.cs" />
     <Compile Include="SelectableObject.cs" />
     <Compile Include="Transform.cs" />
-    <Compile Include="Triangle.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="ValueTypeConverter.cs" />
   </ItemGroup>

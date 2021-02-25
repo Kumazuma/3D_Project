@@ -23,12 +23,15 @@ MaptoolRenderer::SkinnedXMesh::SkinnedXMesh(String^ path)
         m_frameNames[i] = s;
         ++i;
     }
+    this->filePath_ = path;
 }
 
 MaptoolRenderer::SkinnedXMesh::SkinnedXMesh(SkinnedXMesh^ rhs)
 {
     m_frameNames = rhs->m_frameNames;
     renderObject_ = rhs->renderObject_->Clone();
+    this->filePath_ = rhs->filePath_;
+
 }
 
 auto MaptoolRenderer::SkinnedXMesh::PlayAnimation(float timeDelta) -> void

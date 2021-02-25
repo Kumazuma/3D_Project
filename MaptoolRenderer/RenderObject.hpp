@@ -44,7 +44,7 @@ namespace MaptoolRenderer
 	internal:
 		String^ name_;
 		MapToolCore::Transform^ transform_;
-		DirectX::XMFLOAT4X4* transformPtr_;
 		System::ComponentModel::PropertyChangedEventHandler^ transformChangedHandler_;
+		DirectX::XMFLOAT4X4* transformPtr_;
 	};
 }

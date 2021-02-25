@@ -86,7 +86,9 @@ namespace MaptoolNightbuild.MapEditor
             }
         }
 
-        private void RenderObjects_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void RenderObjects_CollectionChanged(
+            object sender,
+            NotifyCollectionChangedEventArgs e)
         {
             renderView.Content.Render();
             var action = new Action(() =>
@@ -97,7 +99,8 @@ namespace MaptoolNightbuild.MapEditor
                         foreach (var obj in e.NewItems)
                         {
                             worldObjectsBindList.Add(obj as MapToolCore.IHasText);
-                            (obj as INotifyPropertyChanged).PropertyChanged += Object_PropertyChanged;
+                            (obj as INotifyPropertyChanged).PropertyChanged += 
+                            Object_PropertyChanged;
                         }
                         worldObjectsBindList.ResetBindings();
                         break;

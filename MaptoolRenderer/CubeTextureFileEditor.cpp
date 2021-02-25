@@ -10,7 +10,10 @@ void MaptoolRenderer::CubeTextureFileEditor::InitializeDialog(OpenFileDialog^ op
 
 }
 
-auto MaptoolRenderer::CubeTextureFileEditor::EditValue(ITypeDescriptorContext^ context, IServiceProvider^ provider, Object^ value) -> Object^ 
+auto MaptoolRenderer::CubeTextureFileEditor::EditValue(
+    ITypeDescriptorContext^ context,
+    IServiceProvider^ provider,
+    Object^ value) -> Object^ 
 {
     System::Object^ text = FileNameEditor::EditValue(context, provider, value);
     if (text == nullptr)
@@ -19,7 +22,8 @@ auto MaptoolRenderer::CubeTextureFileEditor::EditValue(ITypeDescriptorContext^ c
     }
     if (text->GetType() == System::String::typeid)
     {
-        return gcnew CubeTexture(MaptoolRenderer::GraphicsDevice::Instance, static_cast<System::String^>(text));
+        return gcnew CubeTexture(MaptoolRenderer::GraphicsDevice::Instance,
+            static_cast<System::String^>(text));
     }
     return text;
 }

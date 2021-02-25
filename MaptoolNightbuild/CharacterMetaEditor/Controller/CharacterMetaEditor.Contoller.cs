@@ -15,9 +15,16 @@ namespace MaptoolNightbuild.CharacterMetaEditor
             String projectDir = Properties.Settings.Default.ProjectDir;
             MetaFile metaFile = new MetaFile();
             metaFile.MeshFilePath = Document.Instance.Mesh.FilePath;
+            int unnamed = 1;
             foreach (var collider in Document.Instance.ColliderObject)
             {
-                metaFile.ColliderList.Add(collider.Name, collider);
+                string name = collider.Name;
+                if(name == null)
+                {
+                    name = unnamed.ToString();
+                    ++unnamed;
+                }
+                metaFile.ColliderList.Add(name, collider);
             }
             foreach (var animation in Document.Instance.AnimationTable)
             {
@@ -66,6 +73,21 @@ namespace MaptoolNightbuild.CharacterMetaEditor
                 collider.ParentObject = xSkinnedMeshObject;
             }
             return true;
+        }
+        public void AddCollider()
+        {
+            var document = Document.Instance;
+            var newColliderObject = new MaptoolRenderer.ColliderObject();
+            newColliderObject.ParentObject = document.Mesh;
+            document.ColliderObject.Add(newColliderObject);
+        }
+        public void RemoveCollider(IEnumerable<MaptoolRenderer.ColliderObject> colliders)
+        {
+            var document = Document.Instance;
+            foreach (var item in colliders)
+            {
+                document.ColliderObject.Remove(item);
+            }
         }
     }
 }

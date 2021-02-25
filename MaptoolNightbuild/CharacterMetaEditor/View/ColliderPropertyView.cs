@@ -12,20 +12,26 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
 {
     public partial class ColliderPropertyView : UserControl
     {
-        BindingList<MaptoolRenderer.ColliderObject> colliderObjects = new BindingList<MaptoolRenderer.ColliderObject>();
+        BindingList<MaptoolRenderer.ColliderObject> colliderObjects
+            = new BindingList<MaptoolRenderer.ColliderObject>();
 
         public ColliderPropertyView()
         {
+            #region
             InitializeComponent();
             listBox1.DataSource = colliderObjects;
             listBox1.SelectedIndexChanged += ListBox1_SelectedIndexChanged;
             listBox1.MouseUp += ListBox1_MouseUp;
+            #endregion
             var document = Document.Instance;
             document.PropertyChanged += Document_PropertyChanged;
-            document.ColliderObject.CollectionChanged += ColliderObject_CollectionChanged;
+            document.ColliderObject.CollectionChanged
+                += ColliderObject_CollectionChanged;
         }
 
-        private void ColliderObject_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void ColliderObject_CollectionChanged(
+            object sender,
+            NotifyCollectionChangedEventArgs e)
         {
             switch(e.Action )
             {
@@ -83,10 +89,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
 
         private void btnAddColiider_Click(object sender, EventArgs e)
         {
-            var document = Document.Instance;
-            var newColliderObject = new MaptoolRenderer.ColliderObject();
-            newColliderObject.ParentObject = document.Mesh;
-            document.ColliderObject.Add(newColliderObject);
+            Controller.Instance.AddCollider();
         }
 
         private void miDelete_Click(object sender, EventArgs e)
@@ -97,11 +100,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             }
             var selectedItems = new MaptoolRenderer.ColliderObject[listBox1.SelectedItems.Count];
             listBox1.SelectedItems.CopyTo(selectedItems, 0);
-            var document = Document.Instance;
-            foreach (var item in selectedItems)
-            {
-                document.ColliderObject.Remove(item);
-            }
+            Controller.Instance.RemoveCollider(selectedItems);
         }
     }
 }

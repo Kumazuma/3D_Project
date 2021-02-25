@@ -91,7 +91,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             this.btnAddColiider.Name = "btnAddColiider";
             this.btnAddColiider.Size = new System.Drawing.Size(1155, 23);
             this.btnAddColiider.TabIndex = 0;
-            this.btnAddColiider.Text = "btnAddColiider";
+            this.btnAddColiider.Text = "Collider 추가";
             this.btnAddColiider.UseVisualStyleBackColor = true;
             this.btnAddColiider.Click += new System.EventHandler(this.btnAddColiider_Click);
             // 
@@ -100,12 +100,12 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miDelete});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(99, 26);
             // 
             // miDelete
             // 
             this.miDelete.Name = "miDelete";
-            this.miDelete.Size = new System.Drawing.Size(180, 22);
+            this.miDelete.Size = new System.Drawing.Size(98, 22);
             this.miDelete.Text = "삭제";
             this.miDelete.Click += new System.EventHandler(this.miDelete_Click);
             // 

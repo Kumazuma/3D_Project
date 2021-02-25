@@ -79,6 +79,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             this.btnSaveJSON.TabIndex = 1;
             this.btnSaveJSON.Text = "JSON 저장";
             this.btnSaveJSON.UseVisualStyleBackColor = true;
+            this.btnSaveJSON.Click += new System.EventHandler(this.btnSaveJSON_Click);
             // 
             // btnOpenJson
             // 

@@ -18,9 +18,11 @@ namespace MaptoolNightbuild.MapEditor
         ObjectCollection<HashSet<IRenderable>, IRenderable> renderObjects;
         Document()
         {
-            renderObjects = new ObjectCollection<HashSet<IRenderable>, IRenderable>();
+            renderObjects = 
+                new ObjectCollection<HashSet<IRenderable>, IRenderable>();
         }
-        public ObjectCollection<HashSet<IRenderable>, IRenderable> RenderObjects { get => renderObjects; }
-
+        public ObjectCollection<HashSet<IRenderable>, IRenderable>
+            RenderObjects
+        { get => renderObjects; }
     }
 }

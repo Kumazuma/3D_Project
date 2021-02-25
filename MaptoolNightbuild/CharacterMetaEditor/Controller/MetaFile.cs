@@ -137,10 +137,14 @@ namespace MaptoolNightbuild.CharacterMetaEditor
             streamWriter = new StreamWriter(fileStream);
             foreach (var item in animationTable)
             {
-                jAnims.Add(item.Value, item.Key );
+                if(!jAnims.ContainsKey(item.Value))
+                {
+                    jAnims.Add(item.Value, item.Key);
+                }
             }
             jRoot.Add("anim", jAnims);
             jRoot["collider"] = SaveColliderMeta(jRoot, ColliderList);
+            jRoot["mesh"] = MapToolCore.Utility.ToRelativePath(projectDir, MeshFilePath);
             var serializer = JsonSerializer.CreateDefault();
             serializer.Serialize(streamWriter, jRoot);
             streamWriter.Close();

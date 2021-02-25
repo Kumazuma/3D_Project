@@ -19,7 +19,6 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
         Timer timer = new Timer();
         Stopwatch stopWatch = new Stopwatch();
         TimeSpan lastTimeSpan;
-        bool isPlaying = false;
         public CharacterMetaRenderView()
         {
             InitializeComponent();
@@ -82,11 +81,9 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
 
         public void Play()
         {
-            isPlaying = true;
         }
         public void Stop()
         {
-            isPlaying = false;
         }
         public MaptoolRenderer.Camera CurrentCamera
         {
@@ -158,6 +155,24 @@ namespace MaptoolNightbuild.CharacterMetaEditor.View
             loadingDialog.Show();
             this.ParentForm.Enabled = false;
             await Controller.Instance.Load(openFileDialog.FileName);
+            this.ParentForm.Enabled = true;
+            loadingDialog.Close();
+        }
+
+        private void btnSaveJSON_Click(object sender, EventArgs e)
+        {
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "JSON파일(*.json)|*.json"
+            };
+            if (saveFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            var loadingDialog = new XMeshLoadingDialog();
+            loadingDialog.Show();
+            this.ParentForm.Enabled = false;
+            Controller.Instance.Save(saveFileDialog.FileName);
             this.ParentForm.Enabled = true;
             loadingDialog.Close();
         }

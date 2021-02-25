@@ -38,7 +38,7 @@ namespace MaptoolNightbuild.MapEditor
         {
             collection = new Collection(this);
         }
-        public MapFile(JObject jObj, string projectDir)
+        private MapFile(JObject jObj, string projectDir)
         {
             collection = new Collection(this);
 
@@ -195,7 +195,6 @@ namespace MaptoolNightbuild.MapEditor
             jObj.Add("usage", meshObject.Usage.ToString().ToUpper());
             return jObj;
         }
-
         JObject WriteTarget(Object obj)
         {
             var meshObject = obj as MapTarget;
@@ -210,7 +209,8 @@ namespace MaptoolNightbuild.MapEditor
         {
             Action action = new Action(()=>
             {
-                var writeFunctionTable = new Dictionary<Type, WriteObjectInJson> {
+                var writeFunctionTable =
+                new Dictionary<Type, WriteObjectInJson> {
 
                     { typeof(OBJObject),WriteObjMesh },
                     { typeof(MapTarget), WriteTarget }
@@ -219,7 +219,6 @@ namespace MaptoolNightbuild.MapEditor
                 StreamWriter streamWriter = null;
                 var tokenWriter = new JTokenWriter();
                 var jObj = new JObject(new JProperty("skybox", Utility.ToRelativePath(ProjectPath, this.skyboxTexturePath)));
-                var jObjects = new JArray();
                 if (File.Exists(path))
                 {
                     fileStream = File.Open(path, FileMode.Truncate, FileAccess.ReadWrite);
@@ -229,6 +228,7 @@ namespace MaptoolNightbuild.MapEditor
                     fileStream = File.Open(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 }
                 streamWriter = new StreamWriter(fileStream);
+                var jObjects = new JArray();
                 foreach (var obj in this.mapObjects)
                 {
                     var function = writeFunctionTable[obj.GetType()];
@@ -255,44 +255,6 @@ namespace MaptoolNightbuild.MapEditor
                     return new MapFile(root, projectDir) ;
                 }
             });
-        }
-
-        public async Task Open(string path)
-        {
-            Action action = new Action(() =>
-            {
-                var writeFunctionTable = new Dictionary<Type, WriteObjectInJson> {
-
-                    { typeof(OBJObject),WriteObjMesh },
-                    { typeof(MapTarget), WriteTarget }
-                };
-                Stream fileStream = null;
-                StreamWriter streamWriter = null;
-                var tokenWriter = new JTokenWriter();
-                var jObj = new JObject(new JProperty("skybox", Utility.ToRelativePath(ProjectPath, this.skyboxTexturePath)));
-                var jObjects = new JArray();
-                if (File.Exists(path))
-                {
-                    fileStream = File.Open(path, FileMode.Truncate, FileAccess.ReadWrite);
-                }
-                else
-                {
-                    fileStream = File.Open(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                }
-                streamWriter = new StreamWriter(fileStream);
-                foreach (var obj in this.mapObjects)
-                {
-                    var function = writeFunctionTable[obj.GetType()];
-                    if (function == null) continue;
-                    jObjects.Add(function(obj));
-                }
-                jObj.Add("objects", jObjects);
-                var serializer = JsonSerializer.CreateDefault();
-                serializer.Serialize(streamWriter, jObj);
-                streamWriter.Close();
-                streamWriter.Dispose();
-            });
-            await Task.Run(action);
         }
     }
 }
