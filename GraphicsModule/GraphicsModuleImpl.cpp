@@ -234,6 +234,11 @@ HRESULT Kumazuma::GraphicsModuleImpl::GetComputeShader(wchar_t const* id, ID3D11
     return S_OK;
 }
 
+HRESULT Kumazuma::GraphicsModuleImpl::GetVertexShaderAndInputLayout(MeshType meshType, ID3D11VertexShader** outVS, ID3D11InputLayout** outInputLayout)
+{
+    return E_NOTIMPL;
+}
+
 
 Kumazuma::TextureManager& Kumazuma::GraphicsModuleImpl::GetTextureManager()
 {

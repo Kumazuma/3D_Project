@@ -3,6 +3,7 @@
 #include"typedef.hpp"
 #include<d3d11.h>
 #include<dxgi.h>
+#include"Mesh.hpp"
 namespace Kumazuma
 {
 	class Texture2D;
@@ -23,6 +24,7 @@ namespace Kumazuma
 		virtual HRESULT LoadComputeShader(wchar_t const* id, wchar_t const* path, char const* entry) = 0;
 		virtual HRESULT LoadComputeShaderFromBytes(wchar_t const* id, u8 const* ptr, u32 len) = 0;
 		virtual HRESULT GetComputeShader(wchar_t const* id, ID3D11ComputeShader** out) = 0;
+		virtual HRESULT GetVertexShaderAndInputLayout(MeshType meshType, ID3D11VertexShader** outVS, ID3D11InputLayout** outInputLayout) = 0;
 		virtual TextureManager& GetTextureManager() = 0;
 		void LockDevice();
 		void UnlockDevice();

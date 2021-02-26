@@ -49,13 +49,12 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	vPosition *= depth.y;
 	vPosition = mul(vPosition, g_mInverseViewProj);
 
-	float intensity = saturate(abs(dot(g_vLightDirection * -1, vNormal.xyz)));
+	float intensity = saturate(dot(g_vLightDirection * -1, vNormal.xyz));
 	float4 vDiffuse = intensity * g_vLightDiffuse * g_vLightAmbient;
 	vDiffuse.a = intensity;
 
 	float4 vOtherAmbient = gLightAmbientMap[DTid.xy];
 	vDiffuse += vOtherAmbient;
-	vDiffuse = saturate(vDiffuse);
 	gLightAmbientMap[DTid.xy] = vDiffuse;
 
 	if (intensity > 0.f)
@@ -68,7 +67,6 @@ void main(uint3 DTid : SV_DispatchThreadID)
 		vSpecular.a == 1.f;
 		float4 vOtherSpecular = gLightSpecularMap[DTid.xy];
 		vSpecular += vOtherSpecular;
-		vSpecular = saturate(vSpecular);
 		gLightSpecularMap[DTid.xy] = vSpecular;
 	}
 }

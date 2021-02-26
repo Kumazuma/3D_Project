@@ -2,6 +2,8 @@
 #include<array>
 #include<memory>
 #include<wrl.h>
+#include <d2d1_1.h>
+#include <dwrite.h>
 #include"RenderSystem.hpp"
 #include"Material.hpp"
 #include"Texture2D.hpp"
@@ -35,10 +37,19 @@ namespace Kumazuma
 		void RenderDeferred(ID3D11Device* device, ID3D11DeviceContext* context);
 		void DeferredLighting(ID3D11Device* device, ID3D11DeviceContext* context);
 		void DeferredCombine(ID3D11Device* device, ID3D11DeviceContext* context);
+		void ToneMapping(ID3D11Device* device, ID3D11DeviceContext* context);
 		void RenderForward(ID3D11Device* device, ID3D11DeviceContext* context);
 		void RenderUI(ID3D11Device* device, ID3D11DeviceContext* context);
 	private:
 		SwapChain* swapChain_;
+		ComPtr<ID2D1Device> d2dDevice;
+		ComPtr<ID2D1DeviceContext> d2dDeviceContext;
+		ComPtr<ID2D1Factory1> d2dFactory;
+		ComPtr<ID2D1Bitmap1> d2dBackbuffer;
+		ComPtr<ID2D1Bitmap1> d2dAlphado;
+		ComPtr<IDWriteFactory> dwFactory;
+		ComPtr<IDWriteTextFormat> dwTextFormat;
+		COMPtr<ID2D1SolidColorBrush> d2dBrush;
 		std::array< LinkedList<Material*, 32>, NumOf<MaterialShadingClass>() > materials_;
 		std::unique_ptr<Texture2D> albedoGBuffer_;
 		std::unique_ptr<Texture2D> normalGBuffer_;
@@ -47,6 +58,9 @@ namespace Kumazuma
 		//
 		std::unique_ptr<Texture2D> lightSpecularMap_;
 		std::unique_ptr<Texture2D> lightAmbientMap_;
+
+		//
+		std::unique_ptr<Texture2D> hdrRenderResultTexture_;
 
 		//
 		DirectX::XMFLOAT4X4 viewSpaceMatrix_;
@@ -68,6 +82,6 @@ namespace Kumazuma
 		ComPtr<ID3D11Buffer>			csLightCBuffer_;
 		ComPtr<ID3D11Buffer>			csGlobalCBuffer_;
 		ComPtr<ID3D11ComputeShader>		combineCShader_;
-
+		ComPtr<ID3D11ComputeShader>		toneMappingCShader_;
 	};
 }

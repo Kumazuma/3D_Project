@@ -20,10 +20,12 @@ namespace Kumazuma
 		HRESULT GetResource(ID3D11Texture2D** out);
 		HRESULT GetSize(Size2D<u32>* out);
 		HRESULT GetView(GUID, ID3D11View** out);
+		DXGI_FORMAT GetFormat() override;
 		Texture2D* CreateGenerateMipmap(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 	protected:
 		ComPtr<ID3D11Texture2D> texture_;
 		Size2D<u32> size_;
+		DXGI_FORMAT format_;
 		std::unordered_map<GUIDEx, ComPtr<ID3D11View> > views_;
 	};
 }

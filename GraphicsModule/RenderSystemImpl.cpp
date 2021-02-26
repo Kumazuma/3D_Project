@@ -70,6 +70,12 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule, SwapChain*
 		.Build(device.Get());
 	lightSpecularMap_.reset(texture);
 
+	texture =
+		Texture2D::Builder(DXGI_FORMAT_R16G16B16A16_FLOAT, size.width, size.height)
+		.UnorderedResourceView()
+		.Build(device.Get());
+	hdrRenderResultTexture_.reset(texture);
+
 	InitializeRenderState(device.Get());
 
 	HRESULT hr{};
@@ -129,12 +135,49 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule, SwapChain*
 	hr = device->CreateBuffer(&cslightCBufferDesc, nullptr, &csLightCBuffer_);
 
 	gmodule->GetComputeShader(L"combineCShader_", &combineCShader_);
+	gmodule->GetComputeShader(L"toneMappingCShader_", &toneMappingCShader_);
+
+	ComPtr<IDXGIDevice> dxgiDevice;
+	ComPtr<IDXGISurface> dxgiSurface;
+	ComPtr<ID3D11Texture2D> backbuffer;
+	ComPtr<ID3D11Texture2D> texture2D;
+	device->QueryInterface(__uuidof(IDXGIDevice), &dxgiDevice);
+	
+	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory1), &d2dFactory);
+	d2dFactory->CreateDevice(dxgiDevice.Get(), &d2dDevice);
+	d2dDevice->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &d2dDeviceContext);
+	swapChain->GetBackbuffer()->GetResource(&backbuffer);
+	backbuffer->QueryInterface(__uuidof(IDXGISurface), &dxgiSurface);
+	
+	D2D1_BITMAP_PROPERTIES1 bitmapProperties{
+		D2D1::BitmapProperties1(
+			D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
+			D2D1::PixelFormat(swapChain->GetBackbuffer()->GetFormat(), D2D1_ALPHA_MODE_IGNORE),
+			96, 96
+			)
+	};
+	d2dDeviceContext->CreateBitmapFromDxgiSurface(dxgiSurface.Get(), bitmapProperties, &d2dBackbuffer);
+	d2dDeviceContext->SetTarget(d2dBackbuffer.Get());
+
+	bitmapProperties = D2D1::BitmapProperties1(
+		D2D1_BITMAP_OPTIONS_NONE,
+		D2D1::PixelFormat(albedoGBuffer_->GetFormat(), D2D1_ALPHA_MODE_IGNORE));
+	albedoGBuffer_->GetResource(&texture2D);
+	texture2D->QueryInterface(__uuidof(IDXGISurface), &dxgiSurface);
+	d2dDeviceContext->CreateBitmapFromDxgiSurface(dxgiSurface.Get(), bitmapProperties, &d2dAlphado);
+	DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), &dwFactory);
+
+	dwFactory->CreateTextFormat(L"±¼¸²", nullptr, DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 18.f, L"ko-kr", &dwTextFormat);
+
+	hr = d2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(0.f, 0.f, 0.f), &d2dBrush);
+
 }
 
 void Kumazuma::RenderSystemImpl::Initialize(GraphicsModule* gmodule)
 {
 	gmodule->LoadComputeShader(L"directional_lighting", L"./LightingCS.hlsl", "main");
 	gmodule->LoadComputeShader(L"combineCShader_", L"./DeferredCombineCS.hlsl", "main");
+	gmodule->LoadComputeShader(L"toneMappingCShader_", L"./HDRToneMappingCS.hlsl", "main");
 	gmodule->LoadPixelShader(L"deferred_gbuffer_ps", L"./StaticMeshGBufferPS.hlsl", "main");
 
 }
@@ -198,6 +241,16 @@ void Kumazuma::RenderSystemImpl::Render(GraphicsModule* gmodule, DirectX::XMFLOA
 	deviceContext->Unmap(csGlobalCBuffer_.Get(), 0);
 
 	RenderDeferred(device.Get(), deviceContext.Get());
+	RenderForward(device.Get(), deviceContext.Get());
+	ToneMapping(device.Get(), deviceContext.Get());
+	deviceContext->ClearState();
+	d2dDeviceContext->BeginDraw();
+	
+	//d2dDeviceContext->DrawBitmap(d2dAlphado.Get(), D2D1::RectF(0.f, 0.f, 200.f, 200.f));
+	std::wstring helloWorld{ L"Hello, World" };
+	
+	d2dDeviceContext->DrawTextW(helloWorld.c_str(), helloWorld.size(), dwTextFormat.Get(), D2D1::RectF(0.f, 0.f, 200.f, 200.f), d2dBrush.Get());
+	d2dDeviceContext->EndDraw();
 }
 
 void Kumazuma::RenderSystemImpl::SettupVertexShader(MeshType type, ID3D11DeviceContext* context, DirectX::XMFLOAT4X4* worldSpace)
@@ -357,7 +410,7 @@ void Kumazuma::RenderSystemImpl::DeferredLighting(ID3D11Device* device, ID3D11De
 	deviceContext->Map(csLightCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	CS::LightInfo* csLightCBuffer = reinterpret_cast<CS::LightInfo*>(mappedResource.pData);
 	csLightCBuffer->g_vLightAmbient = XMFLOAT4{ 0.5f, 0.5f, 0.5f, 0.5f};
-	csLightCBuffer->g_vLightDiffuse = XMFLOAT4{ 1.f, 1.f, 1.f, 1.f };
+	csLightCBuffer->g_vLightDiffuse = XMFLOAT4{ 1.f, 1.f, 1.f,1.f };
 	csLightCBuffer->g_vLightDirection = lightDirection;
 	csLightCBuffer->lightType = 0;
 	deviceContext->Unmap(csLightCBuffer_.Get(), 0);
@@ -403,30 +456,60 @@ void Kumazuma::RenderSystemImpl::DeferredCombine(ID3D11Device* device, ID3D11Dev
 	ID3D11UnorderedAccessView* albedoMapUAV;
 	ID3D11UnorderedAccessView* lightAmbientMapUAV;
 	ID3D11UnorderedAccessView* lightSpecularMapUAV;
-	ID3D11UnorderedAccessView* backbufferUAV;
-	ComPtr<ID3D11DeviceContext> deferredDeviceContext;
+	ID3D11UnorderedAccessView* hdrRenderResultUAV;
 	Size2D<u32> size{};
 
 	swapChain_->GetBackbuffer()->GetSize(&size);
-	swapChain_->GetBackbuffer()->GetView(&backbufferUAV);
+	hdrRenderResultTexture_->GetView(&hdrRenderResultUAV);
 	this->albedoGBuffer_->GetView(&albedoMapUAV);
 	this->lightAmbientMap_->GetView(&lightAmbientMapUAV);
 	this->lightSpecularMap_->GetView(&lightSpecularMapUAV);
 
-	deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 	deviceContext->ClearState();
 	deviceContext->CSSetShader(combineCShader_.Get(), nullptr, 0);
 	deviceContext->CSSetUnorderedAccessViews(0, 1, &albedoMapUAV,nullptr );
 	deviceContext->CSSetUnorderedAccessViews(1, 1, &lightAmbientMapUAV,nullptr );
 	deviceContext->CSSetUnorderedAccessViews(2, 1, &lightSpecularMapUAV,nullptr );
-	deviceContext->CSSetUnorderedAccessViews(3, 1, &backbufferUAV, nullptr);
+	deviceContext->CSSetUnorderedAccessViews(3, 1, &hdrRenderResultUAV, nullptr);
 	deviceContext->Dispatch(size.width, size.height, 1);
 
 
-	backbufferUAV->Release();
+	hdrRenderResultUAV->Release();
 	albedoMapUAV->Release();
 	lightAmbientMapUAV->Release();
 	lightSpecularMapUAV->Release();
+}
+
+void Kumazuma::RenderSystemImpl::ToneMapping(ID3D11Device* device, ID3D11DeviceContext* context)
+{
+
+	ID3D11UnorderedAccessView* hdrRenderResultUAV;
+	ID3D11UnorderedAccessView* swapChainUAV;
+	Size2D<u32> size{};
+	D3D11_MAPPED_SUBRESOURCE mappedResource{};
+
+
+	swapChain_->GetBackbuffer()->GetSize(&size);
+
+	context->Map(csGlobalCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	CS::GlobalInfo* csGlobalCBuffer = reinterpret_cast<CS::GlobalInfo*>(mappedResource.pData);
+	csGlobalCBuffer->g_bufferSize = XMUINT2{ size.width, size.height };
+	csGlobalCBuffer->g_mInverseViewProj(0, 0) = 0.3f;
+	context->Unmap(csGlobalCBuffer_.Get(), 0);
+
+
+	hdrRenderResultTexture_->GetView(&hdrRenderResultUAV);
+	swapChain_->GetBackbuffer()->GetView(&swapChainUAV);
+	context->ClearState();
+	context->CSSetShader(toneMappingCShader_.Get(), nullptr, 0);
+	context->CSSetConstantBuffers(0, 1, csGlobalCBuffer_.GetAddressOf());
+	context->CSSetUnorderedAccessViews(0, 1, &hdrRenderResultUAV, nullptr);
+	context->CSSetUnorderedAccessViews(1, 1, &swapChainUAV, nullptr);
+	int x = size.width / 16 + static_cast<UINT>(size.width % 16 != 0);
+	int y = size.height / 16 + static_cast<UINT>(size.height % 16 != 0);
+	context->Dispatch(x, y, 1);
+	hdrRenderResultUAV->Release();
+	swapChainUAV->Release();
 }
 
 void Kumazuma::RenderSystemImpl::RenderForward(ID3D11Device* device, ID3D11DeviceContext* deviceContext)

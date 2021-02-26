@@ -86,6 +86,9 @@
     <Filter Include="SwapChain\impl">
       <UniqueIdentifier>{5c2b061e-f57f-4e98-968f-62dccce1fd19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Pipeline">
+      <UniqueIdentifier>{23169289-9c80-4448-92e5-28e161374c3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -171,6 +174,9 @@
     </ClInclude>
     <ClInclude Include="SwapChain.hpp">
       <Filter>SwapChain</Filter>
+    </ClInclude>
+    <ClInclude Include="Pipeline.hpp">
+      <Filter>Pipeline</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -261,6 +267,9 @@
       <Filter>default_deferred_render</Filter>
     </FxCompile>
     <FxCompile Include="DeferredCombineCS.hlsl">
+      <Filter>default_deferred_render</Filter>
+    </FxCompile>
+    <FxCompile Include="HDRToneMappingCS.hlsl">
       <Filter>default_deferred_render</Filter>
     </FxCompile>
   </ItemGroup>

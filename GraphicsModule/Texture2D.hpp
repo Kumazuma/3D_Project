@@ -13,7 +13,7 @@ namespace Kumazuma
 		virtual HRESULT GetResource(ID3D11Texture2D** out) = 0;
 		virtual HRESULT GetSize(Size2D<u32>* out) = 0;
 		virtual HRESULT GetView(GUID, ID3D11View** out) = 0;
-		
+		virtual DXGI_FORMAT GetFormat() = 0;
 		virtual Texture2D* CreateGenerateMipmap(ID3D11Device* device, ID3D11DeviceContext* deviceContext) = 0;
 		template<typename T>
 		HRESULT GetView(T** out);

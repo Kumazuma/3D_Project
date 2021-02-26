@@ -18,6 +18,7 @@ namespace Kumazuma
 
     void Texture2DImpl::InitializeViews(ID3D11Device* device, D3D11_TEXTURE2D_DESC const& desc)
     {
+        format_ = desc.Format;
         HRESULT hr;
         if (desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
         {
@@ -154,6 +155,11 @@ namespace Kumazuma
         *out = view;
         view->AddRef();
         return S_OK;
+    }
+
+    DXGI_FORMAT Texture2DImpl::GetFormat()
+    {
+        return DXGI_FORMAT();
     }
 
     Texture2D* Texture2DImpl::CreateGenerateMipmap(ID3D11Device* device, ID3D11DeviceContext* deviceContext)

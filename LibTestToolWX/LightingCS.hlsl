@@ -23,7 +23,7 @@ RWTexture2D<float4> gLightAmbientMap:register(u3);
 RWTexture2D<float4> gLightSpecularMap:register(u4);
 
 [numthreads(16, 16, 1)]
-void main( uint3 DTid : SV_DispatchThreadID )
+void main(uint3 DTid : SV_DispatchThreadID)
 {
 	if (DTid.x >= g_bufferSize.x || DTid.y >= g_bufferSize.y)
 	{
@@ -35,7 +35,7 @@ void main( uint3 DTid : SV_DispatchThreadID )
 	//float3 finalColor = color * gAmbientColor * gAmbientPower;
 
 	float2 depth = gDepthMap[DTid.xy];
-	
+
 	float4 vNormal = gNormalMap[DTid.xy];
 	vNormal.w = 0.f;
 	vNormal.xyz = normalize(vNormal.xyz * 2.f - 1.f);
@@ -50,12 +50,11 @@ void main( uint3 DTid : SV_DispatchThreadID )
 	vPosition = mul(vPosition, g_mInverseViewProj);
 
 	float intensity = saturate(dot(g_vLightDirection * -1, vNormal.xyz));
-	float4 vDiffuse = intensity * g_vLightDiffuse + g_vLightAmbient;
+	float4 vDiffuse = intensity * g_vLightDiffuse * g_vLightAmbient;
 	vDiffuse.a = intensity;
 
 	float4 vOtherAmbient = gLightAmbientMap[DTid.xy];
 	vDiffuse += vOtherAmbient;
-	vDiffuse = saturate(vDiffuse);
 	gLightAmbientMap[DTid.xy] = vDiffuse;
 
 	if (intensity > 0.f)
@@ -68,7 +67,6 @@ void main( uint3 DTid : SV_DispatchThreadID )
 		vSpecular.a == 1.f;
 		float4 vOtherSpecular = gLightSpecularMap[DTid.xy];
 		vSpecular += vOtherSpecular;
-		vSpecular = saturate(vSpecular);
 		gLightSpecularMap[DTid.xy] = vSpecular;
 	}
 }
