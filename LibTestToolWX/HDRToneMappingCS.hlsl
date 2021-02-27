@@ -14,9 +14,15 @@ void main( uint3 DTid : SV_DispatchThreadID )
 		return;
 	}
 	float4 hdr = hdrRenderTargetTexture[DTid.xy];
-	float4 ldr = hdr * (1 + (hdr / (g_whitePoint * g_whitePoint))) / (1 + hdr);
+	float L = hdr.a;
+	float Cb = hdr.b;
+	float Cr = hdr.r;
+	L = L * (1 + (L / (g_whitePoint * g_whitePoint))) / (1 + L);
+	float4 ldr = (float4)1.f;
+	ldr.r = L + 1.403f * Cr;
+	ldr.g = L - 0.344f * Cb - 0.714f * Cr;
+	ldr.b = L + 1.770f * Cb;
 	ldr = pow(ldr, 1.f / 2.2f);
 	ldr.a = 1.f;
 	sdrRenderTargetTexture[DTid.xy] = ldr;
-
 }

@@ -409,8 +409,8 @@ void Kumazuma::RenderSystemImpl::DeferredLighting(ID3D11Device* device, ID3D11De
 	D3D11_MAPPED_SUBRESOURCE mappedResource{};
 	deviceContext->Map(csLightCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	CS::LightInfo* csLightCBuffer = reinterpret_cast<CS::LightInfo*>(mappedResource.pData);
-	csLightCBuffer->g_vLightAmbient = XMFLOAT4{ 0.5f, 0.5f, 0.5f, 0.5f};
-	csLightCBuffer->g_vLightDiffuse = XMFLOAT4{ 1.f, 1.f, 1.f,1.f };
+	csLightCBuffer->g_vLightAmbient = XMFLOAT4{ 0.1f, 0.1f, 0.1f,0.1f};
+	csLightCBuffer->g_vLightDiffuse = XMFLOAT4{ 2.f, 2.f, 2.f,1.f };
 	csLightCBuffer->g_vLightDirection = lightDirection;
 	csLightCBuffer->lightType = 0;
 	deviceContext->Unmap(csLightCBuffer_.Get(), 0);
@@ -494,7 +494,7 @@ void Kumazuma::RenderSystemImpl::ToneMapping(ID3D11Device* device, ID3D11DeviceC
 	context->Map(csGlobalCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	CS::GlobalInfo* csGlobalCBuffer = reinterpret_cast<CS::GlobalInfo*>(mappedResource.pData);
 	csGlobalCBuffer->g_bufferSize = XMUINT2{ size.width, size.height };
-	csGlobalCBuffer->g_mInverseViewProj(0, 0) = 0.3f;
+	csGlobalCBuffer->g_mInverseViewProj(0, 0) = 1.0f;
 	context->Unmap(csGlobalCBuffer_.Get(), 0);
 
 

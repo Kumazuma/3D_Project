@@ -16,5 +16,10 @@ void main(uint3 DTid : SV_DispatchThreadID)
 		return;
 	}
 	float4 vColor = vSpecular + pow( vAlbedo, 2.2f) * vAmbient;
-	gRenderTarget[DTid.xy] = vColor;
+	float3 yFactor = float3(0.299f, 0.587f, 0.114f);
+
+	float Y = dot(yFactor, vColor.rgb);
+	float Cb = (vColor.b - Y) * 0.565f;
+	float Cr = (vColor.r - Y) * 0.713f;
+	gRenderTarget[DTid.xy] = float4(Cr, 0, Cb, Y);
 }

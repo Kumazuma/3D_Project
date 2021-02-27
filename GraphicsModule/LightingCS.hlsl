@@ -50,7 +50,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	vPosition = mul(vPosition, g_mInverseViewProj);
 
 	float intensity = saturate(dot(g_vLightDirection * -1, vNormal.xyz));
-	float4 vDiffuse = intensity * g_vLightDiffuse * g_vLightAmbient;
+	float4 vDiffuse = intensity * g_vLightDiffuse + g_vLightAmbient;
 	vDiffuse.a = intensity;
 
 	float4 vOtherAmbient = gLightAmbientMap[DTid.xy];
