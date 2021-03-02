@@ -272,5 +272,11 @@
     <FxCompile Include="HDRToneMappingCS.hlsl">
       <Filter>default_deferred_render</Filter>
     </FxCompile>
+    <FxCompile Include="LumAvgCS.hlsl">
+      <Filter>default_deferred_render</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShader.hlsl">
+      <Filter>default_deferred_render</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

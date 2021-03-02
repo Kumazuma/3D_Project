@@ -59,6 +59,11 @@ namespace Kumazuma
 		std::unique_ptr<Texture2D> lightSpecularMap_;
 		std::unique_ptr<Texture2D> lightAmbientMap_;
 
+		std::unique_ptr<Texture2D> luminousnessTexture;
+		std::unique_ptr<Texture2D> luminousness2Texture;
+		std::unique_ptr<Texture2D> cpuAccessLuminousnessTexture;
+
+
 		//
 		std::unique_ptr<Texture2D> hdrRenderResultTexture_;
 
@@ -81,7 +86,11 @@ namespace Kumazuma
 		ComPtr<ID3D11ComputeShader>		directinalLightingCShader_;
 		ComPtr<ID3D11Buffer>			csLightCBuffer_;
 		ComPtr<ID3D11Buffer>			csGlobalCBuffer_;
+		ComPtr<ID3D11Buffer>			csLumCBuffer_;
+
 		ComPtr<ID3D11ComputeShader>		combineCShader_;
 		ComPtr<ID3D11ComputeShader>		toneMappingCShader_;
+		ComPtr<ID3D11ComputeShader>		lumAvgCShader_;
+		ComPtr<ID3D11SamplerState>		lumSamplerState_;
 	};
 }

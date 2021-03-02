@@ -193,7 +193,7 @@ HRESULT Kumazuma::GraphicsModuleImpl::LoadComputeShader(wchar_t const* id, wchar
     ComPtr<ID3DBlob> code;
     ComPtr<ID3DBlob> errMsg;
     ComPtr<ID3D11ComputeShader> computeShader;
-    hr = D3DCompileFromFile(path, nullptr, nullptr, entry, "cs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3
+    hr = D3DCompileFromFile(path, nullptr, nullptr, entry, "cs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG
         , 0, &code, &errMsg);
     if (FAILED(hr))
     {

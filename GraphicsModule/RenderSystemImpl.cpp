@@ -7,7 +7,12 @@
 #include <mutex>
 #include <d3dcompiler.h>
 using namespace DirectX;
-
+struct alignas(16) LumAvgCBuffer
+{
+	Size2D<u32> sourceTextureSize;
+	Size2D<u32> sourceTextureRange;
+	Size2D<u32> destTextureRange;
+};
 namespace CS
 {
 	struct LightInfo
@@ -76,6 +81,28 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule, SwapChain*
 		.Build(device.Get());
 	hdrRenderResultTexture_.reset(texture);
 
+	/*std::unique_ptr<Texture2D> luminousnessTexture;
+	std::unique_ptr<Texture2D> luminousness2Texture;
+	std::unique_ptr<Texture2D> cpuAccessLuminousnessTexture;*/
+//광도를 구하기 위한 텍스처 세장을 만들자.
+	texture =
+		Texture2D::Builder(DXGI_FORMAT_R32G32B32A32_FLOAT, 729, 729)
+		.UnorderedResourceView()
+		.Build(device.Get());
+	luminousnessTexture.reset(texture);
+
+	texture =
+		Texture2D::Builder(DXGI_FORMAT_R32G32B32A32_FLOAT, 729, 729)
+		.UnorderedResourceView()
+		.Build(device.Get());
+	luminousness2Texture.reset(texture);
+	auto cpuAccessTextureBuilder{ Texture2D::Builder(DXGI_FORMAT_R32G32B32A32_FLOAT, 1.f, 1.f) };
+	cpuAccessTextureBuilder.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	cpuAccessTextureBuilder.Usage = D3D11_USAGE_STAGING;
+	cpuAccessTextureBuilder.BindFlags = 0;
+	texture = cpuAccessTextureBuilder.Build(device.Get());
+	cpuAccessLuminousnessTexture.reset(texture);
+
 	InitializeRenderState(device.Get());
 
 	HRESULT hr{};
@@ -130,13 +157,14 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule, SwapChain*
 
 	auto cslightCBufferDesc = CD3D11_BUFFER_DESC(sizeof(CS::LightInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 	auto csGlobalCBufferDesc = CD3D11_BUFFER_DESC(sizeof(CS::GlobalInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+	auto csLumCBufferDesc = CD3D11_BUFFER_DESC(sizeof(LumAvgCBuffer), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 
 	hr = device->CreateBuffer(&csGlobalCBufferDesc, nullptr, &csGlobalCBuffer_);
 	hr = device->CreateBuffer(&cslightCBufferDesc, nullptr, &csLightCBuffer_);
-
+	hr = device->CreateBuffer(&csLumCBufferDesc, nullptr, &csLumCBuffer_);
 	gmodule->GetComputeShader(L"combineCShader_", &combineCShader_);
 	gmodule->GetComputeShader(L"toneMappingCShader_", &toneMappingCShader_);
-
+	gmodule->GetComputeShader(L"lumAvgCShader_", &lumAvgCShader_);
 	ComPtr<IDXGIDevice> dxgiDevice;
 	ComPtr<IDXGISurface> dxgiSurface;
 	ComPtr<ID3D11Texture2D> backbuffer;
@@ -178,8 +206,8 @@ void Kumazuma::RenderSystemImpl::Initialize(GraphicsModule* gmodule)
 	gmodule->LoadComputeShader(L"directional_lighting", L"./LightingCS.hlsl", "main");
 	gmodule->LoadComputeShader(L"combineCShader_", L"./DeferredCombineCS.hlsl", "main");
 	gmodule->LoadComputeShader(L"toneMappingCShader_", L"./HDRToneMappingCS.hlsl", "main");
+	gmodule->LoadComputeShader(L"lumAvgCShader_", L"./LumAvgCS.hlsl", "main");
 	gmodule->LoadPixelShader(L"deferred_gbuffer_ps", L"./StaticMeshGBufferPS.hlsl", "main");
-
 }
 
 void Kumazuma::RenderSystemImpl::AddMaterial(Material* material)
@@ -332,6 +360,21 @@ void Kumazuma::RenderSystemImpl::InitializeRenderState(ID3D11Device* device)
 	rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	device->CreateRasterizerState(&rasterizerDesc, &rasterizerCullNoneState_);
 
+	D3D11_SAMPLER_DESC samplerDesc{};
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0.f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	device->CreateSamplerState(&samplerDesc, &lumSamplerState_);
 }
 
 void Kumazuma::RenderSystemImpl::RenderShadowMap(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
@@ -410,7 +453,7 @@ void Kumazuma::RenderSystemImpl::DeferredLighting(ID3D11Device* device, ID3D11De
 	deviceContext->Map(csLightCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	CS::LightInfo* csLightCBuffer = reinterpret_cast<CS::LightInfo*>(mappedResource.pData);
 	csLightCBuffer->g_vLightAmbient = XMFLOAT4{ 0.1f, 0.1f, 0.1f,0.1f};
-	csLightCBuffer->g_vLightDiffuse = XMFLOAT4{ 2.f, 2.f, 2.f,1.f };
+	csLightCBuffer->g_vLightDiffuse = XMFLOAT4{ 10.f, 10.f, 10.f,1.f };
 	csLightCBuffer->g_vLightDirection = lightDirection;
 	csLightCBuffer->lightType = 0;
 	deviceContext->Unmap(csLightCBuffer_.Get(), 0);
@@ -482,17 +525,90 @@ void Kumazuma::RenderSystemImpl::DeferredCombine(ID3D11Device* device, ID3D11Dev
 
 void Kumazuma::RenderSystemImpl::ToneMapping(ID3D11Device* device, ID3D11DeviceContext* context)
 {
-
+	HRESULT hr{};
 	ID3D11UnorderedAccessView* hdrRenderResultUAV;
 	ID3D11UnorderedAccessView* swapChainUAV;
 	Size2D<u32> size{};
 	D3D11_MAPPED_SUBRESOURCE mappedResource{};
-
-
+	Size2D<u32> destTextureSize{ 729 / 3, 729 / 3 };
+	//
+	ComPtr<ID3D11Texture2D> hdrRenderTexture2D;
+	ComPtr<ID3D11Texture2D> sourceTexture2D;
+	ComPtr<ID3D11Texture2D> destTexture2D;
+	CS::GlobalInfo* csGlobalCBuffer{};
+	LumAvgCBuffer* csLumAvgCBuffer{};
 	swapChain_->GetBackbuffer()->GetSize(&size);
+	hdrRenderResultTexture_->GetResource(&hdrRenderTexture2D);
+	luminousnessTexture->GetResource(&sourceTexture2D);
+	luminousness2Texture->GetResource(&destTexture2D);
+	//우선 HDR렌더타겟의 내용을 원본으로 리사이징한다.
+	context->Map(csLumCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	csLumAvgCBuffer = reinterpret_cast<LumAvgCBuffer*>(mappedResource.pData);
+	csLumAvgCBuffer->sourceTextureRange = size;
+	csLumAvgCBuffer->sourceTextureSize = size;
+	csLumAvgCBuffer->destTextureRange = { 729 , 729 };
+	context->Unmap(csLumCBuffer_.Get(), 0);
+	auto sampler = lumSamplerState_.Get();
+	auto srv = hdrRenderResultTexture_->GetViewRef<ID3D11ShaderResourceView>();
+	auto uav = luminousnessTexture->GetViewRef<ID3D11UnorderedAccessView>();
+	context->ClearState();
+	context->CSSetShader(lumAvgCShader_.Get(), nullptr, 0);
+	context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+	context->CSSetShaderResources(0, 1, &srv);
+	context->CSSetConstantBuffers(0, 1, csLumCBuffer_.GetAddressOf());
+	context->CSSetSamplers(0, 1, &sampler);
+	context->Dispatch(729, 729, 1);
+
+	Texture2D* sourceTexture = luminousnessTexture.get();
+	Texture2D* destTexture = luminousness2Texture.get();
+	while (
+		destTextureSize.height >= 1 ||
+		destTextureSize.width >= 1)
+	{
+		context->Map(csLumCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		csLumAvgCBuffer = reinterpret_cast<LumAvgCBuffer*>(mappedResource.pData);
+		csLumAvgCBuffer->sourceTextureRange = { destTextureSize.width * 3, destTextureSize.height * 3 };
+		csLumAvgCBuffer->sourceTextureSize = { 729 , 729 };
+		csLumAvgCBuffer->destTextureRange = destTextureSize;
+		context->Unmap(csLumCBuffer_.Get(), 0);
+		auto srv = sourceTexture->GetViewRef<ID3D11ShaderResourceView>();
+		auto uav = destTexture->GetViewRef<ID3D11UnorderedAccessView>();
+		//셰이더를 지정하고
+		//
+		auto sampler = lumSamplerState_.Get();
+		context->ClearState();
+		context->CSSetShader(lumAvgCShader_.Get(), nullptr, 0);
+		context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+		context->CSSetShaderResources(0, 1, &srv);
+		context->CSSetConstantBuffers(0, 1, csLumCBuffer_.GetAddressOf());
+		context->CSSetSamplers(0, 1, &sampler);
+		
+		//실행시킨 후에
+		context->Dispatch(destTextureSize.width, destTextureSize.height, 1);
+		//포인터만 바꿔 근원 텍스처와 목적지 텍스처의 역할을 바꾼다.
+		std::swap(sourceTexture, destTexture);
+		
+		destTextureSize = { destTextureSize.width / 3, destTextureSize.height / 3 };
+	}
+	ComPtr<ID3D11Texture2D> cpuReadableTexture2D{};
+	ComPtr<ID3D11Texture2D> lumTexture2D{};
+	sourceTexture->GetResource(&lumTexture2D);
+	this->cpuAccessLuminousnessTexture->GetResource(&cpuReadableTexture2D);
+	D3D11_BOX box{};
+	box.left = 0;
+	box.right = 1;
+	box.top = 0;
+	box.bottom = 1;
+	box.front = 0;
+	box.back = 1;
+	XMFLOAT4 YCbCr{};
+	context->CopySubresourceRegion(cpuReadableTexture2D.Get(), 0, 0, 0, 0, lumTexture2D.Get(), 0, &box);
+	context->Map(cpuReadableTexture2D.Get(), 0, D3D11_MAP_READ, 0, &mappedResource);
+	YCbCr = *reinterpret_cast<XMFLOAT4*>(mappedResource.pData);
+	context->Unmap(cpuReadableTexture2D.Get(), 0);
 
 	context->Map(csGlobalCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	CS::GlobalInfo* csGlobalCBuffer = reinterpret_cast<CS::GlobalInfo*>(mappedResource.pData);
+	csGlobalCBuffer = reinterpret_cast<CS::GlobalInfo*>(mappedResource.pData);
 	csGlobalCBuffer->g_bufferSize = XMUINT2{ size.width, size.height };
 	csGlobalCBuffer->g_mInverseViewProj(0, 0) = 1.0f;
 	context->Unmap(csGlobalCBuffer_.Get(), 0);

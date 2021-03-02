@@ -82,24 +82,32 @@ void TestScene::Loaded()
 			meshObj->AddComponent<Game::TransformComponent>();
 			auto transform{ meshObj->GetComponent<Game::TransformComponent>() };
 			auto mesh{ resourceMgr->GetOBJMesh(base_dir + path) };
+			auto const& jTransform{ it[u8"transform"] };
+			auto const& jPosition{ jTransform[u8"position"] };
+			auto const& jScale{ jTransform[u8"scale"] };
+			auto const& jRotation{ jTransform[u8"rotation"] };
 			XMFLOAT3 pos{
-				it[u8"transform"][u8"position"][u8"x"],
-				it[u8"transform"][u8"position"][u8"y"],
-				it[u8"transform"][u8"position"][u8"z"]
+				jPosition[u8"x"],
+				jPosition[u8"y"],
+				jPosition[u8"z"]
 			};
-			XMFLOAT3 scale{
-				it[u8"transform"][u8"scale"][u8"x"],
-				it[u8"transform"][u8"scale"][u8"y"],
-				it[u8"transform"][u8"scale"][u8"z"]
-			};
+			float scale{ 1.f };
+			if (jScale.is_object())
+			{
+				scale = jScale[u8"x"];
+			}
+			else if(jScale.is_number())
+			{
+				scale = jScale;
+			}
 			XMFLOAT3 rotation{
-				it[u8"transform"][u8"rotation"][u8"x"],
-				it[u8"transform"][u8"rotation"][u8"y"],
-				it[u8"transform"][u8"rotation"][u8"z"]
+				jRotation[u8"x"],
+				jRotation[u8"y"],
+				jRotation[u8"z"]
 			};
 			transform->SetPosition(pos);
 			transform->SetRotation(rotation);
-			transform->SetScale(scale.x);
+			transform->SetScale(scale);
 
 			std::string usage{ it[u8"usage"] };
 			if (usage == u8"TERRAIN")

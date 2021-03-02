@@ -16,7 +16,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor
         public AnimationIDEnumerator(List<String> ids)
         {
             animationIDs = ids;
-            index = 0;
+            index = -1;
         }
         public KeyValuePair<int, string> Current => new KeyValuePair<int, string>(index, animationIDs[index]);
 
@@ -35,7 +35,7 @@ namespace MaptoolNightbuild.CharacterMetaEditor
 
         public void Reset()
         {
-            index = 0;
+            index = -1;
         }
     }
     [TypeConverter(typeof(ExpandableObjectConverter))]
