@@ -33,6 +33,8 @@ namespace Kumazuma
 		void SetGraphicsModule(GraphicsModule* module);
 	private:
 		void InitializeRenderState(ID3D11Device* device);
+		void InitializeStaticMeshVertexShader(ID3D11Device* device);
+		void InitializeSkinnedMeshVertexShader(ID3D11Device* device);
 		void RenderShadowMap(ID3D11Device* device, ID3D11DeviceContext* context);
 		void RenderDeferred(ID3D11Device* device, ID3D11DeviceContext* context);
 		void DeferredLighting(ID3D11Device* device, ID3D11DeviceContext* context);
@@ -79,6 +81,9 @@ namespace Kumazuma
 		//
 		ComPtr<ID3D11InputLayout>		staticMeshInputLayout_;
 		ComPtr<ID3D11VertexShader>		staticMeshVertexShader_;
+		//
+		ComPtr<ID3D11InputLayout>		skinnedMeshInputLayout_;
+		ComPtr<ID3D11VertexShader>		skinnedMeshVertexShader_;
 		//
 		ComPtr<ID3D11Buffer>			vsGlobalCBuffer_;
 		ComPtr<ID3D11Buffer>			vsLocalCBuffer_;

@@ -3,7 +3,6 @@
 #include "Texture2DBuilder.hpp"
 #include "GraphicsModule.hpp"
 #include "SwapChain.hpp"
-#include "Mesh.hpp"
 #include <mutex>
 #include <d3dcompiler.h>
 using namespace DirectX;
@@ -104,54 +103,17 @@ Kumazuma::RenderSystemImpl::RenderSystemImpl(GraphicsModule* gmodule, SwapChain*
 	cpuAccessLuminousnessTexture.reset(texture);
 
 	InitializeRenderState(device.Get());
+	InitializeStaticMeshVertexShader(device.Get());
+	InitializeSkinnedMeshVertexShader(device.Get());
 
 	HRESULT hr{};
-	ComPtr<ID3DBlob> bytesCode;
-	ComPtr<ID3DBlob> errMsg;
-	hr = D3DCompileFromFile(L"./StaticMeshVS.hlsl", nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &bytesCode, &errMsg);
-	if (errMsg != nullptr)
-	{
-		OutputDebugStringA((char* const)errMsg->GetBufferPointer());
-	}
-
-	std::array< D3D11_INPUT_ELEMENT_DESC, 3> polygonLayout{};
-	polygonLayout[0].SemanticName = "POSITION";
-	polygonLayout[0].SemanticIndex = 0;
-	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;//float 3개가 들어간다는 약속
-	polygonLayout[0].InputSlot = 0;
-	polygonLayout[0].AlignedByteOffset = 0;
-	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[0].InstanceDataStepRate = 0;
-
-	polygonLayout[1].SemanticName = "TEXCOORD";
-	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;
-
-	polygonLayout[2].SemanticName = "NORMAL";
-	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[2].InstanceDataStepRate = 0;
-	hr = device->CreateInputLayout(
-		polygonLayout.data(),
-		static_cast<UINT>(polygonLayout.size()),
-		bytesCode->GetBufferPointer(),
-		bytesCode->GetBufferSize(),
-		&staticMeshInputLayout_);
 
 	auto worldCBufferDesc = CD3D11_BUFFER_DESC(sizeof(DirectX::XMFLOAT4X4), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 	auto localCBufferDesc = CD3D11_BUFFER_DESC(sizeof(DirectX::XMFLOAT4X4) * 2, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 
 	hr = device->CreateBuffer(&worldCBufferDesc, nullptr, &vsGlobalCBuffer_);
 	hr = device->CreateBuffer(&localCBufferDesc, nullptr, &vsLocalCBuffer_);
-	device->CreateVertexShader(bytesCode->GetBufferPointer(),
-		bytesCode->GetBufferSize(), nullptr, &staticMeshVertexShader_);
+
 
 	gmodule->GetComputeShader(L"directional_lighting", &directinalLightingCShader_);
 
@@ -305,6 +267,17 @@ void Kumazuma::RenderSystemImpl::SettupVertexShader(MeshType type, ID3D11DeviceC
 		context->VSSetConstantBuffers(0, 1, &vsGlobalCBuffer);
 		context->VSSetConstantBuffers(1, 1, &vsLocalCBuffer);
 		break;
+	case MeshType::Skinned:
+		context->IASetInputLayout(skinnedMeshInputLayout_.Get());
+		context->VSSetShader(skinnedMeshVertexShader_.Get(), nullptr, 0);
+		context->Map(vsLocalCBuffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		mapped = reinterpret_cast<DirectX::XMFLOAT4X4*>(mappedResource.pData);
+		XMStoreFloat4x4(mapped, XMMatrixTranspose(mWorld));
+		XMStoreFloat4x4(mapped + 1, mNormalWorld);
+		context->Unmap(vsLocalCBuffer_.Get(), 0);
+		context->VSSetConstantBuffers(0, 1, &vsGlobalCBuffer);
+		context->VSSetConstantBuffers(1, 1, &vsLocalCBuffer);
+		break;
 	}
 }
 
@@ -375,6 +348,114 @@ void Kumazuma::RenderSystemImpl::InitializeRenderState(ID3D11Device* device)
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	device->CreateSamplerState(&samplerDesc, &lumSamplerState_);
+}
+
+void Kumazuma::RenderSystemImpl::InitializeStaticMeshVertexShader(ID3D11Device* device)
+{
+	HRESULT hr{};
+	ComPtr<ID3DBlob> bytesCode;
+	ComPtr<ID3DBlob> errMsg;
+	hr = D3DCompileFromFile(L"./StaticMeshVS.hlsl", nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &bytesCode, &errMsg);
+	if (errMsg != nullptr)
+	{
+		OutputDebugStringA((char* const)errMsg->GetBufferPointer());
+	}
+
+	std::array< D3D11_INPUT_ELEMENT_DESC, 3> polygonLayout{};
+	polygonLayout[0].SemanticName = "POSITION";
+	polygonLayout[0].SemanticIndex = 0;
+	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;//float 3개가 들어간다는 약속
+	polygonLayout[0].InputSlot = 0;
+	polygonLayout[0].AlignedByteOffset = 0;
+	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[0].InstanceDataStepRate = 0;
+
+	polygonLayout[1].SemanticName = "TEXCOORD";
+	polygonLayout[1].SemanticIndex = 0;
+	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	polygonLayout[1].InputSlot = 0;
+	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[1].InstanceDataStepRate = 0;
+
+	polygonLayout[2].SemanticName = "NORMAL";
+	polygonLayout[2].SemanticIndex = 0;
+	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[2].InputSlot = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[2].InstanceDataStepRate = 0;
+	hr = device->CreateInputLayout(
+		polygonLayout.data(),
+		static_cast<UINT>(polygonLayout.size()),
+		bytesCode->GetBufferPointer(),
+		bytesCode->GetBufferSize(),
+		&staticMeshInputLayout_);
+	device->CreateVertexShader(bytesCode->GetBufferPointer(),
+		bytesCode->GetBufferSize(), nullptr, &staticMeshVertexShader_);
+}
+
+void Kumazuma::RenderSystemImpl::InitializeSkinnedMeshVertexShader(ID3D11Device* device)
+{
+	HRESULT hr{};
+	ComPtr<ID3DBlob> bytesCode;
+	ComPtr<ID3DBlob> errMsg;
+	hr = D3DCompileFromFile(L"./SkinnedMeshVS.hlsl", nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG, 0, &bytesCode, &errMsg);
+	if (errMsg != nullptr)
+	{
+		OutputDebugStringA((char* const)errMsg->GetBufferPointer());
+	}
+
+	std::array< D3D11_INPUT_ELEMENT_DESC, 5> polygonLayout{};
+	polygonLayout[0].SemanticName = "POSITION";
+	polygonLayout[0].SemanticIndex = 0;
+	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;//float 3개가 들어간다는 약속
+	polygonLayout[0].InputSlot = 0;
+	polygonLayout[0].AlignedByteOffset = 0;
+	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[0].InstanceDataStepRate = 0;
+
+	polygonLayout[1].SemanticName = "TEXCOORD";
+	polygonLayout[1].SemanticIndex = 0;
+	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	polygonLayout[1].InputSlot = 0;
+	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[1].InstanceDataStepRate = 0;
+
+	polygonLayout[2].SemanticName = "NORMAL";
+	polygonLayout[2].SemanticIndex = 0;
+	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[2].InputSlot = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[2].InstanceDataStepRate = 0;
+
+
+	
+	polygonLayout[3].SemanticName = "BLENDWEIGHT";
+	polygonLayout[3].SemanticIndex = 0;
+	polygonLayout[3].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	polygonLayout[3].InputSlot = 0;
+	polygonLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[3].InstanceDataStepRate = 0;
+
+	polygonLayout[4].SemanticName = "BLENDINDICES";
+	polygonLayout[4].SemanticIndex = 0;
+	polygonLayout[4].Format = DXGI_FORMAT_R32G32B32A32_UINT;
+	polygonLayout[4].InputSlot = 0;
+	polygonLayout[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[4].InstanceDataStepRate = 0;
+	hr = device->CreateInputLayout(
+		polygonLayout.data(),
+		static_cast<UINT>(polygonLayout.size()),
+		bytesCode->GetBufferPointer(),
+		bytesCode->GetBufferSize(),
+		&skinnedMeshInputLayout_);
+	device->CreateVertexShader(bytesCode->GetBufferPointer(),
+		bytesCode->GetBufferSize(), nullptr, &skinnedMeshVertexShader_);
 }
 
 void Kumazuma::RenderSystemImpl::RenderShadowMap(ID3D11Device* device, ID3D11DeviceContext* deviceContext)

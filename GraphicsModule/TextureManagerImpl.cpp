@@ -26,25 +26,32 @@ namespace Kumazuma
 		std::filesystem::path fullPath{ std::filesystem::absolute(path) };
 		std::wstring fullPathString{ fullPath.generic_wstring() };
 		{
-			std::lock_guard<std::mutex> guard{ mutex_ };
-			auto const findIt = table_.find(fullPathString);
-			if (findIt != table_.end())
+			
+			auto findIt = loadingPaths.find(fullPathString);
+			if (findIt != loadingPaths.end())
 			{
-				//만약에 해당 second가 nullptr이다.
-				if (findIt->second == nullptr)
+				auto it = table_.find(fullPathString);
+				while (it == table_.end())
 				{
-					//로딩이 되기를 대기한다.
-					while (findIt->second == nullptr)
+					auto findIt = loadingPaths.find(fullPathString);
+					if (findIt == loadingPaths.end())
 					{
-
+						return nullptr;
 					}
 				}
-				return new CachedTexture2DImpl{ device.Get(), findIt->second };
+				return new CachedTexture2DImpl{ device.Get(), it->second,fullPathString };
 			}
-			table_.emplace(path, nullptr);
+			std::lock_guard<std::mutex> guard{ mutex_ };
+			loadingPaths.emplace(path);
 		}
 
 		hr = factory_->CreateDecoderFromFilename(fullPathString.c_str(), nullptr, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &decoder);
+		if (FAILED(hr))
+		{
+			std::lock_guard<std::mutex> guard{ mutex_ };
+			loadingPaths.erase(path);
+			return nullptr;
+		}
 		assert(hr == S_OK);
 		hr = decoder->GetFrame(0, &frameDecoder);
 		assert(hr == S_OK);
@@ -63,7 +70,7 @@ namespace Kumazuma
 
 		std::lock_guard<GraphicsModule> graphicsLock{ *module_ };
 		deviceContext->UpdateSubresource(textureDX11.Get(), 0, nullptr, imageData.data(), static_cast<UINT>(imageData.size() / height), 0);
-		CachedTexture2DImpl texture{ device.Get(), textureDX11 };
+		CachedTexture2DImpl texture{ device.Get(), textureDX11,fullPathString };
 		ComPtr<ID3D11ShaderResourceView> srv;
 		((Texture2D&)texture).GetView<ID3D11ShaderResourceView>(&srv);
 		deviceContext->GenerateMips(srv.Get());

@@ -3,12 +3,13 @@
 #include"typedef.hpp"
 #include<d3d11.h>
 #include<dxgi.h>
-#include"Mesh.hpp"
+
 namespace Kumazuma
 {
 	class Texture2D;
 	class TextureManager;
 	class RenderSystem;
+	enum class MeshType;
 	class DLL_CLASS GraphicsModule
 	{
 	public:
@@ -32,3 +33,4 @@ namespace Kumazuma
 		void unlock();
 	};
 }
+#include "MeshCollection.hpp"

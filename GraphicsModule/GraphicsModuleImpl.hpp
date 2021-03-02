@@ -7,6 +7,7 @@
 #include <memory>
 #include "SwapChainTexture.hpp"
 #include "TextureManager.hpp"
+
 using namespace Microsoft::WRL;
 namespace Kumazuma
 {
@@ -26,8 +27,8 @@ namespace Kumazuma
 		HRESULT LoadComputeShader(wchar_t const* id, wchar_t const* path, char const* entry);
 		HRESULT LoadComputeShaderFromBytes(wchar_t const* id, u8 const* ptr, u32 len);
 		HRESULT GetComputeShader(wchar_t const* id, ID3D11ComputeShader** out);
-		HRESULT GetVertexShaderAndInputLayout(MeshType meshType, ID3D11VertexShader** outVS, ID3D11InputLayout** outInputLayout);
-
+		HRESULT GetVertexShaderAndInputLayout(MeshType meshType, ID3D11VertexShader** outVS, ID3D11InputLayout** outInputLayout) override;
+		
 		TextureManager& GetTextureManager();
 		IDXGIFactory* GetDXGIFactory();
 	private:

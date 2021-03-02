@@ -79,11 +79,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\tinyobjloader\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\tinyobjloader\include;$(SolutionDir)reference\assimp\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)reference\assimp\lib\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\tinyobjloader\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\tinyobjloader\include;$(SolutionDir)reference\assimp\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)reference\assimp\lib\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -141,7 +143,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;windowscodecs.lib;d2d1.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;windowscodecs.lib;d2d1.lib;dwrite.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,32 +166,28 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;windowscodecs.lib;d2d1.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;windowscodecs.lib;d2d1.lib;dwrite.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CachedTextureImpl.hpp" />
-    <ClInclude Include="CustomMesh.hpp" />
-    <ClInclude Include="CustomMeshImpl.hpp" />
-    <ClInclude Include="FBXMesh.hpp" />
     <ClInclude Include="ForwardRenderingMaterial.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GraphicsModule.hpp" />
     <ClInclude Include="GraphicsModuleImpl.hpp" />
     <ClInclude Include="guidhashder.hpp" />
     <ClInclude Include="Material.hpp" />
-    <ClInclude Include="Mesh.hpp" />
-    <ClInclude Include="OBJMesh.hpp" />
-    <ClInclude Include="OBJMeshImpl.hpp" />
-    <ClInclude Include="OBJSubsets.hpp" />
+    <ClInclude Include="MeshImpl.hpp" />
+    <ClInclude Include="MeshV2.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Pipeline.hpp" />
     <ClInclude Include="RenderSystem.hpp" />
     <ClInclude Include="RenderSystemImpl.hpp" />
     <ClInclude Include="SkinnedMesh.hpp" />
+    <ClInclude Include="SkinnedMeshImpl.hpp" />
     <ClInclude Include="StandardMaterial.hpp" />
-    <ClInclude Include="Subset.hpp" />
-    <ClInclude Include="Subsets.hpp" />
+    <ClInclude Include="MeshCollection.hpp" />
+    <ClInclude Include="MeshCollectionImpl.hpp" />
     <ClInclude Include="SwapChain.hpp" />
     <ClInclude Include="SwapChainTexture.hpp" />
     <ClInclude Include="Texture2D.hpp" />
@@ -200,17 +198,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CachedTextureImpl.cpp" />
-    <ClCompile Include="CustomMesh.cpp" />
-    <ClCompile Include="CustomMeshImpl.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="FBXMesh.cpp" />
     <ClCompile Include="GraphicsModule.cpp" />
     <ClCompile Include="GraphicsModuleImpl.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="OBJMesh.cpp" />
-    <ClCompile Include="OBJMeshImpl.cpp" />
-    <ClCompile Include="OBJSubsets.cpp" />
+    <ClCompile Include="MeshImpl.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -219,9 +211,11 @@
     </ClCompile>
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="RenderSystemImpl.cpp" />
+    <ClCompile Include="SkinnedMesh.cpp" />
+    <ClCompile Include="SkinnedMeshImpl.cpp" />
     <ClCompile Include="StandardMaterial.cpp" />
-    <ClCompile Include="Subset.cpp" />
-    <ClCompile Include="Subsets.cpp" />
+    <ClCompile Include="MeshCollection.cpp" />
+    <ClCompile Include="MeshCollectionImpl.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="SwapChainTexture.cpp" />
     <ClCompile Include="Texture2D.cpp" />
@@ -280,6 +274,20 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">3.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">3.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">3.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="SkinnedMeshVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="StaticMeshGBufferPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>

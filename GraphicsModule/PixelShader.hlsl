@@ -8,6 +8,6 @@ struct PSIn
 };
 float4 main(PSIn pixel) : COLOR
 {
-	float4 color = g_diffuseTexture[(uint2)(pixel.tex * g_renderSize)];
+	float4 color = (float4)0;
 	return color;
 }

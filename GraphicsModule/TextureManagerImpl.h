@@ -5,6 +5,7 @@
 #include <memory>
 #include <wincodec.h>
 #include <mutex>
+#include <unordered_set>
 using namespace Microsoft::WRL;
 namespace Kumazuma
 {
@@ -21,5 +22,6 @@ namespace Kumazuma
 		GraphicsModuleImpl* module_;
 		ComPtr<IWICImagingFactory> factory_;
 		std::unordered_map<std::wstring, ComPtr<ID3D11Texture2D> > table_;
+		std::unordered_set<std::wstring > loadingPaths;
 	};
 }

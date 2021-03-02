@@ -3,15 +3,14 @@
 #include "GraphicsModule.hpp"
 #include "RenderSystem.hpp"
 #include "Texture2D.hpp"
-#include "Mesh.hpp"
 #include <wrl.h>
 using namespace Microsoft::WRL;
 namespace Kumazuma
 {
-	StandardMaterial::StandardMaterial(GraphicsModule* gmodule, Subset const* subset):
+	StandardMaterial::StandardMaterial(GraphicsModule* gmodule, Mesh const* mesh):
 		Material{MaterialShadingClass::DeferredShading},
 		gmodule_{ gmodule },
-		subset_{ subset },
+		mesh_{ mesh },
 		worldMatrixPtr_{nullptr},
 		pixelShader_{}
 	{
@@ -67,14 +66,14 @@ namespace Kumazuma
 	{
 		ID3D11ShaderResourceView* srv{};
 		ID3D11SamplerState* samplerState{ samplerState_ };
-		auto& mesh{ subset_->GetMesh() };
-		auto* texture2D{ mesh.GetMaterialTexture(subset_->GetMaterial().c_str()) };
+		auto collection{ mesh_->GetMeshCollection() };
+		auto* texture2D{ collection->GetMaterialTexture(mesh_->GetMaterial().c_str()) };
 		if (texture2D != nullptr)
 		{
 			texture2D->GetView(&srv);
 		}
-		renderSystem->SettupVertexShader(MeshType::Static, deviceContext,worldMatrixPtr_);
-		mesh.SetupIA(deviceContext);
+		renderSystem->SettupVertexShader(mesh_->GetType(), deviceContext,worldMatrixPtr_);
+		mesh_->SetupIA(deviceContext);
 		{
 			D3D11_MAPPED_SUBRESOURCE mappedResource{};
 			HRESULT hr = deviceContext->Map(materialCBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -85,7 +84,7 @@ namespace Kumazuma
 		deviceContext->PSSetSamplers(0, 1, &samplerState);
 		deviceContext->PSSetShaderResources(0, 1, &srv);
 		deviceContext->PSSetConstantBuffers(0, 1, &materialCBuffer_);
-		deviceContext->DrawIndexed(subset_->GetTriangleCount() * 3, subset_->GetIndexBase(), 0);
+		deviceContext->DrawIndexed(mesh_->GetIndexCount(), mesh_->GetIndexBase(), 0);
 		if (srv != nullptr)
 		{
 			srv->Release();
